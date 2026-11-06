@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Time/Common.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -127,6 +128,38 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  \brief How As<String> () writes a Duration: an ISO 8601 duration, in its usual format - what Parse reads
+         *
+         *  As<String> () - and so what is built on it, as ObjectVariantMapper's mapping of a Duration, and so its JSON - writes with
+         *  the calling thread's AsStringOptions::GetThreadDefault (): AsStringOptions{}, unless a ScopedThreadDefault has set others.
+         *  Per thread: a thread pool's worker does not see the scope of the thread that queued its task. As<String> (options) writes
+         *  with the options given.
+         *
+         *  Extension points, each a field off by default: an exponent in the seconds ("PT1.5E-9S", ISO 8601-2) - the only way to keep
+         *  a huge or tiny Duration short (Duration{numeric_limits<double>::max ()} writes about 300 digits of years, which no
+         *  precision shortens); weeks ("P3W").
+         *
+         *  \note Satisfies Concepts:
+         *      o   Common::IConstexprable<AsStringOptions>
+         */
+        struct AsStringOptions {
+            /**
+             *  The seconds - the one element written with a fraction - never with an exponent (ISO 8601 Part 1 has none). By default
+             *  6 significant figures, for short text - so not read back exactly; Precision::ShortestRoundTrip () reads back as the
+             *  same Duration.
+             */
+            Characters::Number::Precision fSecondsPrecision{Characters::Number::Precision::MaxSignificantDigits (6)};
+
+            /**
+             *  \brief The calling thread's: AsStringOptions{}, unless a ScopedThreadDefault has set others
+             */
+            static AsStringOptions GetThreadDefault ();
+
+            class ScopedThreadDefault;
+        };
+
+    public:
+        /**
          *  A string is read as Parse reads it (an ISO 8601 duration, as "P3DT2H" or "-PT0.5S"), throwing its
          *  FormatException if it cannot. A std::string is not checked for ASCII first: a character that is not ASCII is a
          *  FormatException too.
@@ -232,10 +265,8 @@ namespace Stroika::Foundation::Time {
          *      o   int, float, etc...
          *      o   std::chrono::milliseconds etc...
          *
-         *  \note SignificantFigures - if given - refers to the precision of the seconds part of the ISO-8601 duration string.
-         * 
-         *  \note Change since before 3.0d12 - with Duration::As<String> () - used
-         *        to default to full precision, and now defaults to default precision (Characters::Number::SignificantFigures{} == 6).
+         *  As<String> () gives back the text a Duration was read from, if it was; else writes it as the calling thread's
+         *  AsStringOptions say (AsStringOptions::GetThreadDefault ()). As<String> (options) writes it as options says.
          *
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 
@@ -249,8 +280,17 @@ namespace Stroika::Foundation::Time {
             requires (Common::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or Common::IDuration<T> or
                       Common::ITimePoint<T>);
         template <typename T>
-        nonvirtual T As (Characters::Number::SignificantFigures p) const
-            requires (Common::IAnyOf<T, Characters::String>);
+        nonvirtual T As (const AsStringOptions& options) const
+            requires (same_as<T, Characters::String>);
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        template <typename T>
+        [[deprecated ("Since Stroika v3.0d26 use As<String> (AsStringOptions{.fSecondsPrecision = p})")]] nonvirtual T As (Characters::Number::SignificantFigures p) const
+            requires (same_as<T, Characters::String>);
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     public:
         /**
@@ -384,7 +424,7 @@ namespace Stroika::Foundation::Time {
     private:
         static Common::StdCompat::expected<Duration, FormatException> Parse_ (string_view text, const ParseOptions& options);
         static Common::StdCompat::expected<InternalNumericFormatType_, FormatException> ParseTime_ (string_view s, const ParseOptions& options);
-        static Characters::String UnParseTime_ (InternalNumericFormatType_ t, Characters::Number::SignificantFigures p);
+        static Characters::String UnParseTime_ (InternalNumericFormatType_ t, const AsStringOptions& options);
 
     private:
         /**
@@ -403,6 +443,31 @@ namespace Stroika::Foundation::Time {
         constexpr void destroy_ (); // drops the text, if any, leaving eNumeric_ (and the numeric value unchanged)
     };
     static_assert (totally_ordered<Duration>);
+    static_assert (Common::IConstexprable<Duration::AsStringOptions>); // see Satisfies Concepts
+
+    /**
+     *  \brief Sets the calling thread's Duration::AsStringOptions for this object's lifetime, then the previous ones again: scopes nest
+     *
+     *  \par Example Usage
+     *      \code
+     *          Duration::AsStringOptions::ScopedThreadDefault exact{{.fSecondsPrecision = Characters::Number::Precision::ShortestRoundTrip ()}};
+     *          String json = DataExchange::Variant::JSON::Writer{}.WriteAsString (mapper.FromObject (myObject)); // its Durations read back exactly
+     *      \endcode
+     *
+     *  \note The thread's setting is a constinit thread_local pointer to the innermost scope's options (none: AsStringOptions{}) -
+     *        a read costs a load or two (a call, on macOS), and a scope two stores.
+     */
+    class Duration::AsStringOptions::ScopedThreadDefault {
+    public:
+        ScopedThreadDefault (const AsStringOptions& options);
+        ScopedThreadDefault (const ScopedThreadDefault&)            = delete;
+        ScopedThreadDefault& operator= (const ScopedThreadDefault&) = delete;
+        ~ScopedThreadDefault ();
+
+    private:
+        AsStringOptions        fOptions_;
+        const AsStringOptions* fPrevious_;
+    };
 
     class Duration::FormatException : public Execution::Exception<runtime_error> {
     private:

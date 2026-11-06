@@ -190,7 +190,7 @@ namespace {
         double         performanceScore = (baselineTime == 0s) ? 1000000 : compareWithTime.count () / baselineTime.count ();
         constexpr char kOneTab_[]       = "\t";
         {
-            Number::FloatToStringOptions fo{Number::SignificantFigures{2}};
+            Number::FloatToStringOptions fo{.fPrecision = Number::Precision::MaxSignificantDigits (2)};
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << Characters::ToString (performanceScore, fo) << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
@@ -1043,10 +1043,41 @@ namespace {
     namespace Test_Number_DETAILS_ {
         constexpr string_view kIntText_[] = {"0", "7", "-42", "1234", "65535", "-2147483647", "123456789", "99"};
         constexpr int         kInts_[]    = {0, 7, -42, 1234, 65535, -2147483647, 123456789, 99};
-        // no number under 1e-6: where the standard library cannot write a float with to_chars, ToString writes those as 0 (Tests/02 allows it)
+        // as ToString's default (%g, 6 significant figures) writes them - and kRoundTrip too, for these
         constexpr string_view kFloatText_[] = {"0", "1.5", "-2.25", "3.14159", "6.02214e+23", "0.0001", "123457", "-0.001"};
         constexpr double      kFloats_[]    = {0, 1.5, -2.25, 3.14159, 6.02214e+23, 0.0001, 123457, -0.001};
-        constexpr long long   kIntSum_      = [] () {
+        // the same, as %.2f writes them (6.02214e+23 swapped for a number with digits after the point)
+        constexpr double      kFixedFloats_[]    = {0, 1.5, -2.25, 3.14159, 1234.5678, 0.0001, 123457, -0.001};
+        constexpr string_view kFixedFloatText_[] = {"0.00", "1.50", "-2.25", "3.14", "1234.57", "0.00", "123457.00", "-0.00"};
+        // and as %.5e (6 significant figures) writes kFloats_
+        constexpr string_view kScientificFloatText_[] = {"0.00000e+00", "1.50000e+00", "-2.25000e+00", "3.14159e+00",
+                                                         "6.02214e+23", "1.00000e-04", "1.23457e+05",  "-1.00000e-03"};
+        constexpr Characters::Number::FloatToStringOptions kFixed2_{.fNotation  = Characters::Number::Notation::ePlain,
+                                                                    .fPrecision = Characters::Number::Precision::FixedFraction (2)};
+        constexpr Characters::Number::FloatToStringOptions kScientific6_{
+            .fNotation = Characters::Number::Notation::eScientific, .fPrecision = Characters::Number::Precision::FixedSignificantDigits (6)};
+        // std::to_chars's text, as a string - the floor any ToString can approach
+        template <typename... ARGS>
+        size_t ToCharsSize_ (double d, ARGS... args)
+        {
+            char  buf[64];
+            char* end = to_chars (std::begin (buf), std::end (buf), d, args...).ptr;
+            return string{buf, end}.size ();
+        }
+        // how ToString wrote fixed point and scientific before Stroika v3.0d26 (and 2.1): one thread_local stringstream, re-imbued and
+        // re-flagged for each number
+        size_t ReusedStreamSize_ (double d, ios_base::fmtflags floatField, streamsize precision)
+        {
+            static thread_local stringstream s;
+            s.str (string{});
+            s.clear ();
+            s.imbue (locale::classic ());
+            s.setf (floatField, ios_base::floatfield);
+            s.precision (precision);
+            s << d;
+            return s.str ().size ();
+        }
+        constexpr long long kIntSum_ = [] () {
             long long s = 0;
             for (int i : kInts_) {
                 s += i;
@@ -1154,6 +1185,78 @@ namespace {
             n += Characters::ToString (d).size ();
         }
         EXPECT_EQ (n, kChars_ (kFloatText_));
+    }
+    void Test_FloatToString_RoundTrip_ToChars_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            n += ToCharsSize_ (d, chars_format::general);
+        }
+        EXPECT_EQ (n, kChars_ (kFloatText_));
+    }
+    void Test_FloatToString_RoundTrip_ToString_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            n += Characters::ToString (d, Characters::Number::FloatToStringOptions::kRoundTrip).size ();
+        }
+        EXPECT_EQ (n, kChars_ (kFloatText_));
+    }
+    void Test_FloatToString_Fixed2_ToChars_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFixedFloats_) {
+            n += ToCharsSize_ (d, chars_format::fixed, 2);
+        }
+        EXPECT_EQ (n, kChars_ (kFixedFloatText_));
+    }
+    void Test_FloatToString_Fixed2_ReusedStream_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFixedFloats_) {
+            n += ReusedStreamSize_ (d, ios_base::fixed, 2);
+        }
+        EXPECT_EQ (n, kChars_ (kFixedFloatText_));
+    }
+    void Test_FloatToString_Fixed2_ToString_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFixedFloats_) {
+            n += Characters::ToString (d, kFixed2_).size ();
+        }
+        EXPECT_EQ (n, kChars_ (kFixedFloatText_));
+    }
+    void Test_FloatToString_Scientific6_ToChars_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            n += ToCharsSize_ (d, chars_format::scientific, 5);
+        }
+        EXPECT_EQ (n, kChars_ (kScientificFloatText_));
+    }
+    void Test_FloatToString_Scientific6_ReusedStream_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            n += ReusedStreamSize_ (d, ios_base::scientific, 5);
+        }
+        EXPECT_EQ (n, kChars_ (kScientificFloatText_));
+    }
+    void Test_FloatToString_Scientific6_ToString_ ()
+    {
+        using namespace Test_Number_DETAILS_;
+        size_t n = 0;
+        for (double d : kFloats_) {
+            n += Characters::ToString (d, kScientific6_).size ();
+        }
+        EXPECT_EQ (n, kChars_ (kScientificFloatText_));
     }
     // and as most code does it: a stream per conversion, in the "C" locale (the same text as the "C" punctuation)
     void Test_ParseInt_Stream_ ()
@@ -3289,6 +3392,18 @@ namespace {
                 500000, 0.5, &failedTests);
         Tester ("double to text (stream)", Test_FloatToString_Stream_, "ostringstream", Test_FloatToString_ToString_,
                 "Characters::ToString", 500000, 0.6, &failedTests);
+        // each against std::to_chars, the floor; and fixed point and scientific against how ToString wrote them before v3.0d26 (a
+        // reused thread_local stringstream) - ratios in one run, so the standard library's own speed moves both sides alike
+        Tester ("double to text, round trip", Test_FloatToString_RoundTrip_ToChars_, "to_chars+string",
+                Test_FloatToString_RoundTrip_ToString_, "Characters::ToString", 1500000, 3.4, &failedTests);
+        Tester ("double to text, %.2f", Test_FloatToString_Fixed2_ToChars_, "to_chars+string", Test_FloatToString_Fixed2_ToString_,
+                "Characters::ToString", 1500000, 3.4, &failedTests);
+        Tester ("double to text, %.2f (reused stream)", Test_FloatToString_Fixed2_ReusedStream_, "thread_local stringstream",
+                Test_FloatToString_Fixed2_ToString_, "Characters::ToString", 500000, 0.7, &failedTests);
+        Tester ("double to text, %.5e", Test_FloatToString_Scientific6_ToChars_, "to_chars+string",
+                Test_FloatToString_Scientific6_ToString_, "Characters::ToString", 1500000, 3.4, &failedTests);
+        Tester ("double to text, %.5e (reused stream)", Test_FloatToString_Scientific6_ReusedStream_, "thread_local stringstream",
+                Test_FloatToString_Scientific6_ToString_, "Characters::ToString", 500000, 0.7, &failedTests);
         Tester ("BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, "vector<byte>",
                 Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, "BLOB", 13000, 1.6, &failedTests);
         Tester ("BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, "vector<byte>",

@@ -66,7 +66,7 @@ String Characters::ToStringDefaults::ToString (const thread::id& t)
     return String{Execution::Thread::FormatThreadID_A (t)};
 }
 
-String Characters::ToStringDefaults::ToString (const Time::Duration& t, Number::SignificantFigures sf)
+String Characters::ToStringDefaults::ToString (const Time::Duration& t, const Number::Precision& secondsPrecision)
 {
-    return t.As<String> (sf);
+    return t.As<String> (Time::Duration::AsStringOptions{.fSecondsPrecision = secondsPrecision});
 }

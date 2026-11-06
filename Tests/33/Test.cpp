@@ -872,11 +872,28 @@ namespace {
             ObjectVariantMapper m;
             m.AddCommonType<Duration> ();
             VariantValue vv = m.FromObject (Duration{numbers::pi});
-            EXPECT_EQ (vv, "PT3.14159S"); // Number::SignificantFigures{} default - used by ObjectVariantMapper - is 6 digits Number::SignificantFigures
+            EXPECT_EQ (vv, "PT3.14159S"); // Duration::AsStringOptions{} - which ObjectVariantMapper uses - writes 6 significant digits
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.14159S\""); // ''
-            m.AddCommonType<Duration> (Number::SignificantFigures{2});                // replaces converter
+            m.AddCommonType<Duration> (Number::Precision::MaxSignificantDigits (2));  // replaces converter
             vv = m.FromObject (Duration{numbers::pi});
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
+        }
+        {
+            // the calling thread's Duration::AsStringOptions, for every Duration a mapper writes there
+            ObjectVariantMapper m;
+            m.AddCommonType<Duration> ();
+            {
+                Duration::AsStringOptions::ScopedThreadDefault exact{{.fSecondsPrecision = Number::Precision::ShortestRoundTrip ()}};
+                VariantValue                                   vv = m.FromObject (Duration{numbers::pi});
+                EXPECT_EQ (vv, "PT3.141592653589793S");
+                EXPECT_EQ (Duration{vv.As<String> ()}, Duration{numbers::pi}); // reads back exactly
+                {
+                    Duration::AsStringOptions::ScopedThreadDefault two{{.fSecondsPrecision = Number::Precision::MaxSignificantDigits (2)}};
+                    EXPECT_EQ (m.FromObject (Duration{numbers::pi}), "PT3.1S"); // scopes nest
+                }
+                EXPECT_EQ (m.FromObject (Duration{numbers::pi}), "PT3.141592653589793S");
+            }
+            EXPECT_EQ (m.FromObject (Duration{numbers::pi}), "PT3.14159S");
         }
     }
 }

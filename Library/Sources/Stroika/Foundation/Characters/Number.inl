@@ -18,6 +18,64 @@ namespace Stroika::Foundation::Characters::Number {
 
     /*
      ********************************************************************************
+     ********************************** Precision ***********************************
+     ********************************************************************************
+     */
+    constexpr Precision::Precision (Kind_ kind, MinMax digits)
+        : fKind_{kind}
+        , fDigits_{digits}
+    {
+    }
+    constexpr Precision Precision::FixedSignificantDigits (unsigned int n)
+    {
+        Require (n >= 1);
+        return Precision{Kind_::eSignificantDigits_, MinMax{n, n}};
+    }
+    constexpr Precision Precision::MaxSignificantDigits (unsigned int n)
+    {
+        Require (n >= 1);
+        return Precision{Kind_::eSignificantDigits_, MinMax{1, n}};
+    }
+    constexpr Precision Precision::MinMaxSignificantDigits (unsigned int minDigits, unsigned int maxDigits)
+    {
+        Require (1 <= maxDigits and minDigits <= maxDigits);
+        return Precision{Kind_::eSignificantDigits_, MinMax{minDigits, maxDigits}};
+    }
+    constexpr Precision Precision::FixedFraction (unsigned int n)
+    {
+        return Precision{Kind_::eFraction_, MinMax{n, n}};
+    }
+    constexpr Precision Precision::MaxFraction (unsigned int n)
+    {
+        return Precision{Kind_::eFraction_, MinMax{0, n}};
+    }
+    constexpr Precision Precision::MinMaxFraction (unsigned int minDigits, unsigned int maxDigits)
+    {
+        Require (minDigits <= maxDigits);
+        return Precision{Kind_::eFraction_, MinMax{minDigits, maxDigits}};
+    }
+    constexpr Precision Precision::ShortestRoundTrip ()
+    {
+        return Precision{Kind_::eShortestRoundTrip_, MinMax{0, 0}};
+    }
+    constexpr auto Precision::GetSignificantDigits () const -> optional<MinMax>
+    {
+        return fKind_ == Kind_::eSignificantDigits_ ? optional<MinMax>{fDigits_} : nullopt;
+    }
+    constexpr auto Precision::GetFractionDigits () const -> optional<MinMax>
+    {
+        return fKind_ == Kind_::eFraction_ ? optional<MinMax>{fDigits_} : nullopt;
+    }
+    constexpr bool Precision::IsShortestRoundTrip () const
+    {
+        return fKind_ == Kind_::eShortestRoundTrip_;
+    }
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    /*
+     ********************************************************************************
      ****************************** SignificantFigures ******************************
      ********************************************************************************
      */
@@ -33,6 +91,10 @@ namespace Stroika::Foundation::Characters::Number {
     constexpr auto SignificantFigures::GetEffectiveSignificantFigures () const -> RepType
     {
         return fSignificantFigures_.value_or (numeric_limits<T>::max_digits10);
+    }
+    constexpr SignificantFigures::operator Precision () const
+    {
+        return fSignificantFigures_ ? Precision::MaxSignificantDigits (max (*fSignificantFigures_, 1u)) : Precision::ShortestRoundTrip ();
     }
     template <IStdBasicStringCompatibleCharacter CHAR>
     constexpr auto SignificantFigures::Calculate (span<const CHAR> number) -> RepType
@@ -130,6 +192,9 @@ namespace Stroika::Foundation::Characters::Number {
      *  \note defined here instead of header cuz needs to be after SignificantFigures::CTOR.
      */
     constexpr inline SignificantFigures SignificantFigures::kFullPrecision{SignificantFigures::FullFlag::eFull};
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     /*
      ********************************************************************************
@@ -224,83 +289,35 @@ namespace Stroika::Foundation::Characters::Number {
      ***************************** FloatToStringOptions *****************************
      ********************************************************************************
      */
-    inline FloatToStringOptions::FloatToStringOptions (const locale& l)
-        : fPunctuation_{Punctuation::FromLocale (l)}
-    {
-    }
-    constexpr FloatToStringOptions::FloatToStringOptions (Common::PredefinedLocale p)
-        : fPunctuation_{PunctuationSpecifier{p}}
-    {
-    }
-    constexpr FloatToStringOptions::FloatToStringOptions (const Punctuation& p)
-        : fPunctuation_{PunctuationSpecifier{p}}
-    {
-    }
-    constexpr FloatToStringOptions::FloatToStringOptions (ios_base::fmtflags fmtFlags)
-        : fFmtFlags_{fmtFlags}
-    {
-    }
-    constexpr FloatToStringOptions::FloatToStringOptions (SignificantFigures precision)
-        : fSignificantFigures_{precision}
-    {
-    }
-    constexpr FloatToStringOptions::FloatToStringOptions (FloatFormatType scientificNotation)
-        : fFloatFormat_{scientificNotation}
-    {
-    }
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    constexpr FloatToStringOptions::FloatToStringOptions (TrimTrailingZerosType trimTrailingZeros)
-        : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrimZeros}
-    {
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-
-    constexpr FloatToStringOptions::FloatToStringOptions (const FloatToStringOptions& b1, const FloatToStringOptions& b2)
-        : FloatToStringOptions{b1}
-    {
-        Memory::CopyToIf (&fSignificantFigures_, b2.fSignificantFigures_);
-        Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
-        Memory::CopyToIf (&fPunctuation_, b2.fPunctuation_);
-        Memory::CopyToIf (&fTrimTrailingZeros_, b2.fTrimTrailingZeros_);
-        Memory::CopyToIf (&fFloatFormat_, b2.fFloatFormat_);
-    }
     template <typename... ARGS>
-    constexpr FloatToStringOptions::FloatToStringOptions (const FloatToStringOptions& b1, const FloatToStringOptions& b2, ARGS&&... args)
-        : FloatToStringOptions{FloatToStringOptions{b1, b2}, forward<ARGS> (args)...}
+    constexpr FloatToStringOptions FloatToStringOptions::With (ARGS&&... args) const
     {
-    }
-    constexpr optional<SignificantFigures> FloatToStringOptions::GetSignificantFigures () const
-    {
-        return fSignificantFigures_;
-    }
-    constexpr optional<bool> FloatToStringOptions::GetTrimTrailingZeros () const
-    {
-        return fTrimTrailingZeros_;
+        FloatToStringOptions r{*this};
+        (r.Set_ (forward<ARGS> (args)), ...);
+        return r;
     }
     inline Punctuation FloatToStringOptions::GetPunctuation () const
     {
-        return fPunctuation_ ? ResolvePunctuation (*fPunctuation_) : Punctuation{};
+        return ResolvePunctuation (fPunctuation);
     }
-    inline locale FloatToStringOptions::GetUseLocale () const
+    constexpr void FloatToStringOptions::Set_ (Notation n)
     {
-        return GetPunctuation ().ToLocale ();
+        fNotation = n;
     }
-    inline bool FloatToStringOptions::GetUsingLocaleClassic () const
+    constexpr void FloatToStringOptions::Set_ (const Precision& p)
     {
-        return GetPunctuation () == Punctuation{};
+        fPrecision = p;
     }
-    constexpr optional<FloatFormatType> FloatToStringOptions::GetFloatFormat () const
+    constexpr void FloatToStringOptions::Set_ (const Punctuation& p)
     {
-        return fFloatFormat_;
+        fPunctuation = p;
     }
-    constexpr optional<ios_base::fmtflags> FloatToStringOptions::GetIOSFmtFlags () const
+    constexpr void FloatToStringOptions::Set_ (Common::PredefinedLocale p)
     {
-        return fFmtFlags_;
+        fPunctuation = p;
     }
+    inline constexpr FloatToStringOptions FloatToStringOptions::kRoundTrip{.fNotation  = Notation::eGeneral,
+                                                                           .fPrecision = Precision::ShortestRoundTrip ()};
 
     namespace Private_ {
         // s, quoted, for an error message - shortened if long; char text that is not ASCII cannot be made a String, so is described

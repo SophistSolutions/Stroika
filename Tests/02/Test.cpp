@@ -5,8 +5,11 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <atomic>
+#include <bit>
+#include <charconv>
 #include <cstdarg>
 #include <iostream>
+#include <random>
 #include <sstream>
 #include <thread>
 
@@ -940,6 +943,10 @@ namespace {
     }
 }
 
+// SignificantFigures is deprecated - its Calculate tested until it is removed
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 namespace {
     GTEST_TEST (Foundation_Characters, CalculateSignificantFigures_)
     {
@@ -959,14 +966,19 @@ namespace {
         EXPECT_EQ (SignificantFigures::Calculate (span{"-0"sv}), 0u);
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 namespace {
     GTEST_TEST (Foundation_Characters, Basic_Float_ToString_)
     {
         Debug::TraceContextBumper ctx{"Basic_Float_ToString_"};
+        using Number::Notation;
+        using Number::Precision;
         {
-            // From Number.h docs (FloatFormatType)
-            static const auto kOptions_ = FloatToStringOptions{eDefaultFloat};
+            // the default - printf's %g (Number.h, Notation::eGeneral)
+            static constexpr auto kOptions_ = FloatToStringOptions{};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "1e-05");
@@ -975,14 +987,13 @@ namespace {
             EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "2.12312e+08");
             EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-44.2");
             EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "1.23457e-07");
-            EXPECT_EQ (Characters::ToString (-0.000123456789, FloatToStringOptions{eDefaultFloat, SignificantFigures{3}}), "-0.000123");
-            // EXTRA TESTS
+            EXPECT_EQ (Characters::ToString (-0.000123456789, Precision::MaxSignificantDigits (3)), "-0.000123");
             EXPECT_EQ (Characters::ToString (1.4, kOptions_), "1.4");
             EXPECT_EQ (Characters::ToString (1.6, kOptions_), "1.6");
         }
         {
-            // From Number.h docs (FloatFormatType)
-            static const auto kOptions_ = FloatToStringOptions{eFixedPoint};
+            // printf's %f
+            static constexpr auto kOptions_ = FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (6)};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0.000000");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.010000");
             EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "0.000010");
@@ -993,8 +1004,7 @@ namespace {
             EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0.000000");
         }
         {
-            // From Number.h docs (FloatFormatType)
-            static const auto kOptions_ = FloatToStringOptions{eFixedPointWithTrailingZerosTrimmed};
+            static constexpr auto kOptions_ = FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::MaxFraction (6)};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "0.00001");
@@ -1005,54 +1015,68 @@ namespace {
             EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0");
         }
         {
-            // From Number.h docs (FloatFormatType)
-            EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientific}), "0.00000e+00");
-            EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientific}), "1.00000e-02");
-            EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientific}), "1.00000e-05");
-            EXPECT_EQ (Characters::ToString (3.12e12, FloatToStringOptions{eScientific}), "3.12000e+12");
-            EXPECT_EQ (Characters::ToString (3.12, FloatToStringOptions{eScientific}), "3.12000e+00");
-            EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions{eScientific}), "2.12312e+08");
-            EXPECT_EQ (Characters::ToString (-44.2, FloatToStringOptions{eScientific}), "-4.42000e+01");
-            EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientific}), "1.23457e-07");
+            // printf's %e
+            static constexpr auto kOptions_ =
+                FloatToStringOptions{.fNotation = Notation::eScientific, .fPrecision = Precision::FixedSignificantDigits (6)};
+            EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0.00000e+00");
+            EXPECT_EQ (Characters::ToString (0.01, kOptions_), "1.00000e-02");
+            EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "1.00000e-05");
+            EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3.12000e+12");
+            EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.12000e+00");
+            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "2.12312e+08");
+            EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-4.42000e+01");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "1.23457e-07");
+            // the same, with the fraction counted after the first digit
+            EXPECT_EQ (Characters::ToString (3.12, FloatToStringOptions{.fNotation = Notation::eScientific, .fPrecision = Precision::FixedFraction (5)}),
+                       "3.12000e+00");
         }
         {
-            // From Number.h docs (FloatFormatType)
-            EXPECT_EQ (Characters::ToString (0.0, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "0.0e+00");
-            EXPECT_EQ (Characters::ToString (0.01, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.0e-02");
-            EXPECT_EQ (Characters::ToString (0.00001, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.0e-05");
-            EXPECT_EQ (Characters::ToString (3.12e12, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "3.12e+12");
-            EXPECT_EQ (Characters::ToString (3.12, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "3.12e+00");
-            EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "2.12312e+08");
-            EXPECT_EQ (Characters::ToString (-44.2, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "-4.42e+01");
-            EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.23457e-07");
-            EXPECT_EQ (Characters::ToString (3724089.418996166, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "3.72409e+06");
-            EXPECT_EQ (Characters::ToString (1.00001, FloatToStringOptions{eScientificWithTrailingZerosTrimmed}), "1.00001e+00");
+            static constexpr auto kOptions_ =
+                FloatToStringOptions{.fNotation = Notation::eScientific, .fPrecision = Precision::MinMaxSignificantDigits (2, 6)};
+            EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0.0e+00");
+            EXPECT_EQ (Characters::ToString (0.01, kOptions_), "1.0e-02");
+            EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "1.0e-05");
+            EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3.12e+12");
+            EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.12e+00");
+            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "2.12312e+08");
+            EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-4.42e+01");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "1.23457e-07");
+            EXPECT_EQ (Characters::ToString (3724089.418996166, kOptions_), "3.72409e+06");
+            EXPECT_EQ (Characters::ToString (1.00001, kOptions_), "1.00001e+00");
         }
         {
-            // From Number.h docs (FloatFormatType)
-            static const auto kOptions_ = FloatToStringOptions{eStandard};
+            // no exponent, at most 6 significant figures - the whole part rounded too
+            static constexpr auto kOptions_ =
+                FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::MaxSignificantDigits (6)};
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "0.00001");
             EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3120000000000");
             EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.12");
-            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "212312345");
+            EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "212312000");
             EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-44.2");
             EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0.000000123457");
-
-            // and a few more
-            EXPECT_EQ (Characters::ToString (1.4, FloatToStringOptions{SignificantFigures{1}, kOptions_}), "1");
-            EXPECT_EQ (Characters::ToString (1.6, FloatToStringOptions{SignificantFigures{1}, kOptions_}), "2");
+            EXPECT_EQ (Characters::ToString (1.4, kOptions_.With (Precision::MaxSignificantDigits (1))), "1");
+            EXPECT_EQ (Characters::ToString (1.6, kOptions_.With (Precision::MaxSignificantDigits (1))), "2");
         }
-        // more tests...
         {
-            static const FloatToStringOptions kFixedPt3_ = FloatToStringOptions{SignificantFigures{3}, eFixedPoint};
+            // no exponent, exactly 6 significant figures
+            static constexpr auto kOptions_ =
+                FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedSignificantDigits (6)};
+            EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0.00000");
+            EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.0100000");
+            EXPECT_EQ (Characters::ToString (3.1, kOptions_), "3.10000");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "0.000000123457");
+            EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3120000000000");
+        }
+        {
+            static constexpr auto kFixedPt3_ = FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (3)};
             EXPECT_EQ (Characters::ToString (3.0, kFixedPt3_), "3.000");
             EXPECT_EQ (Characters::ToString (3.1, kFixedPt3_), "3.100");
             EXPECT_EQ (Characters::ToString (3.1241, kFixedPt3_), "3.124");
             EXPECT_EQ (Characters::ToString (.00331241, kFixedPt3_), "0.003");
             EXPECT_EQ (Characters::ToString (.000331241, kFixedPt3_), "0.000");
-            static const FloatToStringOptions kFixedPt3WithTrim_ = FloatToStringOptions{SignificantFigures{3}, eFixedPointWithTrailingZerosTrimmed};
+            static constexpr auto kFixedPt3WithTrim_ = kFixedPt3_.With (Precision::MaxFraction (3));
             EXPECT_EQ (Characters::ToString (3.0, kFixedPt3WithTrim_), "3");
             EXPECT_EQ (Characters::ToString (3.1, kFixedPt3WithTrim_), "3.1");
             EXPECT_EQ (Characters::ToString (3.1241, kFixedPt3WithTrim_), "3.124");
@@ -1061,6 +1085,138 @@ namespace {
         }
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Characters, Float_ToString_Precision_)
+    {
+        Debug::TraceContextBumper ctx{"Float_ToString_Precision_"};
+        using Number::Notation;
+        using Number::Precision;
+        static_assert (Common::IConstexprable<FloatToStringOptions>);
+        static_assert (FloatToStringOptions::kRoundTrip.fPrecision.IsShortestRoundTrip ());
+        static_assert (FloatToStringOptions{}.With (Precision::FixedFraction (2), Notation::ePlain) ==
+                       FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (2)});
+        {
+            // more digits asked for than the number has: its shortest round-trip digits, not binary noise
+            EXPECT_EQ (Characters::ToString (1.1, Precision::MaxSignificantDigits (17)), "1.1");
+            EXPECT_EQ (Characters::ToString (1.1, Precision::FixedSignificantDigits (17)), "1.1000000000000000");
+            EXPECT_EQ (Characters::ToString (0.1, FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (20)}),
+                       "0.10000000000000000000");
+            EXPECT_EQ (Characters::ToString (1e300, FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (2)}),
+                       "1"_k + String{string (300, '0')} + ".00"_k);
+        }
+        {
+            // rounded as printf rounds: the exact binary value - 2.675 is 2.67499999...; a true tie, half to even
+            EXPECT_EQ (Characters::ToString (2.675, Precision::MaxSignificantDigits (3)), "2.67");
+            EXPECT_EQ (Characters::ToString (2.675, Precision::FixedFraction (2)), "2.67");
+            EXPECT_EQ (Characters::ToString (0.125, Precision::FixedFraction (2)), "0.12");
+            EXPECT_EQ (Characters::ToString (0.375, Precision::FixedFraction (2)), "0.38");
+            // and, within the type's precision, std::to_chars's text - by its own call (the "C" punctuation), and as laid out from its
+            // digits (a decimal comma, swapped back)
+            const Number::Punctuation kComma{.fDecimalPoint = ','};
+            auto                      withPoint = [] (const String& s) { return s.ReplaceAll (","_k, "."_k); };
+            mt19937_64                rng{1234};
+            for (int i = 0; i < 2000; ++i) {
+                double x = bit_cast<double> (rng ());
+                if (not isfinite (x)) {
+                    continue;
+                }
+                for (unsigned int n : {1u, 3u, 6u, 15u}) {
+                    char buf[64];
+                    *to_chars (begin (buf), end (buf), x, chars_format::scientific, static_cast<int> (n - 1)).ptr = 0;
+                    const FloatToStringOptions kOptions{.fNotation = Notation::eScientific, .fPrecision = Precision::FixedSignificantDigits (n)};
+                    EXPECT_EQ (Characters::ToString (x, kOptions), String{buf});
+                    EXPECT_EQ (withPoint (Characters::ToString (x, kOptions.With (kComma))), String{buf});
+                }
+                double y = ldexp (x, -ilogb (x)) * 1000; // under 2000, so with at most 6 decimals within a double's 15 digits
+                for (unsigned int n : {0u, 2u, 6u}) {
+                    char buf[64];
+                    *to_chars (begin (buf), end (buf), y, chars_format::fixed, static_cast<int> (n)).ptr = 0;
+                    const FloatToStringOptions kOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (n)};
+                    EXPECT_EQ (Characters::ToString (y, kOptions), String{buf});
+                    EXPECT_EQ (withPoint (Characters::ToString (y, kOptions.With (kComma))), String{buf});
+                }
+            }
+        }
+        {
+            // eGeneral with ShortestRoundTrip is std::to_chars's chars_format::general
+            EXPECT_EQ (Characters::ToString (0.0001, FloatToStringOptions::kRoundTrip), "0.0001");
+            EXPECT_EQ (Characters::ToString (1e5, FloatToStringOptions::kRoundTrip), "100000");
+            EXPECT_EQ (Characters::ToString (1234567.0, FloatToStringOptions::kRoundTrip), "1.234567e+06");
+            EXPECT_EQ (Characters::ToString (0.1, FloatToStringOptions::kRoundTrip), "0.1");
+            EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions::kRoundTrip), "2.12312345e+08");
+            EXPECT_EQ (Characters::ToString (0.1, FloatToStringOptions::kRoundTrip.With (Notation::ePlain)), "0.1");
+            EXPECT_EQ (Characters::ToString (1234567.0, FloatToStringOptions::kRoundTrip.With (Notation::eScientific)), "1.234567e+06");
+        }
+        {
+            // kRoundTrip reads back as the same number
+            mt19937_64 rng{5678};
+            for (int i = 0; i < 2000; ++i) {
+                double d = bit_cast<double> (rng ());
+                if (isfinite (d)) {
+                    EXPECT_EQ (Number::Parse<double> (Characters::ToString (d, FloatToStringOptions::kRoundTrip)).value_or (0), d);
+                }
+                float f = bit_cast<float> (static_cast<uint32_t> (rng ()));
+                if (isfinite (f)) {
+                    EXPECT_EQ (Number::Parse<float> (Characters::ToString (f, FloatToStringOptions::kRoundTrip)).value_or (0), f);
+                }
+            }
+            // a long double holding exactly a double is written as that double - not with the error of widening it
+            EXPECT_EQ (Characters::ToString (static_cast<long double> (0.1), FloatToStringOptions::kRoundTrip), "0.1");
+            if constexpr (numeric_limits<long double>::digits > numeric_limits<double>::digits) {
+                if (not Debug::IsRunningUnderValgrind ()) { // valgrind holds a long double in 64 bits
+                    long double third = 1.0L / 3;
+                    String      text  = Characters::ToString (third, FloatToStringOptions::kRoundTrip);
+                    EXPECT_GT (text.size (), 18u); // more digits than a double's
+                    EXPECT_EQ (Number::Parse<long double> (text).value_or (0), third);
+                }
+            }
+        }
+        {
+            // the standard library's words, the same everywhere
+            EXPECT_EQ (Characters::ToString (numeric_limits<double>::infinity ()), "inf");
+            EXPECT_EQ (Characters::ToString (-numeric_limits<double>::infinity ()), "-inf");
+            EXPECT_EQ (Characters::ToString (numeric_limits<double>::quiet_NaN ()), "nan");
+            EXPECT_EQ (Characters::ToString (-numeric_limits<double>::quiet_NaN ()), "-nan");
+        }
+        {
+            // one setting: with the default options' others
+            EXPECT_EQ (Characters::ToString (1234.5, Notation::eScientific), "1.2345e+03");
+            EXPECT_EQ (Characters::ToString (3.14159, Precision::FixedFraction (2)), "3.14"); // a fraction precision has no exponent
+            // one significant digit in scientific notation - no digits after the point (the stream code it replaced asserted 2)
+            EXPECT_EQ (Characters::ToString (3.12e12, FloatToStringOptions{.fNotation  = Notation::eScientific,
+                                                                           .fPrecision = Precision::MaxSignificantDigits (1)}),
+                       "3e+12");
+            EXPECT_EQ (FloatToStringOptions{}.With (Notation::eScientific).ToString (),
+                       "{Notation: Scientific, Precision: SignificantDigits:{1...6}, Punctuation: {Decimal-Point: '.'}}");
+        }
+    }
+}
+
+// the deprecated FloatConversion::ToStringOptions - each FloatFormatType as the Notation and Precision that replace it
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+namespace {
+    GTEST_TEST (Foundation_Characters, Float_ToString_Deprecated_FloatConversion_)
+    {
+        Debug::TraceContextBumper ctx{"Float_ToString_Deprecated_FloatConversion_"};
+        using FloatConversion::ToStringOptions;
+        EXPECT_EQ (Characters::ToString (3.14159, ToStringOptions{SignificantFigures{3}}), "3.14");
+        EXPECT_EQ (Characters::ToString (3.14159, ToStringOptions{SignificantFigures{3}, FloatConversion::eFixedPoint}), "3.142");
+        EXPECT_EQ (Characters::ToString (3.1, ToStringOptions{ToStringOptions{SignificantFigures{3}}, FloatConversion::eFixedPointWithWhitespaceTrimmed}),
+                   "3.1");
+        EXPECT_EQ (Characters::ToString (3.12, ToStringOptions{FloatConversion::eScientific}), "3.12000e+00");
+        EXPECT_EQ (Characters::ToString (3.12, ToStringOptions{FloatConversion::eScientificWithWhitespaceTrimmed}), "3.12e+00");
+        EXPECT_EQ (Characters::ToString (0.0000001234567, ToStringOptions{FloatConversion::eStandard}), "0.000000123457");
+        EXPECT_EQ (Characters::ToString (0.1, ToStringOptions{SignificantFigures::kFullPrecision}), "0.1");
+        EXPECT_EQ (FloatConversion::ToString<string> (2.5), "2.5");
+        EXPECT_EQ (Characters::ToString (3.1234, SignificantFigures{2}), "3.1"); // as a Precision: MaxSignificantDigits (2)
+    }
+}
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 // tests of the deprecated String2Int, HexString2Int and ToFloat - kept until they are removed (Number_Parse_ tests Number::Parse and
 // Number::Parse, which replace them)
@@ -1073,7 +1229,7 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             {
-                auto f = FloatConversion::ToFloat<FLOAT_TYPE> (Characters::ToString (l, SignificantFigures::kFullPrecision));
+                auto f = FloatConversion::ToFloat<FLOAT_TYPE> (Characters::ToString (l, FloatToStringOptions::kRoundTrip));
                 if (not Math::NearlyEquals (l, f)) {
                     if (Debug::IsRunningUnderValgrind ()) {
                         Stroika::Frameworks::Test::WarnTestIssue (
@@ -1087,7 +1243,7 @@ namespace {
                     }
                 }
             }
-            EXPECT_TRUE (Math::NearlyEquals (l, FloatConversion::ToFloat<FLOAT_TYPE> (Characters::ToString (l, SignificantFigures::kFullPrecision))));
+            EXPECT_TRUE (Math::NearlyEquals (l, FloatConversion::ToFloat<FLOAT_TYPE> (Characters::ToString (l, FloatToStringOptions::kRoundTrip))));
         }
     }
     GTEST_TEST (Foundation_Characters, StringNumericConversions_)
@@ -1326,31 +1482,31 @@ namespace {
         EXPECT_EQ (Characters::ToString (0.0), "0");
         EXPECT_EQ (Characters::ToString (3000.5), "3000.5");
         EXPECT_EQ (Characters::ToString (3000.500), "3000.5");
-        EXPECT_EQ (Characters::ToString (3.1234, SignificantFigures{2}), "3.1");
-        EXPECT_EQ (Characters::ToString (3.1234, SignificantFigures{3}), "3.12");
-        EXPECT_EQ (Characters::ToString (31.234, SignificantFigures{3}), "31.2");
+        EXPECT_EQ (Characters::ToString (3.1234, Precision::MaxSignificantDigits (2)), "3.1");
+        EXPECT_EQ (Characters::ToString (3.1234, Precision::MaxSignificantDigits (3)), "3.12");
+        EXPECT_EQ (Characters::ToString (31.234, Precision::MaxSignificantDigits (3)), "31.2");
 
-        // And note Characters::ToString also supports SignificantFigures arg
-        EXPECT_EQ (Characters::ToString (3.1234, SignificantFigures{2}), "3.1");
+        // And note Characters::ToString also takes a Precision
+        EXPECT_EQ (Characters::ToString (3.1234, Precision::MaxSignificantDigits (2)), "3.1");
 
         {
             // if exceeds precision, (is that the rule, or smallest rep?) then scientific notation
             EXPECT_EQ (Characters::ToString (30707548160.0), "3.07075e+10");
             EXPECT_EQ (Characters::ToString (3724089.418996166), "3.72409e+06");
-            EXPECT_EQ (Characters::ToString (44905.3, SignificantFigures{6}), "44905.3");
+            EXPECT_EQ (Characters::ToString (44905.3, Precision::MaxSignificantDigits (6)), "44905.3");
         }
 
         {
             // 3.141592653589793  (but really about rounding policy on Characters::ToString)
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{2}), "3.1");
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{3}), "3.14");
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{4}), "3.142");  // 15... rounded up to 2
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{5}), "3.1416"); // 5 rounded to 6!
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{6}), "3.14159");
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{7}), "3.141593");     // rounded != trunc
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{8}), "3.1415927");    // rounded != trunc
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{9}), "3.14159265");   // trunc fine
-            EXPECT_EQ (Characters::ToString (numbers::pi, SignificantFigures{10}), "3.141592654"); // 3 rounded up to 4
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (2)), "3.1");
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (3)), "3.14");
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (4)), "3.142");  // 15... rounded up to 2
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (5)), "3.1416"); // 5 rounded to 6!
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (6)), "3.14159");
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (7)), "3.141593");     // rounded != trunc
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (8)), "3.1415927");    // rounded != trunc
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (9)), "3.14159265");   // trunc fine
+            EXPECT_EQ (Characters::ToString (numbers::pi, Precision::MaxSignificantDigits (10)), "3.141592654"); // 3 rounded up to 4
         }
     }
 }
@@ -2792,12 +2948,15 @@ namespace {
                                                                .fEmitRadixPrefix = true,
                                                                .fPunctuation = Number::Punctuation{.fDigitSeparator = '_', .fGroupSize = 4}}),
                        "0xdead_beef");
-            EXPECT_EQ (Characters::ToString (1.5, FloatToStringOptions{kGerman}), "1,5");
-            EXPECT_EQ (Characters::ToString (1234567.5, FloatToStringOptions{FloatToStringOptions{kGerman}, eFixedPoint}),
+            EXPECT_EQ (Characters::ToString (1.5, FloatToStringOptions{.fPunctuation = kGerman}), "1,5");
+            EXPECT_EQ (Characters::ToString (1234567.5, FloatToStringOptions{.fNotation    = Notation::ePlain,
+                                                                             .fPrecision   = Precision::FixedFraction (6),
+                                                                             .fPunctuation = kGerman}),
                        "1.234.567,500000");
-            EXPECT_EQ (Characters::ToString (1234.5, FloatToStringOptions{FloatToStringOptions{kGerman}, eStandard}), "1.234,5");
+            EXPECT_EQ (Characters::ToString (1234.5, FloatToStringOptions{.fNotation = Notation::ePlain, .fPunctuation = kGerman}),
+                       "1.234,5");
             for (double d : {0.0, -2.5, 1234567.5, 1e-7, 1.5e20}) {
-                String written = Characters::ToString (d, FloatToStringOptions{FloatToStringOptions{kGerman}, SignificantFigures::kFullPrecision});
+                String written = Characters::ToString (d, FloatToStringOptions::kRoundTrip.With (kGerman));
                 EXPECT_EQ (Number::Parse<double> (written, {.fPunctuation = kGerman}).value_or (-1), d);
             }
         }
@@ -2830,7 +2989,7 @@ namespace {
             EXPECT_TRUE (errorText (Number::Parse<double> ("1.5", {.fPunctuation = Number::Punctuation::FromLocale (kComma)})).Contains ("is not a number"sv)); // not its decimal point
             EXPECT_EQ (Number::Parse<double> ("1.000,5", {.fPunctuation = Number::Punctuation::FromLocale (kGrouped)}).value_or (-1), 1000.5);
             EXPECT_TRUE (errorText (Number::Parse<double> ("1,5")).Contains ("is not a number"sv)); // the "C" locale's format by default
-            EXPECT_EQ (Characters::ToString (1.5, FloatToStringOptions{kComma}), "1,5"); // a locale given to FloatToStringOptions
+            EXPECT_EQ (Characters::ToString (1.5, FloatToStringOptions{.fPunctuation = Number::Punctuation::FromLocale (kComma)}), "1,5"); // a locale's punctuation
             // ToLocale: a locale with that punctuation - FromLocale reads it back, and a stream writes it
             EXPECT_EQ (Number::Punctuation::FromLocale (kGermanPunctuation.ToLocale ()), kGermanPunctuation);
             {
@@ -2874,7 +3033,9 @@ namespace {
                 EXPECT_EQ (rem, 2.5);
                 EXPECT_EQ (rest, "x"sv);
                 // a round trip: written with the locale's punctuation - its grouping included - and read back with it
-                String written = Characters::ToString (1234567.5, FloatToStringOptions{FloatToStringOptions{*named}, eFixedPoint});
+                String written = Characters::ToString (1234567.5, FloatToStringOptions{.fNotation  = Notation::ePlain,
+                                                                                       .fPrecision = Precision::FixedFraction (6),
+                                                                                       .fPunctuation = Number::Punctuation::FromLocale (*named)});
                 EXPECT_EQ (Number::Parse<double> (written, {.fPunctuation = Number::Punctuation::FromLocale (*named)}).value_or (-1), 1234567.5);
             }
             else {

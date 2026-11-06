@@ -92,11 +92,12 @@ namespace Stroika::Foundation::Characters {
      * 
      *  \note Extra arguments/overloads
      *      o   ToString (float, Number::FloatToStringOptions)                  // any floating point argument (Number.h)
-     *      o   ToString (float, Number::SignificantFigures)                    // ''
+     *      o   ToString (float, Number::Precision)                             // the default options, with this precision
+     *      o   ToString (float, Number::Notation)                              // the default options, with this notation
      *      o   ToString (integral T, ios_base::fmtflags flags);        // flags may be std::dec, std::oct, or std::hex
      *      o   ToString (integral T, Number::IntegerToStringOptions)          // any radix 2-36, with its prefix, in either case (Number.h)
      *                                                                  // @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
-     *      o   ToString (Duration, Number::SignificantFigures)                 // forwards to Duration::As<String> (Number::SignificantFigures)
+     *      o   ToString (Duration, Number::Precision)                          // Duration::As<String> ({.fSecondsPrecision = p})
      *
      *  \note *Implementation Note*
      *      This implementation defaults to calling T{}.ToString ().

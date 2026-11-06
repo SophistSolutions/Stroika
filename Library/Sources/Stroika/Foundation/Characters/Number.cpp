@@ -13,9 +13,32 @@ using namespace Stroika::Foundation::Characters;
 
 /*
  ********************************************************************************
+ ******************************* Number::Precision ******************************
+ ********************************************************************************
+ */
+String Characters::Number::Precision::ToString () const
+{
+    StringBuilder sb;
+    if (IsShortestRoundTrip ()) {
+        sb << "ShortestRoundTrip"sv;
+    }
+    else if (auto s = GetSignificantDigits ()) {
+        sb << "SignificantDigits:{"sv << s->fMin << "..."sv << s->fMax << "}"sv;
+    }
+    else if (auto f = GetFractionDigits ()) {
+        sb << "Fraction:{"sv << f->fMin << "..."sv << f->fMax << "}"sv;
+    }
+    return sb;
+}
+
+/*
+ ********************************************************************************
  ************************** Number::SignificantFigures **************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996)
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 String Characters::Number::SignificantFigures::ToString () const
 {
     StringBuilder sb;
@@ -29,6 +52,9 @@ String Characters::Number::SignificantFigures::ToString () const
     sb << "}"sv;
     return sb;
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996)
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 /*
  ********************************************************************************
@@ -57,27 +83,24 @@ String Characters::Number::Punctuation::ToString () const
 String Characters::Number::FloatToStringOptions::ToString () const
 {
     StringBuilder sb;
-    sb << "{"sv;
-    if (fSignificantFigures_) {
-        sb << "SignificantFigures:"sv << *fSignificantFigures_ << ","sv;
+    sb << "{Notation: "sv;
+    switch (fNotation) {
+        case Notation::eGeneral:
+            sb << "General"sv;
+            break;
+        case Notation::ePlain:
+            sb << "Plain"sv;
+            break;
+        case Notation::eScientific:
+            sb << "Scientific"sv;
+            break;
     }
-    if (fFmtFlags_) {
-        sb << "Fmt-Flags:"sv << Characters::ToString ((int)*fFmtFlags_, ios_base::hex) << ","sv;
+    sb << ", Precision: "sv << fPrecision.ToString () << ", Punctuation: "sv;
+    if (const Punctuation* p = get_if<Punctuation> (&fPunctuation)) {
+        sb << p->ToString ();
     }
-    if (fPunctuation_) {
-        if (const Punctuation* p = get_if<Punctuation> (&*fPunctuation_)) {
-            sb << "Punctuation:"sv << p->ToString () << ","sv;
-        }
-        else {
-            sb << "Punctuation: "sv
-               << (get<Common::PredefinedLocale> (*fPunctuation_) == Common::eUseCurrentLocale ? "current locale's"sv : "C"sv) << ","sv;
-        }
-    }
-    if (fTrimTrailingZeros_) {
-        sb << "Trim-Trailing-Zeros: "sv << *fTrimTrailingZeros_ << ","sv;
-    }
-    if (fFloatFormat_) {
-        sb << "Scientific-Notation: "sv << (int)*fFloatFormat_ << ","sv;
+    else {
+        sb << (get<Common::PredefinedLocale> (fPunctuation) == Common::eUseCurrentLocale ? "current locale's"sv : "C"sv);
     }
     sb << "}"sv;
     return sb;

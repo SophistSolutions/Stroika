@@ -25,7 +25,7 @@
  *      o   number -> text:     Characters::ToString (n, options) (ToString.h) - with the options types here
  *
  *  Each direction has its own Options - writing says exactly what to produce, reading what to accept - but where both describe the
- *  same thing (significant figures, punctuation), they use the one type defined here, as std::chars_format serves both std::to_chars
+ *  same thing (punctuation), they use the one type defined here, as std::chars_format serves both std::to_chars
  *  and std::from_chars.
  *
  *  Punctuation - a number's decimal point, and how its digits are grouped: 1,234,567.5 or 1.234.567,5 - is all a locale changes in
@@ -71,6 +71,160 @@ namespace Stroika::Foundation::Characters {
 namespace Stroika::Foundation::Characters::Number {
 
     /**
+     *  \brief Where a floating point number's exponent goes
+     *
+     *  Only where the exponent goes: how many digits are written, and what they count, is the Precision.
+     *
+     *  Extension points: ICU's engineering notation (an exponent that is a multiple of 3) and compact notation ("1.2K") would be
+     *  more values here.
+     */
+    enum class Notation {
+        /**
+         *  An exponent only for a very large or very small number - printf's %g, std::chars_format::general: scientific where the
+         *  exponent would be below -4, or at least P - P the precision's maximum significant digits, or 6 for ShortestRoundTrip
+         *  (as std::to_chars writes chars_format::general without a precision). A fraction precision has no P: it is written ePlain.
+         */
+        eGeneral,
+
+        /**
+         *  Never an exponent (Java's "plain", ICU's "simple"): printf's %f is {ePlain, Precision::FixedFraction (n)}.
+         *
+         *  \note A very large or very small number is written in full: 1e300 is 301 characters.
+         */
+        ePlain,
+
+        /**
+         *  Always an exponent: one digit, the decimal point, the rest, then e+NN (at least two exponent digits) - printf's %e is
+         *  {eScientific, Precision::FixedFraction (n)}, the fraction counted after the first digit.
+         */
+        eScientific,
+    };
+
+    /**
+     *  \brief How many digits a floating point number is written with, and what they count: significant figures, or digits after
+     *         the decimal point - or, ShortestRoundTrip, as many as read back as the same number
+     *
+     *  ICU's Precision, made only by the factories below - so a Precision always says what it counts, and C++'s 'precision' (which
+     *  counts significant figures for %g, but digits after the decimal point for %f and %e) has no part in it.
+     *
+     *  The digits written are the number's shortest round-trip digits - the fewest that read back as the same value - where the
+     *  precision has room for them, padded with zeros to its minimum; else the number correctly rounded to its maximum (its exact
+     *  binary value, half to even, as printf and std::to_chars round). So within the type's precision (numeric_limits<T>::digits10
+     *  significant digits: 15 for a double) the text is printf's; asked for more digits than the number has, it is the shortest
+     *  round-trip text, not binary noise - 1.1 at 17 significant digits is "1.1", not "1.1000000000000001".
+     *
+     *  Extension points: ICU's increment rounding (to the nearest 0.05) and minimum integer digits ("007") would be more factories
+     *  here; a rounding mode, a field of FloatToStringOptions.
+     *
+     *  \note Satisfies Concepts:
+     *      o   Common::IConstexprable<Precision>
+     */
+    class Precision {
+    public:
+        /**
+         *  \brief A least and a most number of digits
+         */
+        struct MinMax {
+            unsigned int fMin;
+            unsigned int fMax;
+
+            constexpr bool operator== (const MinMax&) const = default;
+        };
+
+    public:
+        /**
+         *  \brief Exactly n significant digits - padded with zeros: 3.1 is "3.10000" for 6 (printf's %#.6g)
+         *
+         *  \pre n >= 1
+         */
+        static constexpr Precision FixedSignificantDigits (unsigned int n);
+
+    public:
+        /**
+         *  \brief At most n significant digits - no trailing zeros: 3.1 is "3.1" for 6 (printf's %.6g)
+         *
+         *  \pre n >= 1
+         */
+        static constexpr Precision MaxSignificantDigits (unsigned int n);
+
+    public:
+        /**
+         *  \brief At most maxDigits significant digits, padded with zeros to at least minDigits
+         *
+         *  \pre 1 <= maxDigits and minDigits <= maxDigits
+         */
+        static constexpr Precision MinMaxSignificantDigits (unsigned int minDigits, unsigned int maxDigits);
+
+    public:
+        /**
+         *  \brief Exactly n digits after the decimal point - padded with zeros: 3.1 is "3.10" for 2 (with ePlain, printf's %.2f)
+         */
+        static constexpr Precision FixedFraction (unsigned int n);
+
+    public:
+        /**
+         *  \brief At most n digits after the decimal point - no trailing zeros: 3.1 is "3.1" for 2
+         */
+        static constexpr Precision MaxFraction (unsigned int n);
+
+    public:
+        /**
+         *  \brief At most maxDigits digits after the decimal point, padded with zeros to at least minDigits
+         *
+         *  \pre minDigits <= maxDigits
+         */
+        static constexpr Precision MinMaxFraction (unsigned int minDigits, unsigned int maxDigits);
+
+    public:
+        /**
+         *  \brief The fewest digits that read back as the same number (ICU's unlimited; std::to_chars without a precision)
+         */
+        static constexpr Precision ShortestRoundTrip ();
+
+    public:
+        /**
+         *  \brief The significant digits, for a ...SignificantDigits precision; else nullopt
+         */
+        constexpr optional<MinMax> GetSignificantDigits () const;
+
+    public:
+        /**
+         *  \brief The digits after the decimal point, for a ...Fraction precision; else nullopt
+         */
+        constexpr optional<MinMax> GetFractionDigits () const;
+
+    public:
+        /**
+         *  \brief Made by ShortestRoundTrip ()
+         */
+        constexpr bool IsShortestRoundTrip () const;
+
+    public:
+        constexpr bool operator== (const Precision&) const = default;
+
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
+    private:
+        enum class Kind_ : uint8_t {
+            eSignificantDigits_,
+            eFraction_,
+            eShortestRoundTrip_
+        };
+        constexpr Precision (Kind_ kind, MinMax digits);
+
+    private:
+        Kind_  fKind_;
+        MinMax fDigits_;
+    };
+    static_assert (Common::IConstexprable<Precision>); // see Satisfies Concepts
+    /**
+     *  \deprecated Since Stroika v3.0d26: Precision says what it counts - MaxSignificantDigits (n), or ShortestRoundTrip () for
+     *              kFullPrecision.
+     *
      *  Significant figures are the digits in a measured or calculated value that carry reliable information
      *  regarding its precision and accuracy, typically including all non-zero digits, zeros between non-zero digits, and trailing zeros in a decimal.
      *  They define the limit of a measurement's certainty.
@@ -118,7 +272,10 @@ namespace Stroika::Foundation::Characters::Number {
      *              o   digits10 is the number of decimal digits guaranteed to survive text → float → text round-trip.
      *              o   max_digits10 is the number of decimal digits needed to guarantee correct float → text → float round-trip.
      */
-    struct SignificantFigures {
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    struct [[deprecated ("Since Stroika v3.0d26 use Precision - MaxSignificantDigits (n), or ShortestRoundTrip () for kFullPrecision")]] SignificantFigures {
     public:
         using RepType = unsigned int; // maybe use uint16_t?
 
@@ -143,6 +300,12 @@ namespace Stroika::Foundation::Characters::Number {
 
     public:
         constexpr bool operator== (const SignificantFigures&) const = default;
+
+    public:
+        /**
+         *  \brief The Precision that says the same: MaxSignificantDigits (n), or ShortestRoundTrip () for kFullPrecision
+         */
+        constexpr operator Precision () const;
 
     public:
         /**
@@ -201,168 +364,9 @@ namespace Stroika::Foundation::Characters::Number {
          */
         optional<RepType> fSignificantFigures_{6};
     };
-
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-
-    /**
-     */
-    enum class FloatFormatType {
-
-        /**
-         *  corresponds to unsetf (floatfield) - which may be different than scientific or fixed point.
-         *  This is basically what the 'C' standard decided would be the default way to format floating point numbers.
-         * 
-         *  Precision Field: The stream's precision setting (managed by std::setprecision or std::ios_base::precision()) 
-         *  specifies the maximum number of meaningful digits to display in total (both before and after the decimal point),
-         *  not a fixed number of digits after the decimal point.
-         * 
-         *  Trailing Zeros: It does not pad the output with trailing zeros if the number can be displayed with 
-         *  fewer digits than the precision.
-         * 
-         *  Notation: It automatically switches between fixed-point and scientific notation as needed to best 
-         *  represent the value within the given precision. For example, a large number or a number very close 
-         *  to zero might be shown in scientific notation, while others will be in fixed-point notation. 
-         * 
-         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
-         *      number              │   output
-         *       -------------------│----------------------
-         *       0.0                │   0
-         *       0.01               │   0.01
-         *       0.00001            │   1e-05           (probably could be 0.00001)
-         *       3.12e12            │   3.12e+12        (or could be 3.12000e+12 for example using libc++ >= 21)
-         *       3.12               │   3.12
-         *       212312345.0        │   2.12312e+08
-         *       -44.2              │  -44.2
-         *       0.0000001234567    │   1.23457e-07
-         */
-        eDefaultFloat,
-
-        /**
-         *  corresponds to ios_base::fixed (numbers are displayed without an exponent part, not actually fixed with display)
-         * 
-         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
-         *      number              │   output
-         *       -------------------│----------------------
-         *       0.0                │   0.000000
-         *       0.01               │   0.010000
-         *       0.00001            │   0.000010
-         *       3.12e12            │   3120000000000
-         *       3.12               │   3.12
-         *       212312345.0        │   212312345
-         *       -44.2              │   -44.2
-         *       0.0000001234567    │   0.000000
-         */
-        eFixedPointWithoutTrailingZerosTrimmed,
-
-        /**
-         * @brief eFixedPointWithoutTrailingZerosTrimmed
-         */
-        eFixedPoint = eFixedPointWithoutTrailingZerosTrimmed,
-
-        /**
-         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
-         *      number              │   output
-         *       -------------------│----------------------
-         *       0.0                │   0
-         *       0.01               │   0.01
-         *       0.00001            │   0.00001
-         *       3.12e12            │   3120000000000
-         *       3.12               │   3.12
-         *       212312345.0        │   212312345
-         *       -44.2              │   -44.2
-         *       0.0000001234567    │   0
-         */
-        eFixedPointWithTrailingZerosTrimmed,
-
-        /**
-         *  corresponds to ios_base::scientific
-         * 
-         *  For example (first 3 from https ://en.cppreference.com/w/cpp/io/manip/fixed.html)
-         *      number              │   output
-         *       -------------------│----------------------
-         *       0.0                │   0.000000e+00
-         *       0.01               │   1.000000e-02
-         *       0.00001            │   1.000000e-05
-         *       3.12e12            │   3.12000e+12
-         *       3.12               │   3.12000e+00
-         *       212312345.0        │   2.12312e+08
-         *       -44.2              │  -4.42000e+01
-         *       0.0000001234567    │   1.23457e-07
-         */
-        eScientificWithoutTrailingZerosTrimmed,
-
-        /**
-         * @brief eScientificWithoutTrailingZerosTrimmed
-         */
-        eScientific = eScientificWithoutTrailingZerosTrimmed,
-
-        /**
-         *  For example (first 3 from https ://en.cppreference.com/w/cpp/io/manip/fixed.html)
-         *      number              │   output
-         *       -------------------│----------------------
-         *       0.0                │   0.0e+00
-         *       0.01               │   1.0e-02
-         *       0.00001            │   1.0e-05
-         *       3.12e12            │   3.12e+12
-         *       3.12               │   3.12e+00
-         *       212312345.0        │   2.12312e+08
-         *       -44.2              │  -4.42e+01
-         *       0.0000001234567    │   1.23457e-07
-         */
-        eScientificWithTrailingZerosTrimmed,
-
-        /**
-         *  \brief Somewhat like defaultfloat, but never uses scientific notation.
-         * 
-         *  not scientific (no e+nn), but otherwise somewhat like fixed point or defaultfloat.
-         * 
-         *  Really no good name for this (unscientific, defaultfloat means something differnt in C++).
-         *  Sort of like defaultfloat but NEVER deciding to use scientific notation.
-         * 
-         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
-         *      number              │   output
-         *       -------------------│----------------------
-         *       0.0                │   0
-         *       0.01               │   0.01
-         *       0.00001            │   0.00001
-         *       3.12e12            │   3120000000000
-         *       3.12               │   3.12
-         *       212312345.0        │   212312345
-         *       -44.2              │   -44.2
-         *       0.0000001234567    │   0.000000123457
-         */
-        eStandard,
-
-        eAutomaticScientific [[deprecated ("Since Stroika v3.0d23 use eDefaultFloat instead")]],
-
-        eFixedPointWithoutWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eFixedPointWithoutTrailingZerosTrimmed")]] =
-            eFixedPointWithoutTrailingZerosTrimmed,
-        eFixedPointWithWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eFixedPointWithTrailingZerosTrimmed")]] =
-            eFixedPointWithTrailingZerosTrimmed,
-        eScientificWithoutWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eScientificWithoutTrailingZerosTrimmed")]] =
-            eScientificWithoutTrailingZerosTrimmed,
-        eScientificWithWhitespaceTrimmed [[deprecated ("Since Stroika v3.0d26 use eScientificWithTrailingZerosTrimmed")]] =
-            eScientificWithTrailingZerosTrimmed,
-
-        /**
-         * If its good enuf for C, its good enuf for me ;-). Seriously - sensible default.
-         */
-        eDEFAULT = eDefaultFloat,
-
-        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific)
-    };
-    using FloatFormatType::eAutomaticScientific;
     DISABLE_COMPILER_MSC_WARNING_END (4996)
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    using FloatFormatType::eDefaultFloat;
-    using FloatFormatType::eFixedPoint;
-    using FloatFormatType::eFixedPointWithTrailingZerosTrimmed;
-    using FloatFormatType::eScientific;
-    using FloatFormatType::eScientificWithTrailingZerosTrimmed;
-    using FloatFormatType::eStandard;
 
     /**
      *  \brief How a number's text is punctuated: its decimal point, and how its digits are grouped
@@ -439,82 +443,92 @@ namespace Stroika::Foundation::Characters::Number {
     Punctuation ResolvePunctuation (const PunctuationSpecifier& p);
 
     /**
-     *  These are options for ToString (floating point) - Characters::ToString (f, options)
+     *  \brief How Characters::ToString writes a floating point number: ToString (f, options)
      *
-     *  ToString punctuates the number as GetPunctuation () says - by default as the "C" locale does, whatever the global locale.
+     *  The default, {Notation::eGeneral, Precision::MaxSignificantDigits (6)}, is C's - printf's %g, a stream's default; kRoundTrip
+     *  writes text that reads back as the same number. The number is punctuated as fPunctuation says: by default as the "C" locale
+     *  does, whatever the global locale.
      *
-     *  By default (eDefaultFloat) it writes no needless trailing zeros; see FloatFormatType.
+     *  NaN and infinity are written as the standard library writes them - "nan", "inf" or "-inf" (a NaN may be "-nan") - which
+     *  Number::Parse reads back.
      *
-     *  NaN and infinity are written as the standard library writes them - by default "nan", "inf" or "-inf" (a NaN may be "-nan") -
-     *  which ParseFloat reads back.
+     *  \par Example Usage
+     *      \code
+     *          ToString (3.14159265358979)                                                                  // "3.14159"
+     *          ToString (0.1, FloatToStringOptions::kRoundTrip)                                             // "0.1" - reads back exactly
+     *          ToString (3.1, FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (2)}) // "3.10" - %.2f
+     *          ToString (x, FloatToStringOptions::kRoundTrip.With (Notation::eScientific))                  // a constant, one setting changed
+     *          ToString (1234567.5, FloatToStringOptions{.fNotation   = Notation::ePlain,
+     *                                .fPrecision  = Precision::MaxFraction (2),
+     *                                .fPunctuation = Punctuation::FromLocale (locale{"de_DE.UTF-8"})})      // "1.234.567,5"
+     *          ToString (x, FloatToStringOptions{}.With (Common::eUseCurrentLocale))                        // the global locale's, when written
+     *      \endcode
+     *
+     *  Performance: the default and kRoundTrip are one std::to_chars call, as is any precision within the type's
+     *  (numeric_limits<T>::digits10 significant digits - 15 for a double) - with the default punctuation, nothing more. Slower:
+     *      o   other punctuation: a pass over the text;
+     *      o   Common::eUseCurrentLocale: the global locale's punctuation looked up on every call - take Punctuation::FromLocale
+     *          once, and keep it, instead;
+     *      o   more significant digits than the type holds: two std::to_chars calls;
+     *      o   printf, where std::to_chars cannot write the number: a long double that is not a double, with libc++ (whose
+     *          std::to_chars writes a long double as a double, as of 22); every floating point type, for a macOS deployment
+     *          target before 13.3 (Apple's libc++ has floating point std::to_chars from 13.3 on).
+     *
+     *  Extension points, each a field off by default: a rounding mode (ICU's RoundingMode - half to even is used, ICU's default;
+     *  half away from zero is JavaScript's) - std::to_chars gives any float's exact decimal digits, so any mode can be built on
+     *  them; a sign display (always write '+'); a decimal-point display (keep "3." with no fraction).
+     *
+     *  \note Satisfies Concepts:
+     *      o   Common::IConstexprable<FloatToStringOptions>
      */
     struct FloatToStringOptions {
-    public:
         /**
-         * Default is to use the C-locale
-         *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
-         *          basic ios flags
+         *  Where the exponent goes
          */
-        constexpr FloatToStringOptions () = default;
-        constexpr FloatToStringOptions (Common::PredefinedLocale p); ///< Common::eUseCurrentLocale: the global locale's punctuation, when used
-        FloatToStringOptions (const locale& l);                      ///< l's punctuation (Punctuation::FromLocale), taken now
-        constexpr FloatToStringOptions (const Punctuation& p);
-        constexpr FloatToStringOptions (ios_base::fmtflags fmtFlags);
-        constexpr FloatToStringOptions (SignificantFigures precision);
-        constexpr FloatToStringOptions (FloatFormatType floatFormat);
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        [[deprecated ("Since Stroika v3.0d23 use appropriate FloatFormatType 'trim' variant instead")]] constexpr FloatToStringOptions (TrimTrailingZerosType trimTrailingZeros);
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        constexpr FloatToStringOptions (const FloatToStringOptions& b1, const FloatToStringOptions& b2);
+        Notation fNotation{Notation::eGeneral};
+
+        /**
+         *  How many digits, and what they count
+         */
+        Precision fPrecision{Precision::MaxSignificantDigits (6)};
+
+        /**
+         *  The decimal point, and how the digits are grouped: by default the "C" locale's - '.', and no grouping
+         */
+        PunctuationSpecifier fPunctuation{Punctuation{}};
+
+        /**
+         *  \brief A copy, each argument - a Notation, Precision, Punctuation or Common::PredefinedLocale - replacing the setting of
+         *         its type (a PredefinedLocale, the punctuation)
+         */
         template <typename... ARGS>
-        constexpr FloatToStringOptions (const FloatToStringOptions& b1, const FloatToStringOptions& b2, ARGS&&... args);
+        constexpr FloatToStringOptions With (ARGS&&... args) const;
 
-    public:
-        constexpr optional<SignificantFigures> GetSignificantFigures () const;
-
-    public:
-        [[deprecated ("Since Stroika v3.0d23 use FloatFormatType 'trim' variant instead")]]
-        constexpr optional<bool> GetTrimTrailingZeros () const;
-
-    public:
         /**
          *  \brief The punctuation ToString writes with - for Common::eUseCurrentLocale, the global locale's now
          */
         nonvirtual Punctuation GetPunctuation () const;
 
-    public:
-        [[deprecated ("Since Stroika v3.0d26 use GetPunctuation () - or GetPunctuation ().ToLocale ()")]] nonvirtual locale GetUseLocale () const;
+        constexpr bool operator== (const FloatToStringOptions&) const = default;
 
-    public:
-        [[deprecated ("Since Stroika v3.0d26 use GetPunctuation () == Punctuation{}")]] nonvirtual bool GetUsingLocaleClassic () const;
-
-    public:
-        constexpr optional<FloatFormatType> GetFloatFormat () const;
-
-    public:
-        constexpr optional<ios_base::fmtflags> GetIOSFmtFlags () const;
-
-    public:
-        [[deprecated ("Since Stroika v3.0d23 use FloatFormatType 'trim' variant instead")]]
-        static constexpr bool kDefaultTrimTrailingZeros{true};
-
-    public:
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
 
+        /**
+         *  {eGeneral, ShortestRoundTrip ()}: the fewest digits that read back as the same number - std::to_chars (f,
+         *  chars_format::general)'s text
+         */
+        static const FloatToStringOptions kRoundTrip;
+
     private:
-        optional<SignificantFigures>   fSignificantFigures_;
-        optional<ios_base::fmtflags>   fFmtFlags_;
-        optional<PunctuationSpecifier> fPunctuation_;       // missing: Punctuation{}
-        optional<bool>                 fTrimTrailingZeros_; // keep while deprecated
-        optional<FloatFormatType>      fFloatFormat_;
+        constexpr void Set_ (Notation n);
+        constexpr void Set_ (const Precision& p);
+        constexpr void Set_ (const Punctuation& p);
+        constexpr void Set_ (Common::PredefinedLocale p);
     };
+    static_assert (Common::IConstexprable<FloatToStringOptions>); // see Satisfies Concepts
 
     /**
      *  \brief How ToString writes an integer: by default in base 10 - what ParseInteger reads by default

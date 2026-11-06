@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
+#include <array>
 #include <cctype>
 #include <charconv>
 #include <chrono>
@@ -102,241 +103,331 @@ namespace Stroika::Foundation::Characters {
      *  ToStringDefaults namespace --LGP 2023-11-21.
      */
     /*
-     *  Writing a floating point number - ToString (f, Number::FloatToStringOptions). Before Stroika v3.0d26 this was FloatConversion::ToString.
-     *
-     *  @todo   REWRITE much of this, once 3.0 alpha or beta starts: the API is OK, but the implementation weak (and probably slow).
-     *  @todo   Then maybe lose the ios_base::fmtflags option (perhaps keep it as an argument, but just grab those fields) - say an
-     *          option for "FIXEDWIDTH".
+     *  Writing a floating point number - ToString (f, Number::FloatToStringOptions) - as Number::Precision says: the digits come from
+     *  std::to_chars (the shortest round-trip ones, or the number correctly rounded), and are laid out here, so the text is the same
+     *  on every platform. snprintf stands in only where std::to_chars cannot write the number (kHasToChars_).
      */
     namespace Private_ {
-        inline void TrimTrailingZeros_NotSci_ (String* strResult)
-        {
-            // @todo THIS could be more efficient: use StringBuilder and Peek()/Character::AsASCIIQuietly
-            RequireNotNull (strResult);
-            // strip trailing zeros (after decimal point - before they may indicate magnatude)
-            // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            Require (not strResult->Find ('e', eCaseInsensitive).has_value ());
-            size_t pastDot = strResult->find ('.');
-            if (pastDot != String::npos) {
-                ++pastDot;
-                size_t len           = strResult->length ();
-                size_t pPastLastZero = len;
-                for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                    if ((*strResult)[pPastLastZero - 1] != '0') {
-                        break;
-                    }
-                }
-                if (pPastLastZero == pastDot + 1 and (*strResult)[pPastLastZero - 1] == '0') {
-                    pPastLastZero -= 2; // dont map 3.000 to 3.0, map it to 3
-                }
-                if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
-                    *strResult = strResult->SubString (0, pPastLastZero);
-                }
-            }
-        }
-        inline void TrimTrailingZeros_MaybeSci_ (String* strResult)
-        {
-            // @todo THIS could be more efficient: use StringBuilder and Peek()/Character::AsASCIIQuietly
-            RequireNotNull (strResult);
-            // strip trailing zeros (after decimal point - before they may indicate magnatude)
-            // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            if (optional<size_t> whereIsE = strResult->Find ('e', eCaseInsensitive)) {
-                size_t pastDot = strResult->find ('.');
-                if (pastDot != String::npos) {
-                    ++pastDot;
-                    size_t len           = *whereIsE;
-                    size_t pPastLastZero = len;
-                    for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                        if ((*strResult)[pPastLastZero - 1] != '0') {
-                            break;
-                        }
-                    }
-                    if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
-                        *strResult = strResult->SubString (0, pPastLastZero) + strResult->SubString (*whereIsE);
-                    }
-                }
-            }
-            else {
-                size_t pastDot = strResult->find ('.');
-                if (pastDot != String::npos) {
-                    ++pastDot;
-                    size_t len           = strResult->length ();
-                    size_t pPastLastZero = len;
-                    for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                        if ((*strResult)[pPastLastZero - 1] != '0') {
-                            break;
-                        }
-                    }
-                    if (pPastLastZero == pastDot + 1 and (*strResult)[pPastLastZero - 1] == '0') {
-                        pPastLastZero -= 2; // dont map 3.000 to 3.0, map it to 3
-                    }
-                    if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
-                        *strResult = strResult->SubString (0, pPastLastZero);
-                    }
-                }
-            }
-        }
-    }
-
-    namespace Private_ {
-        template <floating_point FLOAT_TYPE>
-        String FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Number::SignificantFigures precision)
-        {
-            using namespace Memory;
-            size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
-            StackBuffer<char> buf{Memory::eUninitialized, sz};
-            ptrdiff_t         resultStrLen;
-            unsigned int      effectivePrecision = precision.GetEffectiveSignificantFigures<FLOAT_TYPE> ();
-
-            // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
-#if defined(__cpp_lib_to_chars)
-            // empirically, on MSVC, to_chars() is much faster than snprintf (appears 3x apx faster) -- LGP 2021-11-04
-            if (precision == Number::SignificantFigures::kFullPrecision) {
-                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
-            }
-            else {
-                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, effectivePrecision).ptr - buf.begin ();
-            }
+#if defined(_LIBCPP_VERSION) and defined(_LIBCPP_AVAILABILITY_HAS_TO_CHARS_FLOATING_POINT)
+        // Apple's libc++ has floating point std::to_chars only from a macOS 13.3 deployment target on
+        inline constexpr bool kLibraryHasFloatToChars_ = _LIBCPP_AVAILABILITY_HAS_TO_CHARS_FLOATING_POINT;
 #else
-            // to_chars with a precision is defined as printf's %.*g. kFullPrecision's max_digits10 reads back as the same number,
-            // but is not always the shortest text that does, as to_chars without a precision writes
-            if constexpr (same_as<FLOAT_TYPE, long double>) {
-                resultStrLen = ::snprintf (buf.data (), buf.size (), "%.*Lg", static_cast<int> (effectivePrecision), f);
-            }
-            else {
-                resultStrLen = ::snprintf (buf.data (), buf.size (), "%.*g", static_cast<int> (effectivePrecision), static_cast<double> (f));
-            }
+        inline constexpr bool kLibraryHasFloatToChars_ = true;
 #endif
-
-            Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
-#if qStroika_Foundation_Debug_AssertionsChecked
-            Assert (precision == Number::SignificantFigures::kFullPrecision or
-                    Number::SignificantFigures::Calculate (span<const char>{buf.data (), static_cast<size_t> (resultStrLen)}) <= effectivePrecision);
-#endif
-            return String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
-        }
-    }
-
-    namespace Private_ {
-        // format "{:.{}f}" - val in fixed notation, with precision digits after the decimal point
+        // std::to_chars writes a T exactly; libc++'s writes a long double as a double (as of libc++ 22) - not exact where a long
+        // double is wider
         template <floating_point T>
-        inline string formatFixed_ (T val, unsigned int precision)
-        {
-#if qCompilerAndStdLib_format_dynamic_spec_Buggy
-            return Common::StdCompat::vformat ("{:.{}f}", Common::StdCompat::make_format_args (val, precision));
+        inline constexpr bool kHasToChars_ = kLibraryHasFloatToChars_ and
+#if defined(_LIBCPP_VERSION)
+                                             (not same_as<T, long double> or numeric_limits<long double>::digits == numeric_limits<double>::digits);
 #else
-            return Common::StdCompat::format ("{:.{}f}", val, precision);
+                                             true;
 #endif
-        }
-        template <floating_point T>
-        inline String formatNonScientific_ (T val, unsigned int nSignificantFigures)
+
+        // 10^0 ... 10^39 - past any type's digits10 (33, for a quad precision long double)
+        inline constexpr auto kPowersOf10_ = [] () {
+            array<long double, 40> r{};
+            long double            p = 1;
+            for (long double& i : r) {
+                i = p;
+                p *= 10;
+            }
+            return r;
+        }();
+
+        // A finite number's decimal digits: d1.d2...dn x 10^fExponent. fDigits has no leading zeros (zero is "0", or "0" padded with
+        // zeros), but may have trailing ones.
+        struct Decimal_ {
+            bool                           fNegative{false};
+            Memory::InlineBuffer<char, 64> fDigits;
+            int                            fExponent{0};
+
+            // the digits after the decimal point, written without an exponent
+            int PlainFractionDigits () const
+            {
+                return max (0, static_cast<int> (fDigits.size ()) - 1 - fExponent);
+            }
+        };
+
+        // the number text [-]ddd[.ddd][e[+-]ddd] - std::to_chars's, or snprintf's, whose decimal point may be the C locale's - as d
+        inline void ParseDecimal_ (string_view text, Decimal_* d)
         {
-            auto compute = [&] () {
-                if (val == 0.0) {
-                    // special case for zero cuz cannot compute log10(0)
-                    return String{formatFixed_ (0.0, nSignificantFigures)};
+            d->fDigits.resize (0);
+            size_t i     = 0;
+            d->fNegative = i < text.size () and text[i] == '-';
+            if (d->fNegative) {
+                ++i;
+            }
+            int  digitsBeforePoint      = 0;
+            int  leadingZerosAfterPoint = 0;
+            bool seenPoint              = false;
+            bool leading                = true;
+            for (; i < text.size () and text[i] != 'e' and text[i] != 'E'; ++i) {
+                char c = text[i];
+                if ('0' <= c and c <= '9') {
+                    if (leading and c == '0') {
+                        if (seenPoint) {
+                            ++leadingZerosAfterPoint;
+                        }
+                        continue;
+                    }
+                    leading = false;
+                    d->fDigits.push_back (c);
+                    if (not seenPoint) {
+                        ++digitsBeforePoint;
+                    }
                 }
                 else {
-                    // Calculate digits before the decimal point
-                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
-
-                    // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
-
-                    return String{formatFixed_ (val, precision)};
+                    seenPoint = true; // the decimal point, whatever its character
                 }
-            };
-            String r = compute ();
-            // @todo RECONSIDER
-            // for example, there is no way for 31200000 to be represented with 6 significant digits (in standard form, you can with scientific)
-            // 212312345.0 with 6 significant digits is 212312000, but we need the extra digits for magnatitude, so not
-            // sure worth losing the action digits we have? CONSIDER!!!!
-            // but for now no ensures --Ensure (Number::SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) <= nSignificantFigures);
-            return r;
+            }
+            int exponent = 0;
+            if (i < text.size ()) {
+                ++i; // the e
+                bool negativeExponent = i < text.size () and text[i] == '-';
+                if (i < text.size () and (text[i] == '-' or text[i] == '+')) {
+                    ++i;
+                }
+                for (; i < text.size (); ++i) {
+                    exponent = exponent * 10 + (text[i] - '0');
+                }
+                if (negativeExponent) {
+                    exponent = -exponent;
+                }
+            }
+            if (d->fDigits.empty ()) {
+                d->fDigits.push_back ('0');
+                d->fExponent = 0;
+                return;
+            }
+            d->fExponent = (digitsBeforePoint > 0 ? digitsBeforePoint - 1 : -1 - leadingZerosAfterPoint) + exponent;
         }
-    }
 
-    namespace Private_ {
-        template <floating_point FLOAT_TYPE>
-        String FloatToString_GeneralCase_ (FLOAT_TYPE f, const Number::FloatToStringOptions& options)
+        // snprintf's text for f, with %.*Le or %.*Lf - for where std::to_chars cannot write it
+        template <floating_point T>
+        string_view SNPrintF_ (Memory::InlineBuffer<char, 128>* buf, bool scientific, int precision, T f)
         {
-            unsigned int usePrecision =
-                options.GetSignificantFigures ().value_or (Number::SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
-            Number::FloatFormatType usingFormat = options.GetFloatFormat ().value_or (Number::FloatFormatType::eDEFAULT);
-
-            if (usingFormat == Number::FloatFormatType::eStandard) {
-                Assert (options.GetIOSFmtFlags () == nullopt); // doable in principle, looking/mapping each feature, but not trivial, and probably not needed anytime soon
-                                                               // --LGP 2026-02-10
-                return formatNonScientific_ (f, usePrecision);
+            int n = scientific ? ::snprintf (buf->data (), buf->size (), "%.*Le", precision, static_cast<long double> (f))
+                               : ::snprintf (buf->data (), buf->size (), "%.*Lf", precision, static_cast<long double> (f));
+            Verify (n > 0 and static_cast<size_t> (n) < buf->size ());
+            return string_view{buf->data (), static_cast<size_t> (n)};
+        }
+        template <floating_point T>
+        T ReadBack_ (const char* text)
+        {
+            if constexpr (same_as<T, float>) {
+                return ::strtof (text, nullptr);
             }
+            else if constexpr (same_as<T, double>) {
+                return ::strtod (text, nullptr);
+            }
+            else {
+                return ::strtold (text, nullptr);
+            }
+        }
 
-            // expensive to construct, and slightly cheaper to just use thread_local version of
-            // the same stringstream each time (only one per thread can be in use)
-            static thread_local stringstream s;
-            static const ios_base::fmtflags  kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
-
-            s.str (string{});
-            s.clear ();
-
-            s.imbue (locale::classic ()); // the "C" locale's text: FloatToString_ punctuates it
-
-            //  must set explicitly (even if defaulted)  because of the thread_local thing
-            s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
-
-            {
-                switch (usingFormat) {
-                    case Number::FloatFormatType::eScientific:
-                    case Number::FloatFormatType::eScientificWithTrailingZerosTrimmed:
-                        s.setf (ios_base::scientific, ios_base::floatfield);
-                        Assert (usePrecision >= 2);
-                        s.precision (usePrecision - 1); // scientific format is n.mmm with m digits of 'precision' - so 1 + m is # of significat digits
-                        break;
-                    case Number::FloatFormatType::eDefaultFloat:
-                        s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
-                        /*
-                         * Precision Field: The stream's precision setting (managed by std::setprecision or std::ios_base::precision()) 
-                         * specifies the maximum number of meaningful digits to display in total (both before and after the decimal point),
-                         * not a fixed number of digits after the decimal point (so same as Number::SignificantFigures)
-                         */
-                        s.precision (usePrecision);
-                        break;
-                    case Number::FloatFormatType::eFixedPoint:
-                    case Number::FloatFormatType::eFixedPointWithTrailingZerosTrimmed:
-                        s.setf (ios_base::fixed, ios_base::floatfield);
-                        s.precision (usePrecision); // I think wrong but test -
-                        break;
-                    case Number::FloatFormatType::eStandard:
-                        AssertNotReached (); // handled above
-                        break;
-                        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-                        DISABLE_COMPILER_MSC_WARNING_START (4996)
-                    case Number::FloatFormatType::eAutomaticScientific: {
-                        s.precision (usePrecision);
-                        bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
-                                                     (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
-                        if (useScientificNotation) {
-                            s.setf (ios_base::scientific, ios_base::floatfield);
-                        }
-                        else {
-                            s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
-                            s.precision (usePrecision);
-                        }
-                    } break;
-                        DISABLE_COMPILER_MSC_WARNING_END (4996)
-                        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-                        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                    default:
-                        RequireNotReached ();
-                        break;
+        // f's shortest round-trip digits
+        template <floating_point T>
+        void ShortestDigits_ (T f, Decimal_* d)
+        {
+            Memory::InlineBuffer<char, 128> buf{Memory::eUninitialized, static_cast<size_t> (numeric_limits<T>::max_digits10) + 16};
+            if constexpr (kHasToChars_<T>) {
+                auto r = to_chars (buf.begin (), buf.end (), f, chars_format::scientific);
+                Assert (r.ec == errc{});
+                ParseDecimal_ (string_view{buf.data (), r.ptr}, d);
+            }
+            else {
+                // the fewest digits that read back as f - max_digits10 always do
+                for (int p = 0;; ++p) {
+                    string_view text = SNPrintF_ (&buf, true, p, f);
+                    if (p + 1 >= numeric_limits<T>::max_digits10 or ReadBack_<T> (buf.data ()) == f) {
+                        ParseDecimal_ (text, d);
+                        return;
+                    }
                 }
             }
-
-            s << f;
-            string ss = s.str ();
-
-            return String{ss};
         }
+        // f correctly rounded to n significant digits
+        template <floating_point T>
+        void SignificantDigits_ (T f, unsigned int n, Decimal_* d)
+        {
+            Require (n >= 1);
+            Memory::InlineBuffer<char, 128> buf{Memory::eUninitialized, n + 16};
+            if constexpr (kHasToChars_<T>) {
+                auto r = to_chars (buf.begin (), buf.end (), f, chars_format::scientific, static_cast<int> (n - 1));
+                Assert (r.ec == errc{});
+                ParseDecimal_ (string_view{buf.data (), r.ptr}, d);
+            }
+            else {
+                ParseDecimal_ (SNPrintF_ (&buf, true, static_cast<int> (n - 1), f), d);
+            }
+        }
+        // f correctly rounded to n digits after the decimal point
+        template <floating_point T>
+        void FractionDigits_ (T f, unsigned int n, Decimal_* d)
+        {
+            // the digits before the point: at most log10 (2) of the binary exponent's
+            int                             wholeDigits = f == 0 ? 1 : max (1, static_cast<int> (ilogb (f) * 0.30103) + 2);
+            Memory::InlineBuffer<char, 128> buf{Memory::eUninitialized, static_cast<size_t> (wholeDigits) + n + 8};
+            if constexpr (kHasToChars_<T>) {
+                auto r = to_chars (buf.begin (), buf.end (), f, chars_format::fixed, static_cast<int> (n));
+                Assert (r.ec == errc{});
+                ParseDecimal_ (string_view{buf.data (), r.ptr}, d);
+            }
+            else {
+                ParseDecimal_ (SNPrintF_ (&buf, false, static_cast<int> (n), f), d);
+            }
+        }
+
+        // the trailing zeros past minDigits digits dropped, and zeros added up to minDigits
+        inline void TrimAndPadDigits_ (Decimal_* d, unsigned int minDigits)
+        {
+            size_t keep = max<size_t> (minDigits, 1);
+            while (d->fDigits.size () > keep and d->fDigits[d->fDigits.size () - 1] == '0') {
+                d->fDigits.resize (d->fDigits.size () - 1);
+            }
+            while (d->fDigits.size () < minDigits) {
+                d->fDigits.push_back ('0');
+            }
+        }
+        // the trailing zeros past minFraction digits after the point dropped, and zeros added up to minFraction (written plain)
+        inline void TrimAndPadFraction_ (Decimal_* d, unsigned int minFraction)
+        {
+            while (d->PlainFractionDigits () > static_cast<int> (minFraction) and d->fDigits[d->fDigits.size () - 1] == '0') {
+                d->fDigits.resize (d->fDigits.size () - 1);
+            }
+            int needed = d->fExponent + 1 + static_cast<int> (minFraction);
+            while (static_cast<int> (d->fDigits.size ()) < needed) {
+                d->fDigits.push_back ('0');
+            }
+        }
+
+        // the digits written, as Number::Precision says: the shortest round-trip digits where they fit, else f correctly rounded
+        template <floating_point T>
+        void Digits_ (T f, Number::Notation notation, const Number::Precision& precision, Decimal_* d)
+        {
+            constexpr unsigned int kTypeDigits = numeric_limits<T>::digits10;
+            auto                   significant = [&] (Number::Precision::MinMax digits) {
+                if (digits.fMax <= kTypeDigits) {
+                    SignificantDigits_ (f, digits.fMax, d); // within the type's precision, the shortest digits - where they fit - are these
+                }
+                else {
+                    ShortestDigits_ (f, d);
+                    if (d->fDigits.size () > digits.fMax) {
+                        SignificantDigits_ (f, digits.fMax, d);
+                    }
+                }
+                TrimAndPadDigits_ (d, digits.fMin);
+            };
+            if (precision.IsShortestRoundTrip ()) {
+                ShortestDigits_ (f, d);
+            }
+            else if (optional<Number::Precision::MinMax> s = precision.GetSignificantDigits ()) {
+                significant (*s);
+            }
+            else if (optional<Number::Precision::MinMax> fraction = precision.GetFractionDigits ()) {
+                if (notation == Number::Notation::eScientific) {
+                    // the digits after the first
+                    significant (Number::Precision::MinMax{fraction->fMin + 1, fraction->fMax + 1});
+                }
+                else {
+                    FractionDigits_ (f, fraction->fMax, d);
+                    if (d->fDigits.size () > kTypeDigits) {
+                        // more digits than the type holds: the shortest, where they fit
+                        Decimal_ shortest;
+                        ShortestDigits_ (f, &shortest);
+                        if (shortest.PlainFractionDigits () <= static_cast<int> (fraction->fMax)) {
+                            *d = shortest;
+                        }
+                    }
+                    TrimAndPadFraction_ (d, fraction->fMin);
+                }
+            }
+        }
+
+        // eGeneral: scientific where the exponent is below -4, or at least P - printf's %g
+        inline bool Scientific_ (Number::Notation notation, const Number::Precision& precision, const Decimal_& d)
+        {
+            switch (notation) {
+                case Number::Notation::eScientific:
+                    return true;
+                case Number::Notation::ePlain:
+                    return false;
+                case Number::Notation::eGeneral:
+                    break;
+            }
+            if (precision.GetFractionDigits ()) {
+                return false;
+            }
+            // std::to_chars, without a precision, writes chars_format::general as %g with 6
+            int p = precision.IsShortestRoundTrip () ? 6 : static_cast<int> (precision.GetSignificantDigits ()->fMax);
+            return d.fExponent < -4 or d.fExponent >= p;
+        }
+
+        // d as text
+        inline void Layout_ (const Decimal_& d, bool scientific, Memory::InlineBuffer<char, 128>* out)
+        {
+            out->resize (0);
+            if (d.fNegative) {
+                out->push_back ('-');
+            }
+            int n = static_cast<int> (d.fDigits.size ());
+            if (scientific) {
+                out->push_back (d.fDigits[0]);
+                if (n > 1) {
+                    out->push_back ('.');
+                    for (int i = 1; i < n; ++i) {
+                        out->push_back (d.fDigits[i]);
+                    }
+                }
+                out->push_back ('e');
+                out->push_back (d.fExponent < 0 ? '-' : '+');
+                unsigned int e = static_cast<unsigned int> (d.fExponent < 0 ? -d.fExponent : d.fExponent);
+                char         exponentDigits[12];
+                int          nExponentDigits = 0;
+                do {
+                    exponentDigits[nExponentDigits++] = static_cast<char> ('0' + e % 10);
+                    e /= 10;
+                } while (e != 0);
+                if (nExponentDigits < 2) {
+                    out->push_back ('0'); // at least two exponent digits, as printf writes
+                }
+                while (nExponentDigits > 0) {
+                    out->push_back (exponentDigits[--nExponentDigits]);
+                }
+            }
+            else if (d.fExponent < 0) {
+                out->push_back ('0');
+                out->push_back ('.');
+                for (int i = 0; i < -d.fExponent - 1; ++i) {
+                    out->push_back ('0');
+                }
+                for (int i = 0; i < n; ++i) {
+                    out->push_back (d.fDigits[i]);
+                }
+            }
+            else {
+                for (int i = 0; i <= d.fExponent; ++i) {
+                    out->push_back (i < n ? d.fDigits[i] : '0'); // past the digits, the zeros of the number's size
+                }
+                if (n > d.fExponent + 1) {
+                    out->push_back ('.');
+                    for (int i = d.fExponent + 1; i < n; ++i) {
+                        out->push_back (d.fDigits[i]);
+                    }
+                }
+            }
+        }
+
+        // the "C" locale's punctuation: '.', and no grouping
+        inline bool IsCPunctuation_ (const Number::PunctuationSpecifier& p)
+        {
+            if (const Number::Punctuation* given = get_if<Number::Punctuation> (&p)) {
+                return *given == Number::Punctuation{};
+            }
+            return get<Common::PredefinedLocale> (p) == Common::PredefinedLocale::eUseCLocale;
+        }
+
     }
 
     namespace Private_ {
@@ -387,19 +478,65 @@ namespace Stroika::Foundation::Characters {
         template <floating_point FLOAT_TYPE>
         String FloatToString_ (FLOAT_TYPE f, const Number::FloatToStringOptions& options)
         {
-            auto floatFormat = options.GetFloatFormat ().value_or (Number::FloatFormatType::eDEFAULT);
-            // written as the "C" locale writes it, and punctuated as the options say at the end
-            auto result = (not options.GetIOSFmtFlags () and floatFormat == Number::FloatFormatType::eDefaultFloat)
-                              ? Private_::FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (
-                                    f, options.GetSignificantFigures ().value_or (Number::SignificantFigures{}))
-                              : Private_::FloatToString_GeneralCase_ (f, options);
-            if (floatFormat == Number::FloatFormatType::eFixedPointWithTrailingZerosTrimmed or floatFormat == Number::FloatFormatType::eStandard) {
-                TrimTrailingZeros_NotSci_ (&result);
+            if constexpr (numeric_limits<FLOAT_TYPE>::digits > numeric_limits<double>::digits) {
+                // a long double holding exactly a double is written as that double: its long double digits would only show the
+                // error of widening it (0.1 as 0.10000000000000000555) - the text reads back as the double it was
+                if (isfinite (f) and static_cast<FLOAT_TYPE> (static_cast<double> (f)) == f) {
+                    return FloatToString_ (static_cast<double> (f), options);
+                }
             }
-            if (floatFormat == Number::FloatFormatType::eScientificWithTrailingZerosTrimmed) {
-                TrimTrailingZeros_MaybeSci_ (&result);
+            if (not isfinite (f)) [[unlikely]] {
+                // as std::to_chars writes them - the same on every platform
+                return isnan (f) ? (signbit (f) ? "-nan"sv : "nan"sv) : (f < 0 ? "-inf"sv : "inf"sv);
             }
-            return Punctuate_ (result, options.GetPunctuation ());
+            bool cPunctuation = IsCPunctuation_ (options.fPunctuation);
+            if constexpr (kHasToChars_<FLOAT_TYPE>) {
+                // Where std::to_chars's text is just what Number::Precision says, one call, its text as it is: printf's %g (the
+                // default), %e and %f - each within the type's precision, where shortest round-trip digits that fit are the
+                // correctly rounded ones - and the shortest chars_format::general (kRoundTrip)
+                if (cPunctuation) {
+                    constexpr unsigned int kTypeDigits = numeric_limits<FLOAT_TYPE>::digits10;
+                    char                   buf[numeric_limits<FLOAT_TYPE>::max_digits10 + 16];
+                    auto                   text = [&] (to_chars_result r) {
+                        Assert (r.ec == errc{});
+                        return String{span<const char>{buf, r.ptr}};
+                    };
+                    optional<Number::Precision::MinMax> s        = options.fPrecision.GetSignificantDigits ();
+                    optional<Number::Precision::MinMax> fraction = options.fPrecision.GetFractionDigits ();
+                    switch (options.fNotation) {
+                        case Number::Notation::eGeneral:
+                            if (options.fPrecision.IsShortestRoundTrip ()) {
+                                return text (to_chars (std::begin (buf), std::end (buf), f, chars_format::general));
+                            }
+                            if (s and s->fMin <= 1 and s->fMax <= kTypeDigits) {
+                                return text (to_chars (std::begin (buf), std::end (buf), f, chars_format::general, static_cast<int> (s->fMax)));
+                            }
+                            break;
+                        case Number::Notation::eScientific:
+                            if (s and s->fMin == s->fMax and s->fMax <= kTypeDigits) {
+                                return text (to_chars (std::begin (buf), std::end (buf), f, chars_format::scientific, static_cast<int> (s->fMax - 1)));
+                            }
+                            if (fraction and fraction->fMin == fraction->fMax and fraction->fMax < kTypeDigits) {
+                                return text (to_chars (std::begin (buf), std::end (buf), f, chars_format::scientific,
+                                                       static_cast<int> (fraction->fMax)));
+                            }
+                            break;
+                        case Number::Notation::ePlain:
+                            // under 10^(kTypeDigits - n), its whole and n fraction digits are within the type's precision
+                            if (fraction and fraction->fMin == fraction->fMax and fraction->fMax <= kTypeDigits and
+                                abs (f) < kPowersOf10_[kTypeDigits - fraction->fMax]) {
+                                return text (to_chars (std::begin (buf), std::end (buf), f, chars_format::fixed, static_cast<int> (fraction->fMax)));
+                            }
+                            break;
+                    }
+                }
+            }
+            Decimal_ d;
+            Digits_ (f, options.fNotation, options.fPrecision, &d);
+            Memory::InlineBuffer<char, 128> text;
+            Layout_ (d, Scientific_ (options.fNotation, options.fPrecision, d), &text);
+            String result{span<const char>{text.data (), text.size ()}};
+            return cPunctuation ? result : Punctuate_ (result, options.GetPunctuation ());
         }
     }
 
@@ -556,9 +693,14 @@ namespace Stroika::Foundation::Characters {
             return Private_::FloatToString_ (t, o);
         }
         template <floating_point T>
-        inline String ToString (T t, Number::SignificantFigures sf)
+        inline String ToString (T t, const Number::Precision& p)
         {
-            return Private_::FloatToString_ (t, Number::FloatToStringOptions{sf});
+            return Private_::FloatToString_ (t, Number::FloatToStringOptions{}.With (p));
+        }
+        template <floating_point T>
+        inline String ToString (T t, Number::Notation n)
+        {
+            return Private_::FloatToString_ (t, Number::FloatToStringOptions{}.With (n));
         }
         template <typename T>
         inline String ToString (const Math::CommonStatistics<T>& t)
@@ -629,7 +771,7 @@ namespace Stroika::Foundation::Characters {
         {
             return Characters::ToString (t.count ()) + " seconds"sv;
         }
-        String ToString (const Time::Duration& t, Number::SignificantFigures p);
+        String ToString (const Time::Duration& t, const Number::Precision& secondsPrecision);
         template <typename CLOCK_T>
         inline String ToString (const chrono::time_point<CLOCK_T, chrono::duration<double>>& t)
         {

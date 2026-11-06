@@ -1089,7 +1089,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
         static TypeMappingDetails MakeCommonSerializer_ (const Common::GUID*, VariantValue::Type representAs = VariantValue::Type::eString);
 
-        static TypeMappingDetails MakeCommonSerializer_ (const Time::Duration*, Characters::Number::SignificantFigures p);
+        static TypeMappingDetails MakeCommonSerializer_ (const Time::Duration*, const Characters::Number::Precision& secondsPrecision);
 
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);

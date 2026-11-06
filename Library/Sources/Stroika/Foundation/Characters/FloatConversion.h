@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 
 _DeprecatedFile_ ("DEPRECATED FloatConversion.h in v3.0d26 - use ToString.h (Characters::ToString) and Number.h (Number::Parse, and "
                   "the types)");
@@ -25,40 +26,97 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     using Characters::eDontTrimZeros;
     using Characters::eTrimZeros;
     using Characters::TrimTrailingZerosType;
-    using Characters::Number::eAutomaticScientific;
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using PredefinedLocale [[deprecated ("Since Stroika v3.0d26 use Common::PredefinedLocale (Common/Locale.h)")]] = Common::PredefinedLocale;
     [[deprecated ("Since Stroika v3.0d26 use Common::eUseCLocale (Common/Locale.h)")]] inline constexpr Common::PredefinedLocale eUseCLocale =
         Common::eUseCLocale;
     [[deprecated ("Since Stroika v3.0d26 use Common::eUseCurrentLocale (Common/Locale.h)")]] inline constexpr Common::PredefinedLocale eUseCurrentLocale =
         Common::eUseCurrentLocale;
-    using SignificantFigures [[deprecated ("Since Stroika v3.0d26 use Characters::Number::SignificantFigures (Number.h)")]] =
-        Characters::Number::SignificantFigures;
+    using SignificantFigures [[deprecated ("Since Stroika v3.0d26 use Characters::Number::Precision (Number.h)")]] = Characters::Number::SignificantFigures;
     using Precision [[deprecated ("Since Stroika v3.0d23 use SignificantFigures instead")]] = Characters::Number::SignificantFigures;
-    using FloatFormatType [[deprecated ("Since Stroika v3.0d26 use Characters::Number::FloatFormatType (Number.h)")]] = Characters::Number::FloatFormatType;
-    [[deprecated ("Since Stroika v3.0d26 use Characters::Number::eDefaultFloat (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eDefaultFloat =
-        Characters::Number::eDefaultFloat;
-    [[deprecated ("Since Stroika v3.0d26 use Characters::Number::eFixedPoint (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eFixedPoint =
-        Characters::Number::eFixedPoint;
-    [[deprecated (
-        "Since Stroika v3.0d26 use Characters::Number::eFixedPointWithTrailingZerosTrimmed (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eFixedPointWithWhitespaceTrimmed =
-        Characters::Number::eFixedPointWithTrailingZerosTrimmed;
-    [[deprecated ("Since Stroika v3.0d26 use Characters::Number::eScientific (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eScientific =
-        Characters::Number::eScientific;
-    [[deprecated (
-        "Since Stroika v3.0d26 use Characters::Number::eScientificWithTrailingZerosTrimmed (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eScientificWithWhitespaceTrimmed =
-        Characters::Number::eScientificWithTrailingZerosTrimmed;
-    [[deprecated ("Since Stroika v3.0d26 use Characters::Number::eStandard (Number.h)")]] inline constexpr Characters::Number::FloatFormatType eStandard =
-        Characters::Number::eStandard;
-    using ToStringOptions [[deprecated ("Since Stroika v3.0d26 use Characters::Number::FloatToStringOptions (Number.h)")]] =
-        Characters::Number::FloatToStringOptions;
+
+    /**
+     *  How a float was written before Stroika v3.0d26, when Number::Notation and Number::Precision replaced it - each value's
+     *  equivalent beside it, for a precision n.
+     */
+    enum class [[deprecated ("Since Stroika v3.0d26 use Characters::Number::Notation and Characters::Number::Precision (Number.h) - "
+                             "FloatConversion.h gives each value's equivalent")]] FloatFormatType {
+        eDefaultFloat,                                     ///< {eGeneral, MaxSignificantDigits (n)}
+        eFixedPointWithoutWhitespaceTrimmed,               ///< {ePlain, FixedFraction (n)}
+        eFixedPoint = eFixedPointWithoutWhitespaceTrimmed, ///< {ePlain, FixedFraction (n)}
+        eFixedPointWithWhitespaceTrimmed,                  ///< {ePlain, MinMaxFraction (0, n)}
+        eScientificWithoutWhitespaceTrimmed,               ///< {eScientific, FixedSignificantDigits (n)}
+        eScientific = eScientificWithoutWhitespaceTrimmed, ///< {eScientific, FixedSignificantDigits (n)}
+        eScientificWithWhitespaceTrimmed,                  ///< {eScientific, MinMaxSignificantDigits (2, n)}
+        eStandard, ///< {ePlain, MaxSignificantDigits (n)} - which rounds the whole part too; eStandard wrote it in full
+        eAutomaticScientific [[deprecated ("Since Stroika v3.0d23 use eDefaultFloat instead")]],
+        eDEFAULT = eDefaultFloat,
+
+        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific)
+    };
+    using FloatFormatType::eAutomaticScientific;
+    using FloatFormatType::eDefaultFloat;
+    using FloatFormatType::eFixedPoint;
+    using FloatFormatType::eFixedPointWithWhitespaceTrimmed;
+    using FloatFormatType::eScientific;
+    using FloatFormatType::eScientificWithWhitespaceTrimmed;
+    using FloatFormatType::eStandard;
+
+    /**
+     *  These were the options for ToString (floating point) before Stroika v3.0d26: each constructor gave one setting, and the
+     *  combining constructors overlaid them. It converts to the Number::FloatToStringOptions that writes the same - but for its
+     *  ios_base::fmtflags, which it ignores.
+     */
+    struct [[deprecated ("Since Stroika v3.0d26 use Characters::Number::FloatToStringOptions (Number.h) - an aggregate of a Notation, a "
+                         "Precision and the punctuation - and its With (...)")]] ToStringOptions {
+    public:
+        constexpr ToStringOptions () = default;
+        constexpr ToStringOptions (Common::PredefinedLocale p);
+        ToStringOptions (const locale& l);
+        constexpr ToStringOptions (const Number::Punctuation& p);
+        constexpr ToStringOptions (ios_base::fmtflags fmtFlags);
+        constexpr ToStringOptions (Number::SignificantFigures precision);
+        constexpr ToStringOptions (FloatFormatType floatFormat);
+        constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
+        constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
+        template <typename... ARGS>
+        constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
+
+    public:
+        /**
+         *  \brief The Number::FloatToStringOptions that writes the same, as FloatFormatType says (its ios_base::fmtflags ignored)
+         */
+        constexpr operator Number::FloatToStringOptions () const;
+
+    public:
+        constexpr optional<Number::SignificantFigures> GetSignificantFigures () const;
+        constexpr optional<bool>                       GetTrimTrailingZeros () const;
+        nonvirtual Number::Punctuation         GetPunctuation () const;
+        nonvirtual locale                      GetUseLocale () const;
+        nonvirtual bool                        GetUsingLocaleClassic () const;
+        constexpr optional<FloatFormatType>    GetFloatFormat () const;
+        constexpr optional<ios_base::fmtflags> GetIOSFmtFlags () const;
+
+    public:
+        static constexpr bool kDefaultTrimTrailingZeros{true};
+
+    public:
+        nonvirtual String ToString () const;
+
+    private:
+        optional<Number::SignificantFigures>   fSignificantFigures_;
+        optional<ios_base::fmtflags>           fFmtFlags_;
+        optional<Number::PunctuationSpecifier> fPunctuation_;
+        optional<bool>                         fTrimTrailingZeros_;
+        optional<FloatFormatType>              fFloatFormat_;
+    };
 
     template <Common::IAnyOf<String, string, wstring> STRING_TYPE = String, floating_point FLOAT_TYPE = float>
-    [[deprecated ("Since Stroika v3.0d26 use Characters::ToString (f, FloatToStringOptions) - .AsASCII () or .As<wstring> () for a "
-                  "string or wstring")]] STRING_TYPE
-    ToString (FLOAT_TYPE f, const Characters::Number::FloatToStringOptions& options = {});
+    [[deprecated ("Since Stroika v3.0d26 use Characters::ToString (f, Number::FloatToStringOptions) - .AsASCII () or .As<wstring> () for "
+                  "a string or wstring")]] STRING_TYPE
+    ToString (FLOAT_TYPE f, const ToStringOptions& options = {});
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     template <floating_point T = double, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     [[deprecated ("Since Stroika v3.0d26 use Number::Parse<T> (s) (Number.h) - .value_or (NAN) for this lenient behavior")]] T

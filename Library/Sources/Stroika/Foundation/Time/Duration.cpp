@@ -220,7 +220,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
 
-            static const Number::FloatToStringOptions kFinalFloatOptions_{Number::eDefaultFloat};
+            static constexpr Number::FloatToStringOptions kFinalFloatOptions_{};
 
             static constexpr bool kFirstSubSecondUnitDoDecimalPlaceImmediately_{true};
 
@@ -506,10 +506,10 @@ auto Duration::ParseTime_ (string_view s, [[maybe_unused]] const ParseOptions& o
     return isNeg ? -result : result;
 }
 
-String Duration::UnParseTime_ (InternalNumericFormatType_ t, Number::SignificantFigures p)
+String Duration::UnParseTime_ (InternalNumericFormatType_ t, const AsStringOptions& options)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}, p={}"_f, t, p};
+    Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}, seconds-precision={}"_f, t, options.fSecondsPrecision};
 #endif
     Require (not isnan (t));
     bool                       isNeg    = (t < 0);
@@ -579,7 +579,8 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, Number::Significant
         }
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
-            result += Characters::ToString (timeLeft, Number::FloatToStringOptions{p, Number::eStandard});
+            result += Characters::ToString (
+                timeLeft, Number::FloatToStringOptions{.fNotation = Number::Notation::ePlain, .fPrecision = options.fSecondsPrecision});
             result += "S"sv;
         }
     }

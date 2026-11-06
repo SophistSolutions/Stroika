@@ -7,6 +7,33 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
+     ***************************** Duration::AsStringOptions ************************
+     ********************************************************************************
+     */
+    namespace Private_ {
+        // the innermost ScopedThreadDefault's options, or nullptr: AsStringOptions{}. constinit - constant initialized - so a read
+        // needs no initialization guard (nor does g++'s bug 66944, two guarded inline thread_locals in one translation unit, apply)
+        inline constinit thread_local const Duration::AsStringOptions* tDurationAsStringOptions_{nullptr};
+    }
+    inline auto Duration::AsStringOptions::GetThreadDefault () -> AsStringOptions
+    {
+        const AsStringOptions* o = Private_::tDurationAsStringOptions_;
+        return o == nullptr ? AsStringOptions{} : *o;
+    }
+    inline Duration::AsStringOptions::ScopedThreadDefault::ScopedThreadDefault (const AsStringOptions& options)
+        : fOptions_{options}
+        , fPrevious_{Private_::tDurationAsStringOptions_}
+    {
+        Private_::tDurationAsStringOptions_ = &fOptions_;
+    }
+    inline Duration::AsStringOptions::ScopedThreadDefault::~ScopedThreadDefault ()
+    {
+        Assert (Private_::tDurationAsStringOptions_ == &fOptions_); // scopes end innermost first
+        Private_::tDurationAsStringOptions_ = fPrevious_;
+    }
+
+    /*
+     ********************************************************************************
      ************************************ Duration **********************************
      ********************************************************************************
      */
@@ -197,7 +224,7 @@ namespace Stroika::Foundation::Time {
                 case eString_:
                     return String{fStringRep_};
                 case eNumeric_:
-                    return UnParseTime_ (count (), Characters::Number::SignificantFigures::kDefault); // new behavior as of v3.0d12 - default precision instead of full (see overload that lets you specify precision)
+                    return UnParseTime_ (count (), AsStringOptions::GetThreadDefault ());
             }
             AssertNotReached ();
             return String{};
@@ -210,20 +237,23 @@ namespace Stroika::Foundation::Time {
         }
     }
     template <typename T>
-    inline T Duration::As (Characters::Number::SignificantFigures p) const
-        requires (Common::IAnyOf<T, Characters::String>)
+    inline T Duration::As (const AsStringOptions& options) const
+        requires (same_as<T, Characters::String>)
     {
-        if constexpr (same_as<T, Characters::String>) {
-            using Characters::String;
-            switch (fRepType_) {
-                case eString_: // unclear about this case? -- different answer than with no argument precision
-                case eNumeric_:
-                    return UnParseTime_ (count (), p);
-            }
-            AssertNotReached ();
-            return String{};
-        }
+        return UnParseTime_ (count (), options);
     }
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    template <typename T>
+    inline T Duration::As (Characters::Number::SignificantFigures p) const
+        requires (same_as<T, Characters::String>)
+    {
+        return As<T> (AsStringOptions{.fSecondsPrecision = p});
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <typename T>
     inline T Duration::AsPinned () const
         requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or

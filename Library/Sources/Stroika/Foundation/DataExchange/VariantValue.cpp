@@ -728,7 +728,7 @@ String VariantValue::AsString_ () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             using namespace Characters;
-            return Characters::ToString (v->fVal, Number::SignificantFigures::kFullPrecision);
+            return Characters::ToString (v->fVal, Number::FloatToStringOptions::kRoundTrip);
         }
         case Type::eDate: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());

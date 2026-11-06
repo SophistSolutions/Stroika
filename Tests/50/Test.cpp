@@ -1014,24 +1014,51 @@ namespace {
         }
         {
             // Support precision of duration reps
-            using Characters::Number::SignificantFigures;
+            using Characters::Number::Precision;
+            auto withDigits = [] (const Duration& d, unsigned int n) {
+                return d.As<String> (Duration::AsStringOptions{.fSecondsPrecision = Precision::MaxSignificantDigits (n)});
+            };
             {
                 const Duration d1 = Duration{"PT1.4S"};
                 EXPECT_EQ (d1.As<String> (), "PT1.4S");
-                EXPECT_EQ (d1.As<String> (SignificantFigures{1}), "PT1S");
+                EXPECT_EQ (withDigits (d1, 1), "PT1S");
             }
             {
                 const Duration d1 = Duration{numbers::pi};
-                EXPECT_EQ (d1.As<String> (SignificantFigures{1}), "PT3S");
-                EXPECT_EQ (d1.As<String> (SignificantFigures{3}), "PT3.14S");
-                EXPECT_EQ (d1.As<String> (SignificantFigures{6}), "PT3.14159S");
-                EXPECT_EQ (d1.As<String> (SignificantFigures{7}), "PT3.141593S");
-                EXPECT_EQ (d1.As<String> (SignificantFigures{8}), "PT3.1415927S");
+                EXPECT_EQ (withDigits (d1, 1), "PT3S");
+                EXPECT_EQ (withDigits (d1, 3), "PT3.14S");
+                EXPECT_EQ (withDigits (d1, 6), "PT3.14159S");
+                EXPECT_EQ (withDigits (d1, 7), "PT3.141593S");
+                EXPECT_EQ (withDigits (d1, 8), "PT3.1415927S");
+                EXPECT_EQ (d1.As<String> (Duration::AsStringOptions{.fSecondsPrecision = Precision::ShortestRoundTrip ()}),
+                           "PT3.141592653589793S");
+                EXPECT_EQ (d1.As<String> (Duration::AsStringOptions{.fSecondsPrecision = Precision::FixedFraction (3)}), "PT3.142S");
+                EXPECT_EQ (Characters::ToString (d1, Precision::MaxSignificantDigits (3)), "PT3.14S");
             }
             {
                 const Duration d1 = Duration{0.000001};
-                EXPECT_EQ (d1.As<String> (SignificantFigures{1}), "PT0.000001S");
-                EXPECT_EQ (d1.As<String> (SignificantFigures{3}), "PT0.000001S");
+                EXPECT_EQ (withDigits (d1, 1), "PT0.000001S");
+                EXPECT_EQ (withDigits (d1, 3), "PT0.000001S");
+            }
+            {
+                // a per thread default - nesting, and ending with its scope
+                const Duration d1 = Duration{numbers::pi};
+                EXPECT_EQ (d1.As<String> (), "PT3.14159S");
+                {
+                    Duration::AsStringOptions::ScopedThreadDefault exact{{.fSecondsPrecision = Precision::ShortestRoundTrip ()}};
+                    EXPECT_EQ (d1.As<String> (), "PT3.141592653589793S");
+                    EXPECT_EQ (Duration{d1.As<String> ()}, d1);
+                    {
+                        Duration::AsStringOptions::ScopedThreadDefault two{{.fSecondsPrecision = Precision::MaxSignificantDigits (2)}};
+                        EXPECT_EQ (d1.As<String> (), "PT3.1S");
+                    }
+                    EXPECT_EQ (d1.As<String> (), "PT3.141592653589793S");
+                    // another thread has its own
+                    String onAnotherThread;
+                    thread{[&] () { onAnotherThread = d1.As<String> (); }}.join ();
+                    EXPECT_EQ (onAnotherThread, "PT3.14159S");
+                }
+                EXPECT_EQ (d1.As<String> (), "PT3.14159S");
             }
         }
     }

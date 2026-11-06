@@ -458,20 +458,21 @@ run time (not a constant expression), or inherited from elsewhere.
 
 Where callers start from a base - a named constant, a context's defaults - and change a setting or two, give the struct a
 `With`: a `constexpr` member returning a copy with the given settings replaced. Where each field has its own type, one variadic
-`With` takes them by type, in any order:
+`With` takes them by type, in any order - as `Characters::Number::FloatToStringOptions` does:
 
 ```c++
-struct Options {
-    Notation  fNotation{Notation::eGeneral};
-    Precision fPrecision{Precision::MaxSignificantDigits (6)};
+struct FloatToStringOptions {
+    Notation             fNotation{Notation::eGeneral};
+    Precision            fPrecision{Precision::MaxSignificantDigits (6)};
+    PunctuationSpecifier fPunctuation{Punctuation{}};
 
     template <typename... ARGS>
-    constexpr Options With (ARGS&&... args) const; ///< a copy, each argument's field (the one of its type) set to it
+    constexpr FloatToStringOptions With (ARGS&&... args) const; ///< a copy, each argument's field (the one of its type) set to it
 };
 
-f (kRoundTrip.With (Notation::eFixed));                                   // a constant, one setting changed
-f (GetThreadDefault ().With (Precision::FixedFraction (2)));              // the context's defaults, the precision given
-f ({.fNotation = Notation::eFixed, .fPrecision = Precision::FixedFraction (2)}); // every setting, by name
+ToString (x, FloatToStringOptions::kRoundTrip.With (Notation::eScientific));                // a constant, one setting changed
+ToString (x, options.With (Precision::FixedFraction (2)));                                  // some options, the precision given
+ToString (x, FloatToStringOptions{.fNotation = Notation::ePlain, .fPrecision = Precision::FixedFraction (2)}); // every setting, by name
 ```
 
 Where two fields share a type (two `bool`s), name the setting instead: `WithPrettyPrint (false)`. A struct its callers build

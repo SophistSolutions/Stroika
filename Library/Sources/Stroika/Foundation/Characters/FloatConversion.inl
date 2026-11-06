@@ -254,26 +254,159 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     }
 
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
+    /*
+     ********************************************************************************
+     ********************** FloatConversion::ToStringOptions ************************
+     ********************************************************************************
+     */
+    constexpr ToStringOptions::ToStringOptions (Common::PredefinedLocale p)
+        : fPunctuation_{Number::PunctuationSpecifier{p}}
+    {
+    }
+    inline ToStringOptions::ToStringOptions (const locale& l)
+        : fPunctuation_{Number::Punctuation::FromLocale (l)}
+    {
+    }
+    constexpr ToStringOptions::ToStringOptions (const Number::Punctuation& p)
+        : fPunctuation_{Number::PunctuationSpecifier{p}}
+    {
+    }
+    constexpr ToStringOptions::ToStringOptions (ios_base::fmtflags fmtFlags)
+        : fFmtFlags_{fmtFlags}
+    {
+    }
+    constexpr ToStringOptions::ToStringOptions (Number::SignificantFigures precision)
+        : fSignificantFigures_{precision}
+    {
+    }
+    constexpr ToStringOptions::ToStringOptions (FloatFormatType floatFormat)
+        : fFloatFormat_{floatFormat}
+    {
+    }
+    constexpr ToStringOptions::ToStringOptions (TrimTrailingZerosType trimTrailingZeros)
+        : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrimZeros}
+    {
+    }
+    constexpr ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
+        : ToStringOptions{b1}
+    {
+        Memory::CopyToIf (&fSignificantFigures_, b2.fSignificantFigures_);
+        Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
+        Memory::CopyToIf (&fPunctuation_, b2.fPunctuation_);
+        Memory::CopyToIf (&fTrimTrailingZeros_, b2.fTrimTrailingZeros_);
+        Memory::CopyToIf (&fFloatFormat_, b2.fFloatFormat_);
+    }
+    template <typename... ARGS>
+    constexpr ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args)
+        : ToStringOptions{ToStringOptions{b1, b2}, forward<ARGS> (args)...}
+    {
+    }
+    constexpr ToStringOptions::operator Number::FloatToStringOptions () const
+    {
+        using Number::Notation;
+        using Number::Precision;
+        Number::SignificantFigures sf   = fSignificantFigures_.value_or (Number::SignificantFigures{});
+        bool                       full = sf == Number::SignificantFigures::kFullPrecision;
+        unsigned int    n = max (sf.GetEffectiveSignificantFigures<double> (), 1u); // as many decimal places as kFullPrecision was
+        FloatFormatType floatFormat = fFloatFormat_.value_or (FloatFormatType::eDEFAULT);
+        if (fTrimTrailingZeros_ == true) {
+            if (floatFormat == FloatFormatType::eFixedPoint) {
+                floatFormat = FloatFormatType::eFixedPointWithWhitespaceTrimmed;
+            }
+            else if (floatFormat == FloatFormatType::eScientific) {
+                floatFormat = FloatFormatType::eScientificWithWhitespaceTrimmed;
+            }
+        }
+        Number::FloatToStringOptions r{.fPunctuation = fPunctuation_.value_or (Number::Punctuation{})};
+        switch (floatFormat) {
+            case FloatFormatType::eFixedPoint:
+                r.fNotation  = Notation::ePlain;
+                r.fPrecision = Precision::FixedFraction (n);
+                break;
+            case FloatFormatType::eFixedPointWithWhitespaceTrimmed:
+                r.fNotation  = Notation::ePlain;
+                r.fPrecision = Precision::MinMaxFraction (0, n);
+                break;
+            case FloatFormatType::eScientific:
+                r.fNotation  = Notation::eScientific;
+                r.fPrecision = full ? Precision::ShortestRoundTrip () : Precision::FixedSignificantDigits (n);
+                break;
+            case FloatFormatType::eScientificWithWhitespaceTrimmed:
+                r.fNotation  = Notation::eScientific;
+                r.fPrecision = full ? Precision::ShortestRoundTrip () : Precision::MinMaxSignificantDigits (min (2u, n), n);
+                break;
+            case FloatFormatType::eStandard:
+                r.fNotation  = Notation::ePlain;
+                r.fPrecision = sf;
+                break;
+            default: // eDefaultFloat, eAutomaticScientific
+                r.fNotation  = Notation::eGeneral;
+                r.fPrecision = sf;
+                break;
+        }
+        return r;
+    }
+    constexpr optional<Number::SignificantFigures> ToStringOptions::GetSignificantFigures () const
+    {
+        return fSignificantFigures_;
+    }
+    constexpr optional<bool> ToStringOptions::GetTrimTrailingZeros () const
+    {
+        return fTrimTrailingZeros_;
+    }
+    inline Number::Punctuation ToStringOptions::GetPunctuation () const
+    {
+        return fPunctuation_ ? Number::ResolvePunctuation (*fPunctuation_) : Number::Punctuation{};
+    }
+    inline locale ToStringOptions::GetUseLocale () const
+    {
+        return GetPunctuation ().ToLocale ();
+    }
+    inline bool ToStringOptions::GetUsingLocaleClassic () const
+    {
+        return GetPunctuation () == Number::Punctuation{};
+    }
+    constexpr optional<FloatFormatType> ToStringOptions::GetFloatFormat () const
+    {
+        return fFloatFormat_;
+    }
+    constexpr optional<ios_base::fmtflags> ToStringOptions::GetIOSFmtFlags () const
+    {
+        return fFmtFlags_;
+    }
+    inline String ToStringOptions::ToString () const
+    {
+        return static_cast<Number::FloatToStringOptions> (*this).ToString ();
+    }
+
     /*
      ********************************************************************************
      ************************** FloatConversion::ToString ***************************
      ********************************************************************************
      */
     template <Common::IAnyOf<String, string, wstring> STRING_TYPE, floating_point FLOAT_TYPE>
-    inline STRING_TYPE ToString (FLOAT_TYPE f, const Characters::Number::FloatToStringOptions& options)
+    inline STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options)
     {
+        Number::FloatToStringOptions o = options;
         if constexpr (same_as<STRING_TYPE, String>) {
-            return Characters::ToString (f, options);
+            return Characters::ToString (f, o);
         }
         else if constexpr (same_as<STRING_TYPE, string>) {
-            Require (options.GetPunctuation () == Characters::Number::Punctuation{});
-            return Characters::ToString (f, options).AsASCII ();
+            Require (o.GetPunctuation () == Characters::Number::Punctuation{});
+            return Characters::ToString (f, o).AsASCII ();
         }
         else if constexpr (same_as<STRING_TYPE, wstring>) {
-            Require (options.GetPunctuation () == Characters::Number::Punctuation{});
-            return Characters::ToString (f, options).template As<wstring> ();
+            Require (o.GetPunctuation () == Characters::Number::Punctuation{});
+            return Characters::ToString (f, o).template As<wstring> ();
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     /*
      ********************************************************************************
