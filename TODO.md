@@ -36,6 +36,10 @@ Generally will track stuff here between releases
    - **IO::Network::Transfer::Cache: a quick review, and docs for its Ptr** (LGP 2026-10-24) -
      Library/Sources/Stroika/Foundation/IO/Network/Transfer/Cache.h: `struct Ptr : shared_ptr<Cache::IRep> {};` has an
      empty doc comment.
+   - **After the float and Duration formatting redesign: which other Options want `With`** (LGP 2026-11-06) - scan
+     Stroika's Options structs and option classes for constructors that merge option sets or convert from each field's
+     type, and `optional<>` fields there only to overlay; convert those whose callers lay settings over a base
+     (Design-Overview.md, "Options structs", has the style).
 
 ## Watching
 

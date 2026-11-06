@@ -493,11 +493,14 @@ still compile". Say which one you did.
   when the failure has more than one cause worth reporting (`Characters::Number::Parse`: not a number, or out of range); the
   caller throws with `ThrowIfFailed ()`, or falls back with `value_or ()`.
   A `Quietly` suffix variant returns `nullopt`/empty instead of throwing.
+- `F()/N` in a comment names F's N-argument overload - Prolog's name/arity (`Run()/0`, `ToString()/1`) - not a call with N.
 - **`Memory::MakeSharedPtr`, not `make_shared`**: the same, except that it block-allocates a type annotated for it (a
   `Memory::UseBlockAllocationIfAppropriate<T>` base) - so use it even where the type is not annotated. The annotation suits
   a small rep allocated often, making that indirection nearly free; elsewhere it hardly matters either way.
 - **An Options struct's fields are plain, with their defaults written in** (`bool fPrettyPrint{true};`) - `optional<T>` only
-  where unset means something no value can (merging, a computed default) - and a class an Options is nested in declares
+  where unset means something no value can (a computed default). To lay a setting or two over a base, give it a `constexpr
+  With (...)` returning a changed copy - not constructors that merge or convert, which cost the aggregate its designated
+  initializers (LGP, 2026-11-06). A class an Options is nested in declares
   `= {}` in the `#else` of `qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy`, two
   constructors in its `#if`. Design-Overview.md, "Options structs", has the why.
 - **Defaults favor ease and soundness; a cost gets a knob** (LGP, 2026-10-18): Stroika's aim is quick development of a

@@ -451,10 +451,34 @@ struct Options {
 
 So the declaration is the default and its documentation in one place, and code reads a field as it is.
 
-A field is `optional<T>` only where unset means something no value of T can say:
-  - options merged, one set overlaid on another (`Number::FloatToStringOptions (b1, b2)`), where "not given" must differ
-    from "given, as the default"
-  - a default computed from other fields, or at run time (not a constant expression), or inherited from elsewhere
+A field is `optional<T>` only where unset means something no value of T can say: a default computed from other fields, or at
+run time (not a constant expression), or inherited from elsewhere.
+
+#### Laying settings over a base: With
+
+Where callers start from a base - a named constant, a context's defaults - and change a setting or two, give the struct a
+`With`: a `constexpr` member returning a copy with the given settings replaced. Where each field has its own type, one variadic
+`With` takes them by type, in any order:
+
+```c++
+struct Options {
+    Notation  fNotation{Notation::eGeneral};
+    Precision fPrecision{Precision::MaxSignificantDigits (6)};
+
+    template <typename... ARGS>
+    constexpr Options With (ARGS&&... args) const; ///< a copy, each argument's field (the one of its type) set to it
+};
+
+f (kRoundTrip.With (Notation::eFixed));                                   // a constant, one setting changed
+f (GetThreadDefault ().With (Precision::FixedFraction (2)));              // the context's defaults, the precision given
+f ({.fNotation = Notation::eFixed, .fPrecision = Precision::FixedFraction (2)}); // every setting, by name
+```
+
+Where two fields share a type (two `bool`s), name the setting instead: `WithPrettyPrint (false)`. A struct its callers build
+whole at their use needs no `With` at all.
+
+`With` is a member function, not a constructor, so the struct stays an aggregate - it keeps designated initializers, and is
+`constexpr` wherever its fields are. ICU's NumberFormatter is set up the same way (`with ().notation (...).precision (...)`).
 
 The cost: an Options struct nested in a class cannot be the default argument (`= {}`) of that class's members while it has
 default member initializers - g++ and clang refuse it, MSVC allows it, and the standard has not settled it. So such a class
@@ -480,6 +504,11 @@ An `optional` field keeps its default twice - in the documentation ("defaults to
 (`value_or (true)`) - and the two drift; and each reader of the field must resolve it again. Nor does `optional` make a struct
 constexpr where plain fields would not: `optional<T>` is usable in constant expressions only where T is. Before Stroika v3.0d25,
 `Variant::JSON::Writer::Options` was all `optional` fields.
+
+`With`, rather than constructors that merge option sets or convert from each field's type: a constructor makes the struct no
+longer an aggregate, so designated initializers go; merging needs every field `optional`, so that "not given" differs from
+"given, as the default"; and a converting constructor builds an options object unasked - `ToString (x, eFixedPoint)` compiles
+by constructing one. `With` changes only what it is given, so a field never needs to say "not given".
 
 
 ### <a name="Comparisons"></a> Comparisons: spaceship operator (operator<=>), operator== etc…
