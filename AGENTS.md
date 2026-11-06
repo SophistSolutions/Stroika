@@ -383,6 +383,8 @@ old staged versions of the commit's files.
   label, and not TODO.md, which lists only work with no issue (a release's section there opens with a pointer to its
   milestone). Saying what is left for a release includes its milestone's open issues - and any still open in a past
   release's milestone. At release, each open one is finished or moved to the next milestone, and the milestone closed.
+  An issue closed while a release is in development goes in its milestone even if never scheduled there - closed as not
+  planned too - so the milestone shows everything that release closed out (LGP, 2026-11-06).
 - **TODO.md outranks any ticket priority**: an entry there is a priority marker - so an entry that leaves for a milestone
   (once its issue holds everything the entry said) takes its priority into the issue's Priority fields. Never delete one
   otherwise unless LGP says so. In a triage, every recommendation is NOW (before the release), TICKET, or PROCESS (a
