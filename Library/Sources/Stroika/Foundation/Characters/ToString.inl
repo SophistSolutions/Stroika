@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Characters {
                 size_t pastDot = strResult->find ('.');
                 if (pastDot != String::npos) {
                     ++pastDot;
-                    size_t len           = *whereIsE - 1;
+                    size_t len           = *whereIsE;
                     size_t pPastLastZero = len;
                     for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
                         if ((*strResult)[pPastLastZero - 1] != '0') {
@@ -399,11 +399,6 @@ namespace Stroika::Foundation::Characters {
             if (floatFormat == Number::FloatFormatType::eScientificWithWhitespaceTrimmed) {
                 TrimTrailingZeros_MaybeSci_ (&result);
             }
-#if qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
-            if (floatFormat == Number::FloatFormatType::eDefaultFloat) {
-                TrimTrailingZeros_MaybeSci_ (&result);
-            }
-#endif
             return Punctuate_ (result, options.GetPunctuation ());
         }
     }

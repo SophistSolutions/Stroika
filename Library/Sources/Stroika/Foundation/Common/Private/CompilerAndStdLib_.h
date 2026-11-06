@@ -993,17 +993,6 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 
 #endif
 
-#ifndef qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
-
-// reproduced problem on 200100 on MACOS
-#if defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy (_LIBCPP_VERSION < 210000)
-#else
-#define qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy 0
-#endif
-
-#endif
-
 /*
 Stack dump:
 0.      Program arguments: clang++-16 -D_GLIBCXX_DEBUG -DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=0 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=1 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=0 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/ -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libxml2 -DMONGOCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/mongocxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include -DBSONCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/bsoncxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libbson-1.0 -fPIC -DMONGOC_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libmongoc-1.0 -DBSON_STATIC -DCURL_STATICLIB -DGTEST_HAS_PTHREAD=1 --std=c++20 -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-psabi -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -g -fsanitize=address,undefined -stdlib=libc++ -c Test.cpp -o /Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/Tests/36/Test.o

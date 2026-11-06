@@ -1025,6 +1025,8 @@ namespace {
             EXPECT_EQ (Characters::ToString (212312345.0, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "2.12312e+08");
             EXPECT_EQ (Characters::ToString (-44.2, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "-4.42e+01");
             EXPECT_EQ (Characters::ToString (0.0000001234567, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.23457e-07");
+            EXPECT_EQ (Characters::ToString (3724089.418996166, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "3.72409e+06");
+            EXPECT_EQ (Characters::ToString (1.00001, FloatToStringOptions{eScientificWithWhitespaceTrimmed}), "1.00001e+00");
         }
         {
             // From Number.h docs (FloatFormatType)
