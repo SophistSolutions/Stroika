@@ -361,14 +361,7 @@ CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
         case WrapInShell::eWindowsCMD: {
             // this is the version of CMD.exe to invoke (I think)
             // https://en.wikipedia.org/wiki/COMSPEC
-            static const String kCOMPSEC_ = [] () -> String {
-                DISABLE_COMPILER_MSC_WARNING_START (4996)
-                if (const char* env_p = std::getenv ("COMSPEC")) {
-                    return String::FromNarrowSDKString (env_p);
-                }
-                DISABLE_COMPILER_MSC_WARNING_END (4996)
-                return "C:\\WINDOWS\\system32\\cmd.exe"sv;
-            }();
+            static const String kCOMPSEC_ = kEnvironment ().Lookup ("COMSPEC"sv).value_or ("C:\\WINDOWS\\system32\\cmd.exe"sv);
             fArgs_ += kCOMPSEC_;
             // fArgs_ += "/D";
             //   fArgs_ += "/E:OFF";

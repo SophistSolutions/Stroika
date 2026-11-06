@@ -21,6 +21,7 @@
 #include <windows.h>
 #endif
 
+#include "Stroika/Foundation/Characters/CharacterEncodingException.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -233,16 +234,17 @@ const Execution::Private_::ReadOnlyImage_& Execution::Private_::GetReadOnlyImage
  ********************************************************************************
  */
 const LazyInitialized<Sequence<filesystem::path>> Execution::kPath{[] () -> Sequence<filesystem::path> {
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    if (const char* env_p = std::getenv ("PATH")) {
-        String pathVar = String::FromNarrowSDKString (env_p);
-#if qStroika_Platform_POSIX
-        return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
-#elif qStroika_Platform_Windows
-        return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
-#endif
+    if (optional<String> pathVar = kEnvironment ().Lookup ("PATH"sv)) {
+        if constexpr (qStroika_Platform_POSIX) {
+            return pathVar->Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
+        }
+        else if constexpr (qStroika_Platform_Windows) {
+            return pathVar->Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
+        }
+        else {
+            AssertNotImplemented ();
+        }
     }
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
     return {};
 }};
 
@@ -253,12 +255,9 @@ const LazyInitialized<Sequence<filesystem::path>> Execution::kPath{[] () -> Sequ
  ********************************************************************************
  */
 const LazyInitialized<Sequence<filesystem::path>> Execution::kPathEXT{[] () -> Sequence<filesystem::path> {
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    if (const char* env_p = std::getenv ("PATHEXT")) {
-        String pathVar = String::FromNarrowSDKString (env_p);
-        return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
+    if (optional<String> pathVar = kEnvironment ().Lookup ("PATHEXT"sv)) {
+        return pathVar->Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
     }
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
     return {};
 }};
 #endif
@@ -338,7 +337,13 @@ const LazyInitialized<Mapping<String, String>> Execution::kEnvironment{[] () -> 
     Mapping<String, String> r;
 #endif
     for (auto i : kRawEnvironment ()) {
-        r.Add (String::FromSDKString (i.fKey), String::FromSDKString (i.fValue));
+        try {
+            r.Add (String::FromSDKString (i.fKey), String::FromSDKString (i.fValue));
+        }
+        catch (const CharacterEncodingException&) {
+            // left out, as if unset, so one bad variable cannot make every lookup throw; kRawEnvironment still has it
+            DbgTrace ("kEnvironment: skipped a variable that does not decode"_f);
+        }
     }
     return r;
 }};
