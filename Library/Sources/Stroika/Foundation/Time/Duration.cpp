@@ -131,9 +131,6 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
     auto                lingMgr = Linguistics::MessageUtilities::Manager::sThe.LookupHandler ();
     static const String kCommaSpace_{", "sv};
-    if (fRepType_ == eEmpty_) {
-        return String{};
-    }
     /*
      *  From http://physics.nist.gov/cuu/Units/checklist.html
      *      There is a space between the numerical value and unit symbol, even when the value is used
@@ -347,8 +344,6 @@ String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, c
 Duration Duration::operator- () const
 {
     switch (fRepType_) {
-        case eEmpty_:
-            return *this;
         case eNumeric_:
             return Duration{-count ()};
         case eString_: {
@@ -380,9 +375,6 @@ auto Duration::Parse (const String& text) -> Common::StdCompat::expected<Duratio
 
 auto Duration::Parse_ (string_view text, const ParseOptions& options) -> Common::StdCompat::expected<Duration, FormatException>
 {
-    if (text.empty ()) {
-        return Duration{}; // the empty Duration
-    }
     auto t = ParseTime_ (text, options);
     if (not t) {
         return Common::StdCompat::unexpected<FormatException>{t.error ()};

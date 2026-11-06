@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Time {
          *      o   a number is digits; the last element's may have a fraction - a '.' or ',' and digits ("PT0.5S", "P0,5D")
          *  No whitespace, around the text or within it: XML strips it from around an xs:duration before the value is read, as
          *  the XML ObjectReader does. Every xs:duration is read - its format is a subset of this one (no weeks, a '.' only, a
-         *  fraction on the seconds only). The empty string is the empty Duration (deprecated, as empty () is).
+         *  fraction on the seconds only). The empty string is not read.
          *
          *  There are no options yet. Possible ones, should text that uses them need reading - each off by default:
          *      o   an exponent: "PT1E-3S" - ISO 8601-2 (https://www.iso.org/standard/70908.html). Stroika v3.0d12 to v3.0d22
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Time {
          *  FormatException if it cannot. A std::string is not checked for ASCII first: a character that is not ASCII is a
          *  FormatException too.
          *
-         *  Duration{} (and Duration{""}) is the empty Duration - deprecated with empty (): use optional<Duration> for no value.
+         *  Duration{} is zero ("PT0S"), as chrono::duration's is. For no value, use optional<Duration>.
          *
          *  \note constexpr not really working (though declared) - see @todo above
          *
@@ -188,15 +188,23 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief Make this the empty Duration
+         *  \brief Make this zero - the same as *this = Duration{}
+         *
+         *  \note Before Stroika v3.0d26, there was an empty Duration (Duration{} and Duration{""}), distinct from zero.
          */
-        [[deprecated ("Since Stroika v3.0d26 - the empty Duration is going away: use optional<Duration> for no value")]] nonvirtual void clear ();
+        [[deprecated ("Since Stroika v3.0d26 - there is no empty Duration: assign Duration{}, or use optional<Duration> for no "
+                      "value")]] nonvirtual void
+        clear ();
 
     public:
         /**
-         *  \brief Is this the empty Duration - Duration{} or Duration{""}, whose As<String> is "" and numeric value 0
+         *  \brief Is this zero - the same as *this == Duration{}
+         *
+         *  \note Before Stroika v3.0d26, there was an empty Duration (Duration{} and Duration{""}), distinct from zero.
          */
-        [[deprecated ("Since Stroika v3.0d26 - the empty Duration is going away: use optional<Duration> for no value")]] constexpr bool empty () const;
+        [[deprecated ("Since Stroika v3.0d26 - there is no empty Duration: compare with Duration{}, or use optional<Duration> for "
+                      "no value")]] constexpr bool
+        empty () const;
 
     public:
         /**
@@ -224,8 +232,6 @@ namespace Stroika::Foundation::Time {
          *      o   int, float, etc...
          *      o   std::chrono::milliseconds etc...
          *
-         *  Note - if 'empty' - As<> for numeric types returns 0.
-         * 
          *  \note SignificantFigures - if given - refers to the precision of the seconds part of the ISO-8601 duration string.
          * 
          *  \note Change since before 3.0d12 - with Duration::As<String> () - used
@@ -382,24 +388,19 @@ namespace Stroika::Foundation::Time {
 
     private:
         /**
-         *  3 types - 'empty' (possibly we can lose this due to presence of optional) - and 
-         *  string, and numeric.
-         *
-         *  We ALWAYS store the numeric value. We OPTIONALLY store the string value. So fNumericRepOrCache_
-         *  is ALWAYS valid (unless fRepType==eEmpty_).
+         *  We ALWAYS store the numeric value (inherited). With eString_, we also store the text it was read from, which
+         *  As<String> gives back.
          */
-        static constexpr InternalNumericFormatType_ kValueWhenEmptyRenderedAsNumber_{0};
         enum RepType_ {
-            eEmpty_,
-            eString_,
-            eNumeric_
+            eNumeric_,
+            eString_
         };
-        RepType_ fRepType_{eEmpty_};
+        RepType_ fRepType_{eNumeric_};
         union {
             char fNonStringRep_{}; // unused except to allow constexpr initialization (allow selecting non fStringRep_ to initialize since union must be initialized)
             string fStringRep_;
         };
-        constexpr void destroy_ (); // allow call if already empty
+        constexpr void destroy_ (); // drops the text, if any, leaving eNumeric_ (and the numeric value unchanged)
     };
     static_assert (totally_ordered<Duration>);
 

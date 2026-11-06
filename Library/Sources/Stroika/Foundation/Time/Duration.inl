@@ -23,8 +23,8 @@ namespace Stroika::Foundation::Time {
         }
     }
     constexpr Duration::Duration ()
-        : inherited{kValueWhenEmptyRenderedAsNumber_}
-        , fRepType_{eEmpty_}
+        : inherited{0}
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
@@ -44,8 +44,8 @@ namespace Stroika::Foundation::Time {
         if (src.fRepType_ == eString_) {
             Assert (fRepType_ == eString_);
             new (&fStringRep_) string{move (src.fStringRep_)};
+            src.destroy_ (); // src keeps its numeric value
         }
-        src.fRepType_ = eEmpty_;
     }
     template <Characters::IConvertibleToString STRINGISH_T>
     inline Duration::Duration (STRINGISH_T&& durationStr, const ParseOptions& options)
@@ -120,12 +120,11 @@ namespace Stroika::Foundation::Time {
     }
     inline void Duration::clear ()
     {
-        destroy_ ();
+        *this = Duration{};
     }
     constexpr bool Duration::empty () const
     {
-        // on construction with an empty string, this produces type eEmpty_
-        return fRepType_ == eEmpty_;
+        return count () == 0;
     }
     inline Duration& Duration::operator= (const Duration& rhs)
     {
@@ -167,8 +166,8 @@ namespace Stroika::Foundation::Time {
                 }
             }
             inherited::operator= (move (rhs));
-            fRepType_     = rhs.fRepType_;
-            rhs.fRepType_ = eEmpty_;
+            fRepType_ = rhs.fRepType_;
+            rhs.destroy_ (); // rhs keeps its numeric value
         }
         return *this;
     }
@@ -177,7 +176,7 @@ namespace Stroika::Foundation::Time {
         if (fRepType_ == eString_) {
             fStringRep_.~basic_string ();
         }
-        fRepType_ = eEmpty_;
+        fRepType_ = eNumeric_;
     }
     template <typename T>
     inline T Duration::As () const
@@ -195,8 +194,6 @@ namespace Stroika::Foundation::Time {
         else if constexpr (same_as<T, Characters::String>) {
             using Characters::String;
             switch (fRepType_) {
-                case eEmpty_:
-                    return String{};
                 case eString_:
                     return String{fStringRep_};
                 case eNumeric_:
@@ -219,8 +216,6 @@ namespace Stroika::Foundation::Time {
         if constexpr (same_as<T, Characters::String>) {
             using Characters::String;
             switch (fRepType_) {
-                case eEmpty_:
-                    return String{};
                 case eString_: // unclear about this case? -- different answer than with no argument precision
                 case eNumeric_:
                     return UnParseTime_ (count (), p);

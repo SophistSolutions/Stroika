@@ -896,9 +896,11 @@ namespace {
         }
         {
             // todo use constexpr
-            const Duration kD = Duration{}; // the empty Duration (deprecated, with empty ())
-            EXPECT_EQ (kD.As<String> (), "");
+            const Duration kD = Duration{}; // zero
+            EXPECT_EQ (kD, Duration{0});
+            EXPECT_EQ (kD.As<String> (), "PT0S");
             EXPECT_EQ (kD.As<double> (), 0);
+            EXPECT_EQ (kD.PrettyPrint (), "0 seconds");
         }
         {
             // todo use constexpr
@@ -949,6 +951,7 @@ namespace {
                 {"PT1e3S", nullopt},
                 {"- P 1D T 1S", nullopt},
                 // not read: malformed
+                {"", nullopt},
                 {" ", nullopt},
                 {"P", nullopt},
                 {"P1DT", nullopt},
