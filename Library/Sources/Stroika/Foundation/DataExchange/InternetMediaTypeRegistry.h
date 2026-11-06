@@ -254,30 +254,6 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  \brief returns true if you can expect to treat as some sort of text and reasonably view - like text/html, application/x-ccr, application/x-url, etc...
-         *
-         *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
-         */
-        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::Wildcards::kText, ct)")]] bool IsTextFormat (const InternetMediaType& ct) const;
-
-    public:
-        /**
-         * This returns true if the given type is known to be treatable as an image. 
-         */
-        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::Wildcards::kImage,ct)")]] bool IsImageFormat (const InternetMediaType& ct) const;
-
-    public:
-        /**
-         * This returns true if the given type is known to be treatable as an XML. 
-         *
-         *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
-         *
-         *  \note This returns true if 'ct.GetSuffix () == "xml"
-         */
-        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::kXML,ct)")]] nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
-
-    public:
-        /**
          *  \brief return true if moreSpecificType 'isa' moreGeneralType
          *
          *  Still a bit of a work in progress (as of 2024-11-03). But basic idea is to make it easy to check categories of internet media types
@@ -332,6 +308,10 @@ namespace Stroika::Foundation::DataExchange {
                                   const EXCEPTION& throwIfNot = InternetMediaTypeNotSupportedException::kThe) const;
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::Wildcards::kText, ct)")]] bool IsTextFormat (const InternetMediaType& ct) const;
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::Wildcards::kImage,ct)")]] bool IsImageFormat (const InternetMediaType& ct) const;
+        [[deprecated ("Since Stroika v3.0d12 - use IsA (InternetMediaTypes::kXML,ct)")]] nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
         [[deprecated ("Since Stroika v3.0d10 - just access sThe->")]] static InternetMediaTypeRegistry Get ()
         {
             return sThe.load ();

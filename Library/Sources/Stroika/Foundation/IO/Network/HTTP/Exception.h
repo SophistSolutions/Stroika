@@ -33,11 +33,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         static void ThrowIfError (Status status, const String& reason = {});
         static void ThrowIfError (const String& status, const String& reason = {});
 
-        [[deprecated ("Since Stroika v3.0d14 use IsOK directly")]] static bool IsHTTPStatusOK (Status status)
-        {
-            return IsOK (status);
-        }
-
     public:
         /*
          * Stroika contains a table mapping some HTTP status values to English text. This can be used to access
@@ -72,6 +67,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     private:
         Status fStatus_;
         String fReason_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d14 use IsOK directly")]] static bool IsHTTPStatusOK (Status status)
+        {
+            return IsOK (status);
+        }
     };
 
 }

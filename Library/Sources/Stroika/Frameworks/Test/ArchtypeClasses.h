@@ -50,8 +50,6 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (not semiregular<OnlyDefaultConstructibleAndMoveable>);
     static_assert (not regular<OnlyDefaultConstructibleAndMoveable>);
 
-    using NotCopyable [[deprecated ("Since Stroika v3.0d10 use OnlyDefaultConstructibleAndMoveable")]] = OnlyDefaultConstructibleAndMoveable;
-
     /**
      *  Object NOT default constructible, is copyable (and assignable); supports operator+ and operator==, and operator<, operator <=>, etc
      * 
@@ -68,10 +66,6 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         OnlyCopyableMoveableAndTotallyOrdered& operator= (OnlyCopyableMoveableAndTotallyOrdered&& rhs)  = default;
         OnlyCopyableMoveableAndTotallyOrdered& operator= (const OnlyCopyableMoveableAndTotallyOrdered&) = default;
 
-        [[deprecated ("Since Stroika v3.0d10 use static_cast<size_t>")]] size_t GetValue () const
-        {
-            return fValue_;
-        }
         static size_t GetTotalLiveCount ();
 
         OnlyCopyableMoveableAndTotallyOrdered operator+ (const OnlyCopyableMoveableAndTotallyOrdered& rhs) const;
@@ -84,6 +78,13 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         size_t               fValue_;
         int                  fConstructed_;
         static inline size_t sTotalLiveObjects_{0};
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d10 use static_cast<size_t>")]] size_t GetValue () const
+        {
+            return fValue_;
+        }
     };
     static_assert (not default_initializable<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (copyable<OnlyCopyableMoveableAndTotallyOrdered>);
@@ -93,8 +94,6 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (not semiregular<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (not regular<OnlyCopyableMoveableAndTotallyOrdered>);
     static_assert (IINTeroperable<OnlyCopyableMoveableAndTotallyOrdered>);
-
-    using SimpleClass [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveableAndTotallyOrdered")]] = OnlyCopyableMoveableAndTotallyOrdered;
 
     /**
      *  Object NOT default constructible, is copyable, assignable; supports operator+, but NO COMPARISON operators
@@ -111,10 +110,6 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         OnlyCopyableMoveable& operator= (OnlyCopyableMoveable&& rhs)  = default;
         OnlyCopyableMoveable& operator= (const OnlyCopyableMoveable&) = default;
 
-        [[deprecated ("Since Stroika v3.0d10 use static_cast<size_t>")]] size_t GetValue () const
-        {
-            return fValue_;
-        }
         static size_t GetTotalLiveCount ();
 
         explicit             operator size_t () const;
@@ -124,6 +119,13 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
         size_t               fValue_;
         int                  fConstructed_;
         static inline size_t sTotalLiveObjects_{0};
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d10 use static_cast<size_t>")]] size_t GetValue () const
+        {
+            return fValue_;
+        }
     };
     static_assert (not default_initializable<OnlyCopyableMoveable>);
     static_assert (copyable<OnlyCopyableMoveable>);
@@ -133,8 +135,6 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     static_assert (not semiregular<OnlyCopyableMoveable>);
     static_assert (not regular<OnlyCopyableMoveable>);
     static_assert (IINTeroperable<OnlyCopyableMoveable>);
-
-    using SimpleClassWithoutComparisonOperators [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveable")]] = OnlyCopyableMoveable;
 
     /**
      *  \brief Copyable, but its copy CTOR throws on demand, and it counts its live instances - for testing the exception safety of containers
@@ -243,4 +243,18 @@ namespace Stroika::Frameworks::Test::ArchtypeClasses {
     };
 
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Frameworks::Test::ArchtypeClasses {
+    using NotCopyable [[deprecated ("Since Stroika v3.0d10 use OnlyDefaultConstructibleAndMoveable")]] = OnlyDefaultConstructibleAndMoveable;
+    using SimpleClass [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveableAndTotallyOrdered")]] = OnlyCopyableMoveableAndTotallyOrdered;
+    using SimpleClassWithoutComparisonOperators [[deprecated ("Since Stroika v3.0d10 use OnlyCopyableMoveable")]] = OnlyCopyableMoveable;
+}
+
 #endif /* _Stroika_Frameworks_Test_ArchtypeClasses_h_ */

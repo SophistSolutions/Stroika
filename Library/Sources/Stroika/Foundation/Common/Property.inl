@@ -210,3 +210,15 @@ namespace Stroika::Foundation::Common {
     }
 
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Common {
+    template <typename T>
+    using ConstantProperty [[deprecated ("Since Stroika v3.0d16 use Execution::LazyInitialized")]] = Execution::LazyInitialized<T>;
+}

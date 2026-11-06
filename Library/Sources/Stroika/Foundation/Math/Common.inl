@@ -365,3 +365,15 @@ namespace Stroika::Foundation::Math {
     }
 
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Math {
+    [[deprecated ("Since C++20, use std::numbers::e_v")]] constexpr double  kE  = numbers::e_v<double>;
+    [[deprecated ("Since C++20, use std::numbers::pi_v")]] constexpr double kPi = numbers::pi_v<double>;
+}

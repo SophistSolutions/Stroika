@@ -191,10 +191,6 @@ namespace Stroika::Foundation::Debug {
         TraceContextBumper (const TraceContextBumper&) = delete;
 
     public:
-        // legacy API
-        [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] TraceContextBumper (const wchar_t* contextName,
-                                                                                            const wchar_t* extraFmt, ...) noexcept;
-
 #if qStroika_Foundation_Debug_DefaultTracingOn
     private:
         // Nothing too important about this constant, but not so long as to be hard to read
@@ -241,6 +237,11 @@ namespace Stroika::Foundation::Debug {
         static void IncCount_ () noexcept;
         static void DecrCount_ () noexcept;
 #endif
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d6 - use _f format strings")]] TraceContextBumper (const wchar_t* contextName,
+                                                                                            const wchar_t* extraFmt, ...) noexcept;
     };
 
     /**

@@ -547,15 +547,16 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T, size_t E1, size_t E2>
         static constexpr strong_ordering Compare (span<const CHAR_T, E1> lhs, span<const CHAR_T, E2> rhs, CompareOptions co) noexcept;
 
+    private:
+        char32_t fCharacterCode_;
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika 3.0d1, use span based Compare")]] static strong_ordering
         Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co) noexcept
         {
             return Compare (span{lhsStart, lhsEnd}, span{rhsStart, rhsEnd}, co);
         }
-
-    private:
-        char32_t fCharacterCode_;
     };
     static_assert (totally_ordered<Character>);
 
@@ -590,8 +591,6 @@ namespace Stroika::Foundation::Characters {
 
         Stroika::Foundation::Characters::CompareOptions fCompareOptions;
     };
-
-    [[deprecated ("UNSUPPORTED Since Stroika v3.0d1")]] const wchar_t* CVT_CHARACTER_2_wchar_t (const Character* c);
 
 }
 

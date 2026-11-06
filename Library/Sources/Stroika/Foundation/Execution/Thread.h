@@ -865,8 +865,6 @@ namespace Stroika::Foundation::Execution {
         };
         inline const AbortException AbortException::kThe;
 
-        using InterruptException [[deprecated ("Since Stroika v3.0d4 - use AbortException")]] = AbortException;
-
         /**
          *  Thread IDs tend to be long and not easy to read in trace output. This utility class just maps these long
          *  ids to a short index. Again - ONLY for easier / brevity in logging. But a common registry is maintained here

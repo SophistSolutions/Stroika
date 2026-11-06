@@ -286,9 +286,6 @@ namespace Stroika::Foundation::Characters {
      *  New code formats with "..."_f; a C format string, with CString::Format.
      */
     String FormatV (const wchar_t* format, va_list argsList);
-    [[deprecated ("Since Stroika v3.0d6 - use _f format strings - not old style c format strings - use CString::Format for old style C "
-                  "format strings")]] String
-    Format (const wchar_t* format, ...);
 
     /**
      *  \brief Like std::format, but formats wide, into a String: f (args...) - its args checked at run time

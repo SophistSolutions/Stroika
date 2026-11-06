@@ -383,7 +383,18 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual BLOB operator+ (const BLOB& rhs) const;
 
+    private:
+        struct BasicRep_;
+        struct ZeroRep_;
+        struct AdoptRep_;          // e.g. for static constexpr arrays
+        struct AdoptAndDeleteRep_; // for user allocated new byte[]....
+
+    private:
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        shared_ptr<_IRep>                                                                      fRep_;
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d5 use span overload")]] static BLOB FromHex (const char* s, const char* e);
         template <typename T>
         [[deprecated ("Since Stroika v3.0d5 - use As/0")]] void As (T* into) const
@@ -413,16 +424,6 @@ namespace Stroika::Foundation::Memory {
         {
             return FromRaw (args...);
         }
-
-    private:
-        struct BasicRep_;
-        struct ZeroRep_;
-        struct AdoptRep_;          // e.g. for static constexpr arrays
-        struct AdoptAndDeleteRep_; // for user allocated new byte[]....
-
-    private:
-        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
-        shared_ptr<_IRep>                                                                      fRep_;
     };
     static_assert (totally_ordered<BLOB>);
     static_assert (regular<BLOB>);

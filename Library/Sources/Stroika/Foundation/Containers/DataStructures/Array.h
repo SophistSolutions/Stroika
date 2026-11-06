@@ -314,16 +314,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant_ () const noexcept;
 #endif
 
+    private:
+        // mostly useful cuz allows for use of realloc, which might imply fewer copies,
+        // but is only legal for trivially_copyable types (cuz realloc sometimes resizes sometimes moves data)
+        static constexpr bool kUseMalloc_{is_trivially_copyable_v<T>};
+
+    private:
+        size_t fLength_{0};         // #items advertised/constructed
+        size_t fSlotsAllocated_{0}; // #items allocated (though not necessarily initialized)
+        T*     fItems_{nullptr};
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         template <typename EQUALS_COMPARER = equal_to<T>>
         [[deprecated ("Since Stroika v3.0d18")]] bool Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
         {
             return this->Find (item, equalsComparer) != nullptr;
         }
-        /**
-         *  \brief insert the 
-         *  NB: Can be called if i done, and just means add before the last item (so if i==end() - same as append)
-         */
         [[deprecated ("Since v3.0d18 - use Insert()")]] void AddBefore (const ForwardIterator& i, ArgByValueType<T> item)
         {
             InsertAt (i, item);
@@ -340,16 +347,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         {
             Insert (i.CurrentIndex () + 1, newValue);
         }
-
-    private:
-        // mostly useful cuz allows for use of realloc, which might imply fewer copies,
-        // but is only legal for trivially_copyable types (cuz realloc sometimes resizes sometimes moves data)
-        static constexpr bool kUseMalloc_{is_trivially_copyable_v<T>};
-
-    private:
-        size_t fLength_{0};         // #items advertised/constructed
-        size_t fSlotsAllocated_{0}; // #items allocated (though not necessarily initialized)
-        T*     fItems_{nullptr};
     };
 
     /**

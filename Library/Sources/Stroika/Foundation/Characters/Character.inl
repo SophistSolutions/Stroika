@@ -621,3 +621,14 @@ namespace Stroika::Foundation::Common {
         {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
     }}};
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Characters {
+    [[deprecated ("UNSUPPORTED Since Stroika v3.0d1")]] const wchar_t* CVT_CHARACTER_2_wchar_t (const Character* c);
+}

@@ -504,6 +504,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d14 use ReadBlocking().value_or(0) typically")]] Characters::Character
         ReadCharacter (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eBlockIfNoDataAvailable) const
             requires (same_as<ELEMENT_TYPE, Characters::Character>)

@@ -502,8 +502,6 @@ namespace Stroika::Frameworks::Service {
          *  \pre args is from ApplyOptions given every option in CommandOptions::kAll
          */
         CommandArgs (const Execution::CommandLine::OptionValues& args);
-        [[deprecated ("Since Stroika v3.0d26 use CommandArgs (cmdLine.ApplyOptions (options)) - options including "
-                      "CommandOptions::kAll")]] CommandArgs (const Execution::CommandLine& cmdLine);
 
         enum class MajorOperation {
             eInstall,
@@ -532,6 +530,11 @@ namespace Stroika::Frameworks::Service {
         /**
          */
         Sequence<String> fUnusedArguments;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d26 use CommandArgs (cmdLine.ApplyOptions (options)) - options including "
+                      "CommandOptions::kAll")]] CommandArgs (const Execution::CommandLine& cmdLine);
     };
 
     /**

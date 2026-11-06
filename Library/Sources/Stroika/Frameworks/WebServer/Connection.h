@@ -133,9 +133,6 @@ namespace Stroika::Frameworks::WebServer {
          */
         Connection ()                  = delete;
         Connection (const Connection&) = delete;
-        [[deprecated ("Since Stroika v3.0d7 - use the Options object with basically the same values")]] explicit Connection (
-            const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = {}, const Headers& defaultResponseHeaders = {},
-            const optional<Headers>& defaultGETResponseHeaders = nullopt, const optional<bool> autoComputeETagResponse = nullopt);
         Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Options& options);
 
     public:
@@ -381,6 +378,12 @@ namespace Stroika::Frameworks::WebServer {
 #if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
         Streams::OutputStream::Ptr<Character> fLogConnectionState_;
 #endif
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d7 - use the Options object with basically the same values")]] explicit Connection (
+            const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = {}, const Headers& defaultResponseHeaders = {},
+            const optional<Headers>& defaultGETResponseHeaders = nullopt, const optional<bool> autoComputeETagResponse = nullopt);
     };
 
 }

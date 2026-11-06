@@ -396,3 +396,14 @@ namespace Stroika::Foundation::Common {
         {Execution::Thread::Priority::eHighest, L"Highest"},
     }}};
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Execution::Thread {
+    using InterruptException [[deprecated ("Since Stroika v3.0d4 - use AbortException")]] = AbortException;
+}

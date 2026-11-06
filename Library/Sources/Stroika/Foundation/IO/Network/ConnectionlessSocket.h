@@ -212,6 +212,7 @@ namespace Stroika::Foundation::IO::Network {
             nonvirtual const _IRep& _cref () const;
 
         public:
+            // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
             [[deprecated ("Since Stroika 3.0d15 use span{} overload")]] size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag,
                                                                                             SocketAddress* fromAddress,
                                                                                             Time::DurationSeconds timeout = Time::kInfinity) const

@@ -66,12 +66,6 @@ namespace Stroika::Frameworks::Test {
      */
     vector<string> Setup (int argc, const char* argv[]);
 
-    /**
-     * print succeeded if it completes, and failed if exception caught
-     *     \see example usage in Setup()
-     */
-    [[deprecated ("Since Strokka v3.0d5 - just use gtest")]] int PrintPassOrFail (void (*regressionTest) ());
-
     namespace Private_ {
         /**
          * LIKE calling Assert but it will ALSO trigger a failure in NODEBUG builds
@@ -168,4 +162,16 @@ ote It cannot say WHY the time was lost - VM paused, host oversubscribed, proces
     };
 
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Frameworks::Test {
+    [[deprecated ("Since Strokka v3.0d5 - just use gtest")]] int PrintPassOrFail (void (*regressionTest) ());
+}
+
 #endif /*_Stroika_TestHarness_h_*/

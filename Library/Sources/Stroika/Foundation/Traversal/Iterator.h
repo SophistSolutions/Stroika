@@ -299,11 +299,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         */
-        using RepSmartPtr [[deprecated ("Since Stroika v3.0d1 - just use unique_ptr<IRep> directly")]] = unique_ptr<IRep>;
-
-    public:
-        /**
          *  \brief This overload is usually not called directly. Instead, iterators are
          *         usually created from a container (eg. Sequence<T>{}.begin()).
          *
@@ -575,6 +570,8 @@ namespace Stroika::Foundation::Traversal {
         static unique_ptr<IRep> Clone_ (const IRep& rep);
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        using RepSmartPtr [[deprecated ("Since Stroika v3.0d1 - just use unique_ptr<IRep> directly")]] = unique_ptr<IRep>;
         template <typename SHARED_T>
         using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use unique_ptr directly")]] = unique_ptr<SHARED_T>;
         template <typename SHARED_T, typename... ARGS_TYPE>
@@ -619,9 +616,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         virtual ~IRep () = default;
-
-    public:
-        using RepSmartPtr [[deprecated ("Since Stroika v3.0d1 - use unique_ptr<IRep> directly")]] = unique_ptr<IRep>;
 
     public:
         /**
@@ -681,6 +675,10 @@ namespace Stroika::Foundation::Traversal {
          */
         virtual void Invariant () const noexcept;
 #endif
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        using RepSmartPtr [[deprecated ("Since Stroika v3.0d1 - use unique_ptr<IRep> directly")]] = unique_ptr<IRep>;
     };
 
     /**

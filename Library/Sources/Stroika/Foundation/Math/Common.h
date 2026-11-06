@@ -40,14 +40,6 @@ namespace Stroika::Foundation::Math {
     constexpr T infinity ();
 
     /**
-     */
-    [[deprecated ("Since C++20, use std::numbers::e_v")]] constexpr double kE = numbers::e_v<double>;
-
-    /**
-     */
-    [[deprecated ("Since C++20, use std::numbers::pi_v")]] constexpr double kPi = numbers::pi_v<double>;
-
-    /**
      * RoundUpTo() - round towards positive infinity.
      *
      *  T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long

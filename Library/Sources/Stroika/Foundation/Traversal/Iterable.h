@@ -507,12 +507,6 @@ namespace Stroika::Foundation::Traversal {
                                       EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
         template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
-        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER>
-        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the overload without it")]] static bool
-        SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize);
-        template <ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER>
-        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the overload without it")]] nonvirtual bool
-        SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize) const;
 
     public:
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER = equal_to<T>>
@@ -1599,6 +1593,13 @@ namespace Stroika::Foundation::Traversal {
         Debug::AssertExternallySynchronizedChecker _fThisAssertExternallySynchronized;
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER>
+        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the overload without it")]] static bool
+        SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize);
+        template <ranges::range RHS_CONTAINER_TYPE, IEqualsComparer<T> EQUALS_COMPARER>
+        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the overload without it")]] nonvirtual bool
+        SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize) const;
         template <typename SHARED_T>
         using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use shared_ptr directly")]] = shared_ptr<SHARED_T>;
         template <typename SHARED_T, typename... ARGS_TYPE>
@@ -1871,10 +1872,13 @@ namespace Stroika::Foundation::Traversal {
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {});
-        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the CTOR without it")]] constexpr SequentialEqualsComparer (
-            const T_EQUALS_COMPARER& elementComparer, bool useIterableSize);
         nonvirtual bool                                               operator() (const Iterable& lhs, const Iterable& rhs) const;
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE T_EQUALS_COMPARER fElementComparer;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d24 - useIterableSize is ignored; use the CTOR without it")]] constexpr SequentialEqualsComparer (
+            const T_EQUALS_COMPARER& elementComparer, bool useIterableSize);
     };
 
     /**

@@ -430,7 +430,12 @@ namespace Stroika::Foundation::Characters {
         static void ThrowIf_ (ConversionStatusFlag cr, size_t errorAtSourceOffset);
 
         //********************** DEPRECATED BELOW ****************************
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         enum [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] LEGACY_ConversionResult {
             conversionOK,    /* conversion successful */
             sourceExhausted, /* partial character in source, but hit end */
@@ -441,23 +446,16 @@ namespace Stroika::Foundation::Characters {
             strictConversion = 0,
             lenientConversion
         };
-
-        /**
-         */
         [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] static bool IsLegalUTF8Sequence (const char* source,
                                                                                                                             const char* sourceEnd);
         [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] static bool IsLegalUTF8Sequence (const char8_t* source,
                                                                                                                             const char8_t* sourceEnd);
-
         template <typename FROM, typename TO>
         [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] static inline size_t
         QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
         {
             return UTFConvert::ComputeTargetBufferSize<TO> (span<const FROM>{sourceStart, sourceEnd});
         }
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         template <typename FROM, typename TO>
         [[deprecated ("Since Stroika v3.0d1, use class UTFConvert::kThe")]] static LEGACY_ConversionResult
         ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)

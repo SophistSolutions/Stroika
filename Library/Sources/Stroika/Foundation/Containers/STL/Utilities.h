@@ -27,22 +27,6 @@ namespace Stroika::Foundation::Containers::STL {
     template <typename ITERABLE_OF_T, typename T = typename ITERABLE_OF_T::value_type, Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
     bool equal (const ITERABLE_OF_T& lhs, const ITERABLE_OF_T& rhs, EQUALS_COMPARER&& equalsComparer = {});
 
-    /*
-     *  STL container constructors take a begin/end combo, but no CONTAINER ctor (except for same as starting).
-     *  So to convert from set<T> to vector<T> is a pain (if you have a function returning set<>). To do pretty
-     *  easily with STL, you need a named temporary. Thats basically all this helper function does.
-     *
-     *  So instead of:
-     *          set<T>  tmp = funCall_returning_set();
-     *          vector<T>   realAnswer = vector<T> (tmp.begin (), tmp.end ());
-     *
-     *  You can write:
-     *      vector<T>   realAnswer = STL::Make<vector<T>> (funCall_returning_set());
-     */
-    template <typename CREATE_CONTAINER_TYPE, typename FROM_CONTAINER_TYPE>
-    [[deprecated ("Since Stroika v3.0d5 just use Traversal::Map<> or more directly use STL(ranges)")]] CREATE_CONTAINER_TYPE
-    Make (const FROM_CONTAINER_TYPE& rhs);
-
     /**
      *  Though you can append to a vector<> with
      *      insert (this->begin (), arg.begin (), arg.end ())

@@ -84,6 +84,8 @@ namespace Stroika::Frameworks::WebServer {
         RequestHandler (HANDLER_FUNCTION&& messageHandler);
 #endif
 
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d12 - use Message& overload)")]] RequestHandler (
             const function<void (Message* message, const Sequence<String>& matchedArgs, bool* handled)>& f);
         [[deprecated ("Since Stroika v3.0d12 - use Message& overload)")]] RequestHandler (

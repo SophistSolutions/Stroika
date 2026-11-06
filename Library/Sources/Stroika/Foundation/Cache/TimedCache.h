@@ -909,7 +909,58 @@ namespace Stroika::Foundation::Cache {
         nonvirtual void AutomaticallyClearExpiredDataSometimes_ ()
             requires (IKeyedCache<KEY>);
 
+    private:
+        // note if shared_mutex, it must be mutable, cuz shared locks still must be done
+        using MaybeMutexType_ =
+            conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized, shared_timed_mutex, Debug::AssertExternallySynchronizedChecker>;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
+
+    private:
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kPerCacheMaxAge, TimeStampDifferenceType, Common::Empty> fMaxAge_;
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
+            conditional_t<TRAITS::kAutomaticPurgeFrequency == TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}, Common::Empty, TimeStampType>
+                fNextAutoClearAt_;
+
+    private:
+        nonvirtual void ClearExpired_ ()
+            requires (IKeyedCache<KEY>);
+        nonvirtual void ClearExpired_ (TimeStampDifferenceType maxAge)
+            requires (IKeyedCache<KEY> and TRAITS::kTrackFreshness);
+
+    private:
+        // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
+        struct MyResult_ {
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fResult;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
+
+            template <typename K = KEY>
+            nonvirtual CacheElement MakeCacheElement (const K& key) const;
+        };
+
+    private:
+        nonvirtual bool Expired_ (const MyResult_& r, TimeStampType now = TRAITS::GetCurrentTimestamp ()) const;
+
+    private:
+        // @todo could consider using Stroika Mapping<> - or TRAITS specified Mapper strategy
+        using MyMapType_ =
+            conditional_t<IKeyedCache<KEY>, Common::LazyType_t<map, KEY, MyResult_, typename TRAITS::InOrderComparerType>, optional<MyResult_>>;
+        MyMapType_ fData_;
+
+    private:
+        // most PRIVATE(_) routines assume locking done externally, but these 'Locking' ones do the locking themselves.
+        template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
+            requires (not IKeyedCache<K>)
+        nonvirtual VALUE LockingLookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller);
+        template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+            requires (IKeyedCache<K>)
+        nonvirtual VALUE LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
+
+    private:
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         DISABLE_COMPILER_MSC_WARNING_START (4996);
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
@@ -958,6 +1009,7 @@ namespace Stroika::Foundation::Cache {
         }
         template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
             requires (not IKeyedCache<K> and TRAITS::kTrackFreshness)
+        [[deprecated ("Since Stroika v3.0d26 use maxAge DURATION directly")]]
         nonvirtual VALUE LookupValue (TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
         {
             return Lookup (Ago (maxAge), forward<CACHE_FILLTER_T> (cacheFiller));
@@ -1088,56 +1140,6 @@ namespace Stroika::Foundation::Cache {
         DISABLE_COMPILER_MSC_WARNING_END (4996);
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
-    private:
-        // note if shared_mutex, it must be mutable, cuz shared locks still must be done
-        using MaybeMutexType_ =
-            conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized, shared_timed_mutex, Debug::AssertExternallySynchronizedChecker>;
-        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
-
-    private:
-        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kPerCacheMaxAge, TimeStampDifferenceType, Common::Empty> fMaxAge_;
-        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
-            conditional_t<TRAITS::kAutomaticPurgeFrequency == TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}, Common::Empty, TimeStampType>
-                fNextAutoClearAt_;
-
-    private:
-        nonvirtual void ClearExpired_ ()
-            requires (IKeyedCache<KEY>);
-        nonvirtual void ClearExpired_ (TimeStampDifferenceType maxAge)
-            requires (IKeyedCache<KEY> and TRAITS::kTrackFreshness);
-
-    private:
-        // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
-        struct MyResult_ {
-            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fResult;
-            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
-            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
-
-            template <typename K = KEY>
-            nonvirtual CacheElement MakeCacheElement (const K& key) const;
-        };
-
-    private:
-        nonvirtual bool Expired_ (const MyResult_& r, TimeStampType now = TRAITS::GetCurrentTimestamp ()) const;
-
-    private:
-        // @todo could consider using Stroika Mapping<> - or TRAITS specified Mapper strategy
-        using MyMapType_ =
-            conditional_t<IKeyedCache<KEY>, Common::LazyType_t<map, KEY, MyResult_, typename TRAITS::InOrderComparerType>, optional<MyResult_>>;
-        MyMapType_ fData_;
-
-    private:
-        // most PRIVATE(_) routines assume locking done externally, but these 'Locking' ones do the locking themselves.
-        template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
-            requires (not IKeyedCache<K>)
-        nonvirtual VALUE LockingLookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller);
-        template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
-            requires (IKeyedCache<K>)
-        nonvirtual VALUE LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
-
-    private:
-        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
     };
     static_assert (ICache<TimedCache<int, int>, int, int>); // see Satisfies Concepts
     static_assert (movable<TimedCache<int, int>>);

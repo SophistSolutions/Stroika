@@ -110,15 +110,16 @@ namespace Stroika::Foundation::Characters {
     public:
         nonvirtual const wregex& GetCompiled () const;
 
+    private:
+        wregex fCompiledRegExp_;
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d14 - use SyntaxType before the regexp")]]
         explicit RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co = eWithCase)
             : RegularExpression (syntaxType, re, co)
         {
         }
-
-    private:
-        wregex fCompiledRegExp_;
     };
     inline const RegularExpression RegularExpression::kNONE{"(?!)"sv};
     inline const RegularExpression RegularExpression::kAny{".*"sv};

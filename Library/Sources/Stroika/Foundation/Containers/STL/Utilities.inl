@@ -15,17 +15,6 @@ namespace Stroika::Foundation::Containers::STL {
 
     /*
      ********************************************************************************
-     ***************************** Containers::STL::Make ****************************
-     ********************************************************************************
-     */
-    template <typename CREATE_CONTAINER_TYPE, typename FROM_CONTAINER_TYPE>
-    inline CREATE_CONTAINER_TYPE Make (const FROM_CONTAINER_TYPE& rhs)
-    {
-        return CREATE_CONTAINER_TYPE (rhs.begin (), rhs.end ());
-    }
-
-    /*
-     ********************************************************************************
      ************************ Containers::STL::Append *******************************
      ********************************************************************************
      */
@@ -173,4 +162,19 @@ namespace Stroika::Foundation::Containers::STL {
         return result;
     }
 
+}
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Containers::STL {
+    template <typename CREATE_CONTAINER_TYPE, typename FROM_CONTAINER_TYPE>
+    [[deprecated ("Since Stroika v3.0d5 just use Traversal::Map<> or more directly use STL(ranges)")]] CREATE_CONTAINER_TYPE Make (const FROM_CONTAINER_TYPE& rhs)
+    {
+        return CREATE_CONTAINER_TYPE (rhs.begin (), rhs.end ());
+    }
 }

@@ -29,8 +29,6 @@ namespace Stroika::Foundation::IO::Network::SOAP {
         String faultcode;
         String faultstring;
     };
-    [[deprecated ("Since Stroika v3.0d25 use Frameworks::WebService::SOAP::DeSerialize (BLOB, Fault*)")]] optional<Fault>
-    Deserialize_Fault (const Streams::InputStream::Ptr<byte>& from);
 
 }
 

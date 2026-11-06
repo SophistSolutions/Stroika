@@ -436,7 +436,19 @@ namespace Stroika::Foundation::DataExchange {
              */
             nonvirtual String ToString () const;
 
+        private:
+            template <typename T>
+            static FromGenericObjectMapperType mkGenericFromMapper_ (const FromObjectMapperType<T>& fromObjectMapper);
+            template <typename T>
+            static ToGenericObjectMapperType mkGenericToMapper_ (const ToObjectMapperType<T>& toObjectMapper);
+
+        private:
+            type_index                  fForType_;
+            FromGenericObjectMapperType fFromObjectMapper_;
+            ToGenericObjectMapperType   fToObjectMapper_;
+
         public:
+            // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
             [[deprecated ("Since Stroika v3.0d7 - use overload with typeInfo third")]] explicit TypeMappingDetails (
                 const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper)
                 : TypeMappingDetails{fromObjectMapper, toObjectMapper, forTypeInfo}
@@ -450,17 +462,6 @@ namespace Stroika::Foundation::DataExchange {
                 : TypeMappingDetails{fromObjectMapper, toObjectMapper, forTypeInfo}
             {
             }
-
-        private:
-            template <typename T>
-            static FromGenericObjectMapperType mkGenericFromMapper_ (const FromObjectMapperType<T>& fromObjectMapper);
-            template <typename T>
-            static ToGenericObjectMapperType mkGenericToMapper_ (const ToObjectMapperType<T>& toObjectMapper);
-
-        private:
-            type_index                  fForType_;
-            FromGenericObjectMapperType fFromObjectMapper_;
-            ToGenericObjectMapperType   fToObjectMapper_;
         };
 
     public:
@@ -904,30 +905,6 @@ namespace Stroika::Foundation::DataExchange {
                                                        const ClassMapperOptions<T>&                options = {})
             requires (is_class_v<T>);
 
-    public:
-        template <typename T>
-        [[deprecated]] static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
-                                                                      const optional<TypeMappingDetails>&         baseClass,
-                                                                      const optional<TypeMappingDetails>& furtherDerivedClass = nullopt)
-            requires (is_class_v<T>)
-        {
-            function<void (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue)> afterFrom = nullptr;
-            if (furtherDerivedClass and furtherDerivedClass->GetGenericFromObjectMapper ()) {
-                afterFrom = [=] (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue) {
-                    VariantValue vv     = furtherDerivedClass->FromObjectMapper<T> () (mapper, objOfType);
-                    *updateVariantValue = vv;
-                };
-            }
-            return MakeClassSerializer<T> (
-                fieldDescriptions,
-                ClassMapperOptions<T>{
-                    .fBeforeFrom = baseClass and baseClass->GetGenericFromObjectMapper () ? baseClass->FromObjectMapper<T> () : nullptr,
-                    .fBeforeTo   = baseClass and baseClass->GetGenericToObjectMapper () ? baseClass->ToObjectMapper<T> () : nullptr,
-                    .fAfterFrom  = afterFrom,
-                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->GetGenericToObjectMapper () ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
-                nullptr);
-        }
-
     private:
         template <typename T>
         static TypeMappingDetails MakeClassSerializer_ (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
@@ -1179,6 +1156,31 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         TypesRegistry fTypeMappingRegistry_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        template <typename T>
+        [[deprecated]] static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                                                      const optional<TypeMappingDetails>&         baseClass,
+                                                                      const optional<TypeMappingDetails>& furtherDerivedClass = nullopt)
+            requires (is_class_v<T>)
+        {
+            function<void (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue)> afterFrom = nullptr;
+            if (furtherDerivedClass and furtherDerivedClass->GetGenericFromObjectMapper ()) {
+                afterFrom = [=] (const ObjectVariantMapper& mapper, const T* objOfType, VariantValue* updateVariantValue) {
+                    VariantValue vv     = furtherDerivedClass->FromObjectMapper<T> () (mapper, objOfType);
+                    *updateVariantValue = vv;
+                };
+            }
+            return MakeClassSerializer<T> (
+                fieldDescriptions,
+                ClassMapperOptions<T>{
+                    .fBeforeFrom = baseClass and baseClass->GetGenericFromObjectMapper () ? baseClass->FromObjectMapper<T> () : nullptr,
+                    .fBeforeTo   = baseClass and baseClass->GetGenericToObjectMapper () ? baseClass->ToObjectMapper<T> () : nullptr,
+                    .fAfterFrom  = afterFrom,
+                    .fAfterTo = furtherDerivedClass and furtherDerivedClass->GetGenericToObjectMapper () ? furtherDerivedClass->ToObjectMapper<T> () : nullptr},
+                nullptr);
+        }
     };
 
     /**
@@ -1199,18 +1201,6 @@ namespace Stroika::Foundation::DataExchange {
 
             Stroika_Define_Enum_Bounds (eOmit, eInclude)
         };
-        /**
-        * ***DEPRECATED SINCE STROIKA v3.0d8...
-         *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with missing values if missing from object
-         */
-        [[deprecated ("Since Stroika v3.0d8")]] static constexpr NullFieldHandling eOmitNullFields = NullFieldHandling::eOmit; // instead of using NullFieldHandling::eOmit
-
-        /**
-        * ***DEPRECATED SINCE STROIKA v3.0d8...
-         *  \brief In ObjectVariantMapper::FromObject () -> VariantValue - parent object created with explicitly null values if missing from object
-         */
-        [[deprecated ("Since Stroika v3.0d8")]] static constexpr NullFieldHandling eIncludeNullFields =
-            NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
 
     private:
         /*
@@ -1253,6 +1243,28 @@ namespace Stroika::Foundation::DataExchange {
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper);
 
     public:
+        /**
+         */
+        nonvirtual String GetSerializedFieldName () const;
+
+    public:
+        /**
+         */
+        nonvirtual StructFieldMetaInfo GetStructFieldMetaInfo () const;
+
+    public:
+        /**
+         */
+        nonvirtual optional<TypeMappingDetails> GetOverrideTypeMapper () const;
+
+    public:
+        friend class ObjectVariantMapper;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d8")]] static constexpr NullFieldHandling eOmitNullFields = NullFieldHandling::eOmit; // instead of using NullFieldHandling::eOmit
+        [[deprecated ("Since Stroika v3.0d8")]] static constexpr NullFieldHandling eIncludeNullFields =
+            NullFieldHandling::eInclude; // instead of using NullFieldHandling::eInclude
         [[deprecated ("Since Stroika v3.0d8 - NullFieldHandling::eOmit is new default, use AddClass options arg "
                       "ClassMapperOptions<T>{.fOmitNullEntriesInFromObject = false} for eInclude behevior")]] StructFieldInfo (const String& serializedFieldName,
                                                                                                                                const StructFieldMetaInfo& fieldMetaInfo,
@@ -1277,24 +1289,6 @@ namespace Stroika::Foundation::DataExchange {
             , fOverrideTypeMapper_{overrideTypeMapper}
         {
         }
-
-    public:
-        /**
-         */
-        nonvirtual String GetSerializedFieldName () const;
-
-    public:
-        /**
-         */
-        nonvirtual StructFieldMetaInfo GetStructFieldMetaInfo () const;
-
-    public:
-        /**
-         */
-        nonvirtual optional<TypeMappingDetails> GetOverrideTypeMapper () const;
-
-    public:
-        friend class ObjectVariantMapper;
     };
 
     template <>

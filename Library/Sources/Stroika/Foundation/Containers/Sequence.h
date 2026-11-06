@@ -590,17 +590,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief write this Sequence into an existing container
-         *
-         *  \deprecated Since Stroika v3.0d24. Offers nothing over '*into = As<CONTAINER_OF_ADDABLE> ()',
-         *              which is what it now does, and it is the only reason Sequence<T> declares an As ()
-         *              at all (see the note on the using-declaration above).
-         */
-        template <typename CONTAINER_OF_ADDABLE>
-        [[deprecated ("Since Stroika v3.0d24 - use *into = As<CONTAINER_OF_ADDABLE> () instead")]] nonvirtual void As (CONTAINER_OF_ADDABLE* into) const;
-
-    public:
-        /**
          *  @see Iterable<T>::First ()
          */
         nonvirtual optional<value_type> First () const;
@@ -728,6 +717,11 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         nonvirtual void _AssertRepValidType () const;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        template <typename CONTAINER_OF_ADDABLE>
+        [[deprecated ("Since Stroika v3.0d24 - use *into = As<CONTAINER_OF_ADDABLE> () instead")]] nonvirtual void As (CONTAINER_OF_ADDABLE* into) const;
     };
 
     /**

@@ -546,6 +546,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         nonvirtual [[deprecated ("String Stroika v3.0d1, Name deprecated - use MapToRange")]] Iterable<RangeType> Map (const Iterable<DomainType>& values) const
         {
             return MapToRange (values);

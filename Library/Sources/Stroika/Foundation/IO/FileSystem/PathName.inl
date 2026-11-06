@@ -29,3 +29,14 @@ namespace Stroika::Foundation::IO::FileSystem {
     }
 
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::IO::FileSystem {
+    [[deprecated ("Since Stroika v3.0d12 use path::preferred_separator ")]] constexpr wchar_t kPathComponentSeperator = filesystem::path::preferred_separator;
+}

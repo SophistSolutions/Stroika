@@ -70,6 +70,24 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
 
 namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 
+    using Base64::LineBreak; // deprecated
+
+}
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     [[deprecated ("Since Stroika v3.0d5 use Base64::Decode")]] inline Memory::BLOB DecodeBase64 (span<const char> s)
     {
         return Base64::Decode (s);
@@ -90,8 +108,6 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     {
         Base64::Decode (s, out);
     }
-
-    using Base64::LineBreak; // deprecated
     [[deprecated ("Since Stroika v3.0d5 use Base64::Encode")]] inline string EncodeBase64 (const Streams::InputStream::Ptr<byte>& from,
                                                                                            LineBreak lb = LineBreak::eAuto_LB)
     {
@@ -101,13 +117,6 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     {
         return Base64::Encode (from, Base64::Options{.fLineBreak = lb});
     }
-
 }
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 #endif /*_Stroika_Foundation_Cryptography_Base64_h_*/

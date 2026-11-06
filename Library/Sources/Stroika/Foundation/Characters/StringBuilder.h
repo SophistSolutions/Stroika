@@ -346,7 +346,14 @@ namespace Stroika::Foundation::Characters {
         void erase (size_t from);
         void erase (size_t from, size_t count);
 
+    private:
+        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronized_;
+
+    private:
+        Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{}; // not nul-terminated
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] StringBuilder (const wchar_t* start, const wchar_t* end)
         {
             Append (span{start, end});
@@ -379,12 +386,6 @@ namespace Stroika::Foundation::Characters {
                 *into = str ().template As<wstring> ();
             }
         }
-
-    private:
-        Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fAssertExternallySynchronized_;
-
-    private:
-        Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{}; // not nul-terminated
     };
 
 }

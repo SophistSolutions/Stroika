@@ -311,9 +311,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void ThrowIfCanceled ();
 
     public:
-        [[deprecated ("Since Stroika v3.0d5 - SetProgress is cancelation point")]] void SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
-
-    public:
         /**
          */
         nonvirtual void SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo);
@@ -329,6 +326,10 @@ namespace Stroika::Foundation::Execution {
         ProgressRangeType         fFromProg_{0.0};
         ProgressRangeType         fToProg_{1.0};
         optional<CurrentTaskInfo> fRestoreTaskInfo_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d5 - SetProgress is cancelation point")]] void SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
     };
 
     /**

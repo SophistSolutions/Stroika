@@ -300,17 +300,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual String ToString () const;
 
-    public:
-        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::eDecoded)")]] String AsDecoded () const
-        {
-            return As<String> (StringPCTEncodedFlag::eDecoded);
-        }
-        template <typename RESULT_TYPE = String>
-        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::ePCTEncoded)")]] RESULT_TYPE AsEncoded () const
-        {
-            return As<RESULT_TYPE> (StringPCTEncodedFlag::ePCTEncoded);
-        }
-
     private:
         // Throws if cannot parse/illegal
         static pair<optional<String>, optional<InternetAddress>> ParseRaw_ (const String& raw);
@@ -323,6 +312,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         String                    fEncodedName_;
         optional<String>          fRegisteredName_;
         optional<InternetAddress> fInternetAddress_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::eDecoded)")]] String AsDecoded () const
+        {
+            return As<String> (StringPCTEncodedFlag::eDecoded);
+        }
+        template <typename RESULT_TYPE = String>
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::ePCTEncoded)")]] RESULT_TYPE AsEncoded () const
+        {
+            return As<RESULT_TYPE> (StringPCTEncodedFlag::ePCTEncoded);
+        }
     };
 
     /**
@@ -411,17 +412,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual String ToString () const;
 
-    public:
-        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::eDecoded)")]] String AsDecoded () const
-        {
-            return As<String> (StringPCTEncodedFlag::eDecoded);
-        }
-        template <typename RESULT_TYPE = String>
-        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::ePCTEncoded)")]] RESULT_TYPE AsEncoded () const
-        {
-            return As<RESULT_TYPE> (StringPCTEncodedFlag::ePCTEncoded);
-        }
-
     private:
         // Throws if cannot parse/illegal
         static String ParseRaw_ (const String& raw);
@@ -432,6 +422,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     private:
         String fEncodedUserInfo_;
         String fUserInfo_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::eDecoded)")]] String AsDecoded () const
+        {
+            return As<String> (StringPCTEncodedFlag::eDecoded);
+        }
+        template <typename RESULT_TYPE = String>
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::ePCTEncoded)")]] RESULT_TYPE AsEncoded () const
+        {
+            return As<RESULT_TYPE> (StringPCTEncodedFlag::ePCTEncoded);
+        }
     };
 
     template <>

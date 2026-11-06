@@ -221,12 +221,25 @@ namespace Stroika::Foundation::Characters::CString {
     {
         return LTrim (RTrim (text));
     }
+}
 
-    /*
-     ********************************************************************************
-     ******************************* String2Int *************************************
-     ********************************************************************************
-     */
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Characters::CString {
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
+                  "(Number.h)")]] unsigned int
+    HexString2Int (const string& s);
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
+                  "(Number.h)")]] unsigned int
+    HexString2Int (const wchar_t* s);
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<unsigned int> (s, {.fRadix = 16, .fAcceptRadixPrefix = true}) "
+                  "(Number.h)")]] unsigned int
+    HexString2Int (const wstring& s);
     namespace Private_ {
         long long int          String2Int_ (const string& s);
         long long int          String2Int_ (const char* s);
@@ -278,17 +291,20 @@ namespace Stroika::Foundation::Characters::CString {
     DISABLE_COMPILER_MSC_WARNING_END (4018)
 
     template <typename T>
-    inline T String2Int (const string& s)
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<T> (s) (Number.h) - .value_or (0) for this lenient behavior")]] inline T
+    String2Int (const string& s)
     {
         return Private_::String2IntOrUInt_<T, const string&> (s);
     }
     template <typename T>
-    inline T String2Int (const wchar_t* s)
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<T> (s) (Number.h) - .value_or (0) for this lenient behavior")]] inline T
+    String2Int (const wchar_t* s)
     {
         return Private_::String2IntOrUInt_<T, const wchar_t*> (s);
     }
     template <typename T>
-    inline T String2Int (const wstring& s)
+    [[deprecated ("Since Stroika v3.0d26 use Number::Parse<T> (s) (Number.h) - .value_or (0) for this lenient behavior")]] inline T
+    String2Int (const wstring& s)
     {
         return Private_::String2IntOrUInt_<T, const wstring&> (s);
     }

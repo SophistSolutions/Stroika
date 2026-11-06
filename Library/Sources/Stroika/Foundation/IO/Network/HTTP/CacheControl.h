@@ -186,9 +186,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         static const CacheControl kDisableCaching;
 
     public:
-        /**
-         *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc) - but it should not be re-used from user to user
-         */
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePrivate, "
                       ".fMaxAge=3600}")]] static const CacheControl kMustRevalidatePrivate;
     };

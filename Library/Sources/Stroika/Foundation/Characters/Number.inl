@@ -71,131 +71,6 @@ namespace Stroika::Foundation::Characters::Number {
         return fKind_ == Kind_::eShortestRoundTrip_;
     }
 
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    /*
-     ********************************************************************************
-     ****************************** SignificantFigures ******************************
-     ********************************************************************************
-     */
-    constexpr SignificantFigures::SignificantFigures (unsigned int p)
-        : fSignificantFigures_{p}
-    {
-    }
-    constexpr SignificantFigures::SignificantFigures (FullFlag)
-        : fSignificantFigures_{} // kFullPrecision
-    {
-    }
-    template <floating_point T>
-    constexpr auto SignificantFigures::GetEffectiveSignificantFigures () const -> RepType
-    {
-        return fSignificantFigures_.value_or (numeric_limits<T>::max_digits10);
-    }
-    constexpr SignificantFigures::operator Precision () const
-    {
-        return fSignificantFigures_ ? Precision::MaxSignificantDigits (max (*fSignificantFigures_, 1u)) : Precision::ShortestRoundTrip ();
-    }
-    template <IStdBasicStringCompatibleCharacter CHAR>
-    constexpr auto SignificantFigures::Calculate (span<const CHAR> number) -> RepType
-    {
-        // two passes cuz eatLeadingZero depends on scientific, which we find at the end of the text
-        bool dotPresent = false;
-        bool scientific = false;
-        for (const CHAR c : number) {
-            switch (c) {
-                // Some locales use . (most), but europe uses , for same purpose (and used in ISO-8601)
-                case '.':
-                case ',':
-                    dotPresent = true;
-                    break;
-                case 'e':
-                case 'E':
-                    scientific = true;
-                    break;
-            }
-        }
-        RepType n{0};
-        RepType trailingZeros{0};
-        bool    eatLeadingZeros = not scientific;
-        bool    gotoDone        = false;
-        for (const CHAR c : number) {
-            switch (c) {
-                case '-':
-                case '+':
-                    break;
-                case '0':
-                    if (eatLeadingZeros) {
-                        // munch
-                    }
-                    else {
-                        ++n;
-                    }
-                    ++trailingZeros;
-                    break;
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    eatLeadingZeros = false;
-                    trailingZeros   = 0;
-                    ++n;
-                    break;
-                case '.':
-                case ',':
-                    trailingZeros = 0;
-                    break;
-                case 'e':
-                case 'E':
-                    gotoDone = true; // goto Done;   // FIX to use this when c++23
-                    break;
-            }
-            if (gotoDone) {
-                break;
-            }
-        }
-        //    Done:
-        if (dotPresent) {
-            if (eatLeadingZeros) {
-                // then the trailing zeros we counted were also leading 0, but wern't added to n so do so now
-                n += trailingZeros;
-            }
-        }
-        else if (not eatLeadingZeros) {
-            n -= trailingZeros;
-        }
-        // else every zero was a leading one, never counted - so "0" is 0
-        return n;
-    }
-
-    /**
-     *      From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
-     *      init (basic_streambuf...) initializes precision to 6
-     *      Stroika need not maintain that default here, but it seems a sensible one...
-     * 
-     *  \note defined here instead of header cuz needs to be after SignificantFigures::CTOR.
-     */
-    constexpr inline SignificantFigures SignificantFigures::kDefault{6};
-
-    /**
-     *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
-     *         you get the exact same answer.
-     * 
-     *  \see  // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
-     *        numeric_limits<T>::max_digits10
-     * 
-     *  \note defined here instead of header cuz needs to be after SignificantFigures::CTOR.
-     */
-    constexpr inline SignificantFigures SignificantFigures::kFullPrecision{SignificantFigures::FullFlag::eFull};
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
     /*
      ********************************************************************************
      ****************************** Number::Punctuation *****************************
@@ -766,4 +641,154 @@ namespace Stroika::Foundation::Characters::Number {
         return r;
     }
 
+}
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Characters {
+    enum class [[deprecated ("Since Stroika v3.0d23 use FloatFormatType 'trim' variant instead")]] TrimTrailingZerosType {
+        eTrimZeros,
+        eDontTrimZeros,
+        Stroika_Define_Enum_Bounds (eTrimZeros, eDontTrimZeros)
+    };
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    using TrimTrailingZerosType::eDontTrimZeros;
+    using TrimTrailingZerosType::eTrimZeros;
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+}
+namespace Stroika::Foundation::Characters::Number {
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    struct [[deprecated ("Since Stroika v3.0d26 use Precision - MaxSignificantDigits (n), or ShortestRoundTrip () for kFullPrecision")]] SignificantFigures {
+    public:
+        using RepType = unsigned int; // maybe use uint16_t?
+        enum FullFlag {
+            eFull
+        };
+        constexpr SignificantFigures () = default;
+        constexpr SignificantFigures (RepType p);
+        constexpr SignificantFigures (FullFlag);
+        constexpr bool operator== (const SignificantFigures&) const = default;
+        constexpr      operator Precision () const;
+        template <floating_point T>
+        constexpr RepType               GetEffectiveSignificantFigures () const;
+        nonvirtual String               ToString () const;
+        static const SignificantFigures kDefault;
+        static const SignificantFigures kFullPrecision;
+        template <IStdBasicStringCompatibleCharacter CHAR>
+        static constexpr auto Calculate (span<const CHAR> number) -> RepType;
+
+    private:
+        optional<RepType> fSignificantFigures_{6};
+    };
+    constexpr SignificantFigures::SignificantFigures (unsigned int p)
+        : fSignificantFigures_{p}
+    {
+    }
+    constexpr SignificantFigures::SignificantFigures (FullFlag)
+        : fSignificantFigures_{} // kFullPrecision
+    {
+    }
+    template <floating_point T>
+    constexpr auto SignificantFigures::GetEffectiveSignificantFigures () const -> RepType
+    {
+        return fSignificantFigures_.value_or (numeric_limits<T>::max_digits10);
+    }
+    constexpr SignificantFigures::operator Precision () const
+    {
+        return fSignificantFigures_ ? Precision::MaxSignificantDigits (max (*fSignificantFigures_, 1u)) : Precision::ShortestRoundTrip ();
+    }
+    template <IStdBasicStringCompatibleCharacter CHAR>
+    constexpr auto SignificantFigures::Calculate (span<const CHAR> number) -> RepType
+    {
+        // two passes cuz eatLeadingZero depends on scientific, which we find at the end of the text
+        bool dotPresent = false;
+        bool scientific = false;
+        for (const CHAR c : number) {
+            switch (c) {
+                // Some locales use . (most), but europe uses , for same purpose (and used in ISO-8601)
+                case '.':
+                case ',':
+                    dotPresent = true;
+                    break;
+                case 'e':
+                case 'E':
+                    scientific = true;
+                    break;
+            }
+        }
+        RepType n{0};
+        RepType trailingZeros{0};
+        bool    eatLeadingZeros = not scientific;
+        bool    gotoDone        = false;
+        for (const CHAR c : number) {
+            switch (c) {
+                case '-':
+                case '+':
+                    break;
+                case '0':
+                    if (eatLeadingZeros) {
+                        // munch
+                    }
+                    else {
+                        ++n;
+                    }
+                    ++trailingZeros;
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    eatLeadingZeros = false;
+                    trailingZeros   = 0;
+                    ++n;
+                    break;
+                case '.':
+                case ',':
+                    trailingZeros = 0;
+                    break;
+                case 'e':
+                case 'E':
+                    gotoDone = true; // goto Done;   // FIX to use this when c++23
+                    break;
+            }
+            if (gotoDone) {
+                break;
+            }
+        }
+        //    Done:
+        if (dotPresent) {
+            if (eatLeadingZeros) {
+                // then the trailing zeros we counted were also leading 0, but wern't added to n so do so now
+                n += trailingZeros;
+            }
+        }
+        else if (not eatLeadingZeros) {
+            n -= trailingZeros;
+        }
+        // else every zero was a leading one, never counted - so "0" is 0
+        return n;
+    }
+
+    constexpr inline SignificantFigures SignificantFigures::kDefault{6};
+
+    constexpr inline SignificantFigures SignificantFigures::kFullPrecision{SignificantFigures::FullFlag::eFull};
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 }

@@ -274,6 +274,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Strokka v3.0d5 deprecated since not widely used and very specific purpose and directly implementingable given "
                       "apis")]] SeekOffsetType
         GetOffsetToEndOfStream () const

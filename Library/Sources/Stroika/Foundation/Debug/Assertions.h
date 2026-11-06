@@ -507,14 +507,6 @@ namespace Stroika::Foundation::Debug {
 #define WeakVerify(c) ((void)(c))
 #endif
 
-    /// ---------------------  DEPRECATED CODE      ------------------------
-    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
-    SetWeakAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName,
-                                                    int lineNum, const char* functionName) noexcept);
-    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
-    SetAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
-                                                const char* functionName) noexcept);
-
 // DEPRECATED NAME (to be removed in Stroika v3.0a1 - deprecated since Stroika v3.0d11)
 #define qDebug qStroika_Foundation_Debug_AssertionsChecked
 }
@@ -525,5 +517,21 @@ namespace Stroika::Foundation::Debug {
  ********************************************************************************
  */
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qStroika_Foundation_Debug_AssertionsChecked, qStroika_Foundation_Debug_AssertionsChecked);
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Debug {
+    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
+    SetWeakAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName,
+                                                    int lineNum, const char* functionName) noexcept);
+    [[deprecated ("Since Stroika v3.0d6 - use the wchar_t overload")]] void
+    SetAssertionHandler (void (*legacyHandler) (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum,
+                                                const char* functionName) noexcept);
+}
 
 #endif /*_Stroika_Foundation_Debug_Assertions_h_*/

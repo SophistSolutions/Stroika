@@ -108,6 +108,7 @@ namespace Stroika::Foundation::Time {
         constexpr DayOfWeek (unsigned int w, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d1, use chrono::Sunday")]] static constexpr weekday    eSunday{Sunday};
         [[deprecated ("Since Stroika v3.0d1, use chrono::Monday")]] static constexpr weekday    eMonday{Monday};
         [[deprecated ("Since Stroika v3.0d1, use chrono::Tuesday")]] static constexpr weekday   eTuesday{Tuesday};
@@ -134,6 +135,7 @@ namespace Stroika::Foundation::Time {
         constexpr MonthOfYear (unsigned int m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d1, use chrono::January")]] static constexpr chrono::month   eJanuary{January};
         [[deprecated ("Since Stroika v3.0d1, use chrono::February")]] static constexpr chrono::month  eFebruary{February};
         [[deprecated ("Since Stroika v3.0d1, use chrono::March")]] static constexpr chrono::month     eMarch{March};
@@ -166,6 +168,7 @@ namespace Stroika::Foundation::Time {
         constexpr DayOfMonth (unsigned int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d1, use day{1} or 1d")]] static constexpr day e1{1};
         [[deprecated ("Since Stroika v3.0d1, use day{2} or 2d")]] static constexpr day e2{2};
         [[deprecated ("Since Stroika v3.0d1, use day{3}")]] static constexpr day       e3{3};
@@ -694,7 +697,20 @@ namespace Stroika::Foundation::Time {
         constexpr T As () const
             requires (Common::IAnyOf<::tm, tm, year_month_day> or Common::ITimePoint<T>);
 
+    private:
+        static optional<Date> LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring& rep, size_t* consumedCharsInStringUpTo);
+
+    private:
+        static constexpr int kTM_Year_RelativeToYear_{1900}; // see https://man7.org/linux/man-pages/man3/ctime.3.html
+
+    private:
+        static Date AsDate_ (const ::tm& when);
+
+    private:
+        year_month_day fRep_;
+
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         using JulianRepType [[deprecated ("Since Stroika v3.0d1 - use JulianDayNumber")]]             = JulianDayNumber;
         using SignedJulianRepType [[deprecated ("Since Stroika v3.0d1 - use SignedJulianDayNumber")]] = SignedJulianDayNumber;
         [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date& operator++ ()
@@ -723,18 +739,6 @@ namespace Stroika::Foundation::Time {
         {
             return static_cast<JulianDayNumber> (Since ().count ());
         }
-
-    private:
-        static optional<Date> LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring& rep, size_t* consumedCharsInStringUpTo);
-
-    private:
-        static constexpr int kTM_Year_RelativeToYear_{1900}; // see https://man7.org/linux/man-pages/man3/ctime.3.html
-
-    private:
-        static Date AsDate_ (const ::tm& when);
-
-    private:
-        year_month_day fRep_;
     };
     static_assert (sizeof (Date) == sizeof (year_month_day)); // generally 4 bytes
     static_assert (totally_ordered<Date>);

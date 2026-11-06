@@ -43,27 +43,6 @@ namespace Stroika::Foundation::Execution {
         inline atomic<uint32_t> sFunctionObjectNextPtrID_{1};
     }
 
-    /**
-     *  IDEA is be SAME AS std::function<> but allow for operator<, a usable operator== etc...,
-     *  which is an unfortunate omission from the c++ standard.
-     *
-     *  This should be convertible to a normal std::function<>, and fairly if not totally interoperable.
-     *
-     *  @aliases This template could have been called Callback<> - as that's principally what its used for.
-     *           Callbacks you need to be able to create, and then later remove (by value) - and this class
-     *           lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
-     *           and then later removed by value.
-     *
-     *  \deprecated Since Stroika v3.0d25 - use std::function; and for callbacks to remove later, Execution::CallbackRegistry, which
-     *          removes by the ID its Add returns. Removing by a Function works only with the Function added, or a copy of it -
-     *          and a lambda, converted implicitly, is a new one, so 'the same' lambda removes nothing (@see CallbackRegistry).
-     *
-     *  \note   This was implemented using a shared_ptr<function<...>> instead of a directly aggregated function object
-     *          until Stroika v2.1d8.
-     *
-     *  \note   <a href="Design-Overview.md#Comparisons">Comparisons</a>:
-     *          static_assert (totally_ordered<Function<...>);
-     */
     template <typename FUNCTION_SIGNATURE>
     class [[deprecated ("Since Stroika v3.0d25 - use std::function; for callbacks to remove later, Execution::CallbackRegistry")]] Function {
     public:

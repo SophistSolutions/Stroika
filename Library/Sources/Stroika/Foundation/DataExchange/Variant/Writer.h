@@ -120,6 +120,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         shared_ptr<const _IRep> fRep_;
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since v3.0d1, use WriteAsBLOB or another Write overload)")]] Memory::BLOB Write (const VariantValue& v)
         {
             return WriteAsBLOB (v);

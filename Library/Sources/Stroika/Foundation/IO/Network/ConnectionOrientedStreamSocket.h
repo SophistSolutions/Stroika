@@ -246,6 +246,7 @@ namespace Stroika::Foundation::IO::Network {
             nonvirtual const _IRep& _cref () const;
 
         public:
+            // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
             [[deprecated ("Since Stroika v3.0d15 use span{} overload")]] size_t Read (byte* intoStart, byte* intoEnd) const
             {
                 return Read (span{intoStart, intoEnd}).size ();

@@ -425,24 +425,6 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual Containers::Mapping<KEY, VALUE> Elements () const;
 
-    public:
-        //         *  \note the overloads taking pair<KEY, VALUE> as the first argument are just tricks to allow deduction guides to
-        //                                    work (because* you cannot specify some template parameters and then have deduction guides take effect)
-        //           .
-        // find better way todo deduction guides so I can deprecate this
-        [[deprecated ("Since Stroika v3.0d5 use Cache::Factory::LRUCache_WithHash or NoHash")]] LRUCache (
-            pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const typename TRAITS::KeyEqualsCompareFunctionType& keyEqualsComparer = {},
-            size_t hashTableSize = 1, const typename TRAITS::KeyHashFunctionType& hashFunction = typename TRAITS::KeyHashFunctionType{})
-            : LRUCache{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
-        {
-        }
-        [[deprecated ("Since Stroika v3.0d5 use Cache::Factory::LRUCache_WithHash or NoHash")]] LRUCache (
-            pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize,
-            const typename TRAITS::KeyHashFunctionType& hashFunction = hash<KEY>{})
-            : LRUCache{maxCacheSize, hashTableSize, hashFunction}
-        {
-        }
-
     private:
         const size_t fHashtableSize_{1};
 
@@ -500,6 +482,21 @@ namespace Stroika::Foundation::Cache {
         Memory::InlineBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d5 use Cache::Factory::LRUCache_WithHash or NoHash")]] LRUCache (
+            pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const typename TRAITS::KeyEqualsCompareFunctionType& keyEqualsComparer = {},
+            size_t hashTableSize = 1, const typename TRAITS::KeyHashFunctionType& hashFunction = typename TRAITS::KeyHashFunctionType{})
+            : LRUCache{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
+        {
+        }
+        [[deprecated ("Since Stroika v3.0d5 use Cache::Factory::LRUCache_WithHash or NoHash")]] LRUCache (
+            pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize,
+            const typename TRAITS::KeyHashFunctionType& hashFunction = hash<KEY>{})
+            : LRUCache{maxCacheSize, hashTableSize, hashFunction}
+        {
+        }
     };
     static_assert (ICache<LRUCache<int, int>, int, int>); // see Satisfies Concepts
     static_assert (movable<LRUCache<int, int>>);

@@ -1523,8 +1523,56 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
+    private:
+        static shared_ptr<_IRep> mkEmpty_ ();
+
+    private:
+        /**
+         *  If the argument CHAR_T is restrictive (such as ASCII/char) - this CHECKS and THROWS (Character::CheckASCII).
+         *  This function also reads the data, and sees if it can downshift 'CHAR_T' to something more restrictive, and produces
+         *  a possibly smaller rep.
+         * 
+         *  For some overloads (e..g && move) - the data is 'stolen/moved'.
+         * 
+         *  See mk_nocheck_ for a simpler - DO WHAT I SAID - operation.
+         */
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        static shared_ptr<_IRep> mk_ (span<const CHAR_T> s);
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        static shared_ptr<_IRep> mk_ (Iterable<CHAR_T> it);
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
+        static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
+
+    private:
+        /*
+         *  Note the mk_nocheck_ - just does the mk of the buffer, but assuming the arguments are legit and will fit (though it may
+         *  assert in DEBUG builds this is true).
+         * 
+         *  This just blindly allocates the buffer of the given size/type for the given arguments.
+         */
+        template <typename CHAR_T>
+        static shared_ptr<_IRep> mk_nocheck_ (span<const CHAR_T> s)
+            requires (same_as<CHAR_T, ASCII> or same_as<CHAR_T, Latin1> or same_as<CHAR_T, char16_t> or same_as<CHAR_T, char32_t>);
+
+    private:
+        template <unsigned_integral T>
+        nonvirtual size_t SubString_adjust_ (T fromOrTo, size_t myLength) const;
+        template <signed_integral T>
+        nonvirtual size_t SubString_adjust_ (T fromOrTo, size_t myLength) const;
+
+    private:
+        nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const;
+
+    protected:
+        nonvirtual void _AssertRepValidType () const;
+
+    private:
+        [[noreturn]] static void ThrowInvalidAsciiException_ (); // avoid include
+
     public:
-        ///////////////// DEPRECATED FUNCTIONS /////////////////
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d13 - if you must use c_str() - use the overload taking StackBuffer arg), or use As<wstring> "
                       "().c_str ()")]] const wchar_t*
                                                                                c_str ();
@@ -1696,54 +1744,6 @@ namespace Stroika::Foundation::Characters {
         {
             return RemoveFirstIf (subString);
         }
-
-    private:
-        static shared_ptr<_IRep> mkEmpty_ ();
-
-    private:
-        /**
-         *  If the argument CHAR_T is restrictive (such as ASCII/char) - this CHECKS and THROWS (Character::CheckASCII).
-         *  This function also reads the data, and sees if it can downshift 'CHAR_T' to something more restrictive, and produces
-         *  a possibly smaller rep.
-         * 
-         *  For some overloads (e..g && move) - the data is 'stolen/moved'.
-         * 
-         *  See mk_nocheck_ for a simpler - DO WHAT I SAID - operation.
-         */
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        static shared_ptr<_IRep> mk_ (span<const CHAR_T> s);
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        static shared_ptr<_IRep> mk_ (Iterable<CHAR_T> it);
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
-        template <IStdBasicStringCompatibleCharacter CHAR_T>
-        static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
-
-    private:
-        /*
-         *  Note the mk_nocheck_ - just does the mk of the buffer, but assuming the arguments are legit and will fit (though it may
-         *  assert in DEBUG builds this is true).
-         * 
-         *  This just blindly allocates the buffer of the given size/type for the given arguments.
-         */
-        template <typename CHAR_T>
-        static shared_ptr<_IRep> mk_nocheck_ (span<const CHAR_T> s)
-            requires (same_as<CHAR_T, ASCII> or same_as<CHAR_T, Latin1> or same_as<CHAR_T, char16_t> or same_as<CHAR_T, char32_t>);
-
-    private:
-        template <unsigned_integral T>
-        nonvirtual size_t SubString_adjust_ (T fromOrTo, size_t myLength) const;
-        template <signed_integral T>
-        nonvirtual size_t SubString_adjust_ (T fromOrTo, size_t myLength) const;
-
-    private:
-        nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const;
-
-    protected:
-        nonvirtual void _AssertRepValidType () const;
-
-    private:
-        [[noreturn]] static void ThrowInvalidAsciiException_ (); // avoid include
     };
     static_assert (totally_ordered<String>);
 

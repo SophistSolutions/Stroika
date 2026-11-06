@@ -99,9 +99,6 @@ namespace Stroika::Foundation::Execution {
         class IAppenderRep;
 
     public:
-        using IAppenderRepPtr [[deprecated ("Since Stroika v3.0d6 - just use shared_ptr<IAppenderRep>")]] = shared_ptr<IAppenderRep>;
-
-    public:
 #if qStroika_HasComponent_syslog
         class SysLogAppender;
 #endif
@@ -139,18 +136,6 @@ namespace Stroika::Foundation::Execution {
     private:
         ~Logger ();
 #endif
-
-    public:
-        [[deprecated ("Since Stroika v3.0d6 use GetAppenders - plural")]] nonvirtual shared_ptr<IAppenderRep> GetAppender () const
-        {
-            return GetAppenders ().FirstValue (nullptr);
-        }
-
-    public:
-        [[deprecated ("Since Stroika v3.0d6 use SetAppenders - plural")]] nonvirtual void SetAppender (const shared_ptr<IAppenderRep>& rep)
-        {
-            SetAppenders (rep);
-        }
 
     public:
         /**
@@ -319,7 +304,6 @@ namespace Stroika::Foundation::Execution {
          *          Logger::sThe.Log (Logger::eError, "Failed to correct something important in file {}"_f, fileName);
          *      \endcode
          */
-        [[deprecated ("Since Stroika v3.0d6 - use _f strings for Logging")]] void Log (Priority logLevel, const wchar_t* format, ...);
         template <typename CHAR_T, typename... ARGS>
         nonvirtual void Log (Priority logLevel, const Characters::FormatString<CHAR_T>& fmt, ARGS&&... args);
         template <Characters::IFormatLiteral FORMAT_LITERAL, typename... ARGS>
@@ -334,6 +318,19 @@ namespace Stroika::Foundation::Execution {
     private:
         shared_ptr<Rep_> fRep_{nullptr}; // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
         Priority fMinLogLevel_{Priority::eInfo}; // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        using IAppenderRepPtr [[deprecated ("Since Stroika v3.0d6 - just use shared_ptr<IAppenderRep>")]] = shared_ptr<IAppenderRep>;
+        [[deprecated ("Since Stroika v3.0d6 use GetAppenders - plural")]] nonvirtual shared_ptr<IAppenderRep> GetAppender () const
+        {
+            return GetAppenders ().FirstValue (nullptr);
+        }
+        [[deprecated ("Since Stroika v3.0d6 use SetAppenders - plural")]] nonvirtual void SetAppender (const shared_ptr<IAppenderRep>& rep)
+        {
+            SetAppenders (rep);
+        }
+        [[deprecated ("Since Stroika v3.0d6 - use _f strings for Logging")]] void Log (Priority logLevel, const wchar_t* format, ...);
     };
 
     /**

@@ -460,6 +460,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d6 - use write with _f strings")]] void printf (const wchar_t* format, ...);
         [[deprecated ("Since Stroika v3.0d7 use span overload)")]] void          write (const byte* s, const byte* e)
         {

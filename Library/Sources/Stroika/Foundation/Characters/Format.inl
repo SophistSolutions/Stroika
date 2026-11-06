@@ -305,3 +305,16 @@ namespace Stroika::Foundation::Characters {
     }
 
 }
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Characters {
+    [[deprecated ("Since Stroika v3.0d6 - use _f format strings - not old style c format strings - use CString::Format for old style C "
+                  "format strings")]] String
+    Format (const wchar_t* format, ...);
+}

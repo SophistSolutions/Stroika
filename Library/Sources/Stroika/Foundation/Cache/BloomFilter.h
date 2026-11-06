@@ -126,11 +126,6 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual bool ProbablyContains (Common::ArgByValueType<T> elt) const;
 
-        [[deprecated ("Since Stroika v3.0d10 use ProbablyContains")]] bool Contains (Common::ArgByValueType<T> elt) const
-        {
-            return ProbablyContains (elt);
-        }
-
     public:
         struct Statistics;
 
@@ -144,6 +139,13 @@ namespace Stroika::Foundation::Cache {
         vector<bool>             fBits_;                         // @todo use Set_Bitstring
         unsigned int             fActualAddCalls_{};             // to support useful statistics, not strictly needed
         unsigned int             fApparentlyDistinctAddCalls_{}; // ""
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d10 use ProbablyContains")]] bool Contains (Common::ArgByValueType<T> elt) const
+        {
+            return ProbablyContains (elt);
+        }
     };
 
     /**

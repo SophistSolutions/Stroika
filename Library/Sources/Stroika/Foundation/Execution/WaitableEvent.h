@@ -312,23 +312,6 @@ namespace Stroika::Foundation::Execution {
         static inline SpinLock sExtraWaitableEventsMutex_;
 #endif
 
-    public:
-        DISABLE_COMPILER_MSC_WARNING_START (4996);
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        enum class [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] ResetType {
-            eAutoReset,
-            eManualReset,
-            Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)
-        };
-        [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eAutoReset   = ResetType::eAutoReset;
-        [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eManualReset = ResetType::eManualReset;
-        [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};
-        [[deprecated ("since v3.0d4 - use WaitStatus::eTriggered")]] static constexpr WaitStatus kWaitQuietlySetResult{WaitStatus::eTriggered};
-        DISABLE_COMPILER_MSC_WARNING_END (4996);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
     private:
         struct WE_ {
             mutable ConditionVariable<> fConditionVariable{};
@@ -345,6 +328,24 @@ namespace Stroika::Foundation::Execution {
 #if qStroika_Foundation_Execution_WaitableEvent_SupportWaitForMultipleObjects
         forward_list<shared_ptr<WE_>> fExtraWaitableEvents_;
 #endif
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        enum class [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] ResetType {
+            eAutoReset,
+            eManualReset,
+            Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)
+        };
+        [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eAutoReset   = ResetType::eAutoReset;
+        [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eManualReset = ResetType::eManualReset;
+        [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};
+        [[deprecated ("since v3.0d4 - use WaitStatus::eTriggered")]] static constexpr WaitStatus kWaitQuietlySetResult{WaitStatus::eTriggered};
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     };
 
 }

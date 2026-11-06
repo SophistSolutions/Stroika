@@ -16,12 +16,20 @@
 
 namespace Stroika::Foundation::Streams::iostream {
 
-    [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring ReadTextStream (istream& in);
-    [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring ReadTextStream (wistream& in);
+}
 
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Streams::iostream {
+    [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring      ReadTextStream (istream& in);
+    [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring      ReadTextStream (wistream& in);
     [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] vector<byte> ReadBytes (istream& in);
     [[deprecated ("Since Stroika v3.0d2, use Foundation::OutputStream")]] void        WriteBytes (ostream& out, const vector<byte>& s);
-
 }
 
 #endif /*_Stroika_Foundation_Streams_iostream_Utilities_h_*/

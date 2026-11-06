@@ -159,9 +159,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual bool Remove (TimerID timer) noexcept;
 
     public:
-        [[deprecated ("Since Stroika v3.0d25 - use Remove, which takes a one-shot too")]] nonvirtual void RemoveRepeating (TimerID timer) noexcept;
-
-    public:
         /**
          */
         nonvirtual RegisteredTaskCollection GetAllRegisteredTasks () const;
@@ -196,6 +193,10 @@ namespace Stroika::Foundation::Execution {
 
     private:
         shared_ptr<IRep> fRep_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d25 - use Remove, which takes a one-shot too")]] nonvirtual void RemoveRepeating (TimerID timer) noexcept;
     };
 
     /**

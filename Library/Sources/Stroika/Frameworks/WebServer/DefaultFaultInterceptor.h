@@ -25,11 +25,14 @@ namespace Stroika::Frameworks::WebServer {
     public:
         DefaultFaultInterceptor ();
         DefaultFaultInterceptor (const function<void (Message&, const exception_ptr&)>& handleFault);
-        [[deprecated ("Since Stroika v3.0d12 use Message&")]] DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&)>& handleFault);
 
     private:
         struct Rep_;
         struct Rep_Explicit_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d12 use Message&")]] DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&)>& handleFault);
     };
 
 }

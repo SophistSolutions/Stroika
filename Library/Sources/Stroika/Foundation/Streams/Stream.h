@@ -99,9 +99,6 @@ namespace Stroika::Foundation::Streams {
          */
         eBlockIfNoDataAvailable,
 
-        /**
-         *  By far safest, simplest approach, but sometimes unacceptable for various reasons, typically involving multiprocessing, and I/O.
-         */
         eDEFAULT [[deprecated ("Since Stroika v3.0d15 - this value deprecated - use eBlockIfNoDataAvailable or another API")]] = eBlockIfNoDataAvailable
     };
     using NoDataAvailableHandling::eBlockIfNoDataAvailable;

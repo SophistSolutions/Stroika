@@ -46,25 +46,6 @@ namespace Stroika::Foundation::Streams::BinaryToText {
     };
 
     /**
-     *  How text was decoded with no CodeCvt named - @see ByteOrderMarkOr, and Reader::New (src) for the byte order mark, else UTF-8.
-     */
-    enum class [[deprecated ("Since Stroika v3.0d25 - use Reader::New (src) or Convert (src) - a byte order mark, else UTF-8 - or "
-                             "ByteOrderMarkOr{codeCvt}")]] AutomaticCodeCvtFlags {
-        eReadBOMAndIfNotPresentUseUTF8,
-        eReadBOMAndIfNotPresentUseCurrentLocale,
-
-        eDEFAULT = eReadBOMAndIfNotPresentUseUTF8
-    };
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
-    using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
-    /**
      *  \brief BinaryToText::Reader::Ptr is an InputStream::Ptr<Character>, usually constructed wrapping some binary object or binary stream
      *
      *  \note   This was called TextInputStreamBinaryAdapter
@@ -151,16 +132,6 @@ namespace Stroika::Foundation::Streams::BinaryToText {
         Ptr New (const Traversal::Iterable<Character>& src); ///< \brief ... text already
         template <typename... ARGS>
         Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args); ///< \brief ... internally synchronized
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        [[deprecated ("Since Stroika v3.0d25 - use New (src, seekable, readAhead) - a byte order mark, else UTF-8 - or New (src, "
-                      "ByteOrderMarkOr{codeCvt}, ...)")]] Ptr
-        New (const InputStream::Ptr<byte>& src, optional<AutomaticCodeCvtFlags> codeCvtFlags, optional<SeekableFlag> seekable = {},
-             ReadAhead readAhead = eReadAheadAllowed);
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     }
 
@@ -180,15 +151,6 @@ namespace Stroika::Foundation::Streams::BinaryToText {
     Characters::String Convert (const Memory::BLOB& src);
     Characters::String Convert (const Memory::BLOB& src, const ByteOrderMarkOr& ifNoByteOrderMark);   ///< \brief convert BLOB to a String
     Characters::String Convert (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter); ///< \brief convert BLOB to a String
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    [[deprecated ("Since Stroika v3.0d25 - use Convert (src) - a byte order mark, else UTF-8 - or Convert (src, "
-                  "ByteOrderMarkOr{codeCvt})")]] Characters::String
-    Convert (const Memory::BLOB& src, optional<AutomaticCodeCvtFlags> codeCvtFlags);
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 }
 

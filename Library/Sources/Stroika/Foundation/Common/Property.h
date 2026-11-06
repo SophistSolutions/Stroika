@@ -444,9 +444,6 @@ namespace Stroika::Foundation::Common {
         using WriteOnlyProperty<decayed_value_type>::operator();
     };
 
-    template <typename T>
-    using ConstantProperty [[deprecated ("Since Stroika v3.0d16 use Execution::LazyInitialized")]] = Execution::LazyInitialized<T>;
-
     /**
      *  \brief ExtendableProperty is a Property which has callbacks associated with it, to be notified when it is accessed or updated
      * 

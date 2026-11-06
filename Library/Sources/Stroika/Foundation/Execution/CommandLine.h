@@ -427,18 +427,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Sequence<String> GetArguments () const;
 
     public:
-        [[deprecated (
-            "Since Stroika v3.0d26 use ApplyOptions (options) - which validates, and returns what the options say")]] nonvirtual void
-        Validate (const Iterable<Option>& options) const;
-        [[deprecated ("Since Stroika v3.0d26 use ApplyOptionsQuietly (options)")]] nonvirtual optional<InvalidCommandLineArgument>
-        ValidateQuietly (const Iterable<Option>& options) const;
-        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).Has (o) / .GetArguments (o)")]] nonvirtual tuple<bool, Sequence<String>>
-                                                                                                    Get (const Option& o) const;
-        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).Has (o)")]] nonvirtual bool Has (const Option& o) const;
-        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).GetArgument (o)")]] nonvirtual optional<String> GetArgument (const Option& o) const;
-        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).GetArguments (o)")]] nonvirtual Sequence<String> GetArguments (const Option& o) const;
-
-    public:
         /**
          *  Strategy/rules used when converting between a list of arguments to a single string.
          */
@@ -494,6 +482,19 @@ namespace Stroika::Foundation::Execution {
     private:
         optional<StringShellQuoting> fShellStyleQuoting_;
         Sequence<String>             fArgs_;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated (
+            "Since Stroika v3.0d26 use ApplyOptions (options) - which validates, and returns what the options say")]] nonvirtual void
+        Validate (const Iterable<Option>& options) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptionsQuietly (options)")]] nonvirtual optional<InvalidCommandLineArgument>
+        ValidateQuietly (const Iterable<Option>& options) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).Has (o) / .GetArguments (o)")]] nonvirtual tuple<bool, Sequence<String>>
+                                                                                                    Get (const Option& o) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).Has (o)")]] nonvirtual bool Has (const Option& o) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).GetArgument (o)")]] nonvirtual optional<String> GetArgument (const Option& o) const;
+        [[deprecated ("Since Stroika v3.0d26 use ApplyOptions (options).GetArguments (o)")]] nonvirtual Sequence<String> GetArguments (const Option& o) const;
     };
     template <>
     String CommandLine::As<String> () const;

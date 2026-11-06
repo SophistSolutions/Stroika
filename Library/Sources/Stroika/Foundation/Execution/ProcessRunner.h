@@ -404,6 +404,7 @@ namespace Stroika::Foundation::Execution {
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
     public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d12 - pass stdin/stdout/stderr to ProcessRunner Run() method (if needed)")]] ProcessRunner (
             const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in,
             const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
@@ -419,7 +420,6 @@ namespace Stroika::Foundation::Execution {
             this->fStdOut_ = out;
             this->fStdErr_ = error;
         }
-
         [[deprecated ("Since Stroika v3.0d12 - use other overloads for ProcessRunner")]] ProcessRunner (
             const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
             const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
@@ -429,58 +429,30 @@ namespace Stroika::Foundation::Execution {
             this->fStdOut_ = out;
             this->fStdErr_ = error;
         }
-
         [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void
         Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
-
         [[deprecated ("Since Stroika v3.0d12 pass in/out/error(can be nullptr) in RunInbackground() method")]] BackgroundProcess
-        RunInBackground (ProgressMonitor::Updater progress);
-
+                                                                    RunInBackground (ProgressMonitor::Updater progress);
         [[deprecated ("Since Stroika v3.0d23d")]] BackgroundProcess RunInBackground (const Streams::InputStream::Ptr<byte>&    in,
                                                                                      const Streams::OutputStream::Ptr<byte>&   out,
                                                                                      const Streams::OutputStream::Ptr<byte>&   error,
                                                                                      [[maybe_unused]] ProgressMonitor::Updater progress);
-
-    public:
-        //DEPRECATED
         [[deprecated ("Since Stroika v3.0d23d")]] void Run (const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
                                                             const Streams::OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress,
                                                             Time::DurationSeconds timeout = Time::kInfinity);
         [[deprecated ("Since Stroika v3.0d23d")]] tuple<Characters::String, Characters::String>
         Run (const Characters::String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress,
              Time::DurationSeconds timeout = Time::kInfinity);
-
-    public:
-        /**
-         */
         [[deprecated ("Since Stroika v3.0d12 - use GetOptions().fWorkingDirectory")]] optional<filesystem::path> GetWorkingDirectory () const;
         [[deprecated ("Since Stroika v3.0d12 - use SetOptions({.fWorkingDirectory})")]] void SetWorkingDirectory (const optional<filesystem::path>& d);
-
-    public:
-        /**
-         *  If empty, stdin will not be empty (redirected from /dev/null).
-         *
-         *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
-         *  the running subprocess.
-         */
         [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] Streams::InputStream::Ptr<byte>
         GetStdIn () const;
         [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void
         SetStdIn (const Streams::InputStream::Ptr<byte>& in);
-
-    public:
-        /**
-         *  If empty, stdout will not be captured (redirected to /dev/null)
-         */
         [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] Streams::OutputStream::Ptr<byte>
         GetStdOut () const;
         [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void
         SetStdOut (const Streams::OutputStream::Ptr<byte>& out);
-
-    public:
-        /**
-         *  If empty, stderr will not be captured (redirected to /dev/null)
-         */
         [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] Streams::OutputStream::Ptr<byte>
         GetStdErr () const;
         [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void

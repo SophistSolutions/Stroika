@@ -295,8 +295,11 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          */
         nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = {});
 
+    private:
+        shared_ptr<IRep> fRep_;
+
     public:
-        //DEPRECATED
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
         [[deprecated ("Since Stroika v3.0d15 use TypedBLOB")]] Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType,
                                                                               const Mapping<String, String>& extraHeaders = {})
         {
@@ -312,9 +315,6 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
         {
             return PUT (l, TypedBLOB{data, contentType}, extraHeaders);
         }
-
-    private:
-        shared_ptr<IRep> fRep_;
     };
 
     /**

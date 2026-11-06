@@ -222,12 +222,6 @@ namespace Stroika::Foundation::Memory {
         nonvirtual void reserve (size_t newCapacity, bool atLeast = true);
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, just use reserve with atLeast flag=true)")]] void ReserveAtLeast (size_t newCapacityAtLeast)
-        {
-            reserve (newCapacityAtLeast, true);
-        }
-
-    public:
         /**
          *  Returns the number of (constructed) elements in the buffer in ELEMENTS (not necessarily in bytes).
          *
@@ -443,6 +437,13 @@ namespace Stroika::Foundation::Memory {
 
     private:
         static void DestroyElts_ (T* start, T* end) noexcept;
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d1, just use reserve with atLeast flag=true)")]] void ReserveAtLeast (size_t newCapacityAtLeast)
+        {
+            reserve (newCapacityAtLeast, true);
+        }
     };
     static_assert (Common::explicitly_convertible_to<InlineBuffer<byte>, span<const byte>>);
 

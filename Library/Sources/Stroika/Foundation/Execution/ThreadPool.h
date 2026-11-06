@@ -380,12 +380,6 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual Characters::String ToString () const;
 
-    public:
-        [[deprecated ("Since Stroika v3.0d5 use Options")]] ThreadPool (unsigned int tc, const optional<Characters::String>& name = nullopt)
-            : ThreadPool{Options{tc, name}}
-        {
-        }
-
     private:
         bool       fCollectStatistics_{false};
         Statistics fCollectedTaskStats_;
@@ -431,6 +425,13 @@ namespace Stroika::Foundation::Execution {
 
     private:
         friend class MyRunnable_; // So MyRunnable_ can call WaitForNextTask_()
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d5 use Options")]] ThreadPool (unsigned int tc, const optional<Characters::String>& name = nullopt)
+            : ThreadPool{Options{tc, name}}
+        {
+        }
     };
 
 }

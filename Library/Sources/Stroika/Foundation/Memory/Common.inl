@@ -12,17 +12,6 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ********************************* Memory::NEltsOf ******************************
-     ********************************************************************************
-     */
-    template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
-    inline constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
-    {
-        return SIZE_OF_ARRAY;
-    }
-
-    /*
-     ********************************************************************************
      *************************** Memory::CompareBytes *******************************
      ********************************************************************************
      */
@@ -597,4 +586,20 @@ namespace Stroika::Foundation::Memory {
         return CopySpanData (ConstSpan (src), target);
     }
 
+}
+
+/*
+ ********************************************************************************
+ ******************************** DEPRECATED ************************************
+ ********************************************************************************
+ *
+ *  Kept only so code written for older Stroika versions keeps compiling - each says what replaces it.
+ */
+namespace Stroika::Foundation::Memory {
+    template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
+    [[deprecated ("Since C++-17 can use std::size(), so deprecated since Stroika v3.0d21")]] constexpr size_t
+    NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
+    {
+        return SIZE_OF_ARRAY;
+    }
 }

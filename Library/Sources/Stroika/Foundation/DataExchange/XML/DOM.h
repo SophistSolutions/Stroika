@@ -554,12 +554,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             nonvirtual Ptr AppendIf (const NameWithNamespace& eltName, const VV& v);
 
         public:
-            [[deprecated]] Ptr AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v)
-            {
-                return AppendIf (eltName, v == nullopt or v->empty () ? nullopt : v);
-            }
-
-        public:
             /**
              * creates a new (empty) node with same argument name (and namespace, and in the same position
              * 
@@ -667,6 +661,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \brief return the associated shared_ptr (can be nullptr)
              */
             nonvirtual shared_ptr<IRep> PeekRep () const;
+
+        public:
+            // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+            [[deprecated]] Ptr AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v)
+            {
+                return AppendIf (eltName, v == nullopt or v->empty () ? nullopt : v);
+            }
         };
 
         /**
