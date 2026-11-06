@@ -623,6 +623,46 @@ namespace {
         EXPECT_EQ (E{bad}.error_or ("none"_k), "oops"sv);
     }
 }
+
+namespace {
+    namespace IConstexprable_Test_ {
+        struct Aggregate {
+            int  fX{1};
+            char fC{'.'};
+        };
+        struct OnlyIntConstructor { // no default constructor - usable at compile time all the same
+            constexpr OnlyIntConstructor (int)
+            {
+            }
+        };
+        struct AllocatesInInitializer { // usable at compile time - though not default constructed, which allocates
+            int* fP = new int{3};
+        };
+        struct NonConstexprConstructor {
+            NonConstexprConstructor ()
+            {
+            }
+        };
+        struct NonConstexprDestructor {
+            ~NonConstexprDestructor ()
+            {
+            }
+        };
+    }
+    GTEST_TEST (Foundation_Common, IConstexprable_)
+    {
+        Debug::TraceContextBumper ctx{"IConstexprable_"};
+        using namespace IConstexprable_Test_;
+        static_assert (IConstexprable<int>);
+        static_assert (IConstexprable<optional<double>>);
+        static_assert (IConstexprable<Aggregate>);
+        static_assert (IConstexprable<OnlyIntConstructor>);
+        static_assert (IConstexprable<AllocatesInInitializer>);
+        static_assert (not IConstexprable<NonConstexprConstructor>);
+        static_assert (not IConstexprable<NonConstexprDestructor>);
+        [[maybe_unused]] constexpr OnlyIntConstructor kOne{1}; // what IConstexprable allows
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

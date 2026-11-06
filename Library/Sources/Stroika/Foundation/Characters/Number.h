@@ -14,6 +14,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -369,6 +370,9 @@ namespace Stroika::Foundation::Characters::Number {
      *  The default - '.', and no grouping - is the "C" locale's. Parse accepts digits grouped as given, or not grouped at all, and
      *  never a separator out of place; ToString groups them as given.
      *
+     *  \note Satisfies Concepts:
+     *      o   Common::IConstexprable<Punctuation>
+     *
      *  \par Example Usage
      *      \code
      *          Number::Punctuation{}                                                                    // 1234567.5 - the "C" locale's
@@ -421,6 +425,7 @@ namespace Stroika::Foundation::Characters::Number {
 
         constexpr bool operator== (const Punctuation&) const = default;
     };
+    static_assert (Common::IConstexprable<Punctuation>); // see Satisfies Concepts
 
     /**
      *  The punctuation options give: a Punctuation - Punctuation{}, the "C" locale's, by default - or Common::eUseCurrentLocale: the

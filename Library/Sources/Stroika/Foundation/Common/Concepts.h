@@ -73,6 +73,23 @@ namespace Stroika::Foundation::Common {
     concept IBuiltinArithmetic = is_arithmetic_v<T>;
 
     /**
+     *  \brief T can be used at compile time: a constexpr variable may be a T
+     *
+     *  What the C++ standard calls a "literal type" - a scalar, a reference, an array of these, or a class with a constexpr
+     *  destructor, a constexpr constructor (or that is an aggregate or a lambda), and members and bases all of such types. It
+     *  says T CAN be used at compile time, not that a given value can: "constexpr T x{...};" compiles only where that
+     *  construction is itself a constant expression.
+     *
+     *  Mostly documentation: a type meant for compile-time use lists IConstexprable<T> in its "\note Satisfies Concepts:",
+     *  with a static_assert after its declaration - so a change that breaks it fails there.
+     *
+     *  \note C++20 removed std::is_literal_type (deprecated in C++17) as of little use to generic code. The compilers still
+     *        compute the property, as the builtin __is_literal_type - g++, clang and MSVC all have it.
+     */
+    template <typename T>
+    concept IConstexprable = __is_literal_type (T);
+
+    /**
      *  \brief like std::invocable concept, except also requires the invocation doesn't raise exceptions
      */
     template <typename F, typename... Args>

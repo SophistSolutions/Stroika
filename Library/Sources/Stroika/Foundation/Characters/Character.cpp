@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "Character.h"
@@ -13,6 +14,7 @@ using namespace Stroika::Foundation::Characters;
 
 // see Satisfies Concepts:
 static_assert (regular<Character>);
+static_assert (Common::IConstexprable<Character>);
 
 /*
  ********************************************************************************

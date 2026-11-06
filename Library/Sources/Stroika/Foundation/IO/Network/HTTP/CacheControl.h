@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
 
 /**
@@ -20,6 +21,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *  Support Cache-Control headers
      *      @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
      *      @see https://tools.ietf.org/html/rfc7234 (Hypertext Transfer Protocol (HTTP/1.1): Caching)
+     *
+     *  \note Satisfies Concepts:
+     *      o   Common::IConstexprable<CacheControl> - so constants such as kImmutable are constexpr
      * 
      *  \par Example Usage
      *      \code
@@ -188,6 +192,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePrivate, "
                       ".fMaxAge=3600}")]] static const CacheControl kMustRevalidatePrivate;
     };
+    static_assert (Common::IConstexprable<CacheControl>); // see Satisfies Concepts
     template <>
     Characters::String CacheControl::As () const;
 
