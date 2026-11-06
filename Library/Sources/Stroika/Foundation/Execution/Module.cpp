@@ -269,8 +269,19 @@ const LazyInitialized<Sequence<filesystem::path>> Execution::kPathEXT{[] () -> S
  ********************************************************************************
  */
 const LazyInitialized<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{[] () -> Mapping<SDKString, SDKString> {
+#if qStroika_Platform_Windows
+    // names match as Windows matches them: ordinal, ignoring case
+    Mapping<SDKString, SDKString> r{Common::DeclareEqualsComparer ([] (const SDKString& lhs, const SDKString& rhs) -> bool {
+#if qStroika_Foundation_Characters_SDKUseswchar_t
+        return ::CompareStringOrdinal (lhs.c_str (), static_cast<int> (lhs.size ()), rhs.c_str (), static_cast<int> (rhs.size ()), TRUE) == CSTR_EQUAL;
+#else
+        return String::EqualsComparer{eCaseInsensitive}(String::FromSDKString (lhs), String::FromSDKString (rhs));
+#endif
+    })};
+#else
     Mapping<SDKString, SDKString> r;
-    const SDKChar* const*         envHead = nullptr;
+#endif
+    const SDKChar* const* envHead = nullptr;
 #if qStroika_Platform_Windows
     // documented in https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getenv-wgetenv?view=msvc-170 can happen, and how to workaround
     DISABLE_COMPILER_MSC_WARNING_START (4996)
@@ -309,7 +320,7 @@ const LazyInitialized<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{
             WeakAssertNotReached ();
         }
         else {
-            r.Add (eltStr.substr (0, i), eltStr.substr (i + 1));
+            r.Add (eltStr.substr (0, i), eltStr.substr (i + 1), AddReplaceMode::eAddIfMissing); // a repeated name: the first, as getenv
         }
     }
     return r;
@@ -321,7 +332,11 @@ const LazyInitialized<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{
  ********************************************************************************
  */
 const LazyInitialized<Mapping<String, String>> Execution::kEnvironment{[] () -> Mapping<String, String> {
+#if qStroika_Platform_Windows
+    Mapping<String, String> r{String::EqualsComparer{eCaseInsensitive}};
+#else
     Mapping<String, String> r;
+#endif
     for (auto i : kRawEnvironment ()) {
         r.Add (String::FromSDKString (i.fKey), String::FromSDKString (i.fValue));
     }

@@ -84,6 +84,11 @@ namespace Stroika::Foundation::Execution {
      *  \brief convert getenv() to a Mapping of SDKString (in case some issue with charactor set conversion)
      * 
      *  \note LazyInitialized so if not used, nearly zero cost
+     * 
+     *  \note Captures data at first use, so if environment changes after that, this will not reflect those changes.
+     *        If you need to reflect changes, getenv (or similar).
+     * 
+     *  \note On Windows, the Mapping key compare function is case-insensitive (like the OS). On other platforms, it is case-sensitive (like the OS).
      */
     extern const LazyInitialized<Containers::Mapping<Characters::SDKString, Characters::SDKString>> kRawEnvironment;
 
@@ -91,6 +96,11 @@ namespace Stroika::Foundation::Execution {
      *  \brief convert getenv() to a Mapping of Strings for easier access
      * 
      *  \note LazyInitialized so if not used, nearly zero cost
+     * 
+     *  \note Captures data at first use, so if environment changes after that, this will not reflect those changes.
+     *        If you need to reflect changes, getenv (or similar).
+     * 
+     *  \note On Windows, the Mapping key compare function is case-insensitive (like the OS). On other platforms, it is case-sensitive (like the OS).
      */
     extern const LazyInitialized<Containers::Mapping<Characters::String, Characters::String>> kEnvironment;
 

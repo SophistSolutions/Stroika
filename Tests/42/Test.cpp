@@ -576,6 +576,11 @@ namespace {
         Debug::TraceContextBumper ctx{"Environment"};
         Mapping<String, String>   env = Execution::kEnvironment;
         EXPECT_TRUE (env.ContainsKey ("PATH"));
+#if qStroika_Platform_Windows
+        // Windows names are case-insensitive: a native process sees "Path" (a POSIX shell's child, PATH)
+        EXPECT_TRUE (env.ContainsKey ("path"));
+        EXPECT_TRUE (Execution::kRawEnvironment ().ContainsKey (SDKSTR ("path")));
+#endif
         DbgTrace ("env={}"_f, env);
     }
 }
