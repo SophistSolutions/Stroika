@@ -104,9 +104,10 @@ namespace Stroika::Foundation::Characters::Number {
                 n += trailingZeros;
             }
         }
-        else {
+        else if (not eatLeadingZeros) {
             n -= trailingZeros;
         }
+        // else every zero was a leading one, never counted - so "0" is 0
         return n;
     }
 

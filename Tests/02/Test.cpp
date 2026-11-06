@@ -955,6 +955,8 @@ namespace {
         EXPECT_EQ (SignificantFigures::Calculate (span{"400.0"sv}), 4u);
         EXPECT_EQ (SignificantFigures::Calculate (span{"0.0000001234567"sv}), 7u);
         EXPECT_EQ (SignificantFigures::Calculate (span{"0.000000000"sv}), 9u);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"0"sv}), 0u);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"-0"sv}), 0u);
     }
 }
 
@@ -968,13 +970,12 @@ namespace {
             EXPECT_EQ (Characters::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (Characters::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (Characters::ToString (0.00001, kOptions_), "1e-05");
-            EXPECT_TRUE (Characters::ToString (3.12e12, kOptions_) == "3.12e+12" or
-                         Characters::ToString (3.12e12, kOptions_) == "3.12000e+12");
+            EXPECT_EQ (Characters::ToString (3.12e12, kOptions_), "3.12e+12");
             EXPECT_EQ (Characters::ToString (3.12, kOptions_), "3.12");
             EXPECT_EQ (Characters::ToString (212312345.0, kOptions_), "2.12312e+08");
             EXPECT_EQ (Characters::ToString (-44.2, kOptions_), "-44.2");
-            // XCode 13/14 return 0 here? --LGP 2026-02-15
-            EXPECT_TRUE (Characters::ToString (0.0000001234567, kOptions_) == "1.23457e-07" or Characters::ToString (0.0000001234567, kOptions_) == "0");
+            EXPECT_EQ (Characters::ToString (0.0000001234567, kOptions_), "1.23457e-07");
+            EXPECT_EQ (Characters::ToString (-0.000123456789, FloatToStringOptions{eDefaultFloat, SignificantFigures{3}}), "-0.000123");
             // EXTRA TESTS
             EXPECT_EQ (Characters::ToString (1.4, kOptions_), "1.4");
             EXPECT_EQ (Characters::ToString (1.6, kOptions_), "1.6");
@@ -1333,17 +1334,8 @@ namespace {
         {
             // if exceeds precision, (is that the rule, or smallest rep?) then scientific notation
             EXPECT_EQ (Characters::ToString (30707548160.0), "3.07075e+10");
-#if defined(__cpp_lib_to_chars)
             EXPECT_EQ (Characters::ToString (3724089.418996166), "3.72409e+06");
             EXPECT_EQ (Characters::ToString (44905.3, SignificantFigures{6}), "44905.3");
-#else
-            String t = Characters::ToString (3724089.418996166);
-            //EXPECT_EQ (t.length (), 11); // 6 digits of precision, plus '.' and 'e+06'
-            EXPECT_TRUE (t.StartsWith ("3.724"));
-            EXPECT_TRUE (t.EndsWith ("e+06"));
-            t = Characters::ToString (44905.3);
-            DbgTrace ("t={}"_f, t);
-#endif
         }
 
         {

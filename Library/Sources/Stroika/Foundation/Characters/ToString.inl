@@ -179,45 +179,6 @@ namespace Stroika::Foundation::Characters {
     }
 
     namespace Private_ {
-#if qStroika_Foundation_Debug_AssertionsChecked || not defined(__cpp_lib_to_chars)
-        inline size_t CalcSignificantFigures_ (const String& numStr, bool countZerosAtEndAfterDecPoint = false)
-        {
-            bool   leading    = true;
-            bool   ignoreRest = false;
-            bool   seenDot    = false;
-            size_t n{};
-            size_t nTrailingZeros{};
-            numStr.Apply ([&] (Character c) {
-                if (ignoreRest) {
-                    return;
-                }
-                if (c == '.') {
-                    seenDot = true;
-                }
-                if (c == '+' or c == '-' or c == '.') {
-                    return;
-                }
-                if (leading and c == '0') {
-                    return;
-                }
-                leading = false;
-                if (c == 'e') {
-                    ignoreRest = true;
-                    return;
-                }
-                if (countZerosAtEndAfterDecPoint and seenDot) {
-                    if (c == '0') {
-                        ++nTrailingZeros;
-                    }
-                    else {
-                        nTrailingZeros = 0;
-                    }
-                }
-                ++n;
-            });
-            return countZerosAtEndAfterDecPoint ? n : n - nTrailingZeros;
-        }
-#endif
         template <floating_point FLOAT_TYPE>
         String FloatToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Number::SignificantFigures precision)
         {
@@ -237,51 +198,20 @@ namespace Stroika::Foundation::Characters {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, effectivePrecision).ptr - buf.begin ();
             }
 #else
-            auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec, bool forceScientific) -> char* {
-                char* fmtPtr = formatBufferStart;
-                *fmtPtr++    = '%';
-                // include precision arg
-                *fmtPtr++ = '.';
-                *fmtPtr++ = '*';
-                if (_Spec != '\0') {
-                    *fmtPtr++ = _Spec; // e.g. 'L' qualifier
-                }
-                *fmtPtr++ = forceScientific ? 'e' : 'g'; // format specifier
-                *fmtPtr   = '\0';
-                Require (fmtPtr < formatBufferEnd);
-                return formatBufferStart;
-            };
-
-            FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision);
-            if (precision != Number::SignificantFigures::kFullPrecision) {
-                f = useRoundedFloat;
+            // to_chars with a precision is defined as printf's %.*g. kFullPrecision's max_digits10 reads back as the same number,
+            // but is not always the shortest text that does, as to_chars without a precision writes
+            if constexpr (same_as<FLOAT_TYPE, long double>) {
+                resultStrLen = ::snprintf (buf.data (), buf.size (), "%.*Lg", static_cast<int> (effectivePrecision), f);
             }
-
-            bool                                 forceScientific = fabs (f) >= std::pow (10, effectivePrecision);
-            Stroika_ATTRIBUTE_INDETERMINATE char format[100]; // filled in with mkFmtWithPrecisionArg_
-            resultStrLen            = ::snprintf (buf.data (), buf.size (),
-                                                  mkFmtWithPrecisionArg_ (std::begin (format), std::end (format),
-                                                                          same_as<FLOAT_TYPE, long double> ? 'L' : '\0', forceScientific),
-                                                  (int)effectivePrecision + 1, f);
-            auto actualPrecIncZeros = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}, true);
-            if (actualPrecIncZeros > effectivePrecision) {
-                ptrdiff_t nBytes    = static_cast<ptrdiff_t> (actualPrecIncZeros) - static_cast<ptrdiff_t> (effectivePrecision);
-                auto      numberEnd = buf.data () + resultStrLen;
-                auto      ePtr      = std::find (buf.data (), numberEnd, 'e');
-                if (ePtr != numberEnd) {
-                    Assert (buf.data () <= ePtr - nBytes);
-                    memmove (ePtr - nBytes, ePtr, (buf.data () + resultStrLen - ePtr)); // slide 'e+22' back over the lost precision bytes of number
-                }
-                resultStrLen -= nBytes;
+            else {
+                resultStrLen = ::snprintf (buf.data (), buf.size (), "%.*g", static_cast<int> (effectivePrecision), static_cast<double> (f));
             }
 #endif
 
-            // [[maybe_unused]] auto oo1 = String{span{buf.data (), static_cast<size_t> (resultStrLen)}}.As<wstring> ();
-            // [[maybe_unused]] auto ooo = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (precision == Number::SignificantFigures::kFullPrecision or
-                    CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
+                    Number::SignificantFigures::Calculate (span<const char>{buf.data (), static_cast<size_t> (resultStrLen)}) <= effectivePrecision);
 #endif
             return String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
         }
