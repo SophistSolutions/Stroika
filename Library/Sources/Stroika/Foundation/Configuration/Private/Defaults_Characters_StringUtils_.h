@@ -3,7 +3,8 @@
  */
 #include "Stroika/Foundation/Common/Private/CompilerAndStdLib_.h"
 
-_DeprecatedFile_ ("DEPRECATED - since v3.0d11, with the rest of Configuration/: nothing includes this, and qPlatformSupports_wcscasecmp/wcsncasecmp are unused. To be removed in v3.0a1");
+_DeprecatedFile_ ("DEPRECATED - since v3.0d11, with the rest of Configuration/: nothing includes this, and "
+                  "qPlatformSupports_wcscasecmp/wcsncasecmp are unused. To be removed in v3.0a1");
 
 /*
  * See DOCS in Stroika/Foundation/Characters/StringUtils.h

@@ -71,7 +71,7 @@
 
 /**
  *  \brief qStroika_Platform_MacOS - MacOS X
- */                                                                                                                                        \
+ */
 #ifndef qStroika_Platform_MacOS
 #if defined(__APPLE__) && defined(__MACH__)
 #define qStroika_Platform_MacOS 1
