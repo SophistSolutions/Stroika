@@ -10,6 +10,12 @@ series of domain-specific **Frameworks** (web server/services, auth, system perf
 UPnP, Modbus, a rich-text editing framework "Led", etc). This is the `v3-Dev` branch (unstable,
 requires C++20+); `v2.1` (C++17+) and `v2.0` (C++14+) are older stable branches maintained separately.
 
+Each major release targets one C++ standard: v3 C++20, the next (v.NEXT) C++23, the one after C++26 - loose plans, and what
+v3 deferred, are in the v3 roadmap (https://github.com/SophistSolutions/Stroika/discussions/120). **A newer standard's feature
+is used only feature-tested, with a path that works on the oldest supported toolchains too** (g++ 11, clang 15 with libc++ 15,
+VS2022) - as `Common::StdCompat` provides `expected` - so C++26 reflection, say, can be one implementation, never the only
+one, until Stroika targets C++26.
+
 Full narrative docs live in `Documentation/` (see especially `Design-Overview.md`, `Patterns.md`,
 `Thread-Safety.md`, `Building-Stroika.md`). This file only covers what's needed for day-to-day work.
 
