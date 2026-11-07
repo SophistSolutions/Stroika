@@ -935,7 +935,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename ENUM_TYPE>
         static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
-        static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::DefaultNames<ENUM_TYPE>::k);
+        static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::kDefaultNames<ENUM_TYPE>);
 
     public:
         /**

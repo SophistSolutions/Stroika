@@ -316,41 +316,139 @@ namespace {
 namespace {
     namespace Test2_EnumNames_Private_ {
         using namespace Common;
+        // a table written for Stroika v3.0d25 and before (below) - used as it is
         enum class fooEnum {
             eOne,
             eTwo,
             Stroika_Define_Enum_Bounds (eOne, eTwo)
         };
+        // nothing declared: the identifiers as written
+        enum class Plain {
+            eRed,
+            eGreen,
+            eBlue = 3, // a gap at 2
+            Stroika_Define_Enum_Bounds (eRed, eBlue)
+        };
+        // Stroika's naming rule, and one name changed - not ASCII
+        enum class Ruled {
+            eAlpha,
+            eBeta,
+            eGamma,
+            Stroika_Define_Enum_Bounds (eAlpha, eGamma)
+        };
+        StroikaNaming          EnumNamingRule (Ruled);
+        constexpr EnumNameText EnumeratorName (Ruled r, EnumNameText byRule)
+        {
+            return r == Ruled::eBeta ? EnumNameText{u8"B\u00eata"} : byRule;
+        }
+        // an enum in a class: the rule by a friend declaration
+        struct Holder {
+            enum class Inner {
+                eX,
+                eY,
+                Stroika_Define_Enum_Bounds (eX, eY)
+            };
+            friend StroikaNaming EnumNamingRule (Inner);
+        };
+        // names longer than EnumNameText::kMaxInlineBytes: a reflected identifier, and a u8"..." name - pointed at, not held
+        enum class Long {
+            eA,
+            eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt,
+            Stroika_Define_Enum_Bounds (eA, eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt)
+        };
+        constexpr EnumNameText EnumeratorName (Long l, EnumNameText byRule)
+        {
+            return l == Long::eA ? EnumNameText{u8"A u8 name longer than sixty-four bytes is pointed at, not copied - any length works"} : byRule;
+        }
+        // Stroika's rule on a long identifier: the name, its tail, is pointed at too
+        enum class LongRuled {
+            eA,
+            eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo,
+            Stroika_Define_Enum_Bounds (eA, eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo)
+        };
+        StroikaNaming EnumNamingRule (LongRuled);
+        // no Stroika_Define_Enum_Bounds: no names (and declaring any for it fails the build)
+        enum class Unbounded {
+            eA,
+            eB
+        };
     }
 }
+// a table written for Stroika v3.0d25 and before - k is DEPRECATED, but such a table still works, as this checks
 namespace Stroika::Foundation::Common {
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <>
     constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k{{{
         {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
         {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
     }}};
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 }
 namespace {
     GTEST_TEST (Foundation_Common, EnumNames_)
     {
         Debug::TraceContextBumper ctx{"{}::EnumNames_"};
         using namespace Test2_EnumNames_Private_;
-        EXPECT_TRUE (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
-        EXPECT_TRUE (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
-        {
-            EXPECT_TRUE (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
-            EXPECT_TRUE (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
+        using Characters::String;
+        using Characters::ToString;
+        // a table written for Stroika v3.0d25 and before, L"..." names: used as it is
+        EXPECT_TRUE (DefaultNames<fooEnum>{}.GetName (fooEnum::eOne) == u8"eOne");
+        EXPECT_TRUE (kDefaultNames<fooEnum>.GetName (fooEnum::eTwo) == u8"eTwo");
+        EXPECT_EQ (ToString (fooEnum::eTwo), "eTwo"sv);
+        EXPECT_EQ (DefaultNames<fooEnum>{}.GetValue (L"eTwo", Execution::Exception<> (L"OutOfRange")), fooEnum::eTwo);
+        try {
+            (void)DefaultNames<fooEnum>{}.GetValue (L"missing", Execution::Exception<> (L"OutOfRange"));
+            ADD_FAILURE () << "no exception";
         }
-        {
-            EXPECT_TRUE ((DefaultNames<fooEnum>{}.GetValue (L"eTwo", Execution::Exception<> (L"OutOfRange")) == fooEnum::eTwo));
-            try {
-                DefaultNames<fooEnum>{}.GetValue (L"missing", Execution::Exception<> (L"OutOfRange"));
-                EXPECT_TRUE (false); // above should throw
-            }
-            catch (const Execution::Exception<>&) {
-                // good
-            }
+        catch (const Execution::Exception<>&) {
+            // good
         }
+        // nothing declared: the identifiers as written - and a value no enumerator has, no name
+        static_assert (kDefaultNames<Plain>.size () == 3);
+        EXPECT_EQ (ToString (Plain::eGreen), "eGreen"sv);
+        EXPECT_EQ (ToString (static_cast<Plain> (2)), "2"sv);
+        // looked up by "...", u8"..." or L"..."
+        EXPECT_EQ (kDefaultNames<Plain>.PeekValue ("eBlue"), Plain::eBlue);
+        EXPECT_EQ (kDefaultNames<Plain>.PeekValue (u8"eBlue"), Plain::eBlue);
+        EXPECT_EQ (kDefaultNames<Plain>.PeekValue (L"eBlue"), Plain::eBlue);
+        EXPECT_FALSE (kDefaultNames<Plain>.PeekValue ("Blue").has_value ());
+        // Stroika's rule, and one name changed - not ASCII
+        EXPECT_EQ (ToString (Ruled::eAlpha), "Alpha"sv);
+        EXPECT_EQ (ToString (Ruled::eBeta), String{u8"B\u00eata"});
+        EXPECT_EQ (kDefaultNames<Ruled>.PeekValue (L"B\u00eata"), Ruled::eBeta); // a wide, non-ASCII lookup
+        EXPECT_EQ (ToString (Holder::Inner::eY), "Y"sv);
+        // other lists: a copy with a change, or a list of its own - "...", u8"..." and L"..." alike
+        constexpr EnumNames<Plain> kOther = kDefaultNames<Plain>.With (Plain::eRed, "rouge");
+        static_assert (kOther.GetName (Plain::eRed) == u8"rouge");
+        static_assert (kDefaultNames<Plain>.GetName (Plain::eRed) == u8"eRed"); // the default unchanged
+        constexpr EnumNames<Plain> kMixed{{Plain::eRed, "R"}, {Plain::eGreen, u8"G"}, {Plain::eBlue, L"B"}};
+        static_assert (kMixed.PeekValue ("G") == Plain::eGreen and kMixed.PeekValue (L"B") == Plain::eBlue);
+        // all of it at compile time
+        static_assert (kDefaultNames<Ruled>.GetName (Ruled::eGamma) == u8"Gamma");
+        static_assert (kDefaultNames<fooEnum>.PeekValue (L"eOne") == fooEnum::eOne);
+        // longer than kMaxInlineBytes: pointed at - a reflected identifier (at an exactly-sized copy), a u8"..." name (at the literal)
+        static_assert (kDefaultNames<Long>.GetName (Long::eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt) ==
+                       u8"eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt");
+        static_assert (kDefaultNames<Long>.GetName (Long::eA).size () > EnumNameText::kMaxInlineBytes);
+        EXPECT_EQ (ToString (Long::eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt),
+                   "eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt"sv);
+        EXPECT_EQ (kDefaultNames<Long>.PeekValue ("A u8 name longer than sixty-four bytes is pointed at, not copied - any length works"), Long::eA);
+        static_assert (kDefaultNames<LongRuled>.GetName (LongRuled::eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo) ==
+                       u8"ThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo");
+        EXPECT_EQ (ToString (LongRuled::eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo),
+                   "ThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo"sv);
+        // no Stroika_Define_Enum_Bounds: its number
+        EXPECT_EQ (ToString (Unbounded::eB), "1"sv);
+#if qStroika_Foundation_Common_EnumNameText_DefineStaticString_
+        // and a long "..." name - copied by std::define_static_string
+        constexpr EnumNames<Plain> kLong = kDefaultNames<Plain>.With (
+            Plain::eRed, "a char name longer than sixty-four bytes - copied to static storage by std::define_static_string");
+        static_assert (kLong.GetName (Plain::eRed).size () > EnumNameText::kMaxInlineBytes);
+#endif
     }
 }
 

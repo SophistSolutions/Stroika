@@ -165,34 +165,64 @@ namespace Stroika::Frameworks::UPnP::DataTypes {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Frameworks::UPnP::DataTypes::DataType> DefaultNames<Frameworks::UPnP::DataTypes::DataType>::k{{{
-        {Frameworks::UPnP::DataTypes::DataType::eUI1, L"ui1"},
-        {Frameworks::UPnP::DataTypes::DataType::eUI2, L"ui2"},
-        {Frameworks::UPnP::DataTypes::DataType::eUI4, L"ui4"},
-        {Frameworks::UPnP::DataTypes::DataType::eUI8, L"ui8"},
-        {Frameworks::UPnP::DataTypes::DataType::eI1, L"i1"},
-        {Frameworks::UPnP::DataTypes::DataType::eI2, L"i2"},
-        {Frameworks::UPnP::DataTypes::DataType::eI4, L"i4"},
-        {Frameworks::UPnP::DataTypes::DataType::eI8, L"i8"},
-        {Frameworks::UPnP::DataTypes::DataType::eInt, L"int"},
-        {Frameworks::UPnP::DataTypes::DataType::eR4, L"r4"},
-        {Frameworks::UPnP::DataTypes::DataType::eR8, L"r8"},
-        {Frameworks::UPnP::DataTypes::DataType::eNumber, L"number"},
-        {Frameworks::UPnP::DataTypes::DataType::eFixed14_4, L"fixed.14.4"},
-        {Frameworks::UPnP::DataTypes::DataType::eFloat, L"float"},
-        {Frameworks::UPnP::DataTypes::DataType::eChar, L"char"},
-        {Frameworks::UPnP::DataTypes::DataType::eString, L"string"},
-        {Frameworks::UPnP::DataTypes::DataType::eDate, L"date"},
-        {Frameworks::UPnP::DataTypes::DataType::eDateTime, L"dateTime"},
-        {Frameworks::UPnP::DataTypes::DataType::eDateTimeTZ, L"dateTime.tz"},
-        {Frameworks::UPnP::DataTypes::DataType::eTime, L"time"},
-        {Frameworks::UPnP::DataTypes::DataType::eTimeTZ, L"time.tz"},
-        {Frameworks::UPnP::DataTypes::DataType::eBoolean, L"boolean"},
-        {Frameworks::UPnP::DataTypes::DataType::eBinBase64, L"bin.base64"},
-        {Frameworks::UPnP::DataTypes::DataType::eBinHex, L"bin.hex"},
-        {Frameworks::UPnP::DataTypes::DataType::eURI, L"uri"},
-        {Frameworks::UPnP::DataTypes::DataType::eUUID, L"uuid"},
-    }}};
+namespace Stroika::Frameworks::UPnP::DataTypes {
+    constexpr Foundation::Common::EnumNameText EnumeratorName (DataType e, Foundation::Common::EnumNameText byRule)
+    {
+        switch (e) {
+            case DataType::eUI1:
+                return "ui1";
+            case DataType::eUI2:
+                return "ui2";
+            case DataType::eUI4:
+                return "ui4";
+            case DataType::eUI8:
+                return "ui8";
+            case DataType::eI1:
+                return "i1";
+            case DataType::eI2:
+                return "i2";
+            case DataType::eI4:
+                return "i4";
+            case DataType::eI8:
+                return "i8";
+            case DataType::eInt:
+                return "int";
+            case DataType::eR4:
+                return "r4";
+            case DataType::eR8:
+                return "r8";
+            case DataType::eNumber:
+                return "number";
+            case DataType::eFixed14_4:
+                return "fixed.14.4";
+            case DataType::eFloat:
+                return "float";
+            case DataType::eChar:
+                return "char";
+            case DataType::eString:
+                return "string";
+            case DataType::eDate:
+                return "date";
+            case DataType::eDateTime:
+                return "dateTime";
+            case DataType::eDateTimeTZ:
+                return "dateTime.tz";
+            case DataType::eTime:
+                return "time";
+            case DataType::eTimeTZ:
+                return "time.tz";
+            case DataType::eBoolean:
+                return "boolean";
+            case DataType::eBinBase64:
+                return "bin.base64";
+            case DataType::eBinHex:
+                return "bin.hex";
+            case DataType::eURI:
+                return "uri";
+            case DataType::eUUID:
+                return "uuid";
+            default:
+                return byRule;
+        }
+    }
 }

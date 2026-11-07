@@ -197,10 +197,6 @@ namespace Stroika::Foundation::IO::Network {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<IO::Network::URI::NormalizationStyle> DefaultNames<IO::Network::URI::NormalizationStyle>::k{{{
-        {IO::Network::URI::NormalizationStyle::eRFC3986, L"RFC3986"},
-        {IO::Network::URI::NormalizationStyle::eAggressive, L"Aggressively"},
-    }}};
+namespace Stroika::Foundation::IO::Network {
+    Common::StroikaNaming EnumNamingRule (URI::NormalizationStyle);
 }

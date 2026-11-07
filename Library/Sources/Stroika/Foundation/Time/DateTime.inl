@@ -147,18 +147,26 @@ namespace Stroika::Foundation::Time {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat> DefaultNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat>::k{{{
-        {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eISO8601, L"ISO-8601"},
-        {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eRFC1123, L"RFC-1123"},
-        {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eHTTPDate, L"HTTP-date"},
-    }}};
-    template <>
-    constexpr EnumNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat>::k{{{
-        {Stroika::Foundation::Time::DateTime::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped,
-         L"Current-Locale-With-Zeros-Stripped"},
-    }}};
+namespace Stroika::Foundation::Time {
+    Common::StroikaNaming          EnumNamingRule (DateTime::LocaleIndependentFormat);
+    constexpr Common::EnumNameText EnumeratorName (DateTime::LocaleIndependentFormat e, Common::EnumNameText byRule)
+    {
+        switch (e) {
+            case DateTime::LocaleIndependentFormat::eHTTPDate:
+                return "HTTP-date";
+            default:
+                return byRule;
+        }
+    }
+    constexpr Common::EnumNameText EnumeratorName (DateTime::NonStandardPrintFormat e, Common::EnumNameText byRule)
+    {
+        switch (e) {
+            case DateTime::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped:
+                return "CurrentLocaleWithZerosStripped";
+            default:
+                return byRule;
+        }
+    }
 }
 
 namespace Stroika::Foundation::Traversal::RangeTraits {

@@ -312,8 +312,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         template <typename ENUM_TYPE>
         static ReaderFromVoidStarFactory MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
-        static ReaderFromVoidStarFactory
-        MakeCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::DefaultNames<ENUM_TYPE>::k);
+        static ReaderFromVoidStarFactory MakeCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::kDefaultNames<ENUM_TYPE>);
 
     public:
         /**
@@ -338,7 +337,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         template <typename ENUM_TYPE>
         nonvirtual void AddCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
-        nonvirtual void AddCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::DefaultNames<ENUM_TYPE>::k);
+        nonvirtual void AddCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap = Common::kDefaultNames<ENUM_TYPE>);
 
     public:
         /**

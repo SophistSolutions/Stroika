@@ -45,11 +45,6 @@ namespace Stroika::Frameworks::WebServer {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{{{
-        {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},
-        {Frameworks::WebServer::Response::State::eHeadersSent, L"Headers-Sent"},
-        {Frameworks::WebServer::Response::State::eCompleted, L"Completed"},
-    }}};
+namespace Stroika::Frameworks::WebServer {
+    Foundation::Common::StroikaNaming EnumNamingRule (Response::State);
 }

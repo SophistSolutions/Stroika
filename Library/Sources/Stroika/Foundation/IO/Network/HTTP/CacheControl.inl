@@ -16,12 +16,20 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<IO::Network::HTTP::CacheControl::Cacheability> DefaultNames<IO::Network::HTTP::CacheControl::Cacheability>::k{{{
-        {IO::Network::HTTP::CacheControl::Cacheability::ePublic, L"public"},
-        {IO::Network::HTTP::CacheControl::Cacheability::ePrivate, L"private"},
-        {IO::Network::HTTP::CacheControl::Cacheability::eNoCache, L"no-cache"},
-        {IO::Network::HTTP::CacheControl::Cacheability::eNoStore, L"no-store"},
-    }}};
+namespace Stroika::Foundation::IO::Network::HTTP {
+    constexpr Common::EnumNameText EnumeratorName (CacheControl::Cacheability e, Common::EnumNameText byRule)
+    {
+        switch (e) {
+            case CacheControl::Cacheability::ePublic:
+                return "public";
+            case CacheControl::Cacheability::ePrivate:
+                return "private";
+            case CacheControl::Cacheability::eNoCache:
+                return "no-cache";
+            case CacheControl::Cacheability::eNoStore:
+                return "no-store";
+            default:
+                return byRule;
+        }
+    }
 }

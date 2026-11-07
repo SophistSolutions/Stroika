@@ -59,13 +59,6 @@ namespace Stroika::Foundation::Database::Document {
     }
 
 }
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Stroika::Foundation::Database::Document::Transaction::IRep::Disposition>
-        DefaultNames<Stroika::Foundation::Database::Document::Transaction::IRep::Disposition>::k{{{
-            {Stroika::Foundation::Database::Document::Transaction::IRep::Disposition::eNone, L"None"},
-            {Stroika::Foundation::Database::Document::Transaction::IRep::Disposition::eRolledBack, L"Rolled-Back"},
-            {Stroika::Foundation::Database::Document::Transaction::IRep::Disposition::eCompleted, L"Completed"},
-            {Stroika::Foundation::Database::Document::Transaction::IRep::Disposition::eFailed, L"Failed"},
-        }}};
+namespace Stroika::Foundation::Database::Document {
+    Common::StroikaNaming EnumNamingRule (Transaction::IRep::Disposition);
 }

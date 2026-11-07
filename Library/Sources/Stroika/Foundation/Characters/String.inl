@@ -398,7 +398,9 @@ namespace Stroika::Foundation::Characters {
     inline String String::FromStringConstant (span<const CHAR_T> str)
     {
         // todo  add test cases..
-        // todo add low pri jira ticket - at least for UTF-8 case - could do native utf8 rep (multibyte indexing)
+        // @todo (low priority) a UTF-8 (char8_t) rep, so a constant u8 string that is not ASCII is shared, not decoded and copied
+        //       - as here, and in CTORFromBasicStringView_ (String.cpp). Enum names are UTF-8 since Stroika v3.0d26 (EnumNameText),
+        //       but nearly always ASCII, which is shared already. The design question: a UTF-8 rep cannot index directly (multibyte).
 
         if constexpr (same_as<CHAR_T, char8_t>) {
             if (Character::IsASCII (str)) {

@@ -612,14 +612,8 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <typename ENUM_TYPE>
-    class EnumNames;
-    template <>
-    constexpr EnumNames<Characters::CompareOptions> DefaultNames<Characters::CompareOptions>::k{{{
-        {Characters::CompareOptions::eWithCase, L"With-Case"},
-        {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
-    }}};
+namespace Stroika::Foundation::Characters {
+    Common::StroikaNaming EnumNamingRule (CompareOptions);
 }
 
 /*

@@ -210,7 +210,8 @@ namespace Stroika::Foundation::IO::Network {
             enum class ConnectionMode {
                 eProfile, // _WLAN_CONNECTION_MODE::wlan_connection_mode_profile- A profile is used to make the connection
                 eTemporaryProfile, // _WLAN_CONNECTION_MODE::wlan_connection_mode_temporary_profile - A temporary profile is used to make the connection
-                eDiscoverSecrure, // _WLAN_CONNECTION_MODE::wlan_connection_mode_discovery_secure - Secure discovery is used to make the connection
+                eDiscoverSecure, // _WLAN_CONNECTION_MODE::wlan_connection_mode_discovery_secure - Secure discovery is used to make the connection
+                eDiscoverSecrure [[deprecated ("Since Stroika v3.0d26 use eDiscoverSecure")]] = eDiscoverSecure,
                 eDiscoverInsecure, // _WLAN_CONNECTION_MODE::wlan_connection_mode_discovery_unsecure,
                 eAuto, // _WLAN_CONNECTION_MODE::wlan_connection_mode_auto - connection initiated by wireless service automatically using a persistent profile
                 eInvalid, // _WLAN_CONNECTION_MODE::wlan_connection_mode_invalid

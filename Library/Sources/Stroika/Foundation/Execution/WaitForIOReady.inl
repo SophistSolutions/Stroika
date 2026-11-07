@@ -99,12 +99,6 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>
-        DefaultNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::k{{{
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eRead, L"Read"},
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eWrite, L"Write"},
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::ePriority, L"Priority"},
-        }}};
+namespace Stroika::Foundation::Execution::WaitForIOReady_Support {
+    Common::StroikaNaming EnumNamingRule (WaitForIOReady_Base::TypeOfMonitor);
 }

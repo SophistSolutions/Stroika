@@ -20,12 +20,6 @@ namespace Stroika::Foundation::IO {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<IO::AccessMode> DefaultNames<IO::AccessMode>::k{{{
-        {IO::AccessMode::eNoAccess, L"No-Access"},
-        {IO::AccessMode::eRead, L"Read"},
-        {IO::AccessMode::eWrite, L"Write"},
-        {IO::AccessMode::eReadWrite, L"Read-Write"},
-    }}};
+namespace Stroika::Foundation::IO {
+    Common::StroikaNaming EnumNamingRule (AccessMode);
 }

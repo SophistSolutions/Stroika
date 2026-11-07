@@ -59,16 +59,6 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Execution::Logger::Priority> DefaultNames<Execution::Logger::Priority>::k{{{
-        {Execution::Logger::Priority::eDebug, L"Debug"},
-        {Execution::Logger::Priority::eInfo, L"Info"},
-        {Execution::Logger::Priority::eNotice, L"Notice"},
-        {Execution::Logger::Priority::eWarning, L"Warning"},
-        {Execution::Logger::Priority::eError, L"Error"},
-        {Execution::Logger::Priority::eCriticalError, L"CriticalError"},
-        {Execution::Logger::Priority::eAlertError, L"AlertError"},
-        {Execution::Logger::Priority::eEmergency, L"Emergency"},
-    }}};
+namespace Stroika::Foundation::Execution {
+    Common::StroikaNaming EnumNamingRule (Logger::Priority);
 }

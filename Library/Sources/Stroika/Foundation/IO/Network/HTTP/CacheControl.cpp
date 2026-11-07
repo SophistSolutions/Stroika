@@ -38,7 +38,7 @@ CacheControl CacheControl::Parse (const String& headerValue)
         Assert (not vv.empty ()); // cuz the first tokenize will never return an empty item
         String token = vv[0];
         for (const Cacheability& sr : DiscreteRange<Cacheability>::FullRange ()) {
-            if (String::EqualsComparer{eCaseInsensitive}(token, DefaultNames<Cacheability>{}.GetName (sr))) {
+            if (String::EqualsComparer{eCaseInsensitive}(token, Characters::ToString (sr))) {
                 r.fCacheability = sr;
                 goto DoneWithV;
             }
@@ -86,7 +86,7 @@ String CacheControl::As () const
         }
     };
     if (fCacheability) {
-        sb << DefaultNames<Cacheability>{}.GetName (*fCacheability);
+        sb << *fCacheability;
     }
     if (fMustRevalidate) {
         handleComma ();

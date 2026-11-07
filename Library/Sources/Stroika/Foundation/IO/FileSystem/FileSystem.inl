@@ -5,10 +5,6 @@
 namespace Stroika::Foundation::IO::FileSystem {
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<IO::FileSystem::RemoveDirectoryPolicy> DefaultNames<IO::FileSystem::RemoveDirectoryPolicy>::k{{{
-        {IO::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty, L"Fail-If-Not-Empty"},
-        {IO::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles, L"Remove-Any-Contained-Files"},
-    }}};
+namespace Stroika::Foundation::IO::FileSystem {
+    Common::StroikaNaming EnumNamingRule (RemoveDirectoryPolicy);
 }

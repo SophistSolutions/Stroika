@@ -449,11 +449,16 @@ namespace Stroika::Foundation::Time {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::k{{{
-        {Stroika::Foundation::Time::Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
-    }}};
+namespace Stroika::Foundation::Time {
+    constexpr Common::EnumNameText EnumeratorName (Date::NonStandardPrintFormat e, Common::EnumNameText byRule)
+    {
+        switch (e) {
+            case Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped:
+                return "CurrentLocaleWithZerosStripped";
+            default:
+                return byRule;
+        }
+    }
 }
 
 namespace Stroika::Foundation::Traversal::RangeTraits {

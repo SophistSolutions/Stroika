@@ -1480,6 +1480,25 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 
 /*
+ *  g++ (13 to 16; not 11 or 12) will not evaluate, in a constant expression, a comparison of the address of an inline
+ *  variable template's array with nullptr - though no object's address is null, and clang (and MSVC) evaluate it. Seen as
+ *  EnumNameText::View () compares its pointer (into Private_::kLongEnumIdentifier_<V>) with nullptr:
+ *
+ *      Enumeration.inl:196:27: error: '(((const char8_t*)(& Stroika::Foundation::Common::Private_::kLongEnumIdentifier_<...>
+ *          .std::array<char8_t, 72>::_M_elems)) == 0)' is not a constant expression
+ *
+ *  The workaround tests what says the same without the pointer (EnumNameText: its length).
+ */
+#ifndef qCompilerAndStdLib_constexpr_inline_variable_address_compared_to_null_Buggy
+#if defined(__GNUC__) and not defined(__clang__)
+#define qCompilerAndStdLib_constexpr_inline_variable_address_compared_to_null_Buggy                                                        \
+    (__GNUC__ >= 13 and CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 16))
+#else
+#define qCompilerAndStdLib_constexpr_inline_variable_address_compared_to_null_Buggy 0
+#endif
+#endif
+
+/*
  * This could be a docker or ubuntu issue, but appears to be an issue with glibc or libstdc++
  * 
 From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order

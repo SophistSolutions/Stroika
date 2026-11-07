@@ -666,16 +666,19 @@ namespace Stroika::Foundation::Characters {
         inline String ToString (const T& t)
             requires (is_enum_v<T>)
         {
-            if constexpr (not Common::IBoundedEnum<T>) {
-                return Characters::ToString (underlying_type_t<T> (t));
-            }
-            else if constexpr (Common::DefaultNames<T>{}.size () == 0) {
-                // emit as number if no EnumNames<> declared
-                return Characters::ToString (underlying_type_t<T> (t));
+            // its name (kDefaultNames' live as long as the program, so shared, not copied), or - unbounded, or a value no
+            // enumerator has - its number
+            if constexpr (Common::IBoundedEnum<T>) {
+                if (optional<u8string_view> n = Common::kDefaultNames<T>.PeekName (t)) {
+                    return String::FromStringConstant (*n);
+                }
             }
             else {
-                return Common::DefaultNames<T>{}.GetName (t);
+                static_assert (
+                    not requires { EnumNamingRule (t); } and not requires { EnumeratorName (t, Common::EnumNameText{}); },
+                    "an enum declaring names (EnumNamingRule, EnumeratorName) needs Stroika_Define_Enum_Bounds - else they go unused");
             }
+            return Characters::ToString (underlying_type_t<T> (t));
         }
         template <typename OPTIONS>
         inline String ToString (const StringBuilder<OPTIONS>& sb)

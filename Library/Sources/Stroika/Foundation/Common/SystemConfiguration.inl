@@ -55,12 +55,6 @@ namespace Stroika::Foundation::Common {
 
 namespace Stroika::Foundation::Common {
 
-    template <>
-    constexpr EnumNames<Common::SystemConfiguration::OperatingSystem::InstallerTechnology>
-        DefaultNames<Common::SystemConfiguration::OperatingSystem::InstallerTechnology>::k{{{
-            {Common::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
-            {Common::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
-            {Common::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
-        }}};
+    Common::StroikaNaming EnumNamingRule (SystemConfiguration::OperatingSystem::InstallerTechnology);
 
 }

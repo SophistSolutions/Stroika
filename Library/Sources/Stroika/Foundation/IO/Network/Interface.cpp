@@ -683,7 +683,7 @@ namespace {
                             case wlan_connection_mode_temporary_profile:
                                 return WirelessInfo::ConnectionMode::eTemporaryProfile;
                             case wlan_connection_mode_discovery_secure:
-                                return WirelessInfo::ConnectionMode::eDiscoverSecrure;
+                                return WirelessInfo::ConnectionMode::eDiscoverSecure;
                             case wlan_connection_mode_discovery_unsecure:
                                 return WirelessInfo::ConnectionMode::eDiscoverInsecure;
                             case wlan_connection_mode_auto:

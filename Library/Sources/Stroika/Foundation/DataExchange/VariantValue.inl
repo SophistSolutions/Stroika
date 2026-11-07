@@ -135,19 +135,6 @@ namespace Stroika::Foundation::DataExchange {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<DataExchange::VariantValue::Type> DefaultNames<DataExchange::VariantValue::Type>::k{{{
-        {DataExchange::VariantValue::eNull, L"Null"},
-        {DataExchange::VariantValue::eBLOB, L"BLOB"},
-        {DataExchange::VariantValue::eBoolean, L"Boolean"},
-        {DataExchange::VariantValue::eInteger, L"Integer"},
-        {DataExchange::VariantValue::eUnsignedInteger, L"Unsigned-Integer"},
-        {DataExchange::VariantValue::eFloat, L"Float"},
-        {DataExchange::VariantValue::eDate, L"Date"},
-        {DataExchange::VariantValue::eDateTime, L"DateTime"},
-        {DataExchange::VariantValue::eString, L"String"},
-        {DataExchange::VariantValue::eArray, L"Array"},
-        {DataExchange::VariantValue::eMap, L"Map"},
-    }}};
+namespace Stroika::Foundation::DataExchange {
+    Common::StroikaNaming EnumNamingRule (VariantValue::Type);
 }

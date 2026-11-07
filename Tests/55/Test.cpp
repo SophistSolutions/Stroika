@@ -752,11 +752,11 @@ namespace {
 
         // each data type named as a service's description names it, and back
         EXPECT_EQ (Characters::ToString (DataType::eFixed14_4), "fixed.14.4"sv);
-        for (const auto& [t, name] : Common::DefaultNames<DataType>::k) {
-            EXPECT_EQ (Common::DefaultNames<DataType>::k.PeekValue (name), t);
+        for (const auto& [t, name] : Common::kDefaultNames<DataType>) {
+            EXPECT_EQ (Common::kDefaultNames<DataType>.PeekValue (name), t);
         }
-        EXPECT_EQ (Common::DefaultNames<DataType>::k.PeekValue (L"dateTime.tz"), DataType::eDateTimeTZ);
-        EXPECT_FALSE (Common::DefaultNames<DataType>::k.PeekValue (L"ui16").has_value ());
+        EXPECT_EQ (Common::kDefaultNames<DataType>.PeekValue (L"dateTime.tz"), DataType::eDateTimeTZ);
+        EXPECT_FALSE (Common::kDefaultNames<DataType>.PeekValue (L"ui16").has_value ());
     }
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM

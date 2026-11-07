@@ -770,18 +770,6 @@ namespace {
         };
     }
 }
-namespace Stroika::Foundation::Common {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
-    template <>
-    constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_Support_::TunerNumberType_>
-        DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_Support_::TunerNumberType_>::k{{{
-            {T7_SAXObjectReader_BLKQCL_ReadSensors_Support_::TunerNumberType_::eT1, L"eT1"},
-            {T7_SAXObjectReader_BLKQCL_ReadSensors_Support_::TunerNumberType_::eT2, L"eT2"},
-            {T7_SAXObjectReader_BLKQCL_ReadSensors_Support_::TunerNumberType_::eT3, L"eT3"},
-            {T7_SAXObjectReader_BLKQCL_ReadSensors_Support_::TunerNumberType_::eT4, L"eT4"},
-        }}};
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
-}
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T7_SAXObjectReader_BLKQCL_ReadSensors_)
     {
@@ -1223,19 +1211,6 @@ namespace {
             Stroika_Define_Enum_Bounds (eT1, eT4)
         };
     }
-}
-namespace Stroika::Foundation::Common {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
-    // for ToString ()
-    template <>
-    constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_>
-        DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_>::k{{{
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT1, L"eT1"},
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT2, L"eT2"},
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT3, L"eT3"},
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT4, L"eT4"},
-        }}};
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
 }
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_)

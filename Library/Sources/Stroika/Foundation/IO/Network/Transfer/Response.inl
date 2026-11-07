@@ -47,17 +47,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
  ******************************* Common::DefaultNames ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation::Common {
-
-    template <>
-    constexpr EnumNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus>
-        DefaultNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus>::k{{{
-            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eNoSSL, L"No-SSL"},
-            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eSSLOK, L"SSL-OK"},
-            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eCertNotYetValid, L"Cert-Not-Yet-Valid"},
-            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eCertExpired, L"Cert-Expired"},
-            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eHostnameMismatch, L"Hostname-Mismatch"},
-            {Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus::eSSLFailure, L"SSL-Failure"},
-        }}};
-
+namespace Stroika::Foundation::IO::Network::Transfer {
+    Common::StroikaNaming EnumNamingRule (Response::SSLResultInfo::ValidationStatus);
 }

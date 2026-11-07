@@ -543,10 +543,6 @@ namespace Stroika::Foundation::Traversal {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k{{{
-        {Traversal::Openness::eOpen, L"Open"},
-        {Traversal::Openness::eClosed, L"Closed"},
-    }}};
+namespace Stroika::Foundation::Traversal {
+    Common::StroikaNaming EnumNamingRule (Openness);
 }

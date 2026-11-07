@@ -244,9 +244,7 @@ namespace Stroika::Foundation::Common {
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    template <>
-    constexpr EnumNames<Execution::WaitableEvent::WaitStatus> DefaultNames<Execution::WaitableEvent::WaitStatus>::k{{{
-        {Execution::WaitableEvent::WaitStatus::eTimeout, L"Timeout"},
-        {Execution::WaitableEvent::WaitStatus::eTriggered, L"Triggered"},
-    }}};
+}
+namespace Stroika::Foundation::Execution {
+    Common::StroikaNaming EnumNamingRule (WaitableEvent::WaitStatus);
 }

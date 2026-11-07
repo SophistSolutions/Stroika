@@ -51,10 +51,6 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Execution::SignalHandler::Type> DefaultNames<Execution::SignalHandler::Type>::k{{{
-        {Execution::SignalHandler::Type::eDirect, L"Direct"},
-        {Execution::SignalHandler::Type::eSafe, L"Safe"},
-    }}};
+namespace Stroika::Foundation::Execution {
+    Common::StroikaNaming EnumNamingRule (SignalHandler::Type);
 }

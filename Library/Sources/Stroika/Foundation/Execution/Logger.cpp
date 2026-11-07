@@ -380,7 +380,7 @@ Logger::SysLogAppender::~SysLogAppender ()
 
 void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
-    DbgTrace ("SYSLOG: {}: {}"_f, DefaultNames<Logger::Priority> ().GetName (logLevel), message);
+    DbgTrace ("SYSLOG: {}: {}"_f, logLevel, message);
     int sysLogLevel = LOG_NOTICE; // doesn't matter cuz assert error if hit
     switch (logLevel) {
         case Priority::eDebug:
@@ -430,8 +430,7 @@ public:
     void Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.rwget ()->Write (
-            "[{:5}][{:16}] {}\n"_f(Common::DefaultNames<Logger::Priority>{}.GetName (logLevel), Time::DateTime::Now ().Format (), message));
+        fWriter_.rwget ()->Write ("[{:5}][{:16}] {}\n"_f(logLevel, Time::DateTime::Now ().Format (), message));
     }
 
 private:

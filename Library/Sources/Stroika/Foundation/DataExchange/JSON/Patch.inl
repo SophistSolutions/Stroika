@@ -5,11 +5,16 @@
 namespace Stroika::Foundation::DataExchange::JSON {
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Stroika::Foundation::DataExchange::JSON::Patch::OperationType> DefaultNames<Stroika::Foundation::DataExchange::JSON::Patch::OperationType>::k{
-        EnumNames<Stroika::Foundation::DataExchange::JSON::Patch::OperationType>::BasicArrayInitializer{{
-            {Stroika::Foundation::DataExchange::JSON::Patch::OperationType::eAdd, L"add"},
-            {Stroika::Foundation::DataExchange::JSON::Patch::OperationType::eRemove, L"remove"},
-        }}};
+namespace Stroika::Foundation::DataExchange::JSON::Patch {
+    constexpr Common::EnumNameText EnumeratorName (OperationType e, Common::EnumNameText byRule)
+    {
+        switch (e) {
+            case OperationType::eAdd:
+                return "add";
+            case OperationType::eRemove:
+                return "remove";
+            default:
+                return byRule;
+        }
+    }
 }

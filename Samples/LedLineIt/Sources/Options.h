@@ -73,14 +73,18 @@ public:
  */
 
 //NB CANNOT CHANGE VALUES LIGHTLY - WRITTEN TO config files
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Options::SyntaxColoringOption> DefaultNames<Options::SyntaxColoringOption>::k{
-        Common::EnumNames<Options::SyntaxColoringOption>::BasicArrayInitializer{{
-            {Options::SyntaxColoringOption::eSyntaxColoringNone, L"None"},
-            {Options::SyntaxColoringOption::eSyntaxColoringCPlusPlus, L"C++"},
-            {Options::SyntaxColoringOption::eSyntaxColoringVB, L"Visual-Basic"},
-        }}};
+constexpr Common::EnumNameText EnumeratorName (Options::SyntaxColoringOption o, Common::EnumNameText byRule)
+{
+    switch (o) {
+        case Options::SyntaxColoringOption::eSyntaxColoringNone:
+            return "None";
+        case Options::SyntaxColoringOption::eSyntaxColoringCPlusPlus:
+            return "C++";
+        case Options::SyntaxColoringOption::eSyntaxColoringVB:
+            return "Visual-Basic";
+        default:
+            return byRule;
+    }
 }
 
 #endif /*__Options_h__*/

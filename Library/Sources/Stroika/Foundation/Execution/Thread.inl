@@ -379,22 +379,9 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-namespace Stroika::Foundation::Common {
-    template <>
-    constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{{{
-        {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},
-        {Execution::Thread::Status::eRunning, L"Running"},
-        {Execution::Thread::Status::eAborting, L"Aborting"},
-        {Execution::Thread::Status::eCompleted, L"Completed"},
-    }}};
-    template <>
-    constexpr EnumNames<Execution::Thread::Priority> DefaultNames<Execution::Thread::Priority>::k{{{
-        {Execution::Thread::Priority::eLowest, L"Lowest"},
-        {Execution::Thread::Priority::eBelowNormal, L"Below-Normal"},
-        {Execution::Thread::Priority::eNormal, L"Normal"},
-        {Execution::Thread::Priority::eAboveNormal, L"Above-Normal"},
-        {Execution::Thread::Priority::eHighest, L"Highest"},
-    }}};
+namespace Stroika::Foundation::Execution::Thread {
+    Common::StroikaNaming EnumNamingRule (Status);
+    Common::StroikaNaming EnumNamingRule (Priority);
 }
 
 /*
