@@ -563,6 +563,8 @@ still compile". Say which one you did.
   says `3.0d25x`, the work is toward 3.0d25.
 - **Keep writing code comments**: one LGP deletes still helped at review, so it is not criticism. The ones he keeps are
   constraints and measured negative results - what stops a future reader's wrong "simplification".
+- **A sample's comments teach the API** (LGP, 2026-11-07): one saying what a Stroika call already did for the program
+  (SSDPClient: "ApplyOptions allowed only on or off") suits a sample, read to learn Stroika; library code does not restate it.
 - **Claims that a tool lacks something carry a version**: "MSVC has no X, as of 19.51". And before changing a convention
   for a `-std=c++26` quirk, check the paper's status: draft features get withdrawn (P4144 removed `span` from an
   `initializer_list`).
