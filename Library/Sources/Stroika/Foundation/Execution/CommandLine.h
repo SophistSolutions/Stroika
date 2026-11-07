@@ -309,7 +309,7 @@ namespace Stroika::Foundation::Execution {
 
             /**
              *  \brief for enumerated value options
-             * 
+             *
              *  If not empty, the only words this option's argument may be.
              *  ApplyOptions refuses any other (from the command line
              *  or fEnvironmentVariable), naming these, and GenerateUsage lists them on the option's help line, in this order. The
@@ -324,6 +324,9 @@ namespace Stroika::Foundation::Execution {
              *              switchTo = *o == "on"sv;    // --switch ON reads as "on"; --switch maybe never gets here
              *          }
              *      \endcode
+             *
+             *  \todo Read the word as an enum, by the enum's own names (GetArgument<E>) - once Common::EnumNames is redone, with
+             *        reflected names and constexpr overrides: https://github.com/SophistSolutions/Stroika/issues/1282
              */
             Sequence<String> fAllowedValues;
 
