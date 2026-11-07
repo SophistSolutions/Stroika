@@ -14,7 +14,7 @@
 #include <cstdarg>
 #include <ranges>
 
-#if defined(__cpp_lib_expected)
+#if __cpp_lib_expected >= 202211L
 #include <expected>
 #else
 #include <variant>
@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Common::StdCompat {
     /**
      *  Wrap a simplified version of std::unexpected, cuz handy even if c++23 not present
      */
-#if defined(__cpp_lib_expected)
+#if __cpp_lib_expected >= 202211L // with the monadic operations and error_or (P2505) - libstdc++ 12's (202202) has neither
     template <typename T>
     using unexpected = std::unexpected<T>;
     template <typename T, typename E>
