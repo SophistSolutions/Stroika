@@ -227,7 +227,9 @@ namespace Stroika::Foundation::Execution {
          *  \pre not fEnvironmentVariable or fSupportsArgument or IsPositionArgument ()
          *  \pre not fDefaultArgument or fSupportsArgument or IsPositionArgument ()
          *  \pre not (fRequired and fDefaultArgument) - a default would make the option never missing
-         * 
+         *  \pre fAllowedValues.empty () or fSupportsArgument or IsPositionArgument ()
+         *  \pre no two fAllowedValues the same (matched as fAllowedValuesCaseSensitive says), and fDefaultArgument, if any, one of them
+         *
          *  \todo figure out if I can make this a literal type, so can be defined constexpr when not using fLongName (or maybe even with using stringview)
          */
         struct Option {
@@ -300,10 +302,35 @@ namespace Stroika::Foundation::Execution {
              *  \par Example Usage
              *      \code
              *          const CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true, .fDefaultArgument = "8080"sv};
-             *          uint16_t                  port = args.GetArgumentValue<uint16_t> (kPortO_);
+             *          uint16_t                  port = args.GetArgumentValue<uint16_t> (kPortO_); // always safe to call as the default is provided.
              *      \endcode
              */
             optional<String> fDefaultArgument;
+
+            /**
+             *  \brief for enumerated value options
+             * 
+             *  If not empty, the only words this option's argument may be.
+             *  ApplyOptions refuses any other (from the command line
+             *  or fEnvironmentVariable), naming these, and GenerateUsage lists them on the option's help line, in this order. The
+             *  argument then reads as the word listed here, whatever case was typed (unless fAllowedValuesCaseSensitive) - still
+             *  a String: what each word means is the program's to say.
+             *
+             *  \par Example Usage
+             *      \code
+             *          const CommandLine::Option kSwitchO_{.fLongName = "switch"sv, .fSupportsArgument = true, .fAllowedValues = {"on"sv, "off"sv}};
+             *          optional<bool>            switchTo;
+             *          if (optional<String> o = args.GetArgument (kSwitchO_)) {
+             *              switchTo = *o == "on"sv;    // --switch ON reads as "on"; --switch maybe never gets here
+             *          }
+             *      \endcode
+             */
+            Sequence<String> fAllowedValues;
+
+            /**
+             *  How an argument is matched against fAllowedValues - by default ignoring case.
+             */
+            Characters::CompareOptions fAllowedValuesCaseSensitive{Characters::eCaseInsensitive};
 
             /**
              *  DEPRECATED since Stroika v3.0d26 - ApplyOptions ignores it, placing positional options in the order passed.
@@ -363,6 +390,7 @@ namespace Stroika::Foundation::Execution {
          *      o   any other word - a bare - too - is positional: each positional option takes one, in the order they appear in
          *          options; a repeatable one takes all those left.
          *  Then an option not given takes its argument from its fEnvironmentVariable, if that is set - or else its fDefaultArgument.
+         *  An argument one of an option's fAllowedValues matches reads as spelled there.
          *
          *  Throws InvalidCommandLineArgument if:
          *      o   a word starting with - names no option
@@ -370,6 +398,7 @@ namespace Stroika::Foundation::Execution {
          *      o   an option that fSupportsArgument and fIfSupportsArgumentThenRequired is the last word, so has no argument
          *      o   an option that is not fRepeatable is given twice
          *      o   a positional word is left with no positional option to take it
+         *      o   an option's argument (from the command line or its fEnvironmentVariable) is not one of its fAllowedValues
          *      o   an fRequired option is not given (nor its fEnvironmentVariable set) - unless an option with fWaivesRequired is
          *
          *  So --help works with a required option missing (kHelp has fWaivesRequired): check for it after ApplyOptions.
@@ -430,8 +459,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \brief A usage line in the usual notation - [X] optional, X required, X... repeatable - then a line for each option
-         *  with fHelpOptionText, fEnvironmentVariable or fDefaultArgument: its names and argument, as GNU and argparse show them,
-         *  then that text, then [env: VARIABLE] and [default: VALUE] (as clap shows them)
+         *  with fHelpOptionText, fEnvironmentVariable, fDefaultArgument or fAllowedValues: its names and argument, as GNU and
+         *  argparse show them, then that text, then [env: VARIABLE], [default: VALUE] and [possible values: A, B] (as clap shows them)
          *
          *  Lines end in \n - right for cerr or cout (see Characters::kEOL; String::NLToNative () converts it for a raw write).
          *

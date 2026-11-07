@@ -178,7 +178,7 @@ int main (int argc, const char* argv[])
                                         .fHelpOptionText   = "Search for it (a UPnP type, or ssdp:all) - and listen"sv};
     const CommandLine::Option kSwitchO_{.fLongName         = "switch"sv,
                                         .fSupportsArgument = true,
-                                        .fHelpArgName      = "on|off"sv,
+                                        .fAllowedValues    = {"on"sv, "off"sv},
                                         .fHelpOptionText   = "Switch each UPnP light found (each SwitchPower service) on or off"sv};
     const CommandLine::Option kWatchO_{.fLongName = "watch"sv, .fHelpOptionText = "Watch each service found: subscribe to its events, and print each"sv};
     const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
@@ -203,10 +203,7 @@ int main (int argc, const char* argv[])
         searchFor = args.GetArgument (kSearchO_);
         watch     = args.Has (kWatchO_);
         if (optional<String> o = args.GetArgument (kSwitchO_)) {
-            if (*o != "on"sv and *o != "off"sv) {
-                Execution::Throw (InvalidCommandLineArgument{"--switch takes on or off"sv, *o});
-            }
-            switchLightsTo = *o == "on"sv;
+            switchLightsTo = *o == "on"sv; // ApplyOptions allowed only on or off - as listed, whatever case was typed
         }
         if (optional<double> o = args.GetArgument<double> (kQuitAfterO_)) {
             quitAfter = Time::DurationSeconds{*o};

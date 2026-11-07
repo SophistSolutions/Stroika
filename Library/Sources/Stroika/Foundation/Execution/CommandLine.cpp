@@ -193,6 +193,10 @@ String CommandLine::Option::ToString () const
     if (fDefaultArgument) {
         sb << "defaultArgument: "sv << *fDefaultArgument << ","sv;
     }
+    if (not fAllowedValues.empty ()) {
+        sb << "allowedValues: "sv << Characters::ToString (fAllowedValues) << ","sv;
+        sb << "allowedValuesCaseSensitive: "sv << fAllowedValuesCaseSensitive << ","sv;
+    }
     if (fSkipFirstNArguments) {
         sb << "skipFirstNArguments: "sv << fSkipFirstNArguments << ","sv;
     }
@@ -492,7 +496,8 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
         }
         return longName;
     };
-    // its help text, then [env: VARIABLE] and [default: VALUE] as clap shows them; nullopt for an option with no line
+    // its help text, then [env: VARIABLE], [default: VALUE] and [possible values: A, B] as clap shows them; nullopt for an
+    // option with no line
     auto helpText = [] (const Option& o) -> optional<String> {
         Sequence<String> parts;
         if (o.fHelpOptionText) {
@@ -503,6 +508,9 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
         }
         if (o.fDefaultArgument) {
             parts += "[default: "sv + *o.fDefaultArgument + "]"sv;
+        }
+        if (not o.fAllowedValues.empty ()) {
+            parts += "[possible values: "sv + String::Join (o.fAllowedValues, ", "sv) + "]"sv;
         }
         return parts.empty () ? optional<String>{} : String::Join (parts, " "sv);
     };
@@ -538,6 +546,13 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
     Require (options.All ([] (const Option& o) { return not o.fEnvironmentVariable or o.fSupportsArgument or o.IsPositionArgument (); }));
     Require (options.All ([] (const Option& o) { return not o.fDefaultArgument or o.fSupportsArgument or o.IsPositionArgument (); }));
     Require (options.All ([] (const Option& o) { return not(o.fRequired and o.fDefaultArgument); }));
+    Require (options.All ([] (const Option& o) { return o.fAllowedValues.empty () or o.fSupportsArgument or o.IsPositionArgument (); }));
+    Require (options.All ([] (const Option& o) {
+        String::EqualsComparer matches{o.fAllowedValuesCaseSensitive};
+        return o.fAllowedValues.empty () or
+               ((not o.fDefaultArgument or o.fAllowedValues.Any ([&] (const String& w) { return matches (w, *o.fDefaultArgument); })) and
+                o.fAllowedValues.Distinct (String::EqualsComparer{o.fAllowedValuesCaseSensitive}).size () == o.fAllowedValues.size ());
+    }));
     Require (not options.Any ([&] (const Option& a) {
         // no word may name two options: a long name matches case-insensitively if either option says so
         return options.Any ([&] (const Option& b) {
@@ -621,6 +636,21 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
         }
         if (o.fDefaultArgument) {
             given += Given{.fOption = o, .fArgument = o.fDefaultArgument, .fFrom = Given::From::eDefault};
+        }
+    }
+    // an option with fAllowedValues takes only those words - its argument then spelled as listed
+    for (size_t i = 0; i < given.size (); ++i) {
+        Given g = given[i];
+        if (g.fArgument and not g.fOption.fAllowedValues.empty ()) {
+            String::EqualsComparer matches{g.fOption.fAllowedValuesCaseSensitive};
+            optional<String>       listed = g.fOption.fAllowedValues.First ([&] (const String& w) { return matches (w, *g.fArgument); });
+            if (not listed) {
+                return ERRT{InvalidCommandLineArgument{"{}: \"{}\" is not one of: {}"_f(OptionValues::Source_ (g), g.fArgument->LimitLength (50),
+                                                                                        String::Join (g.fOption.fAllowedValues, ", "sv)),
+                                                       *g.fArgument}};
+            }
+            g.fArgument = listed;
+            given.SetAt (i, g);
         }
     }
     if (not given.Any ([] (const Given& g) { return g.fOption.fWaivesRequired; })) {

@@ -435,6 +435,46 @@ namespace {
             EXPECT_TRUE (usage.Contains ("  --port=ARG    listen port [default: 8080]\n"sv)) << usage;
             EXPECT_TRUE (usage.Contains ("  --path=ARG    [env: PATH] [default: nowhere]\n"sv)) << usage;
         }
+        {
+            // an option with fAllowedValues takes only those words - from the command line or its fEnvironmentVariable - each
+            // read as listed (matched ignoring case, unless fAllowedValuesCaseSensitive says otherwise)
+            const CommandLine::Option kSwitchO{
+                .fLongName = "switch"sv, .fSupportsArgument = true, .fAllowedValues = {"on"sv, "off"sv}, .fHelpOptionText = "the light"sv};
+            const CommandLine::Option kModeO{.fLongName                   = "mode"sv,
+                                             .fSupportsArgument           = true,
+                                             .fDefaultArgument            = "a"sv,
+                                             .fAllowedValues              = {"A"sv, "a"sv},
+                                             .fAllowedValuesCaseSensitive = eWithCase};
+            const CommandLine::Option kLevelO{.fAllowedValues = {"error"sv, "warning"sv, "info"sv}, .fHelpArgName = "LEVEL"sv};
+            const initializer_list<CommandLine::Option> kAll{kSwitchO, kModeO, kLevelO};
+            CommandLine::OptionValues                   args = CommandLine{"x --switch=OFF WARNING"}.ApplyOptions (kAll);
+            EXPECT_EQ (args.GetArgument (kSwitchO), "off"sv); // as listed
+            EXPECT_EQ (args.GetArgument (kLevelO), "warning"sv);
+            EXPECT_EQ (args.GetArgument (kModeO), "a"sv);                                          // the default
+            EXPECT_EQ (CommandLine{"x --mode A"}.ApplyOptions (kAll).GetArgument (kModeO), "A"sv); // eWithCase: A is not a
+            EXPECT_FALSE (CommandLine{"x"}.ApplyOptions (kAll).Has (kSwitchO));
+            // any other word is refused, naming those allowed - as "message|argument"
+            auto error = [] (const String& cmdLine, const Iterable<CommandLine::Option>& options) -> String {
+                auto r = CommandLine{cmdLine}.ApplyOptionsQuietly (options);
+                if (r) {
+                    return "(no error)"sv;
+                }
+                return r.error ().As<String> () + "|"sv + r.error ().fArgument;
+            };
+            EXPECT_EQ (error ("x --switch maybe", kAll), "Command line argument --switch: \"maybe\" is not one of: on, off|maybe"sv);
+            EXPECT_EQ (error ("x --mode B", kAll), "Command line argument --mode: \"B\" is not one of: A, a|B"sv);
+            EXPECT_EQ (error ("x verbose", kAll), "Command line argument LEVEL: \"verbose\" is not one of: error, warning, info|verbose"sv);
+            // an environment variable's too - PATH is set wherever the tests run, and never to x
+            const CommandLine::Option kPathO{
+                .fLongName = "path"sv, .fSupportsArgument = true, .fEnvironmentVariable = "PATH"sv, .fAllowedValues = {"x"sv}};
+            EXPECT_EQ (CommandLine{"x --path X"}.ApplyOptions ({kPathO}).GetArgument (kPathO), "x"sv);
+            EXPECT_TRUE (error ("x", {kPathO}).StartsWith ("Environment variable PATH (for --path): \""sv)) << error ("x", {kPathO});
+            // and the help line lists them, after any default
+            EXPECT_EQ (CommandLine::GenerateUsage ("x"sv, kAll), "Usage: x [--switch=ARG] [--mode=ARG] [LEVEL]\n"
+                                                                 "  --switch=ARG    the light [possible values: on, off]\n"
+                                                                 "  --mode=ARG      [default: a] [possible values: A, a]\n"
+                                                                 "  LEVEL           [possible values: error, warning, info]\n"sv);
+        }
     }
 }
 
