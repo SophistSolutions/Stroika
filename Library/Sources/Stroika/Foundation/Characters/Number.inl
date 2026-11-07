@@ -185,11 +185,19 @@ namespace Stroika::Foundation::Characters::Number {
     }
     constexpr void FloatToStringOptions::Set_ (const Punctuation& p)
     {
+#if qCompilerAndStdLib_constexpr_variant_assign_alternative_Buggy
+        fPunctuation = PunctuationSpecifier{p};
+#else
         fPunctuation = p;
+#endif
     }
     constexpr void FloatToStringOptions::Set_ (Common::PredefinedLocale p)
     {
+#if qCompilerAndStdLib_constexpr_variant_assign_alternative_Buggy
+        fPunctuation = PunctuationSpecifier{p};
+#else
         fPunctuation = p;
+#endif
     }
     inline constexpr FloatToStringOptions FloatToStringOptions::kRoundTrip{.fNotation  = Notation::eGeneral,
                                                                            .fPrecision = Precision::ShortestRoundTrip ()};

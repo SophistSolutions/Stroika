@@ -109,7 +109,11 @@ namespace {
     // ISO 8601's number: digits, then optionally a decimal point ('.' or ',') and digits
     bool IsISONumber_ (string_view n)
     {
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+        auto i = find_if_not (n.begin (), n.end (), IsDigit_);
+#else
         auto i = ranges::find_if_not (n, IsDigit_);
+#endif
         if (i == n.begin ()) {
             return false;
         }
@@ -445,7 +449,11 @@ auto Duration::ParseTime_ (string_view s, [[maybe_unused]] const ParseOptions& o
          *  Read in the "C" locale, whatever the global one; one decimal point at most, so 1.2.3 is an error, not 1.2.
          */
         string n{number};
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+        replace (n.begin (), n.end (), ',', '.');
+#else
         ranges::replace (n, ',', '.');
+#endif
         auto value = Number::Parse<InternalNumericFormatType_> (span<const char>{n});
         if (not value) {
             return error ("\"{}\" is not a number"_f(String{number}));

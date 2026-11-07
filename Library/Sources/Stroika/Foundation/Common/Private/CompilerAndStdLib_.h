@@ -1463,6 +1463,23 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 
 /*
+ *  libstdc++ 11's variant::operator= (T&&) - assigning one of its alternatives - is not constexpr (P2231R1, constexpr optional
+ *  and variant, came in libstdc++ 12), so a constexpr function doing so fails to compile:
+ *
+ *      Number.inl:188:24: error: call to non-'constexpr' function 'std::enable_if_t<...> std::variant<_Types>::operator=(_Tp&&)
+ *          [with _Tp = const Stroika::Foundation::Characters::Number::Punctuation&; ...]'
+ *
+ *  The workaround assigns a whole variant instead (its defaulted copy/move assignment, constexpr when the alternatives are trivial).
+ */
+#ifndef qCompilerAndStdLib_constexpr_variant_assign_alternative_Buggy
+#if defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_constexpr_variant_assign_alternative_Buggy (_GLIBCXX_RELEASE <= 11)
+#else
+#define qCompilerAndStdLib_constexpr_variant_assign_alternative_Buggy 0
+#endif
+#endif
+
+/*
  * This could be a docker or ubuntu issue, but appears to be an issue with glibc or libstdc++
  * 
 From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
