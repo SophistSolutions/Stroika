@@ -83,6 +83,14 @@ namespace Stroika::Foundation::Execution {
         return nullopt;
     }
     template <ICommandLineArgumentType T>
+    T CommandLine::OptionValues::GetArgumentValue (const Option& o) const
+    {
+        Require (o.fRequired or o.fDefaultArgument);
+        optional<T> r = GetArgument<T> (o);
+        Require (r.has_value ()); // else an fWaivesRequired option (--help) was given: check for it first
+        return *r;
+    }
+    template <ICommandLineArgumentType T>
     Sequence<T> CommandLine::OptionValues::GetArguments (const Option& o) const
     {
         Require (fOptions_.Contains (o));

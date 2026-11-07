@@ -407,6 +407,34 @@ namespace {
             EXPECT_TRUE (CommandLine::GenerateUsage ("x"sv, kAll).Contains ("  --unset=ARG    [env: STROIKA_TEST42_SURELY_NOT_SET]\n"sv))
                 << CommandLine::GenerateUsage ("x"sv, kAll);
         }
+        {
+            // an option not given (nor its fEnvironmentVariable set) takes its fDefaultArgument - and GetArgumentValue reads an
+            // option that must have an argument (it has a default, or is fRequired) as the T itself
+            const CommandLine::Option kPortO{.fLongName = "port"sv, .fSupportsArgument = true, .fDefaultArgument = "8080"sv, .fHelpOptionText = "listen port"sv};
+            const CommandLine::Option kPathO{
+                .fLongName = "path"sv, .fSupportsArgument = true, .fEnvironmentVariable = "PATH"sv, .fDefaultArgument = "nowhere"sv};
+            const CommandLine::Option                   kFileO{.fRequired = true, .fHelpArgName = "FILE"sv};
+            const initializer_list<CommandLine::Option> kAll{kPortO, kPathO, kFileO};
+            CommandLine::OptionValues                   args = CommandLine{"x a.txt"}.ApplyOptions (kAll);
+            EXPECT_EQ (args.GetArgumentValue<uint16_t> (kPortO), 8080);
+            EXPECT_FALSE (args.Has (kPortO)); // not given: the program can tell
+            EXPECT_EQ (CommandLine{"x --port 80 a.txt"}.ApplyOptions (kAll).GetArgumentValue<uint16_t> (kPortO), 80);
+            EXPECT_EQ (args.GetArgument (kPathO), kEnvironment->Lookup ("PATH"sv)); // the environment variable comes before the default
+            EXPECT_EQ (args.GetArgumentValue<filesystem::path> (kFileO), filesystem::path{"a.txt"});
+            // a default that is not a T is named as one
+            const CommandLine::Option kBadO{.fLongName = "bad"sv, .fSupportsArgument = true, .fDefaultArgument = "80x"sv};
+            try {
+                (void)CommandLine{"x"}.ApplyOptions ({kBadO}).GetArgumentValue<int> (kBadO);
+                ADD_FAILURE () << "no exception";
+            }
+            catch (const InvalidCommandLineArgument& e) {
+                EXPECT_EQ (e.As<String> (), "Default argument for --bad: \"80x\" is not an integer"sv);
+            }
+            // and the help line shows it, after any environment variable
+            String usage = CommandLine::GenerateUsage ("x"sv, kAll);
+            EXPECT_TRUE (usage.Contains ("  --port=ARG    listen port [default: 8080]\n"sv)) << usage;
+            EXPECT_TRUE (usage.Contains ("  --path=ARG    [env: PATH] [default: nowhere]\n"sv)) << usage;
+        }
     }
 }
 

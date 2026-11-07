@@ -77,10 +77,10 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \par Example Usage (in application main)
      *      \code
-     *          uint16_t portNumber = 8080;
+     *          uint16_t portNumber;
      *
      *          const CommandLine::Option kPortO_{
-     *              .fLongName = "port"sv, .fSupportsArgument = true, .fHelpOptionText = "specify webserver listen port (default {})"_f(portNumber)};
+     *              .fLongName = "port"sv, .fSupportsArgument = true, .fDefaultArgument = "8080"sv, .fHelpOptionText = "specify webserver listen port"sv};
      *          const CommandLine::Option kQuitAfterO_{
      *              .fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpOptionText = "automatically quit after <argument> seconds"sv};
      *          const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Execution {
      *                  cerr << cmdLine.GenerateUsage (kAllOptions_);
      *                  return EXIT_SUCCESS;
      *              }
-     *              portNumber = args.GetArgument<uint16_t> (kPortO_).value_or (portNumber); // throws if --port is not a uint16_t
+     *              portNumber = args.GetArgumentValue<uint16_t> (kPortO_); // throws if --port is not a uint16_t
      *          }
      *          catch (const InvalidCommandLineArgument& e) {
      *              cerr << Characters::ToString (e) << endl;
@@ -225,6 +225,8 @@ namespace Stroika::Foundation::Execution {
          *  \pre not fRepeatable or fSupportsArgument or IsPositionArgument ()
          *  \pre not fSupportsArgument or fIfSupportsArgumentThenRequired or fLongName (an optional argument is given only as --long=VALUE)
          *  \pre not fEnvironmentVariable or fSupportsArgument or IsPositionArgument ()
+         *  \pre not fDefaultArgument or fSupportsArgument or IsPositionArgument ()
+         *  \pre not (fRequired and fDefaultArgument) - a default would make the option never missing
          * 
          *  \todo figure out if I can make this a literal type, so can be defined constexpr when not using fLongName (or maybe even with using stringview)
          */
@@ -290,6 +292,20 @@ namespace Stroika::Foundation::Execution {
             optional<String> fEnvironmentVariable;
 
             /**
+             *  If this option is not given, nor its fEnvironmentVariable set, its argument is this - read by GetArgument<T> as a T,
+             *  like any argument (so a default that is not a T throws there, naming it). GenerateUsage shows it on the option's
+             *  help line, so the help and the program cannot disagree. Has () stays false: the program can still tell the option
+             *  was not given.
+             *
+             *  \par Example Usage
+             *      \code
+             *          const CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true, .fDefaultArgument = "8080"sv};
+             *          uint16_t                  port = args.GetArgumentValue<uint16_t> (kPortO_);
+             *      \endcode
+             */
+            optional<String> fDefaultArgument;
+
+            /**
              *  DEPRECATED since Stroika v3.0d26 - ApplyOptions ignores it, placing positional options in the order passed.
              *
              *  Not marked [[deprecated]]: on a field of an aggregate, g++ (13-15) and clang (18-21) warn wherever an Option is
@@ -346,7 +362,7 @@ namespace Stroika::Foundation::Execution {
          *      o   a bare -- ends the options: every word after it is positional (so a file can be named -x)
          *      o   any other word - a bare - too - is positional: each positional option takes one, in the order they appear in
          *          options; a repeatable one takes all those left.
-         *  Then an option not given, with an fEnvironmentVariable that is set, takes that variable's value as its argument.
+         *  Then an option not given takes its argument from its fEnvironmentVariable, if that is set - or else its fDefaultArgument.
          *
          *  Throws InvalidCommandLineArgument if:
          *      o   a word starting with - names no option
@@ -414,8 +430,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \brief A usage line in the usual notation - [X] optional, X required, X... repeatable - then a line for each option
-         *  with fHelpOptionText or fEnvironmentVariable: its names and argument, as GNU and argparse show them, then that text,
-         *  then [env: VARIABLE] (as clap shows it)
+         *  with fHelpOptionText, fEnvironmentVariable or fDefaultArgument: its names and argument, as GNU and argparse show them,
+         *  then that text, then [env: VARIABLE] and [default: VALUE] (as clap shows them)
          *
          *  Lines end in \n - right for cerr or cout (see Characters::kEOL; String::NLToNative () converts it for a raw write).
          *
@@ -539,7 +555,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \brief true iff o was given at least once (a positional option: iff a word was left for it), or its argument came
-         *  from its fEnvironmentVariable
+         *  from its fEnvironmentVariable - not for its fDefaultArgument alone
          *
          *  \pre o is one of the options ApplyOptions was given
          */
@@ -547,23 +563,41 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief o's argument (the first, if o is repeatable), as a T; nullopt if o was not given, or was given with no argument
+         *  \brief o's argument (the first, if o is repeatable), as a T; nullopt if o was not given (nor its fEnvironmentVariable
+         *  set, nor has it an fDefaultArgument), or was given with no argument
          *
          *  A positional option's argument is its word. T is String - the text as given - unless asked for otherwise; a
          *  Time::Duration is ISO-8601 (PT10S), so an argument counting seconds is GetArgument<double>.
          *
-         *  Throws InvalidCommandLineArgument, naming o (and its fEnvironmentVariable, if the argument came from there), if the
-         *  argument is not a T (so never for String).
+         *  Throws InvalidCommandLineArgument, naming o - and its fEnvironmentVariable or fDefaultArgument, if the argument came
+         *  from there - if the argument is not a T (so never for String).
          *
          *  \pre o is one of the options ApplyOptions was given
          *
          *  \par Example Usage
          *      \code
-         *          uint16_t portNumber = args.GetArgument<uint16_t> (kPortO_).value_or (8080);
+         *          optional<uint16_t> portNumber = args.GetArgument<uint16_t> (kPortO_);
          *      \endcode
          */
         template <ICommandLineArgumentType T = String>
         nonvirtual optional<T> GetArgument (const Option& o) const;
+
+    public:
+        /**
+         *  \brief o's argument as a T, when it must have one: o is fRequired, or has an fDefaultArgument
+         *
+         *  As GetArgument<T>, throwing as it does, but returning the T itself.
+         *
+         *  \pre o is one of the options ApplyOptions was given
+         *  \pre o.fRequired or o.fDefaultArgument, and no option with fWaivesRequired (as --help) was given
+         *
+         *  \par Example Usage
+         *      \code
+         *          uint16_t portNumber = args.GetArgumentValue<uint16_t> (kPortO_); // kPortO_ has an fDefaultArgument
+         *      \endcode
+         */
+        template <ICommandLineArgumentType T = String>
+        nonvirtual T GetArgumentValue (const Option& o) const;
 
     public:
         /**
@@ -584,13 +618,18 @@ namespace Stroika::Foundation::Execution {
     private:
         /*
          *  One option as ApplyOptions found it - made once there, never changed after: the option (one of the Options it was
-         *  given), its argument (if any), and whether that argument came from the option's fEnvironmentVariable rather than the
-         *  command line. Not const members, which would cost the copy assignment Sequence needs.
+         *  given), its argument (if any), and where that argument came from - the command line, the option's
+         *  fEnvironmentVariable, or its fDefaultArgument. Not const members, which would cost the copy assignment Sequence needs.
          */
         struct Given_ {
+            enum class From {
+                eCommandLine,
+                eEnvironment,
+                eDefault
+            };
             Option           fOption;
             optional<String> fArgument;
-            bool             fFromEnvironment{false};
+            From             fFrom{From::eCommandLine};
         };
 
     private:
@@ -602,13 +641,13 @@ namespace Stroika::Foundation::Execution {
         static T Convert_ (const Given_& g);
 
     private:
-        // where g's argument came from, as an error message starts: "Command line argument --port", or "Environment variable
-        // PORT (for --port)"
+        // where g's argument came from, as an error message starts: "Command line argument --port", "Environment variable PORT
+        // (for --port)", or "Default argument for --port"
         static String Source_ (const Given_& g);
 
     private:
         Sequence<Option> fOptions_; // the options ApplyOptions was given
-        Sequence<Given_> fGiven_;   // each option given, in command-line order - then those taken from their fEnvironmentVariable
+        Sequence<Given_> fGiven_; // each option given, in command-line order - then those from their fEnvironmentVariable or fDefaultArgument
 
     private:
         friend class CommandLine;

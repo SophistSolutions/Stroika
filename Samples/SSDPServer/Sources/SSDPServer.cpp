@@ -164,14 +164,15 @@ int main (int argc, const char* argv[])
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
-    Time::DurationSeconds quitAfter    = Time::kInfinity;
-    uint16_t              portForOurWS = 8080;
+    Time::DurationSeconds quitAfter = Time::kInfinity;
+    uint16_t              portForOurWS{}; // from --port
 
     const CommandLine::Option kPortO_{.fLongName         = "port"sv,
                                       .fSupportsArgument = true,
+                                      .fDefaultArgument  = "8080"sv,
                                       .fHelpArgName      = "PORT"sv,
-                                      .fHelpOptionText = "The port its web server - its description, control and page - listens on (default 8080)"sv};
-    const CommandLine::Option           kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
+                                      .fHelpOptionText   = "The port its web server - its description, control and page - listens on"sv};
+    const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
     const Sequence<CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, kPortO_, kQuitAfterO_};
 
     try {
@@ -180,7 +181,7 @@ int main (int argc, const char* argv[])
             cerr << cmdLine.GenerateUsage (kAllOptions_);
             return EXIT_SUCCESS;
         }
-        portForOurWS = args.GetArgument<uint16_t> (kPortO_).value_or (portForOurWS);
+        portForOurWS = args.GetArgumentValue<uint16_t> (kPortO_);
         if (optional<double> o = args.GetArgument<double> (kQuitAfterO_)) {
             quitAfter = Time::DurationSeconds{*o};
         }

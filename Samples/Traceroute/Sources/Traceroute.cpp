@@ -36,22 +36,30 @@ int main (int argc, const char* argv[])
         ePing,
         eTraceroute,
     };
-    MajorOp               majorOp     = MajorOp::eTraceroute;
-    unsigned int          maxHops     = Ping::Options::kDefaultMaxHops;
-    unsigned int          sampleCount = 3;
-    static const Duration kInterSampleTime_{"PT0.1S"}; // aka 1.5s
-    size_t packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+    MajorOp                              majorOp = MajorOp::eTraceroute;
+    unsigned int                         maxHops{};                   // from --maxHops
+    unsigned int                         sampleCount{};               // from --sampleCount
+    static const Duration                kInterSampleTime_{"PT0.1S"}; // aka 1.5s
+    size_t                               packetSize{};                // from --packetSize
     const Execution::CommandLine::Option kPingO_{.fLongName = "ping"sv, .fHelpOptionText = "Ping the target address"sv};
     const Execution::CommandLine::Option kTraceRtO_{.fLongName = "traceroute"sv, .fHelpOptionText = "Trace the route to the target address"sv};
-    const Execution::CommandLine::Option kPacketSizeO_{
-        .fLongName = "packetSize"sv, .fSupportsArgument = true, .fHelpArgName = "N", .fHelpOptionText = "Number of bytes to send in each test packet"sv};
-    const Execution::CommandLine::Option kMaxHopsO_{
-        .fLongName = "maxHops"sv, .fSupportsArgument = true, .fHelpArgName = "N", .fHelpOptionText = "Max number of hops to get to the target address"sv};
+    const Execution::CommandLine::Option kPacketSizeO_{.fLongName         = "packetSize"sv,
+                                                       .fSupportsArgument = true,
+                                                       // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+                                                       .fDefaultArgument = "{}"_f(Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader)),
+                                                       .fHelpArgName    = "N",
+                                                       .fHelpOptionText = "Number of bytes to send in each test packet"sv};
+    const Execution::CommandLine::Option kMaxHopsO_{.fLongName         = "maxHops"sv,
+                                                    .fSupportsArgument = true,
+                                                    .fDefaultArgument  = "{}"_f(Ping::Options::kDefaultMaxHops),
+                                                    .fHelpArgName      = "N",
+                                                    .fHelpOptionText   = "Max number of hops to get to the target address"sv};
     const Execution::CommandLine::Option kSampleCntO_{
         .fLongName         = "sampleCount"sv,
         .fSupportsArgument = true,
+        .fDefaultArgument  = "3"sv,
         .fHelpArgName      = "N"sv,
-        .fHelpOptionText = "(default 3) - if sampleCount is 1, exception details shown, otherwise just summary of number of exceptions"sv};
+        .fHelpOptionText   = "If sampleCount is 1, exception details shown, otherwise just summary of number of exceptions"sv};
     const Execution::CommandLine::Option kTargetAddress_{.fSupportsArgument = true, .fRequired = true, .fHelpArgName = "target-address"sv};
 
     using namespace Execution::StandardCommandLineOptions;
@@ -78,10 +86,10 @@ int main (int argc, const char* argv[])
         if (args.Has (kTraceRtO_)) {
             majorOp = MajorOp::eTraceroute;
         }
-        packetSize    = args.GetArgument<size_t> (kPacketSizeO_).value_or (packetSize);
-        maxHops       = args.GetArgument<unsigned int> (kMaxHopsO_).value_or (maxHops);
-        sampleCount   = args.GetArgument<unsigned int> (kSampleCntO_).value_or (sampleCount);
-        targetAddress = *args.GetArgument (kTargetAddress_); // fRequired, and no kHelp
+        packetSize    = args.GetArgumentValue<size_t> (kPacketSizeO_);
+        maxHops       = args.GetArgumentValue<unsigned int> (kMaxHopsO_);
+        sampleCount   = args.GetArgumentValue<unsigned int> (kSampleCntO_);
+        targetAddress = args.GetArgumentValue (kTargetAddress_); // fRequired, and no kHelp
     }
     catch (const Execution::InvalidCommandLineArgument& e) {
         usage (Characters::ToString (e));

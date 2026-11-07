@@ -47,7 +47,7 @@ namespace {
         };
         Operation                  fOperation;
         filesystem::path           fArchiveFileName;
-        optional<filesystem::path> fOutputDirectory; // applies only if extract
+        filesystem::path           fOutputDirectory; // applies only if extract
         optional<Sequence<String>> fFiles2Add;
         optional<bool>             fNoFailOnMissingLibrary; // for regression tests
     };
@@ -71,7 +71,8 @@ namespace {
         .fRepeatable  = true,
         .fHelpArgName = "FILE"sv,
     };
-    const CommandLine::Option kOutputDirO_{.fLongName = "outputDirectory"sv, .fSupportsArgument = true, .fHelpOptionText = "(defaulting to .)"sv};
+    const CommandLine::Option kOutputDirO_{
+        .fLongName = "outputDirectory"sv, .fSupportsArgument = true, .fDefaultArgument = "."sv, .fHelpOptionText = "Where --extract writes the files"sv};
 
     const initializer_list<CommandLine::Option> kAllOptions_{
         kHelp, kNoFailOnMissingO_, kListO_, kCreateO_, kExtractO_, kUpdateO_, kOutputDirO_, kArchiveFileO_, kOtherFilenamesO_,
@@ -107,7 +108,7 @@ namespace {
         }
         result.fArchiveFileName = Memory::ValueOf (args.GetArgument<filesystem::path> (kArchiveFileO_));
         result.fFiles2Add       = args.GetArguments (kOtherFilenamesO_);
-        result.fOutputDirectory = args.GetArgument<filesystem::path> (kOutputDirO_);
+        result.fOutputDirectory = args.GetArgumentValue<filesystem::path> (kOutputDirO_);
         // @todo add more.. - update support etc...
         result.fNoFailOnMissingLibrary = args.Has (kNoFailOnMissingO_);
         return result;
@@ -200,7 +201,7 @@ int main (int argc, const char* argv[])
                     ListArchive_ (o->fArchiveFileName);
                     break;
                 case Options_::Operation::eExtract:
-                    ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.value_or ("."sv));
+                    ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory);
                     break;
                 case Options_::Operation::eCreate:
                     CreateArchive_ (o->fArchiveFileName, o->fFiles2Add.value_or (Sequence<String>{}));

@@ -190,6 +190,9 @@ String CommandLine::Option::ToString () const
     if (fEnvironmentVariable) {
         sb << "environmentVariable: "sv << *fEnvironmentVariable << ","sv;
     }
+    if (fDefaultArgument) {
+        sb << "defaultArgument: "sv << *fDefaultArgument << ","sv;
+    }
     if (fSkipFirstNArguments) {
         sb << "skipFirstNArguments: "sv << fSkipFirstNArguments << ","sv;
     }
@@ -217,7 +220,7 @@ CommandLine::OptionValues::OptionValues (const Iterable<Option>& options, const 
 bool CommandLine::OptionValues::Has (const Option& o) const
 {
     Require (fOptions_.Contains (o));
-    return fGiven_.Any ([&] (const Given_& g) { return g.fOption == o; });
+    return fGiven_.Any ([&] (const Given_& g) { return g.fOption == o and g.fFrom != Given_::From::eDefault; });
 }
 
 template <>
@@ -234,7 +237,16 @@ Time::Duration CommandLine::OptionValues::Convert_<Time::Duration> (const Given_
 String CommandLine::OptionValues::Source_ (const Given_& g)
 {
     String option = g.fOption.GetArgumentDescription (g.fOption.IsPositionArgument ());
-    return g.fFromEnvironment ? "Environment variable {} (for {})"_f(*g.fOption.fEnvironmentVariable, option) : "Command line argument "sv + option;
+    switch (g.fFrom) {
+        case Given_::From::eCommandLine:
+            return "Command line argument "sv + option;
+        case Given_::From::eEnvironment:
+            return "Environment variable {} (for {})"_f(*g.fOption.fEnvironmentVariable, option);
+        case Given_::From::eDefault:
+            return "Default argument for "sv + option;
+    }
+    AssertNotReached ();
+    return String{};
 }
 
 String CommandLine::OptionValues::ToString () const
@@ -251,8 +263,11 @@ String CommandLine::OptionValues::ToString () const
         if (g.fArgument) {
             sb << ": "sv << Characters::ToString (*g.fArgument);
         }
-        if (g.fFromEnvironment) {
+        if (g.fFrom == Given_::From::eEnvironment) {
             sb << " (from "sv << *g.fOption.fEnvironmentVariable << ")"sv;
+        }
+        else if (g.fFrom == Given_::From::eDefault) {
+            sb << " (default)"sv;
         }
     }
     sb << "]"sv;
@@ -477,13 +492,19 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
         }
         return longName;
     };
-    // its help text, then [env: VARIABLE] as clap shows it; nullopt for an option with no line
+    // its help text, then [env: VARIABLE] and [default: VALUE] as clap shows them; nullopt for an option with no line
     auto helpText = [] (const Option& o) -> optional<String> {
-        if (not o.fEnvironmentVariable) {
-            return o.fHelpOptionText;
+        Sequence<String> parts;
+        if (o.fHelpOptionText) {
+            parts += *o.fHelpOptionText;
         }
-        String env = "[env: "sv + *o.fEnvironmentVariable + "]"sv;
-        return o.fHelpOptionText ? *o.fHelpOptionText + " "sv + env : env;
+        if (o.fEnvironmentVariable) {
+            parts += "[env: "sv + *o.fEnvironmentVariable + "]"sv;
+        }
+        if (o.fDefaultArgument) {
+            parts += "[default: "sv + *o.fDefaultArgument + "]"sv;
+        }
+        return parts.empty () ? optional<String>{} : String::Join (parts, " "sv);
     };
     size_t maxNameLen{0};
     options.Apply ([&] (const Option& o) {
@@ -515,6 +536,8 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
     Require (options.All ([] (const Option& o) { return not o.fSupportsArgument or o.fIfSupportsArgumentThenRequired or o.fLongName; }));
     Require (options.All ([] (const Option& o) { return not o.fRepeatable or o.fSupportsArgument or o.IsPositionArgument (); }));
     Require (options.All ([] (const Option& o) { return not o.fEnvironmentVariable or o.fSupportsArgument or o.IsPositionArgument (); }));
+    Require (options.All ([] (const Option& o) { return not o.fDefaultArgument or o.fSupportsArgument or o.IsPositionArgument (); }));
+    Require (options.All ([] (const Option& o) { return not(o.fRequired and o.fDefaultArgument); }));
     Require (not options.Any ([&] (const Option& a) {
         // no word may name two options: a long name matches case-insensitively if either option says so
         return options.Any ([&] (const Option& b) {
@@ -584,12 +607,20 @@ auto CommandLine::ApplyOptionsQuietly (const Iterable<Option>& options) const ->
             }
         }
     }
-    // an option not given takes its argument from its environment variable, if that is set (an empty one is as if unset)
+    // an option not given takes its argument from its environment variable, if that is set (an empty one is as if unset) -
+    // or else its default
     for (const Option& o : options) {
-        if (o.fEnvironmentVariable and not wasGiven (o)) {
+        if (wasGiven (o)) {
+            continue;
+        }
+        if (o.fEnvironmentVariable) {
             if (optional<String> v = kEnvironment->Lookup (*o.fEnvironmentVariable); v and not v->empty ()) {
-                given += Given{.fOption = o, .fArgument = v, .fFromEnvironment = true};
+                given += Given{.fOption = o, .fArgument = v, .fFrom = Given::From::eEnvironment};
+                continue;
             }
+        }
+        if (o.fDefaultArgument) {
+            given += Given{.fOption = o, .fArgument = o.fDefaultArgument, .fFrom = Given::From::eDefault};
         }
     }
     if (not given.Any ([] (const Given& g) { return g.fOption.fWaivesRequired; })) {

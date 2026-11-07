@@ -27,12 +27,13 @@ constexpr wchar_t kMagicWriteChar = '='; // if first char after open tag - treat
 
 namespace {
     using StandardCommandLineOptions::kHelp;
-    const CommandLine::Option kFormGeneratorNameO_{.fSingleCharName   = 'n',
-                                                   .fSupportsArgument = true,
-                                                   .fHelpArgName      = "NAME"sv,
-                                                   .fHelpOptionText   = "names the generated function (default Form_Generator)"sv};
-    const CommandLine::Option kInputFileO_{.fRequired = true, .fHelpArgName = "INPUT-HTML-FILE"sv};
-    const CommandLine::Option kOutputFileO_{.fRequired = true, .fHelpArgName = "OUTPUT-CPP-FILE"sv};
+    const CommandLine::Option                   kFormGeneratorNameO_{.fSingleCharName   = 'n',
+                                                                     .fSupportsArgument = true,
+                                                                     .fDefaultArgument  = "Form_Generator"sv,
+                                                                     .fHelpArgName      = "NAME"sv,
+                                                                     .fHelpOptionText   = "names the generated function"sv};
+    const CommandLine::Option                   kInputFileO_{.fRequired = true, .fHelpArgName = "INPUT-HTML-FILE"sv};
+    const CommandLine::Option                   kOutputFileO_{.fRequired = true, .fHelpArgName = "OUTPUT-CPP-FILE"sv};
     const initializer_list<CommandLine::Option> kAllOptions_{kHelp, kFormGeneratorNameO_, kInputFileO_, kOutputFileO_};
 }
 
@@ -231,7 +232,7 @@ int main (int argc, const char* argv[])
         cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_SUCCESS;
     }
-    CompilerApp app{ValueOf (args->GetArgument<filesystem::path> (kInputFileO_)), ValueOf (args->GetArgument<filesystem::path> (kOutputFileO_)),
-                    args->GetArgument (kFormGeneratorNameO_).value_or ("Form_Generator"sv)};
+    CompilerApp app{args->GetArgumentValue<filesystem::path> (kInputFileO_), args->GetArgumentValue<filesystem::path> (kOutputFileO_),
+                    args->GetArgumentValue (kFormGeneratorNameO_)};
     return app.Run () ? EXIT_SUCCESS : EXIT_FAILURE;
 }
