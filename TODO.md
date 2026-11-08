@@ -36,9 +36,6 @@ Generally will track stuff here between releases
    - **IO::Network::Transfer::Cache: a quick review, and docs for its Ptr** (LGP 2026-10-24) -
      Library/Sources/Stroika/Foundation/IO/Network/Transfer/Cache.h: `struct Ptr : shared_ptr<Cache::IRep> {};` has an
      empty doc comment.
-   - **Time::Duration: `operator* (long double lhs, const Duration& rhs)` as `template <floating_point T>`?** (LGP
-     2026-11-06) - Duration.h; today a double or float is promoted to long double, then DurationSeconds (double) times
-     it. Check overload resolution against chrono::duration's own operator*, and an integer left-hand side (2 * d).
    - **String: a UTF-8 (char8_t) rep** (LGP 2026-11-07; may postpone, once discussed) - so a constant u8 string that is not ASCII
      is shared, not decoded and copied: enum names are UTF-8 now (EnumNameText), shared already when ASCII, as nearly all are.
      String.inl's FromStringConstant has the @todo and the design question (a UTF-8 rep cannot index directly).

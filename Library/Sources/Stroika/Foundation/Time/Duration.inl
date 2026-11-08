@@ -376,9 +376,24 @@ namespace Stroika::Foundation::Time {
     {
         return Duration{lhs + rhs.As<DurationSeconds> ()};
     }
-    inline Duration operator* (long double lhs, const Duration& rhs)
+    template <Common::IBuiltinArithmetic T>
+    inline Duration operator* (T lhs, const Duration& rhs)
     {
         return Duration{rhs.As<DurationSeconds> () * lhs};
+    }
+    template <Common::IBuiltinArithmetic T>
+    inline Duration operator* (const Duration& lhs, T rhs)
+    {
+        return Duration{lhs.As<DurationSeconds> () * rhs};
+    }
+    template <Common::IBuiltinArithmetic T>
+    inline Duration operator/ (const Duration& lhs, T rhs)
+    {
+        return Duration{lhs.As<DurationSeconds> () / rhs};
+    }
+    inline Duration::rep operator/ (const Duration& lhs, const Duration& rhs)
+    {
+        return lhs.As<DurationSeconds> () / rhs.As<DurationSeconds> ();
     }
 
 }

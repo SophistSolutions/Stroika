@@ -527,11 +527,31 @@ namespace Stroika::Foundation::Time {
     Duration operator+ (const DurationSeconds& lhs, const Duration& rhs);
 
     /**
-     *  Multiply the duration by the floating point argument
+     *  \brief A Duration times a number, either way round - a Duration
      *
-     *  Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
+     *  chrono::duration's own give a chrono::duration. These take any arithmetic type: one taking a single type (long double,
+     *  say) is ambiguous with chrono's for every other type, each matching one argument exactly.
+     *
+     *  \par Example Usage
+     *      \code
+     *          EXPECT_EQ (2 * Duration{3}, Duration{6});
+     *          EXPECT_EQ ((Duration{"PT3S"} * 0.5).As<String> (), "PT1.5S");
+     *      \endcode
      */
-    Duration operator* (long double lhs, const Duration& rhs);
+    template <Common::IBuiltinArithmetic T>
+    Duration operator* (T lhs, const Duration& rhs);
+    template <Common::IBuiltinArithmetic T>
+    Duration operator* (const Duration& lhs, T rhs); ///< \brief A Duration times a number - a Duration
+
+    /**
+     *  \brief A Duration divided by a number - a Duration; or by a Duration - a number, how many times rhs goes into lhs
+     *
+     *  chrono::duration's give a chrono::duration, and Duration / Duration a chrono::duration<Duration>: Duration is not a
+     *  chrono::duration specialization, so chrono reads the right-hand one as a number.
+     */
+    template <Common::IBuiltinArithmetic T>
+    Duration      operator/ (const Duration& lhs, T rhs);
+    Duration::rep operator/ (const Duration& lhs, const Duration& rhs); ///< \brief How many times rhs goes into lhs, as chrono::duration's
 
 }
 

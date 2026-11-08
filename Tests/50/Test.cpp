@@ -998,6 +998,22 @@ namespace {
             EXPECT_TRUE (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
         }
         {
+            // a Duration times or divided by a number, of any arithmetic type, either way round, is a Duration; divided by a
+            // Duration, a number
+            const Duration d{3};
+            static_assert (same_as<decltype (2.0L * d), Duration> and same_as<decltype (2.0 * d), Duration> and
+                           same_as<decltype (2.0f * d), Duration> and same_as<decltype (2 * d), Duration>);
+            static_assert (same_as<decltype (d * 2.0), Duration> and same_as<decltype (d * 2), Duration> and same_as<decltype (d / 2.0), Duration> and
+                           same_as<decltype (d / 2), Duration> and same_as<decltype (d / d), Duration::rep>);
+            EXPECT_EQ (2.0L * d, Duration{6});
+            EXPECT_EQ (2.0 * d, Duration{6});
+            EXPECT_EQ (2 * d, Duration{6});
+            EXPECT_EQ (d * 2.5f, Duration{7.5});
+            EXPECT_EQ (d / 2, Duration{1.5});
+            EXPECT_EQ ((Duration{"PT3S"} * 0.5).As<String> (), "PT1.5S");
+            EXPECT_EQ (Duration{6} / d, 2.0);
+        }
+        {
             EXPECT_EQ (Duration{"PT1.4S"}.FormatAge (), "now");
             EXPECT_EQ (Duration{"-PT9M"}.FormatAge (), "now");
             EXPECT_EQ (Duration{"-PT20M"}.FormatAge (), "20 minutes ago");
