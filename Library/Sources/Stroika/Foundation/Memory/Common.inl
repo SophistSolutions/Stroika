@@ -121,8 +121,9 @@ namespace Stroika::Foundation::Memory {
         using TO_T = typename TO_SPAN::value_type;
         Require ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ()); // else cannot map evenly
         // allow EITHER size or constness conversions - so NOT re-interpret cast
-        TO_SPAN result{(TO_T*)(src.data ()), src.size_bytes () / sizeof (TO_T)}; // no need to worry about overflow cuz then addressses would overflow
-        Ensure (src.size_bytes () == result.size_bytes ());                      // size in elements can be <, ==, or >
+        // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+        TO_SPAN result ((TO_T*)(src.data ()), src.size_bytes () / sizeof (TO_T)); // no need to worry about overflow cuz then addressses would overflow
+        Ensure (src.size_bytes () == result.size_bytes ());                       // size in elements can be <, ==, or >
         return result;
     }
 

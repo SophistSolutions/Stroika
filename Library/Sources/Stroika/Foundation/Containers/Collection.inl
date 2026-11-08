@@ -88,7 +88,8 @@ namespace Stroika::Foundation::Containers {
                       sized_sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE2>, remove_cvref_t<ITERATOR_OF_ADDABLE>> and
                       same_as<remove_cvref_t<iter_value_t<remove_cvref_t<ITERATOR_OF_ADDABLE>>>, value_type>) {
             if (start != end) [[likely]] {
-                tmp._GetWriteableRep ().Add (span<const value_type>{to_address (start), static_cast<size_t> (end - start)}, nullptr);
+                // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                tmp._GetWriteableRep ().Add (span<const value_type> (to_address (start), static_cast<size_t> (end - start)), nullptr);
             }
         }
         else {
@@ -104,12 +105,14 @@ namespace Stroika::Foundation::Containers {
             for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
                 buf.push_back (*i);
                 if (buf.size () == kChunkSize_) [[unlikely]] {
-                    tmp._GetWriteableRep ().Add (span<const value_type>{buf.begin (), buf.size ()}, nullptr);
+                    // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                    tmp._GetWriteableRep ().Add (span<const value_type> (buf.begin (), buf.size ()), nullptr);
                     buf.clear ();
                 }
             }
             if (buf.size () != 0) [[likely]] {
-                tmp._GetWriteableRep ().Add (span<const value_type>{buf.begin (), buf.size ()}, nullptr);
+                // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                tmp._GetWriteableRep ().Add (span<const value_type> (buf.begin (), buf.size ()), nullptr);
             }
         }
     }
@@ -167,14 +170,16 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Collection<T>::Add (ArgByValueType<value_type> item)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (span<const value_type>{&item, 1}, nullptr);
+        // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (span<const value_type> (&item, 1), nullptr);
         Ensure (not this->empty ());
     }
     template <typename T>
     inline void Collection<T>::Add (ArgByValueType<value_type> item, Iterator<T>* addedAt)
     {
         RequireNotNull (addedAt);
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (span<const value_type>{&item, 1}, addedAt);
+        // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (span<const value_type> (&item, 1), addedAt);
         Ensure (not this->empty ());
         Ensure (not addedAt->Done ());
     }

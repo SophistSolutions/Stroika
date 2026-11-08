@@ -490,7 +490,8 @@ namespace Stroika::Foundation::Traversal {
                         return nullopt;
                     }
                     else {
-                        return spansEqual_ (l, span<const T>{ranges::data (rhs), ranges::size (rhs)});
+                        // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                        return spansEqual_ (l, span<const T> (ranges::data (rhs), ranges::size (rhs)));
                     }
                 };
                 if constexpr (kLHSIsIterable_) {
@@ -502,7 +503,8 @@ namespace Stroika::Foundation::Traversal {
                     }
                 }
                 else {
-                    if (auto result = withLHSSpan_ (span<const T>{ranges::data (lhs), ranges::size (lhs)})) {
+                    // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                    if (auto result = withLHSSpan_ (span<const T> (ranges::data (lhs), ranges::size (lhs)))) {
                         return *result;
                     }
                 }

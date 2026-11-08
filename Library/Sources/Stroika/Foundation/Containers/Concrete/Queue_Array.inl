@@ -39,7 +39,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual optional<span<const value_type>> PeekContiguousStorage () const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fData_};
-            return span<const value_type>{fData_.data (), fData_.size ()};
+            // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+            return span<const value_type> (fData_.data (), fData_.size ());
         }
         virtual size_t size () const override
         {

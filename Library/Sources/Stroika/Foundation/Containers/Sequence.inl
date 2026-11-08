@@ -507,8 +507,9 @@ namespace Stroika::Foundation::Containers {
                       sized_sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE2>, remove_cvref_t<ITERATOR_OF_ADDABLE>> and
                       same_as<remove_cvref_t<iter_value_t<remove_cvref_t<ITERATOR_OF_ADDABLE>>>, T>) {
             if (start != end) [[likely]] {
+                // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (
-                    i, span<const T>{to_address (start), static_cast<size_t> (end - start)});
+                    i, span<const T> (to_address (start), static_cast<size_t> (end - start)));
             }
         }
         else {
@@ -526,13 +527,15 @@ namespace Stroika::Foundation::Containers {
             for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != forward<ITERATOR_OF_ADDABLE2> (end); ++ii) {
                 buf.push_back (*ii);
                 if (buf.size () == kChunkSize_) [[unlikely]] {
-                    accessor._GetWriteableRep ().Insert (insertAt, span<const T>{buf.begin (), buf.size ()});
+                    // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                    accessor._GetWriteableRep ().Insert (insertAt, span<const T> (buf.begin (), buf.size ()));
                     insertAt += buf.size ();
                     buf.clear ();
                 }
             }
             if (buf.size () != 0) [[likely]] {
-                accessor._GetWriteableRep ().Insert (insertAt, span<const T>{buf.begin (), buf.size ()});
+                // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                accessor._GetWriteableRep ().Insert (insertAt, span<const T> (buf.begin (), buf.size ()));
             }
         }
     }
@@ -675,8 +678,9 @@ namespace Stroika::Foundation::Containers {
                       sized_sentinel_for<remove_cvref_t<ITERATOR_OF_ADDABLE2>, remove_cvref_t<ITERATOR_OF_ADDABLE>> and
                       same_as<remove_cvref_t<iter_value_t<remove_cvref_t<ITERATOR_OF_ADDABLE>>>, T>) {
             if (start != end) [[likely]] {
+                // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
                 accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex,
-                                                     span<const T>{to_address (start), static_cast<size_t> (end - start)});
+                                                     span<const T> (to_address (start), static_cast<size_t> (end - start)));
             }
         }
         else {
@@ -703,12 +707,14 @@ namespace Stroika::Foundation::Containers {
             for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
                 buf.push_back (*i);
                 if (buf.size () == kChunkSize_) [[unlikely]] {
-                    accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span<const T>{buf.begin (), buf.size ()});
+                    // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                    accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span<const T> (buf.begin (), buf.size ()));
                     buf.clear ();
                 }
             }
             if (buf.size () != 0) [[likely]] {
-                accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span<const T>{buf.begin (), buf.size ()});
+                // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
+                accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span<const T> (buf.begin (), buf.size ()));
             }
         }
     }
