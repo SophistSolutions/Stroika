@@ -62,6 +62,20 @@ namespace {
     // a light that can be switched on and off: the UPnP Forum's standard SwitchPower service (as the SSDPServer sample has)
     const String kSwitchPowerServiceType_{"urn:schemas-upnp-org:service:SwitchPower:1"sv};
 
+    // --switch's argument: an enum, read by its names - which its bounds give it, and EnumeratorName spells "on" and "off"
+    enum class Switch_ {
+        eOn,
+        eOff
+    };
+    constexpr Common::EnumBounds<Switch_> EnumBoundsOf (Switch_)
+    {
+        return {Switch_::eOn, Switch_::eOff};
+    }
+    constexpr Common::EnumNameText EnumeratorName (Switch_ s, Common::EnumNameText)
+    {
+        return s == Switch_::eOn ? Common::EnumNameText{"on"} : Common::EnumNameText{"off"};
+    }
+
     // an action of the SwitchPower service controlled at controlURL (UPnP Device Architecture 1.1, section 3.2): its out
     // arguments - or, thrown, the error the service says, if it was not done
     SOAP::ActionResponse SwitchPowerAction_ (const URI& controlURL, const String& action, const SOAP::Arguments& inArguments = {})
@@ -178,7 +192,7 @@ int main (int argc, const char* argv[])
                                         .fHelpOptionText   = "Search for it (a UPnP type, or ssdp:all) - and listen"sv};
     const CommandLine::Option kSwitchO_{.fLongName         = "switch"sv,
                                         .fSupportsArgument = true,
-                                        .fAllowedValues    = {"on"sv, "off"sv},
+                                        .fAllowedValues    = CommandLine::Option::AllowedValues<Switch_> (), // on, off
                                         .fHelpOptionText   = "Switch each UPnP light found (each SwitchPower service) on or off"sv};
     const CommandLine::Option kWatchO_{.fLongName = "watch"sv, .fHelpOptionText = "Watch each service found: subscribe to its events, and print each"sv};
     const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
@@ -202,8 +216,8 @@ int main (int argc, const char* argv[])
         listen    = args.Has (kListenO_);
         searchFor = args.GetArgument (kSearchO_);
         watch     = args.Has (kWatchO_);
-        if (optional<String> o = args.GetArgument (kSwitchO_)) {
-            switchLightsTo = *o == "on"sv; // ApplyOptions allowed only on or off - as listed, whatever case was typed
+        if (optional<Switch_> o = args.GetArgument<Switch_> (kSwitchO_)) {
+            switchLightsTo = *o == Switch_::eOn; // ApplyOptions allowed only on or off, whatever case was typed
         }
         if (optional<double> o = args.GetArgument<double> (kQuitAfterO_)) {
             quitAfter = Time::DurationSeconds{*o};

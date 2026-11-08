@@ -479,6 +479,56 @@ namespace {
 }
 
 namespace {
+    namespace CommandLineEnum_ {
+        enum class Level {
+            eError,
+            eWarning,
+            eInfo
+        };
+        constexpr Common::EnumBounds<Level> EnumBoundsOf (Level)
+        {
+            return {Level::eError, Level::eInfo};
+        }
+        Common::StroikaNaming EnumNamingRule (Level); // "Error", "Warning", "Info"
+    }
+    GTEST_TEST (Foundation_Execution, CommandLineEnumArgument_)
+    {
+        Debug::TraceContextBumper ctx{"CommandLineEnumArgument_"};
+        using CommandLineEnum_::Level;
+        // an enum argument, read by its names (kDefaultNames) - ignoring case, unless fAllowedValuesCaseSensitive says otherwise
+        const CommandLine::Option kLevelO{.fLongName = "level"sv, .fSupportsArgument = true, .fRepeatable = true, .fDefaultArgument = "info"sv};
+        EXPECT_TRUE (CommandLine{"x --level warning"}.ApplyOptions ({kLevelO}).GetArgument<Level> (kLevelO) == Level::eWarning);
+        EXPECT_TRUE (CommandLine{"x"}.ApplyOptions ({kLevelO}).GetArgumentValue<Level> (kLevelO) == Level::eInfo); // the default
+        EXPECT_TRUE (CommandLine{"x --level=Error --level INFO"}.ApplyOptions ({kLevelO}).GetArguments<Level> (kLevelO) ==
+                     (Sequence<Level>{Level::eError, Level::eInfo}));
+        const CommandLine::Option kExactO{.fLongName = "level"sv, .fSupportsArgument = true, .fAllowedValuesCaseSensitive = Characters::eWithCase};
+        EXPECT_TRUE (CommandLine{"x --level Warning"}.ApplyOptions ({kExactO}).GetArgument<Level> (kExactO) == Level::eWarning);
+        // any other word throws, naming the names
+        auto error = [] (const String& cmdLine, const CommandLine::Option& o) -> String {
+            try {
+                (void)CommandLine{cmdLine}.ApplyOptions ({o}).GetArgument<Level> (o);
+                return "(no error)"sv;
+            }
+            catch (const InvalidCommandLineArgument& e) {
+                return e.As<String> () + "|"sv + e.fArgument;
+            }
+        };
+        EXPECT_EQ (error ("x --level verbose", kLevelO), "Command line argument --level: \"verbose\" is not one of: Error, Warning, Info|verbose"sv);
+        EXPECT_EQ (error ("x --level warning", kExactO), "Command line argument --level: \"warning\" is not one of: Error, Warning, Info|warning"sv);
+        // fAllowedValues from the same names: ApplyOptions checks them, and the help line lists them
+        const CommandLine::Option kCheckedO{.fLongName         = "level"sv,
+                                            .fSupportsArgument = true,
+                                            .fAllowedValues    = CommandLine::Option::AllowedValues<Level> (),
+                                            .fHelpOptionText   = "how much"sv};
+        EXPECT_EQ (kCheckedO.fAllowedValues, (Sequence<String>{"Error"sv, "Warning"sv, "Info"sv}));
+        EXPECT_TRUE (CommandLine{"x --level WARNING"}.ApplyOptions ({kCheckedO}).GetArgument<Level> (kCheckedO) == Level::eWarning);
+        EXPECT_FALSE (CommandLine{"x --level verbose"}.ApplyOptionsQuietly ({kCheckedO}));
+        String usage = CommandLine::GenerateUsage ("x"sv, {kCheckedO});
+        EXPECT_TRUE (usage.Contains ("how much [possible values: Error, Warning, Info]"sv)) << usage;
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution, CommandLineFromMain_)
     {
         Debug::TraceContextBumper ctx{"CommandLineFromMain_"};

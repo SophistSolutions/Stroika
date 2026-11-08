@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Characters/SDKChar.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -59,11 +60,12 @@ namespace Stroika::Foundation::Execution {
      *  \brief a type CommandLine::OptionValues::GetArgument<T> reads an option's argument as
      *
      *  String (the text as given), a number (read by Characters::Number::Parse<T>: the whole word, in range), filesystem::path,
-     *  or Time::Duration (ISO-8601, as PT10S).
+     *  Time::Duration (ISO-8601, as PT10S), or an enum with bounds (Common::IBoundedEnum), by its names (Common::kDefaultNames).
      */
     template <typename T>
-    concept ICommandLineArgumentType = Common::IAnyOf<T, String, filesystem::path, Time::Duration> or floating_point<T> or
-                                       (integral<T> and not Common::IAnyOf<T, bool, char, wchar_t, char8_t, char16_t, char32_t>);
+    concept ICommandLineArgumentType =
+        Common::IAnyOf<T, String, filesystem::path, Time::Duration> or floating_point<T> or
+        (integral<T> and not Common::IAnyOf<T, bool, char, wchar_t, char8_t, char16_t, char32_t>) or Common::IBoundedEnum<T>;
 
     /**
      *  Take in a 'command line' specification (typically from main (argc,argv), but also used as arguments to ProcessRunner), 
@@ -325,15 +327,31 @@ namespace Stroika::Foundation::Execution {
              *          }
              *      \endcode
              *
-             *  \todo Read the word as an enum, by the enum's own names (GetArgument<E>) - once Common::EnumNames is redone, with
-             *        reflected names and constexpr overrides: https://github.com/SophistSolutions/Stroika/issues/1282
+             *  For an enum, list its names - AllowedValues<E> () - and read the argument as the enum itself (GetArgument<E>):
+             *      \code
+             *          enum class Light { eOn, eOff };
+             *          constexpr Common::EnumBounds<Light> EnumBoundsOf (Light) { return {Light::eOn, Light::eOff}; }
+             *          Common::StroikaNaming EnumNamingRule (Light); // names "On", "Off"
+             *
+             *          const CommandLine::Option kSwitchO_{
+             *              .fLongName = "switch"sv, .fSupportsArgument = true, .fAllowedValues = CommandLine::Option::AllowedValues<Light> ()};
+             *          optional<Light> switchTo = args.GetArgument<Light> (kSwitchO_); // --switch on reads as Light::eOn
+             *      \endcode
              */
             Sequence<String> fAllowedValues;
 
             /**
-             *  How an argument is matched against fAllowedValues - by default ignoring case.
+             *  How an argument is matched against fAllowedValues - by default ignoring case - and, read as an enum, against its
+             *  names.
              */
             Characters::CompareOptions fAllowedValuesCaseSensitive{Characters::eCaseInsensitive};
+
+            /**
+             *  \brief E's names (Common::kDefaultNames), in order - for fAllowedValues, so the option takes just the words
+             *         GetArgument<E> reads, and GenerateUsage lists them
+             */
+            template <Common::IBoundedEnum E>
+            static Sequence<String> AllowedValues ();
 
             /**
              *  DEPRECATED since Stroika v3.0d26 - ApplyOptions ignores it, placing positional options in the order passed.
@@ -599,7 +617,8 @@ namespace Stroika::Foundation::Execution {
          *  set, nor has it an fDefaultArgument), or was given with no argument
          *
          *  A positional option's argument is its word. T is String - the text as given - unless asked for otherwise; a
-         *  Time::Duration is ISO-8601 (PT10S), so an argument counting seconds is GetArgument<double>.
+         *  Time::Duration is ISO-8601 (PT10S), so an argument counting seconds is GetArgument<double>; an enum is one of its
+         *  names (Common::kDefaultNames), matched as o's fAllowedValuesCaseSensitive says - by default ignoring case.
          *
          *  Throws InvalidCommandLineArgument, naming o - and its fEnvironmentVariable or fDefaultArgument, if the argument came
          *  from there - if the argument is not a T (so never for String).

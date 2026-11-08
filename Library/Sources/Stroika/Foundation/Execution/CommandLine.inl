@@ -73,6 +73,21 @@ namespace Stroika::Foundation::Execution {
      ************************* CommandLine::OptionValues ****************************
      ********************************************************************************
      */
+    /*
+     ********************************************************************************
+     ************************* CommandLine::Option::AllowedValues *******************
+     ********************************************************************************
+     */
+    template <Common::IBoundedEnum E>
+    Sequence<String> CommandLine::Option::AllowedValues ()
+    {
+        Sequence<String> result;
+        for (const auto& [e, name] : Common::kDefaultNames<E>) {
+            result += String::FromStringConstant (name);
+        }
+        return result;
+    }
+
     template <ICommandLineArgumentType T>
     optional<T> CommandLine::OptionValues::GetArgument (const Option& o) const
     {
@@ -111,6 +126,18 @@ namespace Stroika::Foundation::Execution {
         }
         else if constexpr (same_as<T, filesystem::path>) {
             return g.fArgument->As<filesystem::path> ();
+        }
+        else if constexpr (Common::IBoundedEnum<T>) {
+            // one of its names, matched as the option's fAllowedValues are
+            String::EqualsComparer matches{g.fOption.fAllowedValuesCaseSensitive};
+            for (const auto& [e, name] : Common::kDefaultNames<T>) {
+                if (matches (String::FromStringConstant (name), *g.fArgument)) {
+                    return e;
+                }
+            }
+            Execution::Throw (InvalidCommandLineArgument{Source_ (g) + ": \""sv + g.fArgument->LimitLength (50) + "\" is not one of: "sv +
+                                                             String::Join (Option::AllowedValues<T> (), ", "sv),
+                                                         *g.fArgument});
         }
         else {
             // Time::Duration's is in CommandLine.cpp
