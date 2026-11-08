@@ -20,6 +20,12 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
+#if qStroika_Foundation_Debug_AssertionsChecked
+namespace Stroika::Foundation::Execution {
+    bool MayHaveApplicationLifetime (span<const byte> s); // declared here too (as in Execution/Module.h), so as not to include it
+}
+#endif
+
 namespace Stroika::Foundation::Characters {
 
     /**
@@ -40,14 +46,6 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename RESULT, typename F, typename... ARGS>
         RESULT WithFormatArgs_ (F&& f, const ARGS&... args);
-
-#if qStroika_Foundation_Debug_AssertionsChecked
-        /**
-         *  Does s last as long as the program - true too where Stroika cannot tell (@see Execution::IsAddressReadOnlyAppLifetime).
-         *  Defined in Format.cpp, so this header need not include Execution/Module.h.
-         */
-        bool LastsAppLifetime_ (wstring_view s);
-#endif
 
         /**
          *  A string literal as a template argument - so "..."_f can widen it, and check it against its arguments, at compile time.
@@ -84,8 +82,8 @@ namespace Stroika::Foundation::Characters {
      *  string. Stroika's own types format there too (a String as AsNarrowSDKString (eIgnoreErrors) gives it), but not what only
      *  _f adds: the types std::format cannot format, formatted through their Characters::ToString (@see IFormattable).
      *
-     *  \note A FormatString<wchar_t> views its text, so that text must last as long as the program (@see String::FromStringConstant)
-     *        - Debug builds check it. A FormatString<char> keeps its own, widened, copy; "..."_f's is static (@see FormatLiteral).
+     *  \note A FormatString<wchar_t> views its text, so that text must have application lifetime (@see Design-Overview.md,
+     *        "Application lifetime") - Debug builds check it. A FormatString<char> keeps its own, widened, copy; "..."_f's is static (@see FormatLiteral).
      *
      *  \note What it formats: @see IFormattable.
      *
@@ -239,7 +237,7 @@ namespace Stroika::Foundation::Characters {
         using FormatLiteralTag_ = void;
 
     private:
-        // the literal, widened at compile time: static, so it lasts as long as the program
+        // the literal, widened at compile time: static, so it has application lifetime
         static constexpr array<wchar_t, decltype (LITERAL)::kChars + 1> kWide_ = Private_::Widen_<LITERAL> ();
     };
 

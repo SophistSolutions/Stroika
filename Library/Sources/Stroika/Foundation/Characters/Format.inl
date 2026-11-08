@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Characters {
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         if (not is_constant_evaluated ()) {
-            Require (Private_::LastsAppLifetime_ (fSV_)); // @see the lifetime note on FormatString
+            Require (Execution::MayHaveApplicationLifetime (as_bytes (span<const CHAR_T> (fSV_)))); // @see the lifetime note on FormatString
         }
 #endif
     }

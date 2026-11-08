@@ -44,9 +44,6 @@ Generally will track stuff here between releases
    - **Time::Duration: `operator* (long double lhs, const Duration& rhs)` as `template <floating_point T>`?** (LGP
      2026-11-06) - Duration.h; today a double or float is promoted to long double, then DurationSeconds (double) times
      it. Check overload resolution against chrono::duration's own operator*, and an integer left-hand side (2 * d).
-   - **Common/Enumeration.h: constrain GetDistanceSpanned and OffsetFromStart with IBoundedEnum** (LGP 2026-11-07) - they use
-     eCOUNT / eSTART, so say so in the signature. And GetDistanceSpanned is declared taking an ENUM e but defined taking none - the
-     declared one has no definition.
    - **String: a UTF-8 (char8_t) rep** (LGP 2026-11-07; may postpone, once discussed) - so a constant u8 string that is not ASCII
      is shared, not decoded and copied: enum names are UTF-8 now (EnumNameText), shared already when ASCII, as nearly all are.
      String.inl's FromStringConstant has the @todo and the design question (a UTF-8 rep cannot index directly).

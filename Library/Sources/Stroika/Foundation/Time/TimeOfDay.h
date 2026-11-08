@@ -24,8 +24,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Release">Release</a>
  *
  * TODO:
- *      @todo   Need DefaultNames<> for enums in TimeOfDay module
- *
  *      @todo   Consider having some way to support double as TimeOfDay (or maybe float). Don't want the
  *              complexity of the chrono code, but some of the power ;-). Not sure how to compromise.
  *

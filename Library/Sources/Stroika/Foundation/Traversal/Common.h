@@ -21,8 +21,6 @@ namespace Stroika::Foundation::Traversal {
      *  not containing the endpoint, and closed means containing the endpoint.
      * 
      *  \note   no support for the concepts of open and closed or neither open nor closed
-     *
-     *  \note   Common::DefaultNames<> supported
      */
     enum class Openness {
         eOpen,

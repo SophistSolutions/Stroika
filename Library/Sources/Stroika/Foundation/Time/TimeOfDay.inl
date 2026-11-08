@@ -55,3 +55,15 @@ namespace Stroika::Foundation::Time {
     }
 
 }
+
+namespace Stroika::Foundation::Time {
+    constexpr Common::EnumNameText EnumeratorName (TimeOfDay::NonStandardPrintFormat e, Common::EnumNameText byRule)
+    {
+        switch (e) {
+            case TimeOfDay::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped:
+                return "CurrentLocaleWithZerosStripped";
+            default:
+                return byRule;
+        }
+    }
+}

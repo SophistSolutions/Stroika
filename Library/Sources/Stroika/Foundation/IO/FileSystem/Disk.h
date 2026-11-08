@@ -32,7 +32,6 @@ namespace Stroika::Foundation::IO::FileSystem {
     using Characters::String;
 
     /**
-     *  \note   Common::DefaultNames<> supported
      *  \note   These print names are mostly for display and debugging purposes, and they are not guaranteed to be safe for
      *          persistence (so be sure to version).
      */

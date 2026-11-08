@@ -66,8 +66,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
         /**
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#cacheability
-         *
-         *  \note   Common::DefaultNames<> supported
          */
         enum class Cacheability {
             ePublic,  // The response may be stored by any cache, even if the response is normally non-cacheable

@@ -167,8 +167,6 @@ namespace Stroika::Foundation::Execution {
          *  But the NUMBERS do NOT correspond!
          *
          *  Lower numbers are less interesting (debug) and higher numbers more important (higher priority).
-         *
-         *  \note   Common::DefaultNames<> supported
          */
         enum class Priority : uint8_t {
             eDebug         = 0, // The message is debug info (not a good use of syslog - consider using DbgTrace)

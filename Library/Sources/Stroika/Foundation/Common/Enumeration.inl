@@ -4,6 +4,12 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
+#if qStroika_Foundation_Debug_AssertionsChecked
+namespace Stroika::Foundation::Execution {
+    bool MayHaveApplicationLifetime (span<const byte> s); // declared here too (as in Execution/Module.h), so as not to include it
+}
+#endif
+
 namespace Stroika::Foundation::Common {
 
     /*
@@ -25,9 +31,10 @@ namespace Stroika::Foundation::Common {
     template <typename ENUM>
     inline constexpr underlying_type_t<ENUM> ToInt (ENUM e)
     {
-        // https://github.com/SophistSolutions/Stroika/issues/685 (STK-549)
-        //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
-        return static_cast<typename underlying_type<ENUM>::type> (e);
+        if constexpr (IBoundedEnum<ENUM>) {
+            Require (ENUM::eSTART <= e and e <= ENUM::eEND);
+        }
+        return static_cast<underlying_type_t<ENUM>> (e);
     }
 
     /*
@@ -35,7 +42,7 @@ namespace Stroika::Foundation::Common {
      ************************* Common::GetDistanceSpanned ***************************
      ********************************************************************************
      */
-    template <typename ENUM>
+    template <IBoundedEnum ENUM>
     constexpr make_unsigned_t<underlying_type_t<ENUM>> GetDistanceSpanned ()
     {
         return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ENUM::eCOUNT);
@@ -49,8 +56,9 @@ namespace Stroika::Foundation::Common {
     template <typename ENUM>
     inline constexpr ENUM ToEnum (underlying_type_t<ENUM> e)
     {
-        // https://github.com/SophistSolutions/Stroika/issues/685 (STK-549)
-        //static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
+        if constexpr (IBoundedEnum<ENUM>) {
+            Require (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
+        }
         return static_cast<ENUM> (e);
     }
 
@@ -59,12 +67,10 @@ namespace Stroika::Foundation::Common {
      *************************** Common::OffsetFromStart ****************************
      ********************************************************************************
      */
-    template <typename ENUM>
+    template <IBoundedEnum ENUM>
     inline constexpr make_unsigned_t<underlying_type_t<ENUM>> OffsetFromStart (ENUM e)
     {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        // https://github.com/SophistSolutions/Stroika/issues/685 (STK-549)
-        //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
         return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ToInt (e) - ToInt (ENUM::eSTART));
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     }
@@ -98,13 +104,8 @@ namespace Stroika::Foundation::Common {
     template <size_t N>
     constexpr EnumNameText::EnumNameText (const char8_t (&s)[N])
     {
-        u8string_view v{s, N - 1};
-        if (is_constant_evaluated () and v.size () > kMaxInlineBytes) {
-            *this = FromStatic (v); // a literal lasts as long as the program (anything else is no constant expression)
-        }
-        else {
-            SetCopyOf_ (v);
-        }
+        // a long one is pointed at: a literal has application lifetime (FromStringConstant checks it, at run time in Debug builds)
+        *this = FromStringConstant (u8string_view{s, N - 1});
     }
     template <size_t N>
     constexpr EnumNameText::EnumNameText (const wchar_t (&s)[N])
@@ -142,17 +143,6 @@ namespace Stroika::Foundation::Common {
             }
             return;
         }
-#if qStroika_Foundation_Common_EnumNameText_DefineStaticString_
-        if consteval {
-            u8string t;
-            for (size_t i = 0; i < s.size ();) {
-                t.append (buf, EncodeUTF8_ (*NextCodePoint_ (s, i), buf));
-            }
-            fPointsTo_ = std::define_static_string (t);
-            fLength_   = t.size ();
-            return;
-        }
-#endif
         Private_::EnumNameText_TooLongToHoldInPlace_WriteItU8SoItIsPointedAt_ ();
     }
     constexpr EnumNameText::EnumNameText (const wchar_t* s)
@@ -170,27 +160,21 @@ namespace Stroika::Foundation::Common {
             r.fLength_ = utf8.size ();
             return r;
         }
-#if qStroika_Foundation_Common_EnumNameText_DefineStaticString_
-        if consteval {
-            u8string t;
-            for (char c : utf8) {
-                t += static_cast<char8_t> (c);
-            }
-            r.fPointsTo_ = std::define_static_string (t);
-            r.fLength_   = t.size ();
-            return r;
-        }
-#endif
         Private_::EnumNameText_TooLongToHoldInPlace_WriteItU8SoItIsPointedAt_ ();
         return r;
     }
-    constexpr EnumNameText EnumNameText::FromStatic (u8string_view s)
+    constexpr EnumNameText EnumNameText::FromStringConstant (u8string_view s)
     {
         EnumNameText r;
         if (s.size () <= kMaxInlineBytes) {
             r.SetCopyOf_ (s); // short names are always held in place
         }
         else {
+#if qStroika_Foundation_Debug_AssertionsChecked
+            if (not is_constant_evaluated ()) {
+                Require (Execution::MayHaveApplicationLifetime (as_bytes (span<const char8_t> (s))));
+            }
+#endif
             r.fPointsTo_ = s.data ();
             r.fLength_   = s.size ();
         }
@@ -263,13 +247,6 @@ namespace Stroika::Foundation::Common {
             fLength_ = s.size ();
             return;
         }
-#if qStroika_Foundation_Common_EnumNameText_DefineStaticString_
-        if consteval {
-            fPointsTo_ = std::define_static_string (s);
-            fLength_   = s.size ();
-            return;
-        }
-#endif
         Private_::EnumNameText_TooLongToHoldInPlace_WriteItU8SoItIsPointedAt_ ();
     }
     constexpr optional<char32_t> EnumNameText::NextCodePoint_ (wstring_view s, size_t& i)
@@ -358,8 +335,8 @@ namespace Stroika::Foundation::Common {
         u8string_view v = identifier.View ();
         if (v.size () >= 2 and v[0] == u8'e' and ((v[1] >= u8'A' and v[1] <= u8'Z') or (v[1] >= u8'0' and v[1] <= u8'9'))) {
             v.remove_prefix (1);
-            // a name too long to hold in place points at text lasting the program - and so does its tail
-            return v.size () > EnumNameText::kMaxInlineBytes ? EnumNameText::FromStatic (v) : EnumNameText{v};
+            // a name too long to hold in place points at text with application lifetime - and so does its tail
+            return v.size () > EnumNameText::kMaxInlineBytes ? EnumNameText::FromStringConstant (v) : EnumNameText{v};
         }
         return identifier;
     }
@@ -437,7 +414,7 @@ namespace Stroika::Foundation::Common {
                 return EnumNameText::FromUTF8 (id);
             }
             else {
-                return EnumNameText::FromStatic (u8string_view{kLongEnumIdentifier_<V>.data (), kLongEnumIdentifier_<V>.size ()});
+                return EnumNameText::FromStringConstant (u8string_view{kLongEnumIdentifier_<V>.data (), kLongEnumIdentifier_<V>.size ()});
             }
         }
 
@@ -514,8 +491,41 @@ namespace Stroika::Foundation::Common {
             }
             return nullopt;
         }
+        // does any enumerator have a Named annotation?
+        template <typename ENUM_TYPE>
+        consteval bool HasNamedEnumerator_ ()
+        {
+#if qCompilerAndStdLib_reflection_debug_mode_vector_of_info_Buggy
+            vector<std::meta::info> enumerators = std::meta::enumerators_of (^^ENUM_TYPE);
+            for (size_t i = 0; i < enumerators.size (); ++i) {
+                std::meta::info e = enumerators.data ()[i];
+#else
+            for (std::meta::info e : std::meta::enumerators_of (^^ENUM_TYPE)) {
+#endif
+                if (not std::meta::annotations_of_with_type (e, ^^Named).empty ()) {
+                    return true;
+                }
+            }
+            return false;
+        }
         // clang-format on
 #endif
+
+        // does ENUM_TYPE declare names, any way - by EnumNamingRule or EnumeratorName beside it, or a C++26 annotation (a naming
+        // rule on it, Named on an enumerator)? Only an IBoundedEnum's are ever used.
+        template <typename ENUM_TYPE>
+        consteval bool DeclaresNames_ ()
+        {
+#if qStroika_Foundation_Common_EnumNames_Annotations_
+            if constexpr (IHasAnnotatedNamingRule_<ENUM_TYPE>) {
+                return true;
+            }
+            if (HasNamedEnumerator_<ENUM_TYPE> ()) {
+                return true;
+            }
+#endif
+            return IHasNamingRule_<ENUM_TYPE> or IHasEnumeratorName_<ENUM_TYPE>;
+        }
 
         // V's default name: its identifier, through its enum's naming rule, then its Named annotation and its EnumeratorName -
         // or empty, for a value no enumerator has (never passed to either)
@@ -532,7 +542,7 @@ namespace Stroika::Foundation::Common {
                 static_assert (not(IHasNamingRule_<ENUM_TYPE> and IHasAnnotatedNamingRule_<ENUM_TYPE>),
                                "an enum picks its naming rule one way: by annotation, or by EnumNamingRule");
                 if constexpr (constexpr optional<u8string_view> a = AnnotatedName_<V> (); a.has_value ()) {
-                    n = EnumNameText::FromStatic (*a);
+                    n = EnumNameText::FromStringConstant (*a);
                 }
 #endif
                 if constexpr (IHasEnumeratorName_<ENUM_TYPE>) {
@@ -553,6 +563,9 @@ namespace Stroika::Foundation::Common {
      ********************************* Common::EnumNames ****************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <typename ENUM_TYPE>
     constexpr EnumNames<ENUM_TYPE>::EnumNames (const BasicArrayInitializer& init)
     {
@@ -561,6 +574,9 @@ namespace Stroika::Foundation::Common {
             fNames_[fSize_++] = Entry{e, EnumNameText{n}};
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <typename ENUM_TYPE>
     constexpr EnumNames<ENUM_TYPE>::EnumNames (initializer_list<Entry> names)
     {
@@ -737,9 +753,66 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ****************************** Common::DefaultNames ****************************
+     ************* DEPRECATED - Common::EnumName, Common::DefaultNames **************
      ********************************************************************************
      */
+    /**
+     *  \brief DEPRECATED (since Stroika v3.0d26) - the entry of a table written for Stroika v3.0d25 and before: an enumerator
+     *  and its name, L"..." - EnumNames::Entry replaces it
+     *
+     *  \see EnumNames::BasicArrayInitializer
+     */
+    template <typename ENUM_TYPE>
+    using EnumName [[deprecated ("Since Stroika v3.0d26 - write an EnumNames as {{E::eA, \"A\"}, ...} (its Entry takes \"...\", "
+                                 "u8\"...\" or L\"...\"), or name the enum by EnumNamingRule and EnumeratorName (see kDefaultNames)")]] =
+        pair<ENUM_TYPE, const wchar_t*>;
+
+    /**
+     *  \brief DEPRECATED (since Stroika v3.0d26) - read kDefaultNames<ENUM_TYPE>: DefaultNames<ENUM_TYPE>{}.GetName (e) is
+     *  kDefaultNames<ENUM_TYPE>.GetName (e)
+     *
+     *  k is only for tables written for Stroika v3.0d25 and before, which specialize it - such a table is still used as it is,
+     *  until it is replaced by an EnumNamingRule and EnumeratorName beside the enum (see kDefaultNames):
+     *      \code
+     *          namespace Stroika::Foundation::Common {
+     *              template <>
+     *              constexpr EnumNames<Priority> DefaultNames<Priority>::k{{{{Priority::eDebug, L"Debug"}, {Priority::eInfo, L"Info"}}}};
+     *          }
+     *      \endcode
+     *  Otherwise k is never defined.
+     *
+     *  (Computing the default in k itself is not portable: a k initialized in the class, gcc lets nothing specialize - "duplicate
+     *  initialization"; a k declared here and defined constexpr outside it, clang (to 22 at least) calls "unknown" in a constant
+     *  expression.)
+     */
+    template <typename ENUM_TYPE>
+    struct [[deprecated ("Since Stroika v3.0d26 - read kDefaultNames<ENUM_TYPE>; a table specializing k: name the enum by EnumNamingRule "
+                         "and EnumeratorName beside it instead (see kDefaultNames)")]] DefaultNames {
+        static_assert (IBoundedEnum<ENUM_TYPE>, "DefaultNames needs an enum with Stroika_Define_Enum_Bounds");
+
+        // undefined unless a table specializes it - and kDefaultNames asks which (for an enum in an anonymous namespace, clang
+        // calls asking a use)
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wundefined-internal\"");
+        [[deprecated ("Since Stroika v3.0d26 - name the enum by EnumNamingRule and EnumeratorName beside it (see kDefaultNames); read "
+                      "kDefaultNames")]] static const EnumNames<ENUM_TYPE> k;
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wundefined-internal\"");
+
+        constexpr operator const EnumNames<ENUM_TYPE>&() const; ///< \brief kDefaultNames<ENUM_TYPE>
+
+        constexpr typename EnumNames<ENUM_TYPE>::const_iterator begin () const;
+        constexpr typename EnumNames<ENUM_TYPE>::const_iterator end () const;
+        constexpr size_t                                        size () const;
+        constexpr optional<u8string_view>                       PeekName (ENUM_TYPE e) const;
+        constexpr u8string_view                                 GetName (ENUM_TYPE e) const;
+        template <typename NAME>
+        constexpr optional<ENUM_TYPE> PeekValue (NAME&& name) const;
+        template <typename... ARGS>
+        constexpr ENUM_TYPE GetValue (ARGS&&... args) const;
+    };
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <typename ENUM_TYPE>
     constexpr DefaultNames<ENUM_TYPE>::operator const EnumNames<ENUM_TYPE>&() const
     {
@@ -782,6 +855,9 @@ namespace Stroika::Foundation::Common {
     {
         return kDefaultNames<ENUM_TYPE>.GetValue (forward<ARGS> (args)...);
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     /*
      ********************************************************************************

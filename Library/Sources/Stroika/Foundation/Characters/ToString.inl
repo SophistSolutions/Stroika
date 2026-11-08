@@ -674,9 +674,9 @@ namespace Stroika::Foundation::Characters {
                 }
             }
             else {
-                static_assert (
-                    not requires { EnumNamingRule (t); } and not requires { EnumeratorName (t, Common::EnumNameText{}); },
-                    "an enum declaring names (EnumNamingRule, EnumeratorName) needs Stroika_Define_Enum_Bounds - else they go unused");
+                static_assert (not Common::Private_::DeclaresNames_<T> (),
+                               "an enum declaring names (EnumNamingRule, EnumeratorName, or a C++26 "
+                               "annotation) needs Stroika_Define_Enum_Bounds - else they go unused");
             }
             return Characters::ToString (underlying_type_t<T> (t));
         }

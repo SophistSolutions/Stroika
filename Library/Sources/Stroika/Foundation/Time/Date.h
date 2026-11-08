@@ -587,8 +587,6 @@ namespace Stroika::Foundation::Time {
          *      eCurrentLocale_WithZerosStripped is locale{}, but with many cases of leading zero's,
          *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
          *      year.
-         *
-         *  \note   Common::DefaultNames<> supported
          */
         enum class NonStandardPrintFormat : uint8_t {
             eCurrentLocale_WithZerosStripped,

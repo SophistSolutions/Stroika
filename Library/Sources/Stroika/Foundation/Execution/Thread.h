@@ -284,9 +284,6 @@ namespace Stroika::Foundation::Execution {
             eAutoStart
         };
 
-        /**
-         *  Common::DefaultNames<> is defined for this enumeration.
-         */
         enum class Status : uint8_t {
             eNotYetRunning, // created, but start not yet called
             eRunning,       // in the context of the 'Run' method
@@ -296,10 +293,6 @@ namespace Stroika::Foundation::Execution {
             Stroika_Define_Enum_Bounds (eNotYetRunning, eCompleted)
         };
 
-        /**
-         *
-         *  \note   Common::DefaultNames<> supported
-         */
         enum class Priority {
             eLowest,
             eBelowNormal,

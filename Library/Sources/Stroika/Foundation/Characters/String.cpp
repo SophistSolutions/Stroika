@@ -47,11 +47,11 @@ static_assert (regular<String>);
 #endif
 
 namespace {
-    // shared rather than copied exactly where it lasts as long as any String sharing it might
+    // shared rather than copied exactly where Stroika can tell it has application lifetime
     template <typename CHAR_T>
     inline bool InReadOnlyImage_ (const basic_string_view<CHAR_T>& s)
     {
-        return Execution::IsAddressReadOnlyAppLifetime (as_bytes (span{s.data (), s.size ()})) == true;
+        return Execution::IsAddressReadOnlyApplicationLifetime (as_bytes (span{s.data (), s.size ()})) == true;
     }
 }
 

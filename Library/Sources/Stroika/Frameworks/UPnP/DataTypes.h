@@ -64,7 +64,7 @@ namespace Stroika::Frameworks::UPnP::DataTypes {
     using Foundation::Characters::String;
 
     /**
-     *  \brief UPnP's data types - each named, as a service's description names it (Common::DefaultNames): ui2, fixed.14.4, ...
+     *  \brief UPnP's data types - each named, as a service's description names it (Common::kDefaultNames): ui2, fixed.14.4, ...
      */
     enum class DataType : uint8_t {
         eUI1,

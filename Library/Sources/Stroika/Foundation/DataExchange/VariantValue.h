@@ -204,8 +204,6 @@ namespace Stroika::Foundation::DataExchange {
          *              VariantValue v2 = fromJSON (toJSON (v));
          *              v2 == v1;  // maybe false
          *              T y = v2.As<T> (); // will produce value x == y
-         *
-         *  \note   Common::DefaultNames<> supported
          * 
          *  \note   the Normalize () method can be used to return the limited subset of information that appears in JSON
          *          (but beware, that also sorts the mappings).

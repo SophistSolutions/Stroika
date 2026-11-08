@@ -136,8 +136,6 @@ namespace Stroika::Foundation::IO::Network {
 
         /**
          *
-         *  \note   Common::DefaultNames<> supported
-         *
          *  Most of these types are obvious, but eDeviceVirtualInternalNetwork is for special internal networks, like for virtualbox, Docker, or other purposes.
          *  They will generally (always) have private IP Addresses distinct from the main real external IP address of the machine in question. It may not always
          *  be possible to identify such networks.
@@ -184,10 +182,6 @@ namespace Stroika::Foundation::IO::Network {
         struct WirelessInfo {
             optional<String> fSSID;
 
-            /**
-             *
-             *  \note   Common::DefaultNames<> supported
-             */
             enum class State {
                 eNotReady,           // WLAN_INTERFACE_STATE::wlan_interface_state_not_ready,
                 eConnected,          // WLAN_INTERFACE_STATE::wlan_interface_state_connected,
@@ -203,10 +197,6 @@ namespace Stroika::Foundation::IO::Network {
             };
             optional<State> fState;
 
-            /**
-             *
-             *  \note   Common::DefaultNames<> supported
-             */
             enum class ConnectionMode {
                 eProfile, // _WLAN_CONNECTION_MODE::wlan_connection_mode_profile- A profile is used to make the connection
                 eTemporaryProfile, // _WLAN_CONNECTION_MODE::wlan_connection_mode_temporary_profile - A temporary profile is used to make the connection
@@ -223,10 +213,6 @@ namespace Stroika::Foundation::IO::Network {
 
             optional<String> fProfileName;
 
-            /**
-             *
-             *  \note   Common::DefaultNames<> supported
-             */
             enum class BSSType {
                 eInfrastructure, // DOT11_BSS_TYPE::dot11_BSS_type_infrastructure
                 eIndependent,    // DOT11_BSS_TYPE::dot11_BSS_type_independent
@@ -239,10 +225,6 @@ namespace Stroika::Foundation::IO::Network {
 
             optional<String> fMACAddress;
 
-            /**
-             *
-             *  \note   Common::DefaultNames<> supported
-             */
             enum class PhysicalConnectionType {
                 eFHSS,       // DOT11_PHY_TYPE::dot11_phy_type_fhss = 1,   Frequency-hopping spread-spectrum
                 eDSSS,       // DOT11_PHY_TYPE:: dot11_phy_type_dsss = 2,   Direct sequence spread spectrum
@@ -273,10 +255,6 @@ namespace Stroika::Foundation::IO::Network {
             optional<bool> fSecurityEnabled; // any wireless security enabled (versus open)  // NOT SURE HOW DIFFERS FROM _DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_80211_OPEN
             optional<bool> f8021XEnabled; // 802.1X
 
-            /**
-             *
-             *  \note   Common::DefaultNames<> supported
-             */
             enum class AuthAlgorithm {
                 eOpen,         // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_80211_OPEN = 1,
                 ePresharedKey, // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_80211_SHARED_KEY = 2,
@@ -339,9 +317,6 @@ namespace Stroika::Foundation::IO::Network {
          */
         optional<Containers::Sequence<InternetAddress>> fDNSServers;
 
-        /**
-         *  \note   Common::DefaultNames<> supported
-         */
         enum class Status {
 
             /**

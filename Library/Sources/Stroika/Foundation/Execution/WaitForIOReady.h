@@ -139,8 +139,6 @@ namespace Stroika::Foundation::Execution {
         public:
             /**
              *  @todo consider adding more params - like out of band flags - but doesn't immediately seem helpful -- LGP 2017-04-16
-             *
-             *  \note   Common::DefaultNames<> supported
              */
             enum class TypeOfMonitor {
                 /**

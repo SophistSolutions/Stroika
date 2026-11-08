@@ -56,8 +56,6 @@ namespace Stroika::Foundation::Streams {
 
     /**
      *  Used in some subclasses as a flag to indicate stream seekability.
-     *
-     *  \note   Common::DefaultNames<> supported
      */
     enum class SeekableFlag {
         eNotSeekable,

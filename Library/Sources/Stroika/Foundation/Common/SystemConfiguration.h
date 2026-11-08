@@ -194,10 +194,6 @@ namespace Stroika::Foundation::Common {
              */
             unsigned int fBits{32};
 
-            /**
-             *
-             *  \note   Common::DefaultNames<> supported
-             */
             enum class InstallerTechnology {
                 eRPM,
                 eMSI,

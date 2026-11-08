@@ -407,7 +407,10 @@ namespace {
         using namespace Test2_EnumNames_Private_;
         using Characters::String;
         using Characters::ToString;
-        // a table written for Stroika v3.0d25 and before, L"..." names: used as it is
+        // a table written for Stroika v3.0d25 and before, L"..." names: used as it is - read as then, by DefaultNames (DEPRECATED)
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         EXPECT_TRUE (DefaultNames<fooEnum>{}.GetName (fooEnum::eOne) == u8"eOne");
         EXPECT_TRUE (kDefaultNames<fooEnum>.GetName (fooEnum::eTwo) == u8"eTwo");
         EXPECT_EQ (ToString (fooEnum::eTwo), "eTwo"sv);
@@ -419,6 +422,9 @@ namespace {
         catch (const Execution::Exception<>&) {
             // good
         }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         // nothing declared: the identifiers as written - and a value no enumerator has, no name
         static_assert (kDefaultNames<Plain>.size () == 3);
         EXPECT_EQ (ToString (Plain::eGreen), "eGreen"sv);
@@ -453,6 +459,16 @@ namespace {
                        u8"ThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo");
         EXPECT_EQ (ToString (LongRuled::eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo),
                    "ThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo"sv);
+        // FromStringConstant at run time: a literal has application lifetime (as Debug builds check), so it is pointed at
+        {
+            u8string_view text = u8"A run-time name longer than sixty-four bytes, pointed at - so it needs application lifetime";
+            EnumNameText  n    = EnumNameText::FromStringConstant (text);
+            EXPECT_TRUE (n.View () == text);
+            EXPECT_TRUE (n.View ().data () == text.data ());
+            // and a long u8"..." written at run time: pointed at the same way
+            EnumNameText n2{u8"A long u8 literal written at run time is pointed at too - it has application lifetime, as checked"};
+            EXPECT_TRUE (n2.View ().starts_with (u8"A long u8 literal") and n2.View ().size () > EnumNameText::kMaxInlineBytes);
+        }
         // no Stroika_Define_Enum_Bounds: its number
         EXPECT_EQ (ToString (Unbounded::eB), "1"sv);
 #if __cpp_impl_reflection >= 202506L
@@ -462,12 +478,6 @@ namespace {
         static_assert (kDefaultNames<Annotated>.GetName (Annotated::eThree) == u8"Trois");
         EXPECT_EQ (ToString (Annotated::eFour), "a char name longer than sixty-four bytes - kept by std::define_static_string, any length"sv);
         EXPECT_EQ (kDefaultNames<Annotated>.PeekValue ("Deux"), Annotated::eTwo);
-#endif
-#if qStroika_Foundation_Common_EnumNameText_DefineStaticString_
-        // and a long "..." name - copied by std::define_static_string
-        constexpr EnumNames<Plain> kLong = kDefaultNames<Plain>.With (
-            Plain::eRed, "a char name longer than sixty-four bytes - copied to static storage by std::define_static_string");
-        static_assert (kLong.GetName (Plain::eRed).size () > EnumNameText::kMaxInlineBytes);
 #endif
     }
 }

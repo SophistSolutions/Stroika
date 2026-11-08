@@ -143,7 +143,7 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
 
 /*
  ********************************************************************************
- ****************** Execution::IsAddressReadOnlyAppLifetime *********************
+ *************** Execution::IsAddressReadOnlyApplicationLifetime ****************
  ********************************************************************************
  */
 namespace {
@@ -226,6 +226,16 @@ const Execution::Private_::ReadOnlyImage_& Execution::Private_::GetReadOnlyImage
         return result;
     }();
     return sImage_;
+}
+
+/*
+ ********************************************************************************
+ ******************** Execution::MayHaveApplicationLifetime *********************
+ ********************************************************************************
+ */
+bool Execution::MayHaveApplicationLifetime (span<const byte> s)
+{
+    return s.empty () or IsAddressReadOnlyApplicationLifetime (s) != false;
 }
 
 /*

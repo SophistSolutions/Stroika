@@ -17,10 +17,10 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ****************** Execution::IsAddressReadOnlyAppLifetime *********************
+     *************** Execution::IsAddressReadOnlyApplicationLifetime ****************
      ********************************************************************************
      */
-    inline optional<bool> IsAddressReadOnlyAppLifetime (span<const byte> s)
+    inline optional<bool> IsAddressReadOnlyApplicationLifetime (span<const byte> s)
     {
         // inline, with the image kept by reference: String asks this of every string view it is constructed from
         static const Private_::ReadOnlyImage_& sImage_ = Private_::GetReadOnlyImage_ ();

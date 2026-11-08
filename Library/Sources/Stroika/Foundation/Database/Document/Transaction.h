@@ -134,9 +134,6 @@ namespace Stroika::Foundation::Database::Document {
         virtual void Rollback () = 0;
 
     public:
-        /**
-         *  \note   Common::DefaultNames<> supported
-         */
         enum class Disposition {
             eNone,
             eRolledBack,

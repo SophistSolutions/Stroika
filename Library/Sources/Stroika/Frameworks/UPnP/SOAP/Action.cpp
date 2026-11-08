@@ -395,7 +395,7 @@ void SOAP::CheckRequest (const ActionRequest& request, const ServiceDescription&
         }
         optional<SD::StateVariable> v =
             description.fStateVariables.First ([&] (const SD::StateVariable& sv) { return sv.fName == described.fRelatedStateVariable; });
-        optional<DataTypes::DataType> t = v ? Common::DefaultNames<DataTypes::DataType>{}.PeekValue (v->fDataType.As<wstring> ().c_str ()) : nullopt;
+        optional<DataTypes::DataType> t = v ? Common::kDefaultNames<DataTypes::DataType>.PeekValue (v->fDataType.As<wstring> ()) : nullopt;
         if (not t) {
             continue; // a type not UPnP's - a vendor's - or none described: not checked
         }

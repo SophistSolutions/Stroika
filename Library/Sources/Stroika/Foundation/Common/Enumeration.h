@@ -13,6 +13,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <optional>
+#include <span>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -20,7 +21,7 @@
 
 /**
  *  \brief qStroika_Foundation_Common_EnumNameText_DefineStaticString_ - the compiler has std::define_static_string (C++26,
- *         P3491), so a long EnumNameText can point at a copy of any text (private: an implementation choice, not an option)
+ *         P3491), which Named (an annotation's name) needs (private: an implementation choice, not an option)
  */
 #ifndef qStroika_Foundation_Common_EnumNameText_DefineStaticString_
 #if defined(__cpp_lib_define_static) and __cpp_lib_define_static >= 202506L
@@ -57,19 +58,59 @@
  *
  * TODO:
  *
- *      @todo   https://github.com/SophistSolutions/Stroika/issues/685 (STK-549) - static_cast usage confusion (ToInt, ToEnum).
- *
  *      @todo   https://github.com/SophistSolutions/Stroika/issues/1284 - enum names: names for an enum with no
- *              Stroika_Define_Enum_Bounds; C++26 reflection (P2996) and annotations (P3394) behind the same interface.
+ *              Stroika_Define_Enum_Bounds.
  */
 
 namespace Stroika::Foundation::Common {
 
     /**
+     *  \def Stroika_Define_Enum_Bounds
+     *
+     *  \brief Makes an enum an IBoundedEnum: written as its last item, it adds eSTART, eEND (one past the last), eLAST and
+     *  eCOUNT, for the values from FIRST_ITEM to LAST_ITEM
+     *
+     *  \par Example Usage
+     *      \code
+     *          enum class Color {
+     *              eRed,
+     *              eGreen,
+     *              eBlue,
+     *              Stroika_Define_Enum_Bounds (eRed, eBlue)
+     *          };
+     *          for (Color c = Color::eSTART; c != Color::eEND; c = Inc (c)) {
+     *              ...
+     *          }
+     *      \endcode
+     *
+     *  What reads the bounds requires an IBoundedEnum: GetDistanceSpanned, OffsetFromStart, and the enum's names (kDefaultNames -
+     *  so ToString and ObjectVariantMapper).
+     *
+     *  \note Stroika_Define_Enum_Bounds will be deprecated in the Stroika release that requires C++26, whose reflection (P2996)
+     *        finds an enum's enumerators itself. Until then, it is what makes an enum bounded.
+     *
+     *  \see IBoundedEnum
+     */
+#define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM)                                                                                  \
+    eSTART = FIRST_ITEM, eEND = LAST_ITEM + 1, eLAST = LAST_ITEM, eCOUNT = eEND - eSTART,
+
+    /**
+     *  Check if T is an enum class, with Stroika_Define_Enum_Bounds called on it to specify bounds.
+     *
+     *  \see Stroika_Define_Enum_Bounds
+     */
+    template <typename T>
+    concept IBoundedEnum = is_enum_v<T> && requires (T t) {
+        T::eSTART;
+        T::eEND;
+        T::eLAST;
+        T::eCOUNT;
+    };
+
+    /**
      *  \brief  Increment the given enumeration safely, without a bunch of casts.
      *
-     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    for an IBoundedEnum: ENUM::eSTART <= e and e < ENUM::eEND - so the result is at most eEND (checked, by ToEnum)
      */
     template <typename ENUM>
     constexpr ENUM Inc (ENUM e);
@@ -77,8 +118,7 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  Cast the given enum to an int (like static_cast<int>()) - but check range.
      *
-     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    for an IBoundedEnum: ENUM::eSTART <= e and e <= ENUM::eEND (eEND too: a loop ends on it)
      *
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      *
@@ -95,21 +135,21 @@ namespace Stroika::Foundation::Common {
      *  \par Example Usage
      *      \code
      *          enum class Priority {
-     *              a, b, c
-     *              Stroika_Define_Enum_Bounds(a, c)
+     *              eLow,
+     *              eMedium,
+     *              eHigh,
+     *              Stroika_Define_Enum_Bounds (eLow, eHigh)
      *          };
-     *          unsigned int    eltsWithPriority[GetDistanceSpanned<Priority> ()];
+     *          unsigned int eltsWithPriority[GetDistanceSpanned<Priority> ()];
      *      \endcode
-     *
      */
-    template <typename ENUM>
-    constexpr make_unsigned_t<underlying_type_t<ENUM>> GetDistanceSpanned (ENUM e);
+    template <IBoundedEnum ENUM>
+    constexpr make_unsigned_t<underlying_type_t<ENUM>> GetDistanceSpanned ();
 
     /**
      *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
      *
-     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    for an IBoundedEnum:  ENUM::eSTART <= e and e <= ENUM::eEND
      *
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      */
@@ -119,76 +159,84 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  offset of given enum from ENUM::eSTART
      *
-     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    ENUM::eSTART <= e and e <= ENUM::eEND (checked, by ToInt) - eEND's offset is eCOUNT
      *
      *  @todo   See if there is some better way for this.
      */
-    template <typename ENUM>
+    template <IBoundedEnum ENUM>
     constexpr make_unsigned_t<underlying_type_t<ENUM>> OffsetFromStart (ENUM e);
 
     /**
-     *  \def Stroika_Define_Enum_Bounds
-     *
-     *      Define meta information on enums using standardized names, so you can generically
-     *      write things like:
-     *          for (auto i = X::eSTART; i != X::eEND; i = Inc (i));
-     */
-#define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM)                                                                                  \
-    eSTART = FIRST_ITEM, eEND = LAST_ITEM + 1, eLAST = LAST_ITEM, eCOUNT = eEND - eSTART,
-
-    /**
-     *  Check if T is an enum class, with Stroika_Define_Enum_Bounds called on it to specify bounds.
-     */
-    template <typename T>
-    concept IBoundedEnum = is_enum_v<T> && requires (T t) {
-        T::eSTART;
-        T::eEND;
-        T::eLAST;
-        T::eCOUNT;
-    };
-
-    /**
-     *  \brief An enumerator's name: UTF-8 - held in place if short, else pointing to text that lasts as long as the program
+     *  \brief An enumerator's name: UTF-8 - held in place if short, else pointing to text with application lifetime
      *
      *  Written "..." (ASCII only: a char literal's bytes depend on the compiler's execution character set - cp1252 for MSVC
      *  without /utf-8), u8"..." (any text), or L"..." (UTF-16 or UTF-32, as wchar_t is - transcoded; so tables written for
      *  Stroika v3.0d25 and before work as written).
      *
-     *  A name of at most kMaxInlineBytes (64) bytes is held in place - nearly all are. A longer one, by where it comes from:
-     *      o   reflected (an enumerator's identifier, through its naming rule): works, any length - points at an exactly-sized
-     *          copy of the identifier
-     *      o   written u8"...": works, any length - points at the literal itself
-     *      o   written "..." or L"...": fails the build (EnumNameText_TooLongToHoldInPlace_WriteItU8SoItIsPointedAt_ - write it
-     *          u8"..."), except where the compiler has std::define_static_string (C++26), which copies it to point at
-     *      o   made at run time: a Require failure - such a name is never pointed at
+     *  \par Example Usage
+     *      \code
+     *          // naming one enumerator, beside the enum (see kDefaultNames) - where an application most often writes one
+     *          constexpr Common::EnumNameText EnumeratorName (Color c, Common::EnumNameText byRule)
+     *          {
+     *              return c == Color::eGreen ? Common::EnumNameText{"Verde"} : byRule;
+     *          }
+     *          // a table of names, for another format: "...", u8"..." or L"..."
+     *          constexpr Common::EnumNames<Color> kOther{{Color::eRed, "R"}, {Color::eGreen, u8"G"}, {Color::eBlue, L"B"}};
+     *          // made at run time, from text with application lifetime: any length
+     *          Common::EnumNameText n = Common::EnumNameText::FromStringConstant (u8"a name of any length"sv);
+     *          u8string_view        v = n.View ();
+     *      \endcode
      *
-     *  A "..." name that is not ASCII fails the same way: the build, at compile time; a Require, at run time.
+     *  \par Argument name requirements:
+     *      Any text, of any length, works as a name:
+     *          o   made automatically, by reflection - an enumerator's identifier, through its naming rule
+     *          o   written u8"..." - a string literal, at compile time or at run time
+     *          o   made by EnumNameText::FromStringConstant (s), at compile time or at run time - which requires s to have
+     *              application lifetime (a string literal does)
+     *      Any other name - written "..." or L"...", or made from text the program made - must be at most kMaxInlineBytes (64)
+     *      bytes of UTF-8.
+     *      A longer one:
+     *          o   in a constant expression: it does not compile.
+     *              The compiler's error is a somewhat confusingly named reference to a function whose name is the error
+     *              message: EnumNameText_TooLongToHoldInPlace_WriteItU8SoItIsPointedAt_.
+     *              If this happens, the workaround is simple: write it as u8"..." instead.
+     *          o   if the EnumNameText is constructed at runtime, from text the program made (rare - copying an EnumNameText is
+     *              always fine): Require() failure (so undefined in release builds)
+     *      A "..." name must also be ASCII, or the same happens (the function named is EnumNameText_ACharNameMustBeASCII_WriteItU8_).
      *
-     *  Only the names themselves end up in the program: a table's L"..." text, and the compiler's function-signature text a
-     *  reflected name is cut from, are read at compile time only - the program holds just each name's UTF-8.
+     *  \par What a name costs
+     *      A name of at most kMaxInlineBytes bytes is held in place: it takes nothing beyond the EnumNameText itself. A longer one
+     *      points at its text - the literal itself, or an exactly-sized copy (of a reflected identifier, or of a C++26 Named
+     *      annotation's text) - which takes its own bytes, once. EnumNames, "Size in the program", has the figures.
+     *
+     *  \par Copying
+     *      Always safe, at any length, and cheap - a trivial copy of sizeof (EnumNameText) bytes: a short name's bytes are copied;
+     *      a long one's pointer is, and what it points at has application lifetime, as every long name's text must.
+     *
+     *  \note Satisfies Concepts:
+     *      o   regular<EnumNameText> - copyable, default constructible (an empty name), and equality comparable
      */
     class EnumNameText {
     public:
         /**
-         *  \brief a name this long or shorter is held in place; a longer one points (see above)
+         *  \brief a name of at most this many bytes of UTF-8 is held in place (see "What a name costs", above)
          *
-         *  Why 64: it is well above any real name - Stroika's run to about 34 bytes, its applications' to 26 (as of v3.0d26) - so
-         *  the names that cannot point all but always fit: one written "..." or L"..." (without std::define_static_string), and
-         *  one made at run time. It is the same on every compiler, so whether a name can be made never depends on which one
-         *  builds it. The price is size: every name takes sizeof (EnumNameText) - 80 bytes on a typical 64-bit compiler (these
-         *  64, a pointer and a length) - however short it is; each 8 bytes less here would save 8 per name.
+         *  Why 64: it is well above any real name - Stroika's run to about 30 bytes, 9 on average, its applications' to 26 (as of
+         *  v3.0d26) - so the names that cannot point all but always fit: one written "..." or L"...", and one made from text the
+         *  program made. It is the same on every compiler, so whether a name can be made never depends on which one builds it. The price:
+         *  every name takes all 64 bytes, however short.
          *
          *  \see EnumNames, "Size in the program"
          */
         static constexpr size_t kMaxInlineBytes = 64;
 
     public:
-        constexpr EnumNameText () = default;
+        constexpr EnumNameText ()                    = default; ///< \brief an empty name - as EnumNames holds for a slot it has not filled
+        constexpr EnumNameText (const EnumNameText&) = default; ///< \brief always safe, at any length: see "Copying", above
         template <size_t N>
         constexpr EnumNameText (const char (&s)[N]);
         template <size_t N>
-        constexpr EnumNameText (const char8_t (&s)[N]); ///< \brief UTF-8, any text - a long one, at compile time, pointed at
+        constexpr EnumNameText (const char8_t (&s)[N]); ///< \brief UTF-8, any text - a long one is pointed at (a literal)
         template <size_t N>
         constexpr EnumNameText (const wchar_t (&s)[N]);     ///< \brief UTF-16 or UTF-32, as wchar_t is - transcoded to UTF-8
         constexpr explicit EnumNameText (string_view s);    ///< \pre s is ASCII
@@ -204,11 +252,12 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  \brief a name pointing at s, not copying it, however long
+         *  \brief s as a name: held in place if short enough, else pointing at s - not copying it, however long
          *
-         *  \pre s lasts as long as the program - a string literal, or a static constexpr array
+         *  \pre s has application lifetime (@see Design-Overview.md, "Application lifetime") - a string literal, or a static
+         *       constexpr array - where it is pointed at; Debug builds check it at run time, where Stroika can tell
          */
-        static constexpr EnumNameText FromStatic (u8string_view s);
+        static constexpr EnumNameText FromStringConstant (u8string_view s);
 
     public:
         /**
@@ -226,10 +275,13 @@ namespace Stroika::Foundation::Common {
         constexpr bool Equals (wstring_view s) const;  ///< \brief the same text as s
 
     public:
+        constexpr EnumNameText& operator= (const EnumNameText&) = default; ///< \brief always safe, at any length: see "Copying", above
+
+    public:
         constexpr bool operator== (const EnumNameText& rhs) const;
 
     private:
-        // s as UTF-8: held in place if short enough, else (at compile time) a copy std::define_static_string makes, if it can
+        // s as UTF-8, held in place - a longer one fails: the build, at compile time; a Require, at run time
         constexpr void SetCopyOf_ (u8string_view s);
         // the code point at s[i], advancing i past it - nullopt if s is not valid UTF-16 (or UTF-32) there
         static constexpr optional<char32_t> NextCodePoint_ (wstring_view s, size_t& i);
@@ -241,6 +293,7 @@ namespace Stroika::Foundation::Common {
         size_t                          fLength_{0};
         array<char8_t, kMaxInlineBytes> fInline_{}; // a short name
     };
+    static_assert (regular<EnumNameText> and is_trivially_copyable_v<EnumNameText>); // see Satisfies Concepts, and Copying
 
     /**
      *  \brief A naming rule: how an enum's enumerators are named from their identifiers, as written ("eWithCase"), at compile
@@ -310,7 +363,7 @@ namespace Stroika::Foundation::Common {
         consteval Named (const char8_t (&s)[N]); ///< \brief UTF-8, any text
 
         /**
-         *  \brief the name, as UTF-8 - in storage that lasts as long as the program
+         *  \brief the name, as UTF-8 - with application lifetime
          */
         constexpr u8string_view View () const;
 
@@ -321,16 +374,10 @@ namespace Stroika::Foundation::Common {
 #endif
 
     /**
-     *  \brief The entry of a table written for Stroika v3.0d25 and before: an enumerator and its name, L"..."
-     *
-     *  \see EnumNames::BasicArrayInitializer
-     */
-    template <typename ENUM_TYPE>
-    using EnumName = pair<ENUM_TYPE, const wchar_t*>;
-
-    /**
      *  \brief An enum's enumerators and their names - for ToString, serialization (ObjectVariantMapper, ObjectReader), and
-     *  looking a value up by its name
+     *  looking a value up by its name.
+     *
+     *  This aggregates an array of Entry (pair<ENUM_TYPE, EnumNameText>).
      *
      *  The usual one is the enum's default, kDefaultNames<ENUM_TYPE>. Another can be made for one use - another format's names -
      *  from a list, or as a copy of another with changes (With).
@@ -342,14 +389,29 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      *
      *  \par Size in the program
-     *      Only an enum whose names are used - its kDefaultNames read at run time, by ToString, ObjectVariantMapper,
-     *      ObjectReader or directly - has them in the program: one read-only constant, kCapacity x sizeof (Entry) +
-     *      sizeof (size_t) bytes, whatever the names' lengths. On a typical 64-bit compiler an Entry is 88 bytes (the enum,
-     *      padded to 8, and an 80 byte EnumNameText), so an enum of 6 enumerators costs about 536 bytes. A name longer than
-     *      EnumNameText::kMaxInlineBytes adds its own bytes, pointed at. Nothing else is kept: not the compiler's signature
-     *      text a reflected name comes from, nor a table's L"..." text. (A table written for Stroika v3.0d25 and before cost
-     *      16 bytes an entry, plus its L"..." text - (length + 1) x sizeof (wchar_t): 2 on Windows, 4 elsewhere.) Compilers
-     *      may lay these out differently, or fold identical constants together - the figures are a guide, not a promise.
+     *      Only an enum whose names are used at run time - by ToString, ObjectVariantMapper, ObjectReader, or read directly -
+     *      has them in the program: its kDefaultNames, one read-only constant. Its size depends on how many enumerators the
+     *      enum has, not on how long their names are:
+     *          kCapacity x sizeof (Entry) + sizeof (size_t)
+     *      On a typical 64-bit compiler an Entry is 88 bytes: the enum (4 bytes, padded to 8) and an EnumNameText (80 bytes -
+     *      its 64 in-place bytes, a pointer and a length). So:
+     *          o   a 15 character name costs 88 bytes - and so does a 3 or a 60 character one
+     *          o   an enum of 6 enumerators costs 6 x 88 + 8 = 536 bytes
+     *          o   a name longer than EnumNameText::kMaxInlineBytes costs 88 bytes plus its own text, pointed at
+     *      Nothing else is kept: not the compiler's signature text a reflected name is cut from, nor a table's L"..." text.
+     *
+     *      For comparison, a table written for Stroika v3.0d25 and before cost 16 bytes an entry (the enum and a pointer),
+     *      plus its L"..." text, (length + 1) x sizeof (wchar_t): for a 15 character name, 16 + 16 x 4 = 80 bytes on Linux
+     *      and macOS, 16 + 16 x 2 = 48 on Windows.
+     *
+     *      Compilers may lay these out differently, or fold identical constants together - the figures are a guide, not a
+     *      promise.
+     *
+     *  \note Why ENUM_TYPE must be an IBoundedEnum (Stroika_Define_Enum_Bounds): an EnumNames holds a slot for each value from
+     *        eSTART to eLAST (kCapacity), and Reflected () finds the enumerators by trying each value in that range - C++20 has no
+     *        other way to find them. C++26 reflection does (std::meta::enumerators_of gives an enum's enumerators, and so their
+     *        count), so neither needs the bounds there: this requirement goes when Stroika requires C++26, as
+     *        Stroika_Define_Enum_Bounds does.
      *
      *  \note   Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -388,17 +450,27 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  \brief the shape of a table written for Stroika v3.0d25 and before: k{{{ {E::eA, L"A"}, ... }}}
+         *  \brief DEPRECATED (since Stroika v3.0d26) - the shape of a table written for Stroika v3.0d25 and before:
+         *  k{{{ {E::eA, L"A"}, ... }}} - written {{E::eA, "A"}, ...} now (initializer_list<Entry>)
          */
-        using BasicArrayInitializer = array<EnumName<ENUM_TYPE>, kCapacity>;
+        using BasicArrayInitializer [[deprecated ("Since Stroika v3.0d26 - write an EnumNames as {{E::eA, \"A\"}, ...}, or name the enum "
+                                                  "by EnumNamingRule and EnumeratorName (see kDefaultNames)")]] =
+            array<pair<ENUM_TYPE, const wchar_t*>, kCapacity>;
 
     public:
         /**
          *  \pre no value twice, nor two values with one name
          */
         constexpr EnumNames () = default;
-        constexpr EnumNames (const BasicArrayInitializer& init);
         constexpr EnumNames (initializer_list<Entry> names);
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        [[deprecated ("Since Stroika v3.0d26 - write an EnumNames as {{E::eA, \"A\"}, ...}, or name the enum by EnumNamingRule and "
+                      "EnumeratorName (see kDefaultNames)")]] constexpr EnumNames (const BasicArrayInitializer& init);
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     public:
         /**
@@ -408,7 +480,7 @@ namespace Stroika::Foundation::Common {
          *  The identifiers are read from the compiler's text for a function template's signature - each value from eSTART to
          *  eLAST is tried; one that two enumerators share is named as the first (so eSTART and eLAST never are), and one that no
          *  enumerator has is skipped. An identifier longer than EnumNameText::kMaxInlineBytes is pointed at, in an exactly-sized
-         *  copy of its own - so any length works. All at compile time: about 1 ms per value, in each file that uses the names.
+         *  copy of its own - so any length works. All at compile time.
          */
         static constexpr EnumNames Reflected ();
 
@@ -491,46 +563,6 @@ namespace Stroika::Foundation::Common {
         const Entry* fEntry_{nullptr};
     };
 
-    /**
-     *  \brief ENUM_TYPE's default names, kDefaultNames<ENUM_TYPE>, as an object: DefaultNames<ENUM_TYPE>{}.GetName (e)
-     *
-     *  k is only for tables written for Stroika v3.0d25 and before, which specialize it - such a table is used as it is:
-     *      \code
-     *          namespace Stroika::Foundation::Common {
-     *              template <>
-     *              constexpr EnumNames<Priority> DefaultNames<Priority>::k{{{{Priority::eDebug, L"Debug"}, {Priority::eInfo, L"Info"}}}};
-     *          }
-     *      \endcode
-     *  Otherwise k is never defined: read kDefaultNames<ENUM_TYPE>.
-     *
-     *  (Computing the default in k itself is not portable: a k initialized in the class, gcc lets nothing specialize - "duplicate
-     *  initialization"; a k declared here and defined constexpr outside it, clang (to 22 at least) calls "unknown" in a constant
-     *  expression.)
-     */
-    template <typename ENUM_TYPE>
-    struct DefaultNames {
-        static_assert (IBoundedEnum<ENUM_TYPE>, "DefaultNames needs an enum with Stroika_Define_Enum_Bounds");
-
-        // undefined unless a table specializes it - and kDefaultNames asks which (for an enum in an anonymous namespace, clang
-        // calls asking a use)
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wundefined-internal\"");
-        [[deprecated ("Since Stroika v3.0d26 - name the enum by EnumNamingRule and EnumeratorName beside it (see kDefaultNames); read "
-                      "kDefaultNames")]] static const EnumNames<ENUM_TYPE> k;
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wundefined-internal\"");
-
-        constexpr operator const EnumNames<ENUM_TYPE>&() const; ///< \brief kDefaultNames<ENUM_TYPE>
-
-        constexpr typename EnumNames<ENUM_TYPE>::const_iterator begin () const;
-        constexpr typename EnumNames<ENUM_TYPE>::const_iterator end () const;
-        constexpr size_t                                        size () const;
-        constexpr optional<u8string_view>                       PeekName (ENUM_TYPE e) const;
-        constexpr u8string_view                                 GetName (ENUM_TYPE e) const;
-        template <typename NAME>
-        constexpr optional<ENUM_TYPE> PeekValue (NAME&& name) const;
-        template <typename... ARGS>
-        constexpr ENUM_TYPE GetValue (ARGS&&... args) const;
-    };
-
     namespace Private_ {
         template <IBoundedEnum ENUM_TYPE>
         constexpr EnumNames<ENUM_TYPE> ComputeDefaultNames_ ();
@@ -540,7 +572,7 @@ namespace Stroika::Foundation::Common {
      *  \brief ENUM_TYPE's default names: what ToString, ObjectVariantMapper and ObjectReader use, unless told otherwise
      *
      *  Made, in order:
-     *      o   from a table written for Stroika v3.0d25 and before, specializing DefaultNames<ENUM_TYPE>::k, as it is
+     *      o   from a table written for Stroika v3.0d25 and before, specializing DefaultNames<ENUM_TYPE>::k (DEPRECATED), as it is
      *      o   otherwise as EnumNames<ENUM_TYPE>::Reflected () - so by the enum's naming rule, then its EnumeratorName:
      *          \code
      *              enum class Color { eRed, eGreen, eBlue, Stroika_Define_Enum_Bounds (eRed, eBlue) };
@@ -551,6 +583,17 @@ namespace Stroika::Foundation::Common {
      *              }
      *          \endcode
      *  Declare these right after the enum - in its header - before anything uses its names.
+     *
+     *  \par Example Usage
+     *      \code
+     *          DbgTrace ("color={}"_f, Color::eGreen);                                         // color=Verde
+     *          String          s = Characters::ToString (Color::eRed);                         // "Red"
+     *          u8string_view   n = Common::kDefaultNames<Color>.GetName (Color::eBlue);        // u8"Blue"
+     *          optional<Color> c = Common::kDefaultNames<Color>.PeekValue ("Verde");          // Color::eGreen
+     *      \endcode
+     *
+     *  \note The names are made at compile time - kDefaultNames is a constant - so making them costs nothing at run time,
+     *        and a static_assert can check one.
      */
     template <IBoundedEnum ENUM_TYPE>
     inline constexpr EnumNames<ENUM_TYPE> kDefaultNames = Private_::ComputeDefaultNames_<ENUM_TYPE> ();

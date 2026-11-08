@@ -490,9 +490,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution, IsAddressReadOnlyAppLifetime_)
+    GTEST_TEST (Foundation_Execution, IsAddressReadOnlyApplicationLifetime_)
     {
-        Debug::TraceContextBumper ctx{"IsAddressReadOnlyAppLifetime_"};
+        Debug::TraceContextBumper ctx{"IsAddressReadOnlyApplicationLifetime_"};
         static const char         kStaticConst[] = "static const";
         static char               sWritable[]    = "writable static";
         char                      onStack[]      = "on the stack";
@@ -502,17 +502,17 @@ namespace {
 #else
         auto bytes = [] (string_view s) { return as_bytes (span{s}); };
 #endif
-        optional<bool> literal = IsAddressReadOnlyAppLifetime (bytes ("a literal"sv));
+        optional<bool> literal = IsAddressReadOnlyApplicationLifetime (bytes ("a literal"sv));
         if (literal == nullopt) {
             GTEST_SKIP () << "this platform cannot tell (only Linux, MacOS and Windows can)";
         }
         // a literal, and a constant array, are in the program's read-only image; nothing writable or not lasting is
         EXPECT_TRUE (*literal);
-        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (kStaticConst)), true);
-        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (sWritable)), false);
-        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (onStack)), false);
-        EXPECT_EQ (IsAddressReadOnlyAppLifetime (bytes (onHeap)), false);
-        EXPECT_EQ (IsAddressReadOnlyAppLifetime (span<const byte>{}), false);
+        EXPECT_EQ (IsAddressReadOnlyApplicationLifetime (bytes (kStaticConst)), true);
+        EXPECT_EQ (IsAddressReadOnlyApplicationLifetime (bytes (sWritable)), false);
+        EXPECT_EQ (IsAddressReadOnlyApplicationLifetime (bytes (onStack)), false);
+        EXPECT_EQ (IsAddressReadOnlyApplicationLifetime (bytes (onHeap)), false);
+        EXPECT_EQ (IsAddressReadOnlyApplicationLifetime (span<const byte>{}), false);
     }
 }
 

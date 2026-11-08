@@ -78,20 +78,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
 }
 
-/*
- ********************************************************************************
- *********************************** Common::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika::Foundation::Common {
-
-    template <>
-    constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>
-        DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::k{{{
-            {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eProactivelySendAuthentication,
-             L"Proactively-Send-Authenitcation"},
-            {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eRespondToWWWAuthenticate,
-             L"Respond-To-WWW-Authenticate"},
-        }}};
-
+namespace Stroika::Foundation::IO::Network::Transfer::Connection {
+    Common::StroikaNaming EnumNamingRule (Options::Authentication::Options);
 }

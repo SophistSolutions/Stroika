@@ -583,7 +583,7 @@ namespace {
         }
         {
             // but a string literal's characters - in the program's read-only image - are shared, not copied (where Stroika can
-            // tell: @see Execution::IsAddressReadOnlyAppLifetime); a writable buffer's never are, wherever it is
+            // tell: @see Execution::IsAddressReadOnlyApplicationLifetime); a writable buffer's never are, wherever it is
             constexpr string_view kLiteral       = "abc literal"sv;
             static const char     kStaticConst[] = "abc static const";
             static char           sWritable[]    = "abc writable static";
@@ -597,7 +597,7 @@ namespace {
             onStack[0]   = 'x';
             EXPECT_EQ (w, "abc writable static");
             EXPECT_EQ (st, "abc on the stack");
-            if (Execution::IsAddressReadOnlyAppLifetime (as_bytes (span{kLiteral})) != nullopt) { // where Stroika can tell
+            if (Execution::IsAddressReadOnlyApplicationLifetime (as_bytes (span{kLiteral})) != nullopt) { // where Stroika can tell
                 EXPECT_EQ (l.GetPeekSpanData<ASCII> ().fAscii.data (), kLiteral.data ());
                 EXPECT_EQ (c.GetPeekSpanData<ASCII> ().fAscii.data (), kStaticConst);
             }

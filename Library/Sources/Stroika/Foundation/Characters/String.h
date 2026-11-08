@@ -216,10 +216,9 @@ namespace Stroika::Foundation::Characters {
          *          carefully excludes conflicting CTOR overloads, and purpose is to allow constructing a String
          *          from anything with a 'special conversion' method to UNICODE string, such as filesystem::path.
          *
-         *  \note Before Stroika v3.0d25, the basic_string_view<CHAR_T> constructors REQUIRED the characters viewed to last for the
-         *        life of the application: they shared them, never copied. Now they check whether they can safely share them - a
-         *        string literal's, in the program's read-only image (@see Execution::IsAddressReadOnlyAppLifetime) - and otherwise
-         *        copy. To skip that check, for a literal, use "..."_k (or FromStringConstant).
+         *  \note Before Stroika v3.0d25, the basic_string_view<CHAR_T> constructors REQUIRED the characters viewed to have application
+         *        lifetime: they shared them, never copied. Now they check whether they can safely share them - a string literal's,
+         *        in the program's read-only image (@see Execution::IsAddressReadOnlyApplicationLifetime) - and otherwise copy. To skip that check, for a literal, use "..."_k (or FromStringConstant).
          *
          *  \note 'char' (using ASCII = char) constructors:
          *        Because the character-set of strings of type 'char' is ambiguous, their characters must be ASCII. That is
@@ -355,9 +354,9 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *   \brief Take the given argument data (constant span) - which must remain unchanged - constant - for the application lifetime - and treat it as a Stroika String object
-         * 
-         *  This allows creation of String objects with fewer memory allocations and less copyinh, and more efficient storage, in most situations
+         *   \brief Take the given argument data (constant span) - which must have application lifetime - and treat it as a Stroika String object
+         *
+         *  This allows creation of String objects with fewer memory allocations and less copying, and more efficient storage, in most situations
          *
          *  The resulting String is a perfectly compliant Stroika String (somewhat akin to std::string_view vs std::string).
          *
@@ -370,12 +369,9 @@ namespace Stroika::Foundation::Characters {
          *          String  tmp5    =   "FRED"_k;                               // equivalent to FromStringConstant
          *      \endcode
          *
-         *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime (intended use case is C string literals).
-         *
-         *  \note 'application lifetime': the characters must stay unchanged, at that address, for as long as anything may still
-         *        use them - and as copies of a String share them (copy-on-write), and can be kept anywhere, in practice that means
-         *        until the program ends: a string literal. Break the rule and the behavior is undefined - it may well appear to
-         *        work, but nothing promises it.
+         *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime (intended use case is C string literals):
+         *      @see Design-Overview.md, "Application lifetime". Break the rule and the behavior is undefined - it may well appear
+         *      to work, but nothing promises it.
          *
          *  \pre argument string MAY contain embedded nul characters (but for char* overloads wrong size inferred).
          * 

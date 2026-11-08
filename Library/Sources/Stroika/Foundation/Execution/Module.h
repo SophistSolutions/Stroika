@@ -53,18 +53,37 @@ namespace Stroika::Foundation::Execution {
     filesystem::path GetEXEPath (pid_t processID);
 
     /**
-     *  \brief Is all of s in memory that is read-only for as long as the program runs - so a pointer into it may be kept, rather
-     *         than its bytes copied?
+     *  \brief Is all of s in the main executable's read-only image - so it has application lifetime, and a pointer into it
+     *         may be kept, rather than its bytes copied?
      *
-     *  That memory is the main executable's read-only image, where its string literals and other constant data are (and
-     *  Stroika's own, since Stroika is linked statically). Another module's read-only image does not count: it can be unloaded.
+     *  That image is where the program's string literals and other constant data are (and Stroika's own, since Stroika is
+     *  linked statically). Another module's read-only image does not count: it can be unloaded.
      *
-     *  \returns true if so; false if not - s may yet be read-only (another module's, or a read-only mapping) but nothing promises
-     *           it lasts; nullopt if Stroika cannot tell on this platform (it can on Linux, MacOS and Windows). An empty s is false.
+     *  \returns true if so; false if not - s may yet have application lifetime (another module's image, a read-only mapping),
+     *           but Stroika cannot tell; nullopt if Stroika cannot tell on this platform (it can on Linux, MacOS and Windows).
+     *           An empty s is false.
      *
      *  Cheap: a few comparisons, once the image has been examined (at first use).
+     *
+     *  \see Design-Overview.md, "Application lifetime"
      */
-    optional<bool> IsAddressReadOnlyAppLifetime (span<const byte> s);
+    optional<bool> IsAddressReadOnlyApplicationLifetime (span<const byte> s);
+
+    /**
+     *  \brief For a precondition: may s have application lifetime? - false only where Stroika can tell it does not
+     *
+     *  IsAddressReadOnlyApplicationLifetime (s), but true where that cannot tell (nullopt), and true for an empty s, which has
+     *  nothing to outlive:
+     *      \code
+     *          Require (Execution::MayHaveApplicationLifetime (as_bytes (span{s})));
+     *      \endcode
+     *
+     *  Not inline, so that a low-level header can declare it, rather than include this one (as Common/Enumeration.inl and
+     *  Characters/Format.h do).
+     *
+     *  \see Design-Overview.md, "Application lifetime"
+     */
+    bool MayHaveApplicationLifetime (span<const byte> s);
 
     /**
      *  The set of system locations to look for an executable (note order matters, which is why this is a Sequence)

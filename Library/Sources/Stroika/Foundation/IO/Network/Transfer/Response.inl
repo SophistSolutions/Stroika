@@ -42,11 +42,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     }
 }
 
-/*
- ********************************************************************************
- ******************************* Common::DefaultNames ***************************
- ********************************************************************************
- */
 namespace Stroika::Foundation::IO::Network::Transfer {
     Common::StroikaNaming EnumNamingRule (Response::SSLResultInfo::ValidationStatus);
 }

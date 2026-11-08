@@ -593,6 +593,20 @@ namespace {
 
 **Destruction order.** Statics are destroyed in the reverse order of their construction ([basic.start.term]), so a static is safe to use from another's destructor if it was constructed first. Make sure of that by having the holder use it while constructing, or by defining it as an `inline` variable in a header the holder's file includes first - C++17's replacement for ModuleInit\<> (Debug/Trace.inl does this, as does each XML provider's `kDefaultProvider`). That fails when the holder reaches its dependency indirectly - through an interface, a choice made at run time, or an object its caller supplies - and takes hold of it only later: then nothing orders the two. For that, what is held must keep alive what it needs (shared ownership), as XML schemas and documents do with their provider since Stroika v3.0d25 - or do not keep it in a static.
 
+### <a name="Application-lifetime"></a> Application lifetime
+
+Memory has **application lifetime** when it stays valid, unchanged and at the same address, until the program ends: in practice a string literal, or a `static constexpr` array - static storage duration, and never written. A Stroika API that keeps a pointer to text, rather than copying it, requires it:
+
+- `String::FromStringConstant`, and `"..."_k`
+- `Common::EnumNameText::FromStringConstant`, for a name too long to hold in place
+- `Characters::FormatString<wchar_t>`, which views its text
+
+A String's copies share what it points at, and can be kept anywhere, so "as long as anything uses it" means, in practice, until the program ends. Break the rule and the behavior is undefined: it may well seem to work.
+
+Stroika can check one case at run time: `Execution::IsAddressReadOnlyApplicationLifetime` tells whether memory is in the main executable's read-only image, where its literals are (another module's image does not count - it can be unloaded). String's constructors from a string view use it to share a literal's text rather than copy it; `Execution::MayHaveApplicationLifetime` - false only where Stroika can tell the memory does not have application lifetime - checks the requirement in Debug builds.
+
+Names say ApplicationLifetime in full (`IsAddressReadOnlyApplicationLifetime`); docs say "application lifetime" (`\pre s has application lifetime`).
+
 ### class/method Final
 
 - It does very little good (helps optimization sometimes but also can needlessly limit programmer options later)

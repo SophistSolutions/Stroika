@@ -1628,11 +1628,11 @@ namespace {
             Sample,
             Stroika_Define_Enum_Bounds (Background, Sample)
         };
-        constexpr Common::EnumNames<ScanKindType> ScanKindType_NAMES{{{
-            {ScanKindType::Background, L"Background"},
-            {ScanKindType::Reference, L"Reference"},
-            {ScanKindType::Sample, L"Sample"},
-        }}};
+        constexpr Common::EnumNames<ScanKindType> ScanKindType_NAMES{
+            {ScanKindType::Background, "Background"},
+            {ScanKindType::Reference, "Reference"},
+            {ScanKindType::Sample, "Sample"},
+        };
         using ScanIDType = int;
         struct SpectrumType : Mapping<double, double> {
             struct CompareNumbersEqual_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
