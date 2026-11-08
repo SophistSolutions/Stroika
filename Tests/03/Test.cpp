@@ -372,6 +372,18 @@ namespace {
             eA,
             eB
         };
+#if __cpp_impl_reflection >= 202506L
+        // C++26 annotations, where the compiler has them: the rule, and names, on the enum itself
+        // clang-format off
+        enum class [[= StroikaNaming{}]] Annotated {
+            eOne,
+            eTwo [[= Named{"Deux"}]],
+            eThree [[= Named{u8"Trois"}]],
+            eFour [[= Named{"a char name longer than sixty-four bytes - kept by std::define_static_string, any length"}]],
+            Stroika_Define_Enum_Bounds (eOne, eFour)
+        };
+        // clang-format on
+#endif
     }
 }
 // a table written for Stroika v3.0d25 and before - k is DEPRECATED, but such a table still works, as this checks
@@ -443,6 +455,14 @@ namespace {
                    "ThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo"sv);
         // no Stroika_Define_Enum_Bounds: its number
         EXPECT_EQ (ToString (Unbounded::eB), "1"sv);
+#if __cpp_impl_reflection >= 202506L
+        // C++26 annotations: the rule's, and the names'
+        static_assert (kDefaultNames<Annotated>.GetName (Annotated::eOne) == u8"One");
+        static_assert (kDefaultNames<Annotated>.GetName (Annotated::eTwo) == u8"Deux");
+        static_assert (kDefaultNames<Annotated>.GetName (Annotated::eThree) == u8"Trois");
+        EXPECT_EQ (ToString (Annotated::eFour), "a char name longer than sixty-four bytes - kept by std::define_static_string, any length"sv);
+        EXPECT_EQ (kDefaultNames<Annotated>.PeekValue ("Deux"), Annotated::eTwo);
+#endif
 #if qStroika_Foundation_Common_EnumNameText_DefineStaticString_
         // and a long "..." name - copied by std::define_static_string
         constexpr EnumNames<Plain> kLong = kDefaultNames<Plain>.With (

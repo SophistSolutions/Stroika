@@ -1499,6 +1499,45 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 
 /*
+ *  g++ 16 (16.0.1 20260322, Ubuntu 26.04's), with -freflection only: a static data member declared in its class C as a class
+ *  template specialization over C - optional<C>, Synchronized<C> - instantiates it there, with C still incomplete, though a
+ *  declaration (not a definition) needs no complete type:
+ *
+ *      type_traits:3718:7: error: invalid use of incomplete type 'class Stroika::Foundation::Time::Timezone'
+ *      ...
+ *      Timezone.h:150:41:   required from here
+ *          static const optional<Timezone> kUnknown; // defined constexpr
+ *
+ *  Without -freflection, and with clang, it compiles. The workaround declares a reference to it instead, bound to an object
+ *  defined after C is complete.
+ */
+/*
+ *  libstdc++ 16's debug mode (_GLIBCXX_DEBUG), with -freflection: a vector of std::meta::info can be neither iterated nor
+ *  indexed - its checked iterator and operator[] are not consteval, as a consteval-only type needs:
+ *
+ *      debug/safe_iterator.h:481:56: error: consteval-only expressions are only allowed in a constant-evaluated context
+ *      debug/safe_iterator.h:480:7: error: function of consteval-only type must be declared 'consteval'
+ *
+ *  The workaround walks its data ().
+ */
+#ifndef qCompilerAndStdLib_reflection_debug_mode_vector_of_info_Buggy
+#if defined(_GLIBCXX_DEBUG) and defined(__cpp_impl_reflection) and defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_reflection_debug_mode_vector_of_info_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 16)
+#else
+#define qCompilerAndStdLib_reflection_debug_mode_vector_of_info_Buggy 0
+#endif
+#endif
+
+#ifndef qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy
+#if defined(__GNUC__) and not defined(__clang__) and defined(__cpp_impl_reflection)
+#define qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 16)
+#else
+#define qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy 0
+#endif
+#endif
+
+/*
  * This could be a docker or ubuntu issue, but appears to be an issue with glibc or libstdc++
  * 
 From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order

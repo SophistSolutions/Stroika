@@ -45,7 +45,14 @@ namespace Stroika::Foundation::Time {
      */
     inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 
+#if qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy
+    namespace Private_ {
+        inline constexpr optional<Timezone> kUnknownTimezone_{nullopt};
+    }
+    inline constexpr const optional<Timezone>& Timezone::kUnknown = Private_::kUnknownTimezone_;
+#else
     inline constexpr optional<Timezone> Timezone::kUnknown{nullopt};
+#endif
 
     inline make_signed_t<time_t> Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
     {

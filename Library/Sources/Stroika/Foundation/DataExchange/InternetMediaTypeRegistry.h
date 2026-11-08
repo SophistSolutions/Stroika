@@ -183,7 +183,11 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \note  \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
+#if qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy
+        static Execution::Synchronized<InternetMediaTypeRegistry>& sThe;
+#else
         static Execution::Synchronized<InternetMediaTypeRegistry> sThe;
+#endif
 
     public:
         /**
@@ -321,7 +325,14 @@ namespace Stroika::Foundation::DataExchange {
             sThe = newRegistry;
         }
     };
+#if qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy
+    namespace Private_ {
+        inline Execution::Synchronized<InternetMediaTypeRegistry> sTheInternetMediaTypeRegistry_;
+    }
+    inline Execution::Synchronized<InternetMediaTypeRegistry>& InternetMediaTypeRegistry::sThe = Private_::sTheInternetMediaTypeRegistry_;
+#else
     inline Execution::Synchronized<InternetMediaTypeRegistry> InternetMediaTypeRegistry::sThe;
+#endif
 
     /**
      *  \brief for OS facilities not updatable - or controllable - just usable.

@@ -321,6 +321,38 @@ namespace Stroika::Foundation::Common {
     {
         return identifier;
     }
+#if qStroika_Foundation_Common_EnumNames_Annotations_
+    /*
+     ********************************************************************************
+     ********************************* Common::Named ********************************
+     ********************************************************************************
+     */
+    template <size_t N>
+    consteval Named::Named (const char (&s)[N])
+        : fText{nullptr}
+        , fLength{N - 1}
+    {
+        u8string t;
+        for (size_t i = 0; i + 1 < N; ++i) {
+            if (static_cast<unsigned char> (s[i]) >= 0x80) {
+                Private_::EnumNameText_ACharNameMustBeASCII_WriteItU8_ ();
+            }
+            t += static_cast<char8_t> (s[i]);
+        }
+        fText = std::define_static_string (u8string_view{t});
+    }
+    template <size_t N>
+    consteval Named::Named (const char8_t (&s)[N])
+        : fText{std::define_static_string (u8string_view{s, N - 1})}
+        , fLength{N - 1}
+    {
+    }
+    constexpr u8string_view Named::View () const
+    {
+        return u8string_view{fText, fLength};
+    }
+#endif
+
     constexpr EnumNameText StroikaNaming::Apply (const EnumNameText& identifier)
     {
         u8string_view v = identifier.View ();
@@ -428,8 +460,65 @@ namespace Stroika::Foundation::Common {
             { EnumeratorName (e, n) } -> convertible_to<EnumNameText>;
         };
 
-        // V's default name: its identifier, through its enum's naming rule, then its EnumeratorName - or empty, for a value no
-        // enumerator has (never passed to either)
+#if qStroika_Foundation_Common_EnumNames_Annotations_
+        // clang-format off
+        template <typename T>
+        constexpr bool kIsEnumNamingRule_ = IEnumNamingRule<T>;
+        // the naming rule an annotation on the enum gives - enum class [[= Common::StroikaNaming{}]] E - or void
+        template <typename ENUM_TYPE>
+        consteval std::meta::info AnnotatedNamingRule_ ()
+        {
+#if qCompilerAndStdLib_reflection_debug_mode_vector_of_info_Buggy
+            vector<std::meta::info> annotations = std::meta::annotations_of (^^ENUM_TYPE);
+            for (size_t i = 0; i < annotations.size (); ++i) {
+                std::meta::info a = annotations.data ()[i];
+#else
+            for (std::meta::info a : std::meta::annotations_of (^^ENUM_TYPE)) {
+#endif
+                std::meta::info t = std::meta::remove_cvref (std::meta::type_of (a));
+                if (std::meta::extract<bool> (std::meta::substitute (^^kIsEnumNamingRule_, {t}))) {
+                    return t;
+                }
+            }
+            return ^^void;
+        }
+        template <typename ENUM_TYPE>
+        concept IHasAnnotatedNamingRule_ = (AnnotatedNamingRule_<ENUM_TYPE> () != ^^void);
+        template <IHasAnnotatedNamingRule_ ENUM_TYPE>
+            requires (not IHasNamingRule_<ENUM_TYPE>)
+        struct NamingRule_<ENUM_TYPE> {
+            using type = typename [:AnnotatedNamingRule_<ENUM_TYPE> ():];
+        };
+        // the Named annotation on V's enumerator (the first declared with the value V - not eSTART, ...), if any
+        template <auto V>
+        consteval optional<u8string_view> AnnotatedName_ ()
+        {
+#if qCompilerAndStdLib_reflection_debug_mode_vector_of_info_Buggy
+            vector<std::meta::info> enumerators = std::meta::enumerators_of (^^decltype (V));
+            for (size_t i = 0; i < enumerators.size (); ++i) {
+                std::meta::info e = enumerators.data ()[i];
+#else
+            for (std::meta::info e : std::meta::enumerators_of (^^decltype (V))) {
+#endif
+                if (std::meta::extract<decltype (V)> (std::meta::constant_of (e)) == V) {
+                    vector<std::meta::info> names = std::meta::annotations_of_with_type (e, ^^Named);
+                    if (names.empty ()) {
+                        return nullopt;
+                    }
+#if qCompilerAndStdLib_reflection_debug_mode_vector_of_info_Buggy
+                    return std::meta::extract<Named> (*names.data ()).View ();
+#else
+                    return std::meta::extract<Named> (names.front ()).View ();
+#endif
+                }
+            }
+            return nullopt;
+        }
+        // clang-format on
+#endif
+
+        // V's default name: its identifier, through its enum's naming rule, then its Named annotation and its EnumeratorName -
+        // or empty, for a value no enumerator has (never passed to either)
         template <auto V>
         constexpr EnumNameText DefaultEnumeratorName_ ()
         {
@@ -439,6 +528,13 @@ namespace Stroika::Foundation::Common {
             }
             else {
                 EnumNameText n = NamingRule_<ENUM_TYPE>::type::Apply (EnumIdentifierText_<V> ());
+#if qStroika_Foundation_Common_EnumNames_Annotations_
+                static_assert (not(IHasNamingRule_<ENUM_TYPE> and IHasAnnotatedNamingRule_<ENUM_TYPE>),
+                               "an enum picks its naming rule one way: by annotation, or by EnumNamingRule");
+                if constexpr (constexpr optional<u8string_view> a = AnnotatedName_<V> (); a.has_value ()) {
+                    n = EnumNameText::FromStatic (*a);
+                }
+#endif
                 if constexpr (IHasEnumeratorName_<ENUM_TYPE>) {
                     n = EnumeratorName (V, n);
                 }

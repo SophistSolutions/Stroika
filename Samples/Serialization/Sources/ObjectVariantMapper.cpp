@@ -210,9 +210,69 @@ namespace {
     }
 }
 
+namespace {
+    // An enum is written and read by its names (kDefaultNames) once Stroika_Define_Enum_Bounds gives its range. By default a
+    // name is the identifier as written ("eLow"); a naming rule changes them all, and single names can be given. Where the
+    // compiler has C++26 annotations, they sit on the enum itself; elsewhere, declarations beside it say the same.
+#if __cpp_impl_reflection >= 202506L
+    // clang-format off
+    enum class [[= Common::StroikaNaming{}]] Priority_ {
+        eLow,
+        eNormal,
+        eUrgent [[= Common::Named{"ASAP"}]],
+        Stroika_Define_Enum_Bounds (eLow, eUrgent)
+    };
+    // clang-format on
+#else
+    enum class Priority_ {
+        eLow,
+        eNormal,
+        eUrgent,
+        Stroika_Define_Enum_Bounds (eLow, eUrgent)
+    };
+    Common::StroikaNaming          EnumNamingRule (Priority_); // Stroika's rule: the identifier without its e - "Low", "Normal"
+    constexpr Common::EnumNameText EnumeratorName (Priority_ p, Common::EnumNameText byRule)
+    {
+        return p == Priority_::eUrgent ? "ASAP" : byRule; // a name of its own
+    }
+#endif
+
+    void EnumsByName_ ()
+    {
+        Debug::TraceContextBumper ctx{"EnumsByName_"};
+
+        struct Task_ {
+            String    fTitle;
+            Priority_ fPriority{Priority_::eNormal};
+
+            // Not needed to use ObjectVariantMapper - just needed to 'test' if the data round-tripped properly
+            bool operator== (const Task_& rhs) const = default;
+        };
+
+        ObjectVariantMapper mapper;
+        mapper.AddCommonType<Priority_> (); // by its names
+        mapper.AddClass<Task_> ({
+            {"Title"sv, &Task_::fTitle},
+            {"Priority"sv, &Task_::fPriority},
+        });
+
+        Task_        task{.fTitle = "Fix the roof"sv, .fPriority = Priority_::eUrgent};
+        VariantValue v = mapper.FromObject (task);
+        DbgTrace ("v = {}"_f, v); // {"Title": "Fix the roof", "Priority": "ASAP"}
+        [[maybe_unused]] Mapping<String, VariantValue> fields = v.As<Mapping<String, VariantValue>> ();
+        Assert (fields.Lookup ("Priority"sv)->As<String> () == "ASAP"sv);
+        Assert (mapper.ToObject<Task_> (v) == task);
+
+        // ToString - and so DbgTrace and "{}"_f - prints its name too
+        DbgTrace ("priority = {}"_f, Priority_::eLow); // Low
+        Assert (Characters::ToString (Priority_::eLow) == "Low"sv);
+    }
+}
+
 void Samples::Serialization::ObjectVariantMapper::RunDemo ()
 {
     SimpleGettingStarted_ ();
     UseObjectVariantMapperTry2_ ();
     GeneratingReadOnlyFieldsTry3_ ();
+    EnumsByName_ ();
 }

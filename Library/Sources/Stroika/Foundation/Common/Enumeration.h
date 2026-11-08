@@ -32,6 +32,20 @@
 #if qStroika_Foundation_Common_EnumNameText_DefineStaticString_
 #include <meta>
 #include <string>
+#include <vector>
+#endif
+
+/**
+ *  \brief qStroika_Foundation_Common_EnumNames_Annotations_ - the compiler has C++26 reflection (P2996), and with it
+ *         annotations (P3394), so an enum's naming rule and an enumerator's name can be annotations on them (private: code
+ *         writing them tests __cpp_impl_reflection, the compiler's own macro for them)
+ */
+#ifndef qStroika_Foundation_Common_EnumNames_Annotations_
+#if defined(__cpp_impl_reflection) and __cpp_impl_reflection >= 202506L and qStroika_Foundation_Common_EnumNameText_DefineStaticString_
+#define qStroika_Foundation_Common_EnumNames_Annotations_ 1
+#else
+#define qStroika_Foundation_Common_EnumNames_Annotations_ 0
+#endif
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
@@ -269,6 +283,42 @@ namespace Stroika::Foundation::Common {
         static constexpr EnumNameText Apply (const EnumNameText& identifier);
     };
     static_assert (IEnumNamingRule<StroikaNaming>); // see Satisfies Concepts
+
+#if qStroika_Foundation_Common_EnumNames_Annotations_
+    /**
+     *  \brief An enumerator's name, as a C++26 annotation (P3394) on it - the same as an EnumeratorName case for it - where the
+     *  compiler has annotations (__cpp_impl_reflection)
+     *
+     *  On the enum, a naming rule's value is an annotation too - the same as an EnumNamingRule declaration:
+     *      \code
+     *          enum class [[= Common::StroikaNaming{}]] Color {
+     *              eRed,
+     *              eGreen [[= Common::Named{"Vert"}]],
+     *              eBlue,
+     *              Stroika_Define_Enum_Bounds (eRed, eBlue)
+     *          };                                                      // "Red", "Vert", "Blue"
+     *      \endcode
+     *  An enum picks its rule one way: by annotation, or by EnumNamingRule.
+     *
+     *  Written "..." (ASCII) or u8"..." (any text), any length. An annotation's value must be of a structural type - its
+     *  members all public - so a name is a Named here, not an EnumNameText.
+     */
+    struct Named {
+        template <size_t N>
+        consteval Named (const char (&s)[N]);
+        template <size_t N>
+        consteval Named (const char8_t (&s)[N]); ///< \brief UTF-8, any text
+
+        /**
+         *  \brief the name, as UTF-8 - in storage that lasts as long as the program
+         */
+        constexpr u8string_view View () const;
+
+        // public only because an annotation's type must be structural: read View ()
+        const char8_t* fText;
+        size_t         fLength;
+    };
+#endif
 
     /**
      *  \brief The entry of a table written for Stroika v3.0d25 and before: an enumerator and its name, L"..."

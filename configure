@@ -1046,7 +1046,7 @@ class Configure_:
             self.Print("Warning: c++14 not supported by Stroika v2.1 or later\n")
         if v == "c++17":
             self.Print("Warning: c++17 not supported by Stroika v3 or later\n")
-        if v not in ("c++2a", "c++20", "c++2b", "c++23"):
+        if v not in ("c++2a", "c++20", "c++2b", "c++23", "c++2c", "c++26"):
             self.Print("Warning: unrecognized arg to --cppstd-version\n")
         if v == "":
             Die_("--cppstd-version needs a value (configure --help lists the options)")
@@ -2163,7 +2163,7 @@ OPTIONS_ = [
             Set_("ENABLE_GLIBCXX_DEBUG")),
     Option_("MACOSX_DEPLOYMENT_TARGET", "{#|default|none}", "set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific)",
             Configure_.OptionMacOSXDeploymentTarget_),
-    Option_("cppstd-version", "{FLAG}", "Sets can be c++20, c++2a, c++2b, c++23",
+    Option_("cppstd-version", "{FLAG}", "Sets can be c++20, c++2a, c++2b, c++23, c++2c, c++26",
             Configure_.OptionCppStdVersion_),
     Option_("stdlib", "{LIB}", "libc++ (clang lib), libstdc++ (gcc and often clang)",
             Set_("STDCXXLIB")),

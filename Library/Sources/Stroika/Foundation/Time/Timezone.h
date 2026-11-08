@@ -147,7 +147,11 @@ namespace Stroika::Foundation::Time {
         /**
          *  Returns Timezone object in localtime timezone.
          */
+#if qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy
+        static const optional<Timezone>& kUnknown; // defined constexpr
+#else
         static const optional<Timezone> kUnknown; // defined constexpr
+#endif
 
     public:
         /**

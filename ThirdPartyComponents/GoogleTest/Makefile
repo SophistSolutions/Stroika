@@ -35,7 +35,8 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
-CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+# built as C++20 (CMAKE_CXX_STANDARD, below), so without what needs C++26 - g++ refuses -freflection otherwise
+CXXFLAGS 	:= 	$(filter-out -freflection,${PLATFORM_CXXFLAGS})
 
 
 

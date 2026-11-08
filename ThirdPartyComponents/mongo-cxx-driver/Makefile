@@ -52,7 +52,8 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
-CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+# its CMake builds bsoncxx as C++11 (its -std= after ours), so without what needs C++26 - g++ refuses -freflection otherwise
+CXXFLAGS 	:= 	$(filter-out -freflection,${PLATFORM_CXXFLAGS})
 
 
 ## Crazy but mongo build script depends on python, needs to know version, and provides very long elaborate script to find the
