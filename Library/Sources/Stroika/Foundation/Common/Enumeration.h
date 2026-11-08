@@ -198,13 +198,13 @@ namespace Stroika::Foundation::Common {
      *  Traversal::DiscreteRange<E>::FullRange ().Elements (). (eCOUNT carries the warning where the macro is written - a
      *  compiler does not warn inside a deprecated declaration - so reading it does not warn.)
      */
-// clang-format off
+    // clang-format off
 #define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM)                                                                      \
     eSTART [[deprecated ("Since Stroika v3.0d26 - kEnumBounds<E>.fFirst")]] = FIRST_ITEM,                                      \
     eEND [[deprecated ("Since Stroika v3.0d26 - loop over Traversal::DiscreteRange<E>::FullRange ().Elements ()")]] = LAST_ITEM + 1, \
     eLAST [[deprecated ("Since Stroika v3.0d26 - kEnumBounds<E>.fLast")]] = LAST_ITEM,                                         \
     eCOUNT = ::Stroika::Foundation::Common::Private_::Stroika_Define_Enum_Bounds_ (LAST_ITEM + 1 - FIRST_ITEM),
-// clang-format on
+    // clang-format on
 
     /**
      *  \brief  Increment the given enumeration safely, without a bunch of casts.
@@ -215,15 +215,13 @@ namespace Stroika::Foundation::Common {
     constexpr ENUM Inc (ENUM e);
 
     /**
-     *  \brief  Cast the given enum to an int (like static_cast<int>()) - but check range.
+     *  \brief  e as its underlying type - as C++23's std::to_underlying - checking, for an IBoundedEnum, that e is in range
      *
      *      \pre    for an IBoundedEnum, e is in kEnumBounds<ENUM>, or one past its last (where a loop ends)
      *
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      *
      *  \note This function could have been called Ord () - to be more like Pascal.
-     *
-     *  @todo   See if there is some better way for this.
      */
     template <typename ENUM>
     constexpr underlying_type_t<ENUM> ToInt (ENUM e);
@@ -242,7 +240,7 @@ namespace Stroika::Foundation::Common {
     constexpr make_unsigned_t<underlying_type_t<ENUM>> GetDistanceSpanned ();
 
     /**
-     *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
+     *  \brief  e as an ENUM - as static_cast<ENUM> (e) - checking, for an IBoundedEnum, that it is in range
      *
      *      \pre    for an IBoundedEnum, e is in kEnumBounds<ENUM>, or one past its last (where a loop ends)
      *
@@ -255,8 +253,6 @@ namespace Stroika::Foundation::Common {
      *  \brief  offset of given enum from kEnumBounds<ENUM>.fFirst
      *
      *      \pre    e is in kEnumBounds<ENUM>, or one past its last (checked, by ToInt) - whose offset is Count ()
-     *
-     *  @todo   See if there is some better way for this.
      */
     template <IBoundedEnum ENUM>
     constexpr make_unsigned_t<underlying_type_t<ENUM>> OffsetFromStart (ENUM e);
