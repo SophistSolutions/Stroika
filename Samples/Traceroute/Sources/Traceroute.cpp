@@ -138,7 +138,7 @@ int main (int argc, const char* argv[])
                             return addrStr;
                         }
                     }();
-                    String timeStr = h.fTime ? h.fTime->PrettyPrint () : "timeout\t"_k;
+                    String timeStr = h.fTime ? h.fTime->Format () : "timeout\t"_k;
                     cout << hopIdx++ << "\t" << timeStr << "\t" << hopName << endl;
                 };
                 // can call without callback, and just get all the hops in a list, which is simpler. But using the callback allows you to see

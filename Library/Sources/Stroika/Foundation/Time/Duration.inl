@@ -302,9 +302,25 @@ namespace Stroika::Foundation::Time {
             return T{this->AsPinned<typename T::duration> ()};
         }
     }
-    inline Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
+    inline Characters::String Duration::PrettyPrint () const
     {
-        return PrettyPrint (prettyPrintInfo);
+        return Format ();
+    }
+    inline Characters::String Duration::PrettyPrint (const FormatOptions& options) const
+    {
+        return Format (options);
+    }
+    inline Characters::String Duration::PrettyPrintAge () const
+    {
+        return FormatAge ();
+    }
+    inline Characters::String Duration::PrettyPrintAge (const AgeFormatOptions& ageOptions) const
+    {
+        return FormatAge (ageOptions);
+    }
+    inline Characters::String Duration::PrettyPrintAge (const AgeFormatOptions& ageOptions, const FormatOptions& options) const
+    {
+        return FormatAge (ageOptions, options);
     }
     inline Characters::String Duration::ToString () const
     {

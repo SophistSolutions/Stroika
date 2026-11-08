@@ -879,20 +879,20 @@ namespace {
         }
         {
             const Duration kHalfMinute = Duration{"PT0.5M"};
-            EXPECT_EQ (kHalfMinute.PrettyPrint (), "30 seconds");
+            EXPECT_EQ (kHalfMinute.Format (), "30 seconds");
         }
         {
             const Duration k3MS = Duration{"PT0.003S"};
-            EXPECT_EQ (k3MS.PrettyPrint (), "3 ms");
+            EXPECT_EQ (k3MS.Format (), "3 ms");
         }
         {
             const Duration kD = Duration{"PT1.003S"};
-            EXPECT_EQ (kD.PrettyPrint (), "1.003 seconds");
+            EXPECT_EQ (kD.Format (), "1.003 seconds");
         }
         {
             const Duration kD = Duration{"PT0.000045S"};
-            //EXPECT_TRUE (kD.PrettyPrint () == L"45 µs");   // SAD - but L"45 µs" 'works' but doesn't provide the RIGHT string portably
-            EXPECT_EQ (kD.PrettyPrint (), L"45 \u00b5s");
+            //EXPECT_TRUE (kD.Format () == L"45 µs");   // SAD - but L"45 µs" 'works' but doesn't provide the RIGHT string portably
+            EXPECT_EQ (kD.Format (), L"45 \u00b5s");
         }
         {
             // todo use constexpr
@@ -900,22 +900,22 @@ namespace {
             EXPECT_EQ (kD, Duration{0});
             EXPECT_EQ (kD.As<String> (), "PT0S");
             EXPECT_EQ (kD.As<double> (), 0);
-            EXPECT_EQ (kD.PrettyPrint (), "0 seconds");
+            EXPECT_EQ (kD.Format (), "0 seconds");
         }
         {
             // todo use constexpr
             const Duration kD = Duration{1.6e-6};
-            EXPECT_EQ (kD.PrettyPrint (), L"1.6 \u00b5s");
+            EXPECT_EQ (kD.Format (), L"1.6 \u00b5s");
         }
         {
             // todo use constexpr
             const Duration kD{33us};
-            EXPECT_EQ (kD.PrettyPrint (), L"33 \u00b5s");
+            EXPECT_EQ (kD.Format (), L"33 \u00b5s");
         }
         {
             const Duration kD = Duration{"PT0.000045S"};
-            EXPECT_TRUE (kD.PrettyPrint () == L"45 \u00b5s");
-            EXPECT_TRUE ((-kD).PrettyPrint () == L"-45 \u00b5s");
+            EXPECT_TRUE (kD.Format () == L"45 \u00b5s");
+            EXPECT_TRUE ((-kD).Format () == L"-45 \u00b5s");
             EXPECT_TRUE ((-kD).As<String> () == "-PT0.000045S");
         }
         EXPECT_TRUE (Duration{"PT30S"}.As<time_t> () == 30);
@@ -998,19 +998,29 @@ namespace {
             EXPECT_TRUE (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
         }
         {
-            EXPECT_EQ (Duration{"PT1.4S"}.PrettyPrintAge (), "now");
-            EXPECT_EQ (Duration{"-PT9M"}.PrettyPrintAge (), "now");
-            EXPECT_EQ (Duration{"-PT20M"}.PrettyPrintAge (), "20 minutes ago");
-            EXPECT_EQ (Duration{"PT20M"}.PrettyPrintAge (), "20 minutes from now");
-            EXPECT_EQ (Duration{"PT4H"}.PrettyPrintAge (), "4 hours from now");
-            EXPECT_EQ (Duration{"PT4.4H"}.PrettyPrintAge (), "4 hours from now");
-            EXPECT_EQ (Duration{"P2Y"}.PrettyPrintAge (), "2 years from now");
-            EXPECT_EQ (Duration{"P2.4Y"}.PrettyPrintAge (), "2 years from now");
-            EXPECT_EQ (Duration{"P2.6Y"}.PrettyPrintAge (), "3 years from now");
-            EXPECT_EQ (Duration{"-P1M"}.PrettyPrintAge (), "1 month ago");
-            EXPECT_EQ (Duration{"-P2M"}.PrettyPrintAge (), "2 months ago");
-            EXPECT_EQ (Duration{"-P1Y"}.PrettyPrintAge (), "1 year ago");
-            EXPECT_EQ (Duration{"-P2Y"}.PrettyPrintAge (), "2 years ago");
+            EXPECT_EQ (Duration{"PT1.4S"}.FormatAge (), "now");
+            EXPECT_EQ (Duration{"-PT9M"}.FormatAge (), "now");
+            EXPECT_EQ (Duration{"-PT20M"}.FormatAge (), "20 minutes ago");
+            EXPECT_EQ (Duration{"PT20M"}.FormatAge (), "20 minutes from now");
+            EXPECT_EQ (Duration{"PT4H"}.FormatAge (), "4 hours from now");
+            EXPECT_EQ (Duration{"PT4.4H"}.FormatAge (), "4 hours from now");
+            EXPECT_EQ (Duration{"P2Y"}.FormatAge (), "2 years from now");
+            EXPECT_EQ (Duration{"P2.4Y"}.FormatAge (), "2 years from now");
+            EXPECT_EQ (Duration{"P2.6Y"}.FormatAge (), "3 years from now");
+            EXPECT_EQ (Duration{"-P1M"}.FormatAge (), "1 month ago");
+            EXPECT_EQ (Duration{"-P2M"}.FormatAge (), "2 months ago");
+            EXPECT_EQ (Duration{"-P1Y"}.FormatAge (), "1 year ago");
+            EXPECT_EQ (Duration{"-P2Y"}.FormatAge (), "2 years ago");
+        }
+        {
+            // options other than the defaults
+            Duration::FormatOptions options;
+            options.fLabels.fSeconds = "secs";
+            EXPECT_EQ (Duration{3}.Format (options), "3 secs");
+            EXPECT_EQ (Duration{"-PT9M"}.FormatAge (Duration::AgeFormatOptions{.fNowThreshold = 60}), "9 minutes ago");
+            options.fLabels.fMinutes = "mins";
+            EXPECT_EQ (Duration{"PT20M"}.FormatAge (Duration::AgeFormatOptions{.fLabels = {.fFromNow = "hence"}}, options),
+                       "20 mins hence");
         }
         {
             // Support precision of duration reps

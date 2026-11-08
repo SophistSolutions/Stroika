@@ -3520,7 +3520,7 @@ namespace {
         }
         JSONTests_::Run ();
 
-        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint () << "]]]" << endl << endl;
+        GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).Format () << "]]]" << endl << endl;
 
         // extra tests
         {

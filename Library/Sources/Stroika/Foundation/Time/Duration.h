@@ -40,10 +40,10 @@
  *
  *      @todo   Consider using long double for InternalNumericFormatType_;
  *
- *      @todo   Consider adding 'significantFigures' property to PrettyPrintInfo. Think about significantFigures support/design of
+ *      @todo   Consider adding 'significantFigures' property to FormatOptions. Think about significantFigures support/design of
  *              boost (maybe use  bignum or rational?). Probably no - but document clearly why or why not.
  *
- *      @todo   Add PRECISION support to PrettyPrintInfo argument to PrettyPrint () function.
+ *      @todo   Add PRECISION support to FormatOptions.
  *          o   Number of seconds. Anything less than that number is truncated.
  *          o   So .001 'precision' means show 3.44444 as 3.444 and 60 means show 67 seconds as 'one minute'
  *          o   Maybe add option so can show > or < as in < one minute or > one minute for being passed sentinel values?
@@ -314,71 +314,79 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  \brief The unit names Format () and FormatAge () write, singular and plural - English by default
          */
-        struct PrettyPrintInfo {
+        struct FormatOptions {
             /**
              */
             struct Labels {
-                Characters::String fYear;
-                Characters::String fYears;
-                Characters::String fMonth;
-                Characters::String fMonths;
-                Characters::String fWeek;
-                Characters::String fWeeks;
-                Characters::String fDay;
-                Characters::String fDays;
-                Characters::String fHour;
-                Characters::String fHours;
-                Characters::String fMinute;
-                Characters::String fMinutes;
-                Characters::String fSecond;
-                Characters::String fSeconds;
-                Characters::String fMilliSecond;
-                Characters::String fMilliSeconds;
-                Characters::String fMicroSecond;
-                Characters::String fMicroSeconds;
-                Characters::String fNanoSecond;
-                Characters::String fNanoSeconds;
-                Characters::String fPicoSecond;
-                Characters::String fPicoSeconds;
+                Characters::String fYear{"year"sv};
+                Characters::String fYears{"years"sv};
+                Characters::String fMonth{"month"sv};
+                Characters::String fMonths{"months"sv};
+                Characters::String fWeek{"week"sv};
+                Characters::String fWeeks{"weeks"sv};
+                Characters::String fDay{"day"sv};
+                Characters::String fDays{"days"sv};
+                Characters::String fHour{"hour"sv};
+                Characters::String fHours{"hours"sv};
+                Characters::String fMinute{"minute"sv};
+                Characters::String fMinutes{"minutes"sv};
+                Characters::String fSecond{"second"sv};
+                Characters::String fSeconds{"seconds"sv};
+                Characters::String fMilliSecond{"ms"sv};
+                Characters::String fMilliSeconds{"ms"sv};
+                Characters::String fMicroSecond{L"\u00b5s"sv};
+                Characters::String fMicroSeconds{L"\u00b5s"sv};
+                Characters::String fNanoSecond{"ns"sv};
+                Characters::String fNanoSeconds{"ns"sv};
+                Characters::String fPicoSecond{"ps"sv};
+                Characters::String fPicoSeconds{"ps"sv};
             } fLabels;
         };
 
     public:
-        static const PrettyPrintInfo kDefaultPrettyPrintInfo;
-
-    public:
         /**
-         *  Consider deprecating, and using 'Format'
-         */
-        nonvirtual Characters::String PrettyPrint (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
-
-    public:
-        /**
-         *  \brief like javascript 'humanize' APIs
-         * 
+         *  \brief The Duration in words, for people to read - "3 seconds", "1.003 seconds", "3 ms" - like JavaScript's 'humanize' APIs
+         *
          *  \par Example Usage
          *      \code
-         *          Assert (Duration{3}.Format () == "3 seconds")
+         *          EXPECT_EQ (Duration{3}.Format (), "3 seconds");
+         *          Duration::FormatOptions options;
+         *          options.fLabels.fSeconds = "secs";
+         *          EXPECT_EQ (Duration{3}.Format (options), "3 secs");
          *      \endcode
+         *
+         *  \note Format () formats with a FormatOptions{} built once, not per call: building one - its 22 labels - costs about as
+         *        much as the formatting. So FormatOptions is not a default argument (= {}).
          */
-        nonvirtual Characters::String Format (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
-
-    public:
-        struct AgePrettyPrintInfo {
-            struct Labels {
-                Characters::String fNow;
-                Characters::String fAgo;
-                Characters::String fFromNow; // could use 'until' or 'from now'
-            } fLabels;
-            double fNowThreshold{};
-        };
-
-    public:
-        static const AgePrettyPrintInfo kDefaultAgePrettyPrintInfo;
+        nonvirtual Characters::String Format () const;
+        nonvirtual Characters::String Format (const FormatOptions& options) const; ///< \brief Format () with the labels given
 
     public:
         /**
+         *  \brief The words FormatAge () puts around the number, and how near zero is "now"
+         */
+        struct AgeFormatOptions {
+            /**
+             */
+            struct Labels {
+                Characters::String fNow{"now"sv};
+                Characters::String fAgo{"ago"sv};
+                Characters::String fFromNow{"from now"sv}; // could use 'until' or 'from now'
+            } fLabels;
+
+            /**
+             *  \brief In seconds: a Duration nearer zero than this, either way, is fLabels.fNow
+             */
+            double fNowThreshold{12 * 60};
+        };
+
+    public:
+        /**
+         *  \brief The Duration as a time relative to now, for people to read - "now", "20 minutes ago", "4 hours from now" - in
+         *         one unit, rounded
+         *
          *  Inspired by useful JQuery plugin http://ksylvest.github.io/jquery-age/; or https://momentjs.com/
          *
          *  Technically, this isn't an 'age' but just a 'now-centric' pretty printing of durations.
@@ -387,15 +395,31 @@ namespace Stroika::Foundation::Time {
          *
          *  \par Example Usage
          *      \code
-         *          EXPECT_EQ (Duration{"PT1.4S"}.PrettyPrintAge (), "now");
-         *          EXPECT_EQ (Duration{"-PT9M"}.PrettyPrintAge (), "now");
-         *          EXPECT_EQ (Duration{"-PT20M"}.PrettyPrintAge (), "20 minutes ago");
-         *          EXPECT_EQ (Duration{"PT20M"}.PrettyPrintAge (), "20 minutes from now");
-         *          EXPECT_EQ (Duration{"PT4H"}.PrettyPrintAge (), "4 hours from now");
+         *          EXPECT_EQ (Duration{"PT1.4S"}.FormatAge (), "now");
+         *          EXPECT_EQ (Duration{"-PT9M"}.FormatAge (), "now");
+         *          EXPECT_EQ (Duration{"-PT20M"}.FormatAge (), "20 minutes ago");
+         *          EXPECT_EQ (Duration{"PT20M"}.FormatAge (), "20 minutes from now");
+         *          EXPECT_EQ (Duration{"PT4H"}.FormatAge (), "4 hours from now");
+         *          EXPECT_EQ (Duration{"-PT9M"}.FormatAge (Duration::AgeFormatOptions{.fNowThreshold = 60}), "9 minutes ago");
          *      \endcode
+         *
+         *  \note Like Format (), FormatAge () formats with options built once, not per call.
          */
-        nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo,
-                                                      const PrettyPrintInfo&    prettyPrintInfo    = kDefaultPrettyPrintInfo) const;
+        nonvirtual Characters::String FormatAge () const;
+        nonvirtual Characters::String FormatAge (const AgeFormatOptions& ageOptions) const; ///< \brief FormatAge () with the AgeFormatOptions given
+        nonvirtual Characters::String FormatAge (const AgeFormatOptions& ageOptions, const FormatOptions& options) const; ///< \brief FormatAge () with both options given
+
+    public:
+        using PrettyPrintInfo [[deprecated ("Since Stroika v3.0d26 use FormatOptions")]]       = FormatOptions;
+        using AgePrettyPrintInfo [[deprecated ("Since Stroika v3.0d26 use AgeFormatOptions")]] = AgeFormatOptions;
+        [[deprecated ("Since Stroika v3.0d26 use FormatOptions{}")]] static const FormatOptions       kDefaultPrettyPrintInfo;
+        [[deprecated ("Since Stroika v3.0d26 use AgeFormatOptions{}")]] static const AgeFormatOptions kDefaultAgePrettyPrintInfo;
+        [[deprecated ("Since Stroika v3.0d26 use Format")]] nonvirtual Characters::String PrettyPrint () const;
+        [[deprecated ("Since Stroika v3.0d26 use Format")]] nonvirtual Characters::String PrettyPrint (const FormatOptions& options) const;
+        [[deprecated ("Since Stroika v3.0d26 use FormatAge")]] nonvirtual Characters::String PrettyPrintAge () const;
+        [[deprecated ("Since Stroika v3.0d26 use FormatAge")]] nonvirtual Characters::String PrettyPrintAge (const AgeFormatOptions& ageOptions) const;
+        [[deprecated ("Since Stroika v3.0d26 use FormatAge")]] nonvirtual Characters::String PrettyPrintAge (const AgeFormatOptions& ageOptions,
+                                                                                                             const FormatOptions& options) const;
 
     public:
         /**

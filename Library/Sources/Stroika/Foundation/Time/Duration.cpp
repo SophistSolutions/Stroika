@@ -50,24 +50,22 @@ Duration::FormatException::FormatException (const String& details)
  ********************************************************************************
  */
 namespace {
-    // sigh - not sure why so hard still -- LGP 2023-01-22 ;-)
-    constexpr wstring_view kMS_ = L"\u00b5s"sv; // u8"µs"sv
-    static_assert (kMS_.size () == 2 && kMS_[0] == 0x00B5 and kMS_[1] == 's');
-    //static_assert (sizeof (u8"µ") == 3 and u8"µ"[0] == 0xC2 and u8"µ"[1] == 0xB5); // be sure above encoding working, since appantly not well standardized (file has UTF8 BOM)
-}
-const Duration::PrettyPrintInfo Duration::kDefaultPrettyPrintInfo = {{
-    "year"sv,    "years"sv,  "month"sv,   "months"sv, "week"sv, "weeks"sv, "day"sv, "days"sv, "hour"sv, "hours"sv, "minute"sv,
-    "minutes"sv, "second"sv, "seconds"sv, "ms"sv,     "ms"sv,   kMS_,      kMS_,    "ns"sv,   "ns"sv,   "ps"sv,    "ps"sv,
-}};
-
-const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
+    // built once: building a FormatOptions - its 22 labels - costs about as much as formatting with it
+    const Duration::FormatOptions& DefaultFormatOptions_ ()
     {
-        "now"sv,
-        "ago"sv,
-        "from now"sv,
-    },
-    12 * 60 /*fNowThreshold*/
-};
+        static const Duration::FormatOptions kDefault_{};
+        return kDefault_;
+    }
+}
+
+DISABLE_COMPILER_MSC_WARNING_START (4996)
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+const Duration::FormatOptions    Duration::kDefaultPrettyPrintInfo{};
+const Duration::AgeFormatOptions Duration::kDefaultAgePrettyPrintInfo{};
+DISABLE_COMPILER_MSC_WARNING_END (4996)
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 Duration& Duration::operator+= (const Duration& rhs)
 {
@@ -131,7 +129,12 @@ namespace {
     constexpr time_t kSecondsPerYear_   = kSecondsPerDay_ * 365;
 }
 
-String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
+String Duration::Format () const
+{
+    return Format (DefaultFormatOptions_ ());
+}
+
+String Duration::Format (const FormatOptions& options) const
 {
     auto                lingMgr = Linguistics::MessageUtilities::Manager::sThe.LookupHandler ();
     static const String kCommaSpace_{", "sv};
@@ -153,7 +156,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 result << kCommaSpace_;
             }
             result << nYears << kSpaceBeforeUnit_
-                   << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
+                   << lingMgr->PluralizeNoun (options.fLabels.fYear, options.fLabels.fYears, static_cast<int> (nYears));
             timeLeft -= nYears * kSecondsPerYear_;
         }
     }
@@ -164,7 +167,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 result << kCommaSpace_;
             }
             result << "{}"_f(nMonths) << kSpaceBeforeUnit_
-                   << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
+                   << lingMgr->PluralizeNoun (options.fLabels.fMonth, options.fLabels.fMonths, static_cast<int> (nMonths));
             timeLeft -= nMonths * kSecondsPerMonth_;
         }
     }
@@ -175,7 +178,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 result << kCommaSpace_;
             }
             result << "{}"_f(nDays) << kSpaceBeforeUnit_
-                   << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
+                   << lingMgr->PluralizeNoun (options.fLabels.fDay, options.fLabels.fDays, static_cast<int> (nDays));
             timeLeft -= nDays * kSecondsPerDay_;
         }
     }
@@ -187,7 +190,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 result << "{}"_f(nHours) << kSpaceBeforeUnit_
-                       << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
+                       << lingMgr->PluralizeNoun (options.fLabels.fHour, options.fLabels.fHours, static_cast<int> (nHours));
                 timeLeft -= nHours * kSecondsPerHour_;
             }
         }
@@ -198,7 +201,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 result << "{}"_f(nMinutes) << kSpaceBeforeUnit_
-                       << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
+                       << lingMgr->PluralizeNoun (options.fLabels.fMinute, options.fLabels.fMinutes, static_cast<int> (nMinutes));
                 timeLeft -= nMinutes * kSecondsPerMinute_;
             }
         }
@@ -212,11 +215,11 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 // Map 3.242 to printing out 3.242, but 0.234 prints out as 234 milliseconds
                 if (fabs (timeLeft - timeLeftAsInt) < 0.001) {
                     result << "{}"_f(static_cast<int> (timeLeft)) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, timeLeftAsInt);
+                           << lingMgr->PluralizeNoun (options.fLabels.fSecond, options.fLabels.fSeconds, timeLeftAsInt);
                     timeLeft -= static_cast<int> (timeLeft);
                 }
                 else {
-                    result << "{:.3f}"_f(timeLeft) << kSpaceBeforeUnit_ << prettyPrintInfo.fLabels.fSeconds;
+                    result << "{:.3f}"_f(timeLeft) << kSpaceBeforeUnit_ << options.fLabels.fSeconds;
                     timeLeft = 0.0;
                 }
             }
@@ -237,12 +240,12 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
                     result << Characters::ToString (timeLeft * 1.0e3, kFinalFloatOptions_) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                           << lingMgr->PluralizeNoun (options.fLabels.fMilliSecond, options.fLabels.fMilliSeconds, nMilliseconds);
                     timeLeft = 0;
                 }
                 else {
                     result << int (nMilliseconds) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                           << lingMgr->PluralizeNoun (options.fLabels.fMilliSecond, options.fLabels.fMilliSeconds, nMilliseconds);
                     timeLeft -= 1.0e-3 * nMilliseconds;
                 }
             }
@@ -253,12 +256,12 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
                     result << Characters::ToString (timeLeft * 1.0e6, kFinalFloatOptions_) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                           << lingMgr->PluralizeNoun (options.fLabels.fMicroSecond, options.fLabels.fMicroSeconds, nMicroSeconds);
                     timeLeft = 0;
                 }
                 else {
                     result << int (nMicroSeconds) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                           << lingMgr->PluralizeNoun (options.fLabels.fMicroSecond, options.fLabels.fMicroSeconds, nMicroSeconds);
                     timeLeft -= 1.0e-6 * nMicroSeconds;
                 }
             }
@@ -269,12 +272,12 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
                     result << Characters::ToString (timeLeft * 1.0e9, kFinalFloatOptions_) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+                           << lingMgr->PluralizeNoun (options.fLabels.fNanoSecond, options.fLabels.fNanoSeconds, nNanoSeconds);
                     timeLeft = 0;
                 }
                 else {
-                    result << int (nMicroSeconds) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSecond, nNanoSeconds);
+                    result << int (nNanoSeconds) << kSpaceBeforeUnit_
+                           << lingMgr->PluralizeNoun (options.fLabels.fNanoSecond, options.fLabels.fNanoSeconds, nNanoSeconds);
                     timeLeft -= 1.0e-9 * nNanoSeconds;
                 }
             }
@@ -286,17 +289,17 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 Duration::InternalNumericFormatType_ extraBits = nPicoSeconds - floor (nPicoSeconds);
                 if (extraBits > 1.0e-2) {
                     result << nPicoSeconds << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fPicoSecond, prettyPrintInfo.fLabels.fPicoSeconds, 2);
+                           << lingMgr->PluralizeNoun (options.fLabels.fPicoSecond, options.fLabels.fPicoSeconds, 2);
                 }
                 else {
                     result << int (nPicoSeconds) << kSpaceBeforeUnit_
-                           << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fPicoSecond, prettyPrintInfo.fLabels.fPicoSeconds, int (nPicoSeconds));
+                           << lingMgr->PluralizeNoun (options.fLabels.fPicoSecond, options.fLabels.fPicoSeconds, int (nPicoSeconds));
                 }
             }
         }
     }
     if (result.empty ()) {
-        result << "0"sv << kSpaceBeforeUnit_ << prettyPrintInfo.fLabels.fSeconds;
+        result << "0"sv << kSpaceBeforeUnit_ << options.fLabels.fSeconds;
     }
     if (isNeg) {
         static const String kNeg_{"-"sv};
@@ -305,16 +308,27 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     return result;
 }
 
-String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
+String Duration::FormatAge () const
+{
+    static const AgeFormatOptions kDefault_{};
+    return FormatAge (kDefault_, DefaultFormatOptions_ ());
+}
+
+String Duration::FormatAge (const AgeFormatOptions& ageOptions) const
+{
+    return FormatAge (ageOptions, DefaultFormatOptions_ ());
+}
+
+String Duration::FormatAge (const AgeFormatOptions& ageOptions, const FormatOptions& options) const
 {
     InternalNumericFormatType_ t     = As<InternalNumericFormatType_> ();
     bool                       isNeg = (t < 0);
     InternalNumericFormatType_ absT  = isNeg ? -t : t;
-    if (absT < agePrettyPrintInfo.fNowThreshold) {
-        return agePrettyPrintInfo.fLabels.fNow;
+    if (absT < ageOptions.fNowThreshold) {
+        return ageOptions.fLabels.fNow;
     }
 
-    String suffix = isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
+    String suffix = isNeg ? ageOptions.fLabels.fAgo : ageOptions.fLabels.fFromNow;
 
     auto fmtDate = [suffix] (int timeInSelectedUnit, const String& singularUnit, const String& pluralUnit) -> String {
         String label = Linguistics::MessageUtilities::Manager::sThe.PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
@@ -328,21 +342,21 @@ String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, c
     constexpr InternalNumericFormatType_ kShowMonthsIfLess_    = 11 * kSecondsPerMonth_;
 
     if (absT < kShowAsMinutesIfLess_) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerMinute_), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerMinute_), options.fLabels.fMinute, options.fLabels.fMinutes);
     }
     if (absT < kShowHoursIfLess_) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerHour_), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerHour_), options.fLabels.fHour, options.fLabels.fHours);
     }
     if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerWeek_), 1.0)) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerDay_), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerDay_), options.fLabels.fDay, options.fLabels.fDays);
     }
     if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerMonth_), 1.0)) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerWeek_), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerWeek_), options.fLabels.fWeek, options.fLabels.fWeeks);
     }
     if (absT < kShowMonthsIfLess_) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerMonth_), prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerMonth_), options.fLabels.fMonth, options.fLabels.fMonths);
     }
-    return fmtDate (Math::Round<int> (absT / kSecondsPerYear_), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
+    return fmtDate (Math::Round<int> (absT / kSecondsPerYear_), options.fLabels.fYear, options.fLabels.fYears);
 }
 
 Duration Duration::operator- () const
