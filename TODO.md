@@ -50,6 +50,13 @@ Generally will track stuff here between releases
    - **String: a UTF-8 (char8_t) rep** (LGP 2026-11-07; may postpone, once discussed) - so a constant u8 string that is not ASCII
      is shared, not decoded and copied: enum names are UTF-8 now (EnumNameText), shared already when ASCII, as nearly all are.
      String.inl's FromStringConstant has the @todo and the design question (a UTF-8 rep cannot index directly).
+   - **A clearer spelling for a span from a pointer and a size** (LGP 2026-11-07: "I don't like the fix even with the
+     comment") - since 6f00f5debb, generic code writes `span<const T> (p, n)`, 23 sites each with a `(), not {}`
+     comment, because braces let the C++26 draft's span (initializer_list) constructor (P2447, in libstdc++ 16; P4144
+     withdrew it) take {p, n} as two Ts when T converts from both - a container of bool read freed memory. Find an idiom
+     that needs no comment (a `Memory::MakeSpan (p, n)`, say) and replace them; check first whether GCC 16's release still
+     has P2447 (Ubuntu 26.04's g++-16 is a 2026-03-22 trunk snapshot), and whether non-generic sites (span<const bool>, or
+     a class type with converting constructors) are at risk too.
    - **After the float and Duration formatting redesign: which other Options want `With`** (LGP 2026-11-06) - scan
      Stroika's Options structs and option classes for constructors that merge option sets or convert from each field's
      type, and `optional<>` fields there only to overlay; convert those whose callers lay settings over a base
