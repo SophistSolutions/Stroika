@@ -71,9 +71,11 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  e.g. Linux procfs
          */
         eSystemInformation,
-
-        Stroika_Define_Enum_Bounds (eRemovableDisk, eSystemInformation)
     };
+    constexpr Common::EnumBounds<BlockDeviceKind> EnumBoundsOf (BlockDeviceKind)
+    {
+        return {BlockDeviceKind::eRemovableDisk, BlockDeviceKind::eSystemInformation};
+    }
 
     /**
      *  Information for a physical disk (not for a partition).

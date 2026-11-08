@@ -211,7 +211,7 @@ namespace {
 }
 
 namespace {
-    // An enum is written and read by its names (kDefaultNames) once Stroika_Define_Enum_Bounds gives its range. By default a
+    // An enum is written and read by its names (kDefaultNames) once EnumBoundsOf, beside it, gives its bounds. By default a
     // name is the identifier as written ("eLow"); a naming rule changes them all, and single names can be given. Where the
     // compiler has C++26 annotations, they sit on the enum itself; elsewhere, declarations beside it say the same.
 #if __cpp_impl_reflection >= 202506L
@@ -220,16 +220,22 @@ namespace {
         eLow,
         eNormal,
         eUrgent [[= Common::Named{"ASAP"}]],
-        Stroika_Define_Enum_Bounds (eLow, eUrgent)
     };
     // clang-format on
+    constexpr Common::EnumBounds<Priority_> EnumBoundsOf (Priority_)
+    {
+        return {Priority_::eLow, Priority_::eUrgent};
+    }
 #else
     enum class Priority_ {
         eLow,
         eNormal,
         eUrgent,
-        Stroika_Define_Enum_Bounds (eLow, eUrgent)
     };
+    constexpr Common::EnumBounds<Priority_> EnumBoundsOf (Priority_)
+    {
+        return {Priority_::eLow, Priority_::eUrgent};
+    }
     Common::StroikaNaming          EnumNamingRule (Priority_); // Stroika's rule: the identifier without its e - "Low", "Normal"
     constexpr Common::EnumNameText EnumeratorName (Priority_ p, Common::EnumNameText byRule)
     {

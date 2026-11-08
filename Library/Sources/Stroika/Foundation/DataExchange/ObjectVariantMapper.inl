@@ -1016,11 +1016,13 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
             *intoObjOfTypeT = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
             Assert (static_cast<SerializeAsType> (*intoObjOfTypeT) == d.As<SerializeAsType> ()); // no round-trip loss
-            if (not(ENUM_TYPE::eSTART <= *intoObjOfTypeT and *intoObjOfTypeT < ENUM_TYPE::eEND)) [[unlikely]] {
-                using namespace Characters;
-                DbgTrace ("Enumeration ('{}') value {} out of range"_f, type_index{typeid (ENUM_TYPE)}, static_cast<int> (*intoObjOfTypeT));
-                static const auto kException_ = BadFormatException{"Enumeration value out of range"_k};
-                Execution::Throw (kException_);
+            if constexpr (Common::IBoundedEnum<ENUM_TYPE>) {
+                if (not Common::kEnumBounds<ENUM_TYPE>.Contains (*intoObjOfTypeT)) [[unlikely]] {
+                    using namespace Characters;
+                    DbgTrace ("Enumeration ('{}') value {} out of range"_f, type_index{typeid (ENUM_TYPE)}, static_cast<int> (*intoObjOfTypeT));
+                    static const auto kException_ = BadFormatException{"Enumeration value out of range"_k};
+                    Execution::Throw (kException_);
+                }
             }
         };
         return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (ENUM_TYPE)};

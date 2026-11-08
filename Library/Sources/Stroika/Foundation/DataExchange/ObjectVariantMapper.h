@@ -1198,9 +1198,11 @@ namespace Stroika::Foundation::DataExchange {
         enum class NullFieldHandling {
             eOmit,
             eInclude,
-
-            Stroika_Define_Enum_Bounds (eOmit, eInclude)
         };
+        friend constexpr Common::EnumBounds<NullFieldHandling> EnumBoundsOf (NullFieldHandling)
+        {
+            return {NullFieldHandling::eOmit, NullFieldHandling::eInclude};
+        }
 
     private:
         /*

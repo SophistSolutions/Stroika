@@ -141,9 +141,11 @@ namespace Stroika::Foundation::Database::SQL {
             eRolledBack,
             eCompleted,
             eFailed,
-
-            Stroika_Define_Enum_Bounds (eNone, eFailed)
         };
+        friend constexpr Common::EnumBounds<Disposition> EnumBoundsOf (Disposition)
+        {
+            return {Disposition::eNone, Disposition::eFailed};
+        }
 
     public:
         /**

@@ -37,9 +37,11 @@ namespace Stroika::Foundation::Common {
         Beta             = qStroika_Version_Stage_Beta,
         ReleaseCandidate = qStroika_Version_Stage_ReleaseCandidate,
         Release          = qStroika_Version_Stage_Release,
-
-        Stroika_Define_Enum_Bounds (Dev, Release)
     };
+    constexpr Common::EnumBounds<VersionStage> EnumBoundsOf (VersionStage)
+    {
+        return {VersionStage::Dev, VersionStage::Release};
+    }
 
     /**
      *  In Stroika, we represent a version# as (higher sort order priority first):

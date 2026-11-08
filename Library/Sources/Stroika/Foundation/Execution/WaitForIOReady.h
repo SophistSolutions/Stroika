@@ -161,9 +161,11 @@ namespace Stroika::Foundation::Execution {
                  *  @see https://man7.org/linux/man-pages/man2/poll.2.html - It is used to detect "out-of-band" (OOB) data on sockets or high-priority, non-zero priority band data in STREAMS.
                  */
                 ePriority,
-
-                Stroika_Define_Enum_Bounds (eRead, ePriority)
             };
+            friend constexpr Common::EnumBounds<TypeOfMonitor> EnumBoundsOf (TypeOfMonitor)
+            {
+                return {TypeOfMonitor::eRead, TypeOfMonitor::ePriority};
+            }
 
         public:
             using TypeOfMonitorSet = Containers::Set<TypeOfMonitor>;

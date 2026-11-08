@@ -55,9 +55,11 @@ namespace Stroika::Foundation::IO::FileSystem {
         eRemoveAnyContainedFiles, // note - this includes the case of included folders which include more files - fully recursive
 
         eDEFAULT = eFailIfNotEmpty,
-
-        Stroika_Define_Enum_Bounds (eFailIfNotEmpty, eRemoveAnyContainedFiles)
     };
+    constexpr Common::EnumBounds<RemoveDirectoryPolicy> EnumBoundsOf (RemoveDirectoryPolicy)
+    {
+        return {RemoveDirectoryPolicy::eFailIfNotEmpty, RemoveDirectoryPolicy::eRemoveAnyContainedFiles};
+    }
 
     static constexpr RemoveDirectoryPolicy eFailIfNotEmpty          = RemoveDirectoryPolicy::eFailIfNotEmpty;
     static constexpr RemoveDirectoryPolicy eRemoveAnyContainedFiles = RemoveDirectoryPolicy::eRemoveAnyContainedFiles;

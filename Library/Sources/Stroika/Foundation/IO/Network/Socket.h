@@ -153,9 +153,11 @@ namespace Stroika::Foundation::IO::Network {
             eBoth,
 
             eDEFAULT = eBoth,
-
-            Stroika_Define_Enum_Bounds (eReads, eBoth)
         };
+        constexpr Common::EnumBounds<ShutdownTarget> EnumBoundsOf (ShutdownTarget)
+        {
+            return {ShutdownTarget::eReads, ShutdownTarget::eBoth};
+        }
 
         /**
          *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).

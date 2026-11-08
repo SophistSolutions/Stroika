@@ -102,9 +102,11 @@ namespace Stroika::Foundation::Characters {
         ePreferKeepMid,
 
         eDEFAULT = ePreferKeepLeft,
-
-        Stroika_Define_Enum_Bounds (ePreferKeepLeft, ePreferKeepMid)
     };
+    constexpr Common::EnumBounds<StringShorteningPreference> EnumBoundsOf (StringShorteningPreference)
+    {
+        return {StringShorteningPreference::ePreferKeepLeft, StringShorteningPreference::ePreferKeepMid};
+    }
     using StringShorteningPreference::ePreferKeepLeft;
     using StringShorteningPreference::ePreferKeepMid;
     using StringShorteningPreference::ePreferKeepRight;

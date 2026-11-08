@@ -110,9 +110,11 @@ namespace Stroika::Foundation::IO::Network {
             Host,
 
             eDEFAULT = Network,
-
-            Stroika_Define_Enum_Bounds (Network, Host)
         };
+        friend constexpr Common::EnumBounds<ByteOrder> EnumBoundsOf (ByteOrder)
+        {
+            return {ByteOrder::Network, ByteOrder::Host};
+        }
 
     public:
         /**

@@ -89,9 +89,11 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
             eWaitingOnPaging,
             eZombie,
             eSuspended, //  T is traced or stopped (on a signal)
-
-            Stroika_Define_Enum_Bounds (eRunning, eSuspended)
         };
+        friend constexpr Foundation::Common::EnumBounds<RunStatus> EnumBoundsOf (RunStatus)
+        {
+            return {RunStatus::eRunning, RunStatus::eSuspended};
+        }
 
         /**
          */

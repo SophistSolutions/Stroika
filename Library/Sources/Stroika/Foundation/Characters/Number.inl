@@ -662,11 +662,14 @@ namespace Stroika::Foundation::Characters {
     enum class [[deprecated ("Since Stroika v3.0d23 use FloatFormatType 'trim' variant instead")]] TrimTrailingZerosType {
         eTrimZeros,
         eDontTrimZeros,
-        Stroika_Define_Enum_Bounds (eTrimZeros, eDontTrimZeros)
     };
     DISABLE_COMPILER_MSC_WARNING_START (4996);
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    constexpr Common::EnumBounds<TrimTrailingZerosType> EnumBoundsOf (TrimTrailingZerosType)
+    {
+        return {TrimTrailingZerosType::eTrimZeros, TrimTrailingZerosType::eDontTrimZeros};
+    }
     using TrimTrailingZerosType::eDontTrimZeros;
     using TrimTrailingZerosType::eTrimZeros;
     DISABLE_COMPILER_MSC_WARNING_END (4996);

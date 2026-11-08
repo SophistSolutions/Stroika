@@ -152,9 +152,11 @@ namespace Stroika::Foundation::IO::Network {
             eDeviceVirtualInternalNetwork,
 
             eOther,
-
-            Stroika_Define_Enum_Bounds (eLoopback, eOther)
         };
+        friend constexpr Common::EnumBounds<Type> EnumBoundsOf (Type)
+        {
+            return {Type::eLoopback, Type::eOther};
+        }
 
         /**
          */
@@ -192,9 +194,11 @@ namespace Stroika::Foundation::IO::Network {
                 eDiscovering, // WLAN_INTERFACE_STATE::wlan_interface_state_discovering  - Auto configuration is discovering settings for the network
                 eAuthenticating, // WLAN_INTERFACE_STATE::wlan_interface_state_authenticating
                 eUnknown,
-
-                Stroika_Define_Enum_Bounds (eNotReady, eUnknown)
             };
+            friend constexpr Common::EnumBounds<State> EnumBoundsOf (State)
+            {
+                return {State::eNotReady, State::eUnknown};
+            }
             optional<State> fState;
 
             enum class ConnectionMode {
@@ -206,9 +210,11 @@ namespace Stroika::Foundation::IO::Network {
                 eAuto, // _WLAN_CONNECTION_MODE::wlan_connection_mode_auto - connection initiated by wireless service automatically using a persistent profile
                 eInvalid, // _WLAN_CONNECTION_MODE::wlan_connection_mode_invalid
                 eUnknown,
-
-                Stroika_Define_Enum_Bounds (eProfile, eUnknown)
             };
+            friend constexpr Common::EnumBounds<ConnectionMode> EnumBoundsOf (ConnectionMode)
+            {
+                return {ConnectionMode::eProfile, ConnectionMode::eUnknown};
+            }
             optional<ConnectionMode> fConnectionMode;
 
             optional<String> fProfileName;
@@ -218,9 +224,11 @@ namespace Stroika::Foundation::IO::Network {
                 eIndependent,    // DOT11_BSS_TYPE::dot11_BSS_type_independent
                 eAny,            // DOT11_BSS_TYPE::dot11_BSS_type_any
                 eUnknown,
-
-                Stroika_Define_Enum_Bounds (eInfrastructure, eUnknown)
             };
+            friend constexpr Common::EnumBounds<BSSType> EnumBoundsOf (BSSType)
+            {
+                return {BSSType::eInfrastructure, BSSType::eUnknown};
+            }
             optional<BSSType> fBSSType;
 
             optional<String> fMACAddress;
@@ -237,9 +245,11 @@ namespace Stroika::Foundation::IO::Network {
                 e80211ad,    // DOT11_PHY_TYPE::dot11_phy_type_dmg = 9,                     // 11ad
                 e80211ax,    // DOT11_PHY_TYPE::dot11_phy_type_he = 10,                     // 11ax
                 eUnknown,    // DOT11_PHY_TYPE::dot11_phy_type_unknown = 0,
-
-                Stroika_Define_Enum_Bounds (eFHSS, eUnknown)
             };
+            friend constexpr Common::EnumBounds<PhysicalConnectionType> EnumBoundsOf (PhysicalConnectionType)
+            {
+                return {PhysicalConnectionType::eFHSS, PhysicalConnectionType::eUnknown};
+            }
             optional<PhysicalConnectionType> fPhysicalConnectionType;
 
             /**
@@ -264,9 +274,11 @@ namespace Stroika::Foundation::IO::Network {
                 eRSNA,         // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_RSNA = 6,
                 eRSNA_PSK,     // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_RSNA_PSK = 7,
                 eUnknown,
-
-                Stroika_Define_Enum_Bounds (eOpen, eUnknown)
             };
+            friend constexpr Common::EnumBounds<AuthAlgorithm> EnumBoundsOf (AuthAlgorithm)
+            {
+                return {AuthAlgorithm::eOpen, AuthAlgorithm::eUnknown};
+            }
             optional<AuthAlgorithm> fAuthAlgorithm;
 
             optional<String> fCipher;
@@ -334,9 +346,11 @@ namespace Stroika::Foundation::IO::Network {
              *        Corresponds to IfOperStatus==IfOperStatusUp
              */
             eRunning,
-
-            Stroika_Define_Enum_Bounds (eConnected, eRunning)
         };
+        friend constexpr Common::EnumBounds<Status> EnumBoundsOf (Status)
+        {
+            return {Status::eConnected, Status::eRunning};
+        }
 
         /**
          *  The state of the interface (@see Status) if known.

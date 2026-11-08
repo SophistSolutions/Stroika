@@ -85,9 +85,11 @@ namespace Stroika::Foundation::Execution {
             eSafe,
 
             eDEFAULT = eSafe,
-
-            Stroika_Define_Enum_Bounds (eDirect, eSafe)
         };
+        friend constexpr Common::EnumBounds<Type> EnumBoundsOf (Type)
+        {
+            return {Type::eDirect, Type::eSafe};
+        }
 
     public:
         /**

@@ -22,9 +22,11 @@ namespace Stroika::Foundation::IO {
 
         // composite values
         eReadWrite = eRead | eWrite,
-
-        Stroika_Define_Enum_Bounds (eNoAccess, eReadWrite)
     };
+    constexpr Common::EnumBounds<AccessMode> EnumBoundsOf (AccessMode)
+    {
+        return {AccessMode::eNoAccess, AccessMode::eReadWrite};
+    }
 
     constexpr AccessMode operator& (AccessMode l, AccessMode r);
     constexpr AccessMode operator| (AccessMode l, AccessMode r);

@@ -1626,8 +1626,11 @@ namespace {
             Background,
             Reference,
             Sample,
-            Stroika_Define_Enum_Bounds (Background, Sample)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<ScanKindType> EnumBoundsOf (ScanKindType)
+        {
+            return {ScanKindType::Background, ScanKindType::Sample};
+        }
         constexpr Common::EnumNames<ScanKindType> ScanKindType_NAMES{
             {ScanKindType::Background, "Background"},
             {ScanKindType::Reference, "Reference"},

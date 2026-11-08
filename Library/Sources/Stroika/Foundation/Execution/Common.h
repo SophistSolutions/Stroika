@@ -94,11 +94,13 @@ namespace Stroika::Foundation::Execution {
          */
         eUnseq,
 
-        Stroika_Define_Enum_Bounds (eSeq, eUnseq)
-
-            eDEFAULT [[deprecated ("Since Stroika v3.0d24 - call the overload taking no SequencePolicy to let the "
-                                   "implementation choose, or say eSeq if you require sequential")]] = eSeq,
+        eDEFAULT [[deprecated ("Since Stroika v3.0d24 - call the overload taking no SequencePolicy to let the "
+                               "implementation choose, or say eSeq if you require sequential")]] = eSeq,
     };
+    constexpr Common::EnumBounds<SequencePolicy> EnumBoundsOf (SequencePolicy)
+    {
+        return {SequencePolicy::eSeq, SequencePolicy::eUnseq};
+    }
 
 }
 

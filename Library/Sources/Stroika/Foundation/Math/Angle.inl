@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Math {
                                                                          : (angle * (2 * numbers::pi_v<RepType>) / 400.0))}
     {
         using namespace Common;
-        Require (ToInt (AngleFormat::eSTART) <= ToInt (angleFormat) and ToInt (angleFormat) < ToInt (AngleFormat::eEND));
+        Require (kEnumBounds<AngleFormat>.Contains (angleFormat));
     }
     inline constexpr Angle::RepType Angle::AsRadians () const
     {

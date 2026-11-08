@@ -26,6 +26,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -320,22 +321,62 @@ namespace {
         enum class fooEnum {
             eOne,
             eTwo,
-            Stroika_Define_Enum_Bounds (eOne, eTwo)
         };
+        constexpr EnumBounds<fooEnum> EnumBoundsOf (fooEnum)
+        {
+            return {fooEnum::eOne, fooEnum::eTwo};
+        }
         // nothing declared: the identifiers as written
         enum class Plain {
             eRed,
             eGreen,
             eBlue = 3, // a gap at 2
-            Stroika_Define_Enum_Bounds (eRed, eBlue)
         };
+        constexpr EnumBounds<Plain> EnumBoundsOf (Plain)
+        {
+            return {Plain::eRed, Plain::eBlue};
+        }
+        // bounds the other ways: the DEPRECATED Stroika_Define_Enum_Bounds, and a specialization of kEnumBounds (below) - as for
+        // an enum one may not add a function beside, one of namespace std's; and none at all
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        enum class Macro {
+            eA,
+            eB,
+            eC,
+            Stroika_Define_Enum_Bounds (eA, eC)
+        };
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        enum class Specialized {
+            eP,
+            eQ
+        };
+        enum class NoBounds {
+            eX,
+            eY
+        };
+        // a uint8_t enum to its last value: one past it does not fit
+        enum class Full : uint8_t {
+            eZero = 0,
+            eMax  = 255
+        };
+        constexpr EnumBounds<Full> EnumBoundsOf (Full)
+        {
+            return {Full::eZero, Full::eMax};
+        }
         // Stroika's naming rule, and one name changed - not ASCII
         enum class Ruled {
             eAlpha,
             eBeta,
             eGamma,
-            Stroika_Define_Enum_Bounds (eAlpha, eGamma)
         };
+        constexpr EnumBounds<Ruled> EnumBoundsOf (Ruled)
+        {
+            return {Ruled::eAlpha, Ruled::eGamma};
+        }
         StroikaNaming          EnumNamingRule (Ruled);
         constexpr EnumNameText EnumeratorName (Ruled r, EnumNameText byRule)
         {
@@ -346,16 +387,22 @@ namespace {
             enum class Inner {
                 eX,
                 eY,
-                Stroika_Define_Enum_Bounds (eX, eY)
             };
+            friend constexpr EnumBounds<Inner> EnumBoundsOf (Inner)
+            {
+                return {Inner::eX, Inner::eY};
+            }
             friend StroikaNaming EnumNamingRule (Inner);
         };
         // names longer than EnumNameText::kMaxInlineBytes: a reflected identifier, and a u8"..." name - pointed at, not held
         enum class Long {
             eA,
             eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt,
-            Stroika_Define_Enum_Bounds (eA, eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt)
         };
+        constexpr EnumBounds<Long> EnumBoundsOf (Long)
+        {
+            return {Long::eA, Long::eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsNameIsPointedAt};
+        }
         constexpr EnumNameText EnumeratorName (Long l, EnumNameText byRule)
         {
             return l == Long::eA ? EnumNameText{u8"A u8 name longer than sixty-four bytes is pointed at, not copied - any length works"} : byRule;
@@ -364,8 +411,11 @@ namespace {
         enum class LongRuled {
             eA,
             eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo,
-            Stroika_Define_Enum_Bounds (eA, eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo)
         };
+        constexpr EnumBounds<LongRuled> EnumBoundsOf (LongRuled)
+        {
+            return {LongRuled::eA, LongRuled::eThisEnumeratorIdentifierIsLongerThanSixtyFourBytesSoItsTailIsPointedAtToo};
+        }
         StroikaNaming EnumNamingRule (LongRuled);
         // no Stroika_Define_Enum_Bounds: no names (and declaring any for it fails the build)
         enum class Unbounded {
@@ -380,11 +430,20 @@ namespace {
             eTwo [[= Named{"Deux"}]],
             eThree [[= Named{u8"Trois"}]],
             eFour [[= Named{"a char name longer than sixty-four bytes - kept by std::define_static_string, any length"}]],
-            Stroika_Define_Enum_Bounds (eOne, eFour)
         };
         // clang-format on
+        constexpr EnumBounds<Annotated> EnumBoundsOf (Annotated)
+        {
+            return {Annotated::eOne, Annotated::eFour};
+        }
 #endif
     }
+}
+// bounds by a specialization of kEnumBounds - as an enum of namespace std's gets them
+namespace Stroika::Foundation::Common {
+    template <>
+    inline constexpr auto kEnumBounds<Test2_EnumNames_Private_::Specialized> =
+        EnumBounds<Test2_EnumNames_Private_::Specialized>{Test2_EnumNames_Private_::Specialized::eP, Test2_EnumNames_Private_::Specialized::eQ};
 }
 // a table written for Stroika v3.0d25 and before - k is DEPRECATED, but such a table still works, as this checks
 namespace Stroika::Foundation::Common {
@@ -401,6 +460,32 @@ namespace Stroika::Foundation::Common {
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 }
 namespace {
+    GTEST_TEST (Foundation_Common, EnumBounds_)
+    {
+        Debug::TraceContextBumper ctx{"{}::EnumBounds_"};
+        using namespace Test2_EnumNames_Private_;
+        using Characters::ToString;
+        // by EnumBoundsOf: every value from the first to the last, an enumerator or not
+        static_assert (kEnumBounds<Plain> == EnumBounds<Plain>{Plain::eRed, Plain::eBlue});
+        static_assert (kEnumBounds<Plain>.Count () == 4 and kEnumBounds<Plain>.Contains (static_cast<Plain> (2)));
+        static_assert (not kEnumBounds<Plain>.Contains (static_cast<Plain> (4)));
+        // by the DEPRECATED macro, by a specialization of kEnumBounds - and none
+        static_assert (kEnumBounds<Macro> == EnumBounds<Macro>{Macro::eA, Macro::eC});
+        static_assert (kEnumBounds<Specialized>.Count () == 2);
+        static_assert (IBoundedEnum<Plain> and IBoundedEnum<Macro> and IBoundedEnum<Specialized>);
+        static_assert (not IBoundedEnum<NoBounds> and not IBoundedEnum<int>);
+        EXPECT_EQ (ToString (Specialized::eQ), "eQ"sv); // its names, through its bounds
+        EXPECT_EQ (ToString (NoBounds::eY), "1"sv);     // no bounds: its number
+        // a uint8_t enum to its last value: Count past what the type holds; ToInt and ToEnum take eMax, Inc stops there
+        static_assert (kEnumBounds<Full>.Count () == 256);
+        static_assert (ToInt (Full::eMax) == 255 and ToEnum<Full> (255) == Full::eMax);
+        // iterating them
+        int n = 0;
+        for ([[maybe_unused]] Plain p : DiscreteRange<Plain>::FullRange ().Elements ()) {
+            ++n;
+        }
+        EXPECT_EQ (n, 4);
+    }
     GTEST_TEST (Foundation_Common, EnumNames_)
     {
         Debug::TraceContextBumper ctx{"{}::EnumNames_"};

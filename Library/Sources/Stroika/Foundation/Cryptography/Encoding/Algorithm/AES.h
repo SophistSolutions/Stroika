@@ -46,9 +46,11 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
         e256_CFB128,
 
         eDEFAULT = e256_CBC,
-
-        Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
     };
+    constexpr Common::EnumBounds<AESOptions> EnumBoundsOf (AESOptions)
+    {
+        return {AESOptions::e128_CBC, AESOptions::e256_CFB128};
+    }
 
 #if qStroika_HasComponent_OpenSSL
     /**

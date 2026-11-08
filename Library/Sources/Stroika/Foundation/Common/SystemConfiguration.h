@@ -198,9 +198,11 @@ namespace Stroika::Foundation::Common {
                 eRPM,
                 eMSI,
                 eDPKG,
-
-                Stroika_Define_Enum_Bounds (eRPM, eDPKG)
             };
+            friend constexpr Common::EnumBounds<InstallerTechnology> EnumBoundsOf (InstallerTechnology)
+            {
+                return {InstallerTechnology::eRPM, InstallerTechnology::eDPKG};
+            }
 
             /**
              *  Some UNIX systems use rpm (redhat, and many others), and others use dpkg (Debian based).

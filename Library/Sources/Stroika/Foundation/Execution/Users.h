@@ -15,9 +15,11 @@ namespace Stroika::Foundation::Execution {
         ePrettyName,
 
         eDEFAULT = ePrettyName,
-
-        Stroika_Define_Enum_Bounds (ePrettyName, ePrettyName)
     };
+    constexpr Common::EnumBounds<UserNameFormat> EnumBoundsOf (UserNameFormat)
+    {
+        return {UserNameFormat::ePrettyName, UserNameFormat::ePrettyName};
+    }
     Characters::String GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT);
 
 }

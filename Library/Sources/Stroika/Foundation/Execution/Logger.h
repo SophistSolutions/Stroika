@@ -177,9 +177,11 @@ namespace Stroika::Foundation::Execution {
             eCriticalError = 5, // The message states a critical condition
             eAlertError    = 6, // Action on the message must be taken immediately
             eEmergency     = 7, // The message says the system is unusable
-
-            Stroika_Define_Enum_Bounds (eDebug, eEmergency)
         };
+        friend constexpr Common::EnumBounds<Priority> EnumBoundsOf (Priority)
+        {
+            return {Priority::eDebug, Priority::eEmergency};
+        }
 
     public:
         static constexpr Priority eDebug         = Priority::eDebug;

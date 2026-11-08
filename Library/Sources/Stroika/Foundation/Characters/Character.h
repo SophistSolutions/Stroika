@@ -35,9 +35,11 @@ namespace Stroika::Foundation::Characters {
     enum class CompareOptions : uint8_t {
         eWithCase,
         eCaseInsensitive,
-
-        Stroika_Define_Enum_Bounds (eWithCase, eCaseInsensitive)
     };
+    constexpr Common::EnumBounds<CompareOptions> EnumBoundsOf (CompareOptions)
+    {
+        return {CompareOptions::eWithCase, CompareOptions::eCaseInsensitive};
+    }
     using CompareOptions::eCaseInsensitive;
     using CompareOptions::eWithCase;
 

@@ -185,16 +185,21 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Traversal, Test_3_SimpleDiscreteRangeWithEnumsTest_)
-    {
-        Debug::TraceContextBumper ctx{"{}::Test_3_SimpleDiscreteRangeWithEnumsTest_"};
+    namespace Test3_ {
         enum class Color {
             red,
             blue,
             green,
-
-            Stroika_Define_Enum_Bounds (red, green)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<Color> EnumBoundsOf (Color)
+        {
+            return {Color::red, Color::green};
+        }
+    }
+    GTEST_TEST (Foundation_Traversal, Test_3_SimpleDiscreteRangeWithEnumsTest_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test_3_SimpleDiscreteRangeWithEnumsTest_"};
+        using Color = Test3_::Color;
 
         {
             using namespace RangeTraits;
@@ -202,16 +207,19 @@ namespace {
             Color max1 = Default<Color>::kUpperBound;
             Color min2 = Default_Enum<Color>::kLowerBound;
             Color max2 = Default_Enum<Color>::kUpperBound;
-            Color min3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kLowerBound;
-            Color max3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kUpperBound;
-            EXPECT_TRUE (Color::red == Color::eSTART and Color::green == Color::eLAST);
-            EXPECT_TRUE (min1 == Color::eSTART and max1 == Color::eLAST);
-            EXPECT_TRUE (min2 == Color::eSTART and max2 == Color::eLAST);
-            EXPECT_TRUE (min3 == Color::eSTART and max3 == Color::eLAST);
+            Color min3 =
+                Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Common::kEnumBounds<Color>.fFirst, Common::kEnumBounds<Color>.fLast>>::kLowerBound;
+            Color max3 =
+                Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Common::kEnumBounds<Color>.fFirst, Common::kEnumBounds<Color>.fLast>>::kUpperBound;
+            constexpr Common::EnumBounds<Color> kBounds = Common::kEnumBounds<Color>;
+            EXPECT_TRUE (Color::red == kBounds.fFirst and Color::green == kBounds.fLast);
+            EXPECT_TRUE (min1 == kBounds.fFirst and max1 == kBounds.fLast);
+            EXPECT_TRUE (min2 == kBounds.fFirst and max2 == kBounds.fLast);
+            EXPECT_TRUE (min3 == kBounds.fFirst and max3 == kBounds.fLast);
         }
         {
             using namespace RangeTraits;
-            EXPECT_TRUE (Default_Enum<Color>::GetNext (Color::eSTART) == Color::blue);
+            EXPECT_TRUE (Default_Enum<Color>::GetNext (Common::kEnumBounds<Color>.fFirst) == Color::blue);
             EXPECT_TRUE (Default_Enum<Color>::GetPrevious (Color::blue) == Color::red);
         }
         {

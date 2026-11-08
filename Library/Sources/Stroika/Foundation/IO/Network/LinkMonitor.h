@@ -76,9 +76,11 @@ namespace Stroika::Foundation::IO::Network {
         enum class LinkChange {
             eAdded,
             eRemoved,
-
-            Stroika_Define_Enum_Bounds (eAdded, eRemoved)
         };
+        friend constexpr Common::EnumBounds<LinkChange> EnumBoundsOf (LinkChange)
+        {
+            return {LinkChange::eAdded, LinkChange::eRemoved};
+        }
 
         /**
          *  \brief What a callback is told: an address added to (or removed from) an interface.

@@ -25,9 +25,11 @@ namespace Stroika::Foundation::Traversal {
     enum class Openness {
         eOpen,
         eClosed,
-
-        Stroika_Define_Enum_Bounds (eOpen, eClosed)
     };
+    constexpr Common::EnumBounds<Openness> EnumBoundsOf (Openness)
+    {
+        return {Openness::eOpen, Openness::eClosed};
+    }
     using Openness::eClosed;
     using Openness::eOpen;
 

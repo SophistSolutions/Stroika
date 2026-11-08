@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <initializer_list>
 #include <iterator>
+#include <limits>
 #include <optional>
 #include <span>
 #include <string_view>
@@ -56,61 +57,159 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- * TODO:
- *
- *      @todo   https://github.com/SophistSolutions/Stroika/issues/1284 - enum names: names for an enum with no
- *              Stroika_Define_Enum_Bounds.
  */
 
 namespace Stroika::Foundation::Common {
 
     /**
-     *  \def Stroika_Define_Enum_Bounds
+     *  \brief An enum's bounds: its first and its last value - every value from one to the other is in range, an enumerator or
+     *  not
      *
-     *  \brief Makes an enum an IBoundedEnum: written as its last item, it adds eSTART, eEND (one past the last), eLAST and
-     *  eCOUNT, for the values from FIRST_ITEM to LAST_ITEM
-     *
-     *  \par Example Usage
+     *  An enum gets its bounds from a function, EnumBoundsOf, declared in the enum's namespace - or, for an enum in a class, as
+     *  a friend in the class - and found by argument-dependent lookup:
      *      \code
-     *          enum class Color {
-     *              eRed,
-     *              eGreen,
-     *              eBlue,
-     *              Stroika_Define_Enum_Bounds (eRed, eBlue)
+     *          enum class Color { eRed, eGreen, eBlue };
+     *          constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
+     *
+     *          struct Light {
+     *              enum class State { eOff, eDim, eOn };
+     *              friend constexpr Common::EnumBounds<State> EnumBoundsOf (State) { return {State::eOff, State::eOn}; }
      *          };
-     *          for (Color c = Color::eSTART; c != Color::eEND; c = Inc (c)) {
-     *              ...
-     *          }
+     *      \endcode
+     *  Write it in the enum's own header, right after the enum, so everything that uses the enum sees it. Read the bounds with
+     *  kEnumBounds, never by calling EnumBoundsOf. An enum declared in a function cannot have one - a function cannot be defined
+     *  in a function - so declare such an enum at namespace scope.
+     *
+     *  An enum with bounds is an IBoundedEnum: it has names (kDefaultNames - for ToString and ObjectVariantMapper), it can be
+     *  iterated (Traversal::DiscreteRange), and ToInt and ToEnum check its values:
+     *      \code
+     *          for (Color c : Traversal::DiscreteRange<Color>::FullRange ().Elements ()) { ... }
+     *          array<int, Common::kEnumBounds<Color>.Count ()> perColor{};
      *      \endcode
      *
-     *  What reads the bounds requires an IBoundedEnum: GetDistanceSpanned, OffsetFromStart, and the enum's names (kDefaultNames -
-     *  so ToString and ObjectVariantMapper).
-     *
-     *  \note Stroika_Define_Enum_Bounds will be deprecated in the Stroika release that requires C++26, whose reflection (P2996)
-     *        finds an enum's enumerators itself. Until then, it is what makes an enum bounded.
-     *
-     *  \see IBoundedEnum
+     *  \note Satisfies Concepts:
+     *      o   regular<EnumBounds<ENUM>> - and it is structural, so it can be a template argument
      */
-#define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM)                                                                                  \
-    eSTART = FIRST_ITEM, eEND = LAST_ITEM + 1, eLAST = LAST_ITEM, eCOUNT = eEND - eSTART,
+    template <typename ENUM>
+    struct EnumBounds {
+        static_assert (is_enum_v<ENUM>, "EnumBounds are an enum's");
+
+        ENUM fFirst{};
+        ENUM fLast{};
+
+        /**
+         *  \brief how many values from fFirst to fLast, enumerators or not
+         */
+        constexpr size_t Count () const;
+
+        /**
+         *  \brief is e from fFirst to fLast?
+         */
+        constexpr bool Contains (ENUM e) const;
+
+        constexpr bool operator== (const EnumBounds&) const = default;
+    };
 
     /**
-     *  Check if T is an enum class, with Stroika_Define_Enum_Bounds called on it to specify bounds.
+     *  \brief Where an enum's bounds come from: declare one for your enum, after it (see EnumBounds) - not this one, which is here
+     *         only to document the name
      *
-     *  \see Stroika_Define_Enum_Bounds
+     *      \code
+     *          enum class Color { eRed, eGreen, eBlue };
+     *          constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
+     *      \endcode
+     *
+     *  Stroika finds yours by argument-dependent lookup - it is a better match than this one, always - and reads it only through
+     *  kEnumBounds. This one is deleted, so an enum without one of its own has no bounds. Do not specialize it.
+     */
+    void EnumBoundsOf (auto) = delete;
+
+    namespace Private_ {
+        // kEnumBounds of an enum with none
+        struct NoEnumBounds_ {};
+        template <typename ENUM>
+        constexpr auto ComputeEnumBounds_ ();
+    }
+
+    /**
+     *  \brief ENUM's bounds, wherever they are declared - read them here
+     *
+     *  kEnumBounds<E> is E's bounds, from:
+     *      o   an EnumBoundsOf function, after the enum - the usual way (see EnumBounds)
+     *      o   Stroika_Define_Enum_Bounds, in the enum (DEPRECATED)
+     *      o   an explicit specialization of kEnumBounds itself (see below)
+     *  An enum with two of these, which disagree, fails the build. An enum with none has no bounds: kEnumBounds<E> is not an
+     *  EnumBounds<E>, and IBoundedEnum<E> is false.
+     *
+     *  \par Why this, and not EnumBoundsOf (E{})
+     *      An enum's bounds can come from more than one place, and code reading them should not care which. And one of those
+     *      places is not a function: argument-dependent lookup finds EnumBoundsOf only in the enum's own namespace, and a program
+     *      may not add declarations to namespace std - so an enum of the standard library's gets bounds by a specialization of
+     *      kEnumBounds, in Stroika's namespace:
+     *      \code
+     *          namespace Stroika::Foundation::Common {
+     *              template <>
+     *              inline constexpr auto kEnumBounds<std::memory_order> =
+     *                  EnumBounds<std::memory_order>{std::memory_order::relaxed, std::memory_order::seq_cst};
+     *          }
+     *      \endcode
+     *      Write such a specialization in one header, included before anything reads that enum's bounds: a file that reads
+     *      kEnumBounds<E> without having seen it gets the unspecialized value - different bounds in different files, which no
+     *      compiler is required to catch. Any other enum - even a third-party library's - is better given an EnumBoundsOf.
+     *
+     *  \par An enum declared in a function
+     *      can have neither: a function cannot be defined in a function, and a specialization cannot name the enum. Declare it
+     *      at namespace scope instead. (Once Stroika requires C++26, kEnumBounds can find any enum's bounds by reflection - a
+     *      function's enums too.)
+     *
+     *  \note Under C++26, reflection (std::meta::enumerators_of) could give any enum bounds. Stroika does not use it for that,
+     *        so whether an enum has bounds - and so names - never depends on the compiler.
+     */
+    template <typename ENUM>
+    inline constexpr auto kEnumBounds = Private_::ComputeEnumBounds_<ENUM> ();
+
+    /**
+     *  \brief Does T have bounds (kEnumBounds) - an enum with an EnumBoundsOf function, say?
+     *
+     *  \see EnumBounds
      */
     template <typename T>
-    concept IBoundedEnum = is_enum_v<T> && requires (T t) {
-        T::eSTART;
-        T::eEND;
-        T::eLAST;
-        T::eCOUNT;
-    };
+    concept IBoundedEnum = is_enum_v<T> and same_as<remove_cv_t<decltype (kEnumBounds<T>)>, EnumBounds<T>>;
+
+    namespace Private_ {
+        template <typename T>
+        [[deprecated (
+            "Since Stroika v3.0d26 - in place of Stroika_Define_Enum_Bounds, declare after the enum: constexpr "
+            "Common::EnumBounds<E> EnumBoundsOf (E) { return {first, last}; } (see EnumBounds), and read kEnumBounds<E>")]] constexpr T
+        Stroika_Define_Enum_Bounds_ (T t)
+        {
+            return t;
+        }
+    }
+
+    /**
+     *  \def Stroika_Define_Enum_Bounds
+     *
+     *  \brief DEPRECATED (since Stroika v3.0d26) - written as an enum's last item, it gave the enum bounds: enumerators eSTART,
+     *  eEND (one past the last), eLAST and eCOUNT. Declare an EnumBoundsOf function after the enum instead (see EnumBounds).
+     *
+     *  Writing it warns, and so does reading eSTART, eEND or eLAST: E::eSTART is kEnumBounds<E>.fFirst, E::eLAST
+     *  kEnumBounds<E>.fLast, E::eCOUNT kEnumBounds<E>.Count (), and a loop to E::eEND is over
+     *  Traversal::DiscreteRange<E>::FullRange ().Elements (). (eCOUNT carries the warning where the macro is written - a
+     *  compiler does not warn inside a deprecated declaration - so reading it does not warn.)
+     */
+// clang-format off
+#define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM)                                                                      \
+    eSTART [[deprecated ("Since Stroika v3.0d26 - kEnumBounds<E>.fFirst")]] = FIRST_ITEM,                                      \
+    eEND [[deprecated ("Since Stroika v3.0d26 - loop over Traversal::DiscreteRange<E>::FullRange ().Elements ()")]] = LAST_ITEM + 1, \
+    eLAST [[deprecated ("Since Stroika v3.0d26 - kEnumBounds<E>.fLast")]] = LAST_ITEM,                                         \
+    eCOUNT = ::Stroika::Foundation::Common::Private_::Stroika_Define_Enum_Bounds_ (LAST_ITEM + 1 - FIRST_ITEM),
+// clang-format on
 
     /**
      *  \brief  Increment the given enumeration safely, without a bunch of casts.
      *
-     *      \pre    for an IBoundedEnum: ENUM::eSTART <= e and e < ENUM::eEND - so the result is at most eEND (checked, by ToEnum)
+     *      \pre    for an IBoundedEnum, e is in kEnumBounds<ENUM> - so the result is at most one past its last (checked, by ToEnum)
      */
     template <typename ENUM>
     constexpr ENUM Inc (ENUM e);
@@ -118,7 +217,7 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  Cast the given enum to an int (like static_cast<int>()) - but check range.
      *
-     *      \pre    for an IBoundedEnum: ENUM::eSTART <= e and e <= ENUM::eEND (eEND too: a loop ends on it)
+     *      \pre    for an IBoundedEnum, e is in kEnumBounds<ENUM>, or one past its last (where a loop ends)
      *
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      *
@@ -130,16 +229,12 @@ namespace Stroika::Foundation::Common {
     constexpr underlying_type_t<ENUM> ToInt (ENUM e);
 
     /**
-     *  \brief  return the distance spanned by an enum, e.g. for use in an array
+     *  \brief  return the distance spanned by an enum, e.g. for use in an array - kEnumBounds<ENUM>.Count ()
      *
      *  \par Example Usage
      *      \code
-     *          enum class Priority {
-     *              eLow,
-     *              eMedium,
-     *              eHigh,
-     *              Stroika_Define_Enum_Bounds (eLow, eHigh)
-     *          };
+     *          enum class Priority { eLow, eMedium, eHigh };
+     *          constexpr Common::EnumBounds<Priority> EnumBoundsOf (Priority) { return {Priority::eLow, Priority::eHigh}; }
      *          unsigned int eltsWithPriority[GetDistanceSpanned<Priority> ()];
      *      \endcode
      */
@@ -149,7 +244,7 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
      *
-     *      \pre    for an IBoundedEnum:  ENUM::eSTART <= e and e <= ENUM::eEND
+     *      \pre    for an IBoundedEnum, e is in kEnumBounds<ENUM>, or one past its last (where a loop ends)
      *
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      */
@@ -157,9 +252,9 @@ namespace Stroika::Foundation::Common {
     constexpr ENUM ToEnum (underlying_type_t<ENUM> e);
 
     /**
-     *  \brief  offset of given enum from ENUM::eSTART
+     *  \brief  offset of given enum from kEnumBounds<ENUM>.fFirst
      *
-     *      \pre    ENUM::eSTART <= e and e <= ENUM::eEND (checked, by ToInt) - eEND's offset is eCOUNT
+     *      \pre    e is in kEnumBounds<ENUM>, or one past its last (checked, by ToInt) - whose offset is Count ()
      *
      *  @todo   See if there is some better way for this.
      */
@@ -302,7 +397,8 @@ namespace Stroika::Foundation::Common {
      *  An enum picks its rule by a declaration beside it, found by argument-dependent lookup and never defined - only its
      *  return type is used (for an enum in a class, a friend declaration in the class):
      *      \code
-     *          enum class Color { eRed, eGreen, eBlue, Stroika_Define_Enum_Bounds (eRed, eBlue) };
+     *          enum class Color { eRed, eGreen, eBlue };
+     *          constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
      *          Common::StroikaNaming EnumNamingRule (Color);       // names "Red", "Green", "Blue"
      *      \endcode
      *  An enum with none is named by IdentifierNaming. EnumeratorName, beside the enum too, may then rename any enumerator.
@@ -337,6 +433,35 @@ namespace Stroika::Foundation::Common {
     };
     static_assert (IEnumNamingRule<StroikaNaming>); // see Satisfies Concepts
 
+    /**
+     *  \brief How an enum picks its naming rule: declare one for your enum, beside it, never defined - only its return type is
+     *         used (see IEnumNamingRule) - not this one, which is here only to document the name
+     *
+     *      \code
+     *          Common::StroikaNaming EnumNamingRule (Color); // names "Red", "Green", "Blue"
+     *      \endcode
+     *
+     *  Stroika finds yours by argument-dependent lookup - it is a better match than this one, always. This one is deleted, so an
+     *  enum without one of its own is named by IdentifierNaming. Do not specialize it.
+     */
+    void EnumNamingRule (auto) = delete;
+
+    /**
+     *  \brief How an enum renames single enumerators, after its naming rule: define one for your enum, beside it (see
+     *         kDefaultNames) - not this one, which is here only to document the name
+     *
+     *      \code
+     *          constexpr Common::EnumNameText EnumeratorName (Color c, Common::EnumNameText byRule)
+     *          {
+     *              return c == Color::eGreen ? Common::EnumNameText{"Verde"} : byRule; // "Red", "Verde", "Blue"
+     *          }
+     *      \endcode
+     *
+     *  Stroika finds yours by argument-dependent lookup - it is a better match than this one, always. This one is deleted, so an
+     *  enum without one of its own keeps its naming rule's names. Do not specialize it.
+     */
+    void EnumeratorName (auto, auto) = delete;
+
 #if qStroika_Foundation_Common_EnumNames_Annotations_
     /**
      *  \brief An enumerator's name, as a C++26 annotation (P3394) on it - the same as an EnumeratorName case for it - where the
@@ -348,8 +473,8 @@ namespace Stroika::Foundation::Common {
      *              eRed,
      *              eGreen [[= Common::Named{"Vert"}]],
      *              eBlue,
-     *              Stroika_Define_Enum_Bounds (eRed, eBlue)
      *          };                                                      // "Red", "Vert", "Blue"
+     *          constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
      *      \endcode
      *  An enum picks its rule one way: by annotation, or by EnumNamingRule.
      *
@@ -407,18 +532,18 @@ namespace Stroika::Foundation::Common {
      *      Compilers may lay these out differently, or fold identical constants together - the figures are a guide, not a
      *      promise.
      *
-     *  \note Why ENUM_TYPE must be an IBoundedEnum (Stroika_Define_Enum_Bounds): an EnumNames holds a slot for each value from
-     *        eSTART to eLAST (kCapacity), and Reflected () finds the enumerators by trying each value in that range - C++20 has no
-     *        other way to find them. C++26 reflection does (std::meta::enumerators_of gives an enum's enumerators, and so their
-     *        count), so neither needs the bounds there: this requirement goes when Stroika requires C++26, as
-     *        Stroika_Define_Enum_Bounds does.
+     *  \note Why ENUM_TYPE must be an IBoundedEnum (see EnumBounds): an EnumNames holds a slot for each value in its bounds
+     *        (kCapacity), and Reflected () finds the enumerators by trying each value in them - C++20 has no other way to find
+     *        them. C++26 reflection does (std::meta::enumerators_of gives an enum's enumerators, and so their count), so neither
+     *        would need the bounds there.
      *
      *  \note   Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename ENUM_TYPE>
     class EnumNames {
         // not a constraint on ENUM_TYPE: code written for Stroika v3.0d25 and before declares template <typename ENUM_TYPE> class EnumNames;
-        static_assert (IBoundedEnum<ENUM_TYPE>, "EnumNames needs an enum with Stroika_Define_Enum_Bounds");
+        static_assert (IBoundedEnum<ENUM_TYPE>,
+                       "EnumNames needs an enum with bounds - an EnumBoundsOf function beside it (see EnumBounds)");
 
     public:
         /**
@@ -438,12 +563,12 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  \brief the most names one EnumNames holds: one for each value from eSTART to eLAST
+         *  \brief the most names one EnumNames holds: one for each value in kEnumBounds<ENUM_TYPE>
          */
         DISABLE_COMPILER_MSC_WARNING_START (4996); // an enum deprecated whole - as WaitableEvent::ResetType - has its names too
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        static constexpr size_t kCapacity = static_cast<size_t> (ENUM_TYPE::eCOUNT);
+        static constexpr size_t kCapacity = kEnumBounds<ENUM_TYPE>.Count ();
         DISABLE_COMPILER_MSC_WARNING_END (4996);
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
@@ -474,11 +599,11 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  \brief each enumerator from eSTART to eLAST, named by ENUM_TYPE's naming rule (IdentifierNaming, unless an EnumNamingRule
+         *  \brief each enumerator in kEnumBounds<ENUM_TYPE>, named by ENUM_TYPE's naming rule (IdentifierNaming, unless an EnumNamingRule
          *  declaration beside the enum picks another), then by its EnumeratorName, if one is declared beside the enum
          *
-         *  The identifiers are read from the compiler's text for a function template's signature - each value from eSTART to
-         *  eLAST is tried; one that two enumerators share is named as the first (so eSTART and eLAST never are), and one that no
+         *  The identifiers are read from the compiler's text for a function template's signature - each value in the bounds is
+         *  tried; one that two enumerators share is named as the first (so an alias, as eDEFAULT, never is), and one that no
          *  enumerator has is skipped. An identifier longer than EnumNameText::kMaxInlineBytes is pointed at, in an exactly-sized
          *  copy of its own - so any length works. All at compile time.
          */
@@ -575,7 +700,8 @@ namespace Stroika::Foundation::Common {
      *      o   from a table written for Stroika v3.0d25 and before, specializing DefaultNames<ENUM_TYPE>::k (DEPRECATED), as it is
      *      o   otherwise as EnumNames<ENUM_TYPE>::Reflected () - so by the enum's naming rule, then its EnumeratorName:
      *          \code
-     *              enum class Color { eRed, eGreen, eBlue, Stroika_Define_Enum_Bounds (eRed, eBlue) };
+     *              enum class Color { eRed, eGreen, eBlue };
+     *              constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
      *              Common::StroikaNaming EnumNamingRule (Color);                                   // "Red", "Green", "Blue" - and
      *              constexpr Common::EnumNameText EnumeratorName (Color c, Common::EnumNameText byRule)
      *              {

@@ -32,9 +32,11 @@ namespace Stroika::Foundation::Math {
             eRadians,
             eDegrees,
             eGradians,
-
-            Stroika_Define_Enum_Bounds (eRadians, eGradians)
         };
+        friend constexpr Common::EnumBounds<AngleFormat> EnumBoundsOf (AngleFormat)
+        {
+            return {AngleFormat::eRadians, AngleFormat::eGradians};
+        }
 
     public:
         static constexpr AngleFormat eRadians  = AngleFormat::eRadians;

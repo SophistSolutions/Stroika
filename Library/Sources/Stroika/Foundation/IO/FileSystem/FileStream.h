@@ -33,9 +33,11 @@ namespace Stroika::Foundation::IO::FileSystem::FileStream {
     enum class AdoptFDPolicy {
         eCloseOnDestruction,
         eDisconnectOnDestruction,
-
-        Stroika_Define_Enum_Bounds (eCloseOnDestruction, eDisconnectOnDestruction)
     };
+    constexpr Common::EnumBounds<AdoptFDPolicy> EnumBoundsOf (AdoptFDPolicy)
+    {
+        return {AdoptFDPolicy::eCloseOnDestruction, AdoptFDPolicy::eDisconnectOnDestruction};
+    }
     using AdoptFDPolicy::eCloseOnDestruction;
     using AdoptFDPolicy::eDisconnectOnDestruction;
 

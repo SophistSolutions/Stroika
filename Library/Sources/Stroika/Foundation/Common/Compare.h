@@ -95,9 +95,11 @@ namespace Stroika::Foundation::Common {
          *   e.g. function<int(T,T)> - where < 0 return is 'in order' (eStrictInOrder), 0 means equal, and > 0 means reversed order
          */
         eThreeWayCompare,
-
-        Stroika_Define_Enum_Bounds (eEquals, eThreeWayCompare)
     };
+    constexpr Common::EnumBounds<ComparisonRelationType> EnumBoundsOf (ComparisonRelationType)
+    {
+        return {ComparisonRelationType::eEquals, ComparisonRelationType::eThreeWayCompare};
+    }
 
     namespace Private_ {
         template <typename ARG_T, typename COMPARE_FUNCTION>

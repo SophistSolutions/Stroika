@@ -301,9 +301,11 @@ namespace Stroika::Frameworks::WebServer {
             ePreparingHeaders, // A newly constructed Response starts out ePreparingHeaders state
             eHeadersSent,      // headers have now been sent over the wire
             eCompleted,        // and finally to Completed
-
-            Stroika_Define_Enum_Bounds (ePreparingHeaders, eCompleted)
         };
+        friend constexpr Foundation::Common::EnumBounds<State> EnumBoundsOf (State)
+        {
+            return {State::ePreparingHeaders, State::eCompleted};
+        }
 
     public:
         /**

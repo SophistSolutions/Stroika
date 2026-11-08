@@ -42,9 +42,11 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
         eToDisk,
 
         eDEFAULT = eToOperatingSystem,
-
-        Stroika_Define_Enum_Bounds (eToOperatingSystem, eToDisk)
     };
+    constexpr Common::EnumBounds<FlushFlag> EnumBoundsOf (FlushFlag)
+    {
+        return {FlushFlag::eToOperatingSystem, FlushFlag::eToDisk};
+    }
     constexpr FlushFlag eToOperatingSystem = FlushFlag::eToOperatingSystem;
     constexpr FlushFlag eToDisk            = FlushFlag::eToDisk;
 
@@ -56,18 +58,22 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
         eAppend,
 
         eDEFAULT = eStartFromStart,
-
-        Stroika_Define_Enum_Bounds (eStartFromStart, eAppend)
     };
+    constexpr Common::EnumBounds<AppendFlag> EnumBoundsOf (AppendFlag)
+    {
+        return {AppendFlag::eStartFromStart, AppendFlag::eAppend};
+    }
     constexpr AppendFlag eStartFromStart = AppendFlag::eStartFromStart;
     constexpr AppendFlag eAppend         = AppendFlag::eAppend;
 
     enum class BufferFlag {
         eBuffered,
         eUnbuffered,
-
-        Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
     };
+    constexpr Common::EnumBounds<BufferFlag> EnumBoundsOf (BufferFlag)
+    {
+        return {BufferFlag::eBuffered, BufferFlag::eUnbuffered};
+    }
     constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
     constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 

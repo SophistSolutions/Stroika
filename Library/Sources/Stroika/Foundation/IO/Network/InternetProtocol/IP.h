@@ -39,9 +39,11 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
         eIPV4AndIPV6,
 
         eDEFAULT = eIPV4AndIPV6,
-
-        Stroika_Define_Enum_Bounds (eIPV4Only, eIPV4AndIPV6)
     };
+    constexpr Common::EnumBounds<IPVersionSupport> EnumBoundsOf (IPVersionSupport)
+    {
+        return {IPVersionSupport::eIPV4Only, IPVersionSupport::eIPV4AndIPV6};
+    }
 
     /**
      *  Trivial helper so you can do:

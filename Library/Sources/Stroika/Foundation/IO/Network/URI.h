@@ -319,9 +319,11 @@ namespace Stroika::Foundation::IO::Network {
             eAggressive,
 
             eDefault = eRFC3986,
-
-            Stroika_Define_Enum_Bounds (eRFC3986, eAggressive)
         };
+        friend constexpr Common::EnumBounds<NormalizationStyle> EnumBoundsOf (NormalizationStyle)
+        {
+            return {NormalizationStyle::eRFC3986, NormalizationStyle::eAggressive};
+        }
 
     public:
         /**

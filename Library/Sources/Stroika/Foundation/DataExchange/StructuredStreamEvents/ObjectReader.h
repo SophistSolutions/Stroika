@@ -324,8 +324,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *          enum class GenderType_ {
          *              Male,
          *              Female,
-         *              Stroika_Define_Enum_Bounds (Male, Female)
          *          };
+         *          constexpr Common::EnumBounds<GenderType_> EnumBoundsOf (GenderType_) { return {GenderType_::Male, GenderType_::Female}; }
          *          registry.AddCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
          *              pair<GenderType_, String>{GenderType_::Male, "Male"},
          *              pair<GenderType_, String>{GenderType_::Female, "Female"},
@@ -359,8 +359,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *          enum class GenderType_ {
          *              Male,
          *              Female,
-         *              Stroika_Define_Enum_Bounds (Male, Female)
          *          };
+         *          constexpr Common::EnumBounds<GenderType_> EnumBoundsOf (GenderType_) { return {GenderType_::Male, GenderType_::Female}; }
          *          registry.AddCommonReader_EnumAsInt<GenderType_> ();
          *      \endcode
          */

@@ -174,9 +174,11 @@ namespace Stroika::Foundation::Execution {
         enum class WaitStatus {
             eTimeout,
             eTriggered,
-
-            Stroika_Define_Enum_Bounds (eTimeout, eTriggered)
         };
+        friend constexpr Common::EnumBounds<WaitStatus> EnumBoundsOf (WaitStatus)
+        {
+            return {WaitStatus::eTimeout, WaitStatus::eTriggered};
+        }
 
     public:
         /**
@@ -337,8 +339,11 @@ namespace Stroika::Foundation::Execution {
         enum class [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] ResetType {
             eAutoReset,
             eManualReset,
-            Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)
         };
+        friend constexpr Common::EnumBounds<ResetType> EnumBoundsOf (ResetType)
+        {
+            return {ResetType::eAutoReset, ResetType::eManualReset};
+        }
         [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eAutoReset   = ResetType::eAutoReset;
         [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eManualReset = ResetType::eManualReset;
         [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};

@@ -50,9 +50,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         eStandard, ///< {ePlain, MaxSignificantDigits (n)} - which rounds the whole part too; eStandard wrote it in full
         eAutomaticScientific [[deprecated ("Since Stroika v3.0d23 use eDefaultFloat instead")]],
         eDEFAULT = eDefaultFloat,
-
-        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific)
     };
+    constexpr Common::EnumBounds<FloatFormatType> EnumBoundsOf (FloatFormatType)
+    {
+        return {FloatFormatType::eDefaultFloat, FloatFormatType::eAutomaticScientific};
+    }
     using FloatFormatType::eAutomaticScientific;
     using FloatFormatType::eDefaultFloat;
     using FloatFormatType::eFixedPoint;

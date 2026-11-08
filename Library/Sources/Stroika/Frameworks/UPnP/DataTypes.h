@@ -93,9 +93,11 @@ namespace Stroika::Frameworks::UPnP::DataTypes {
         eBinHex,
         eURI,
         eUUID,
-
-        Stroika_Define_Enum_Bounds (eUI1, eUUID)
     };
+    constexpr Foundation::Common::EnumBounds<DataType> EnumBoundsOf (DataType)
+    {
+        return {DataType::eUI1, DataType::eUUID};
+    }
 
     /**
      *  \brief A value of any of UPnP's data types, as its C++ type (the table above) - for code that learns a value's type as it

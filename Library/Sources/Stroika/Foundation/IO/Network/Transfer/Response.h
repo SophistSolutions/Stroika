@@ -97,9 +97,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
                 eCertExpired,
                 eHostnameMismatch,
                 eSSLFailure, // generic - typically bad CERT - or bad trust
-
-                Stroika_Define_Enum_Bounds (eNoSSL, eSSLFailure)
             };
+            friend constexpr Common::EnumBounds<ValidationStatus> EnumBoundsOf (ValidationStatus)
+            {
+                return {ValidationStatus::eNoSSL, ValidationStatus::eSSLFailure};
+            }
             ValidationStatus fValidationStatus{ValidationStatus::eNoSSL};
 
             /**

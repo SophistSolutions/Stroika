@@ -237,9 +237,11 @@ namespace Stroika::Frameworks::WebServer {
                  * @brief Done with connection and ready to close it down (maybe cleanly closing, or maybe with exception)
                  */
                 eClosing,
-
-                Stroika_Define_Enum_Bounds (eNew, eClosing)
             };
+            friend constexpr Foundation::Common::EnumBounds<State> EnumBoundsOf (State)
+            {
+                return {State::eNew, State::eClosing};
+            }
             State fState{State::eNew};
 
             /**

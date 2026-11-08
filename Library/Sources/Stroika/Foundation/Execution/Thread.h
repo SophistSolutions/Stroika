@@ -289,9 +289,11 @@ namespace Stroika::Foundation::Execution {
             eRunning,       // in the context of the 'Run' method
             eAborting,      // Abort () called, but the thread still hasn't yet unwound
             eCompleted,     // run has terminated (possibly by exception, possibly normally, possibly because of Abort call)
-
-            Stroika_Define_Enum_Bounds (eNotYetRunning, eCompleted)
         };
+        constexpr Common::EnumBounds<Status> EnumBoundsOf (Status)
+        {
+            return {Status::eNotYetRunning, Status::eCompleted};
+        }
 
         enum class Priority {
             eLowest,
@@ -299,9 +301,11 @@ namespace Stroika::Foundation::Execution {
             eNormal,
             eAboveNormal,
             eHighest,
-
-            Stroika_Define_Enum_Bounds (eLowest, eHighest)
         };
+        constexpr Common::EnumBounds<Priority> EnumBoundsOf (Priority)
+        {
+            return {Priority::eLowest, Priority::eHighest};
+        }
 
         /**
          *

@@ -37,12 +37,21 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
 
 #if __has_include("boost/json.hpp")
             eDEFAULT = eBoost,
-            Stroika_Define_Enum_Bounds (eStroikaNative, eBoost)
 #else
             eDEFAULT = eStroikaNative,
-            Stroika_Define_Enum_Bounds (eStroikaNative, eStroikaNative)
 #endif
         };
+#if __has_include("boost/json.hpp")
+        friend constexpr Common::EnumBounds<Algorithm> EnumBoundsOf (Algorithm)
+        {
+            return {Algorithm::eStroikaNative, Algorithm::eBoost};
+        }
+#else
+        friend constexpr Common::EnumBounds<Algorithm> EnumBoundsOf (Algorithm)
+        {
+            return {Algorithm::eStroikaNative, Algorithm::eStroikaNative};
+        }
+#endif
         using Algorithm::eStroikaNative;
 #if __has_include("boost/json.hpp")
         using Algorithm::eBoost;
@@ -94,7 +103,6 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
 #endif
         static shared_ptr<_IRep> mk_ (const ReaderOptions& options);
     };
-
 }
 
 /*

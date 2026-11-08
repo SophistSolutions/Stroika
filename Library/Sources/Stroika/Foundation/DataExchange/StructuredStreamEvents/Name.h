@@ -48,9 +48,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
             eElement,
             eAttribute,
             eValue,
-
-            Stroika_Define_Enum_Bounds (eElement, eValue)
         };
+        friend constexpr Common::EnumBounds<NameType> EnumBoundsOf (NameType)
+        {
+            return {NameType::eElement, NameType::eValue};
+        }
         NameType fType{eElement};
 
         /**

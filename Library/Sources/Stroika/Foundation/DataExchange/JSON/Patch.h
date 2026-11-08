@@ -29,9 +29,11 @@ namespace Stroika::Foundation::DataExchange::JSON::Patch {
     enum class OperationType {
         eAdd,
         eRemove,
-
-        Stroika_Define_Enum_Bounds (eAdd, eRemove)
     };
+    constexpr Common::EnumBounds<OperationType> EnumBoundsOf (OperationType)
+    {
+        return {OperationType::eAdd, OperationType::eRemove};
+    }
 
     /**
      */

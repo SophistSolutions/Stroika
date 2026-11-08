@@ -380,9 +380,11 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
                 eRespondToWWWAuthenticate,
 
                 eDEFAULT = eRespondToWWWAuthenticate,
-
-                Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
             };
+            friend constexpr Common::EnumBounds<Options> EnumBoundsOf (Options)
+            {
+                return {Options::eProactivelySendAuthentication, Options::eRespondToWWWAuthenticate};
+            }
 
         public:
             /**

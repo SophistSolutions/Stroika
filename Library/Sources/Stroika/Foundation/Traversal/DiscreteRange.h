@@ -77,13 +77,14 @@ namespace Stroika::Foundation::Traversal {
      *
      *  \par OR
      *      \code
-     *          enum class Color { red, blue, green,  Stroika_Define_Enum_Bounds (red, green) };
+     *          enum class Color { red, blue, green };
+     *          constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::red, Color::green}; }
      *          for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
      *              // iterate over each color - red, green, blue
      *          }
      *      \endcode
      *
-     *  \note   Since the default traits for an enum with Stroika type annotation (Stroika_Define_Enum_Bounds)
+     *  \note   Since the default traits for an enum with bounds (Common::kEnumBounds - see Common::EnumBounds)
      *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
      *          iterable with all possible legal values of the enum.
      */

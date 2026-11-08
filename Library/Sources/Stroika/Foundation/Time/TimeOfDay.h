@@ -223,9 +223,11 @@ namespace Stroika::Foundation::Time {
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
-
-            Stroika_Define_Enum_Bounds (eCurrentLocale_WithZerosStripped, eCurrentLocale_WithZerosStripped)
         };
+        friend constexpr Common::EnumBounds<NonStandardPrintFormat> EnumBoundsOf (NonStandardPrintFormat)
+        {
+            return {NonStandardPrintFormat::eCurrentLocale_WithZerosStripped, NonStandardPrintFormat::eCurrentLocale_WithZerosStripped};
+        }
 
     public:
         using NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;

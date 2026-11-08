@@ -48,9 +48,11 @@ public:
         eSyntaxColoringNone      = 1,
         eSyntaxColoringCPlusPlus = 2,
         eSyntaxColoringVB        = 3,
-
-        Stroika_Define_Enum_Bounds (eSyntaxColoringNone, eSyntaxColoringVB)
     };
+    friend constexpr Stroika::Foundation::Common::EnumBounds<SyntaxColoringOption> EnumBoundsOf (SyntaxColoringOption)
+    {
+        return {SyntaxColoringOption::eSyntaxColoringNone, SyntaxColoringOption::eSyntaxColoringVB};
+    }
     nonvirtual SyntaxColoringOption GetSyntaxColoringOption () const;
     nonvirtual void                 SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption);
 #endif

@@ -197,11 +197,12 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \note Only used to construct/define a specific Range<> type
          *
-         *  Default_Enum<> can be used to generate an automatic traits object (with bounds)
-         *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
+         *  Default_Enum<> can be used to generate an automatic traits object (with bounds) for an enumeration with bounds
+         *  (Common::kEnumBounds - see Common::EnumBounds).
          */
         template <typename T>
-        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {};
+        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
+                                       ExplicitBounds<T, Foundation::Common::kEnumBounds<T>.fFirst, Foundation::Common::kEnumBounds<T>.fLast>> {};
 
         /**
          *  \note Only used to construct/define a specific Range<> type

@@ -156,9 +156,11 @@ namespace Stroika::Foundation::Time {
             eISO8601,  ///< \brief the value of kISO8601Format
             eRFC1123,  ///< \brief the value of kRFC1123Format
             eHTTPDate, ///< \brief the value of kHTTPDateFormat
-
-            Stroika_Define_Enum_Bounds (eISO8601, eHTTPDate)
         };
+        friend constexpr Common::EnumBounds<LocaleIndependentFormat> EnumBoundsOf (LocaleIndependentFormat)
+        {
+            return {LocaleIndependentFormat::eISO8601, LocaleIndependentFormat::eHTTPDate};
+        }
 
     public:
         /**
@@ -397,9 +399,11 @@ namespace Stroika::Foundation::Time {
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
-
-            Stroika_Define_Enum_Bounds (eCurrentLocale_WithZerosStripped, eCurrentLocale_WithZerosStripped)
         };
+        friend constexpr Common::EnumBounds<NonStandardPrintFormat> EnumBoundsOf (NonStandardPrintFormat)
+        {
+            return {NonStandardPrintFormat::eCurrentLocale_WithZerosStripped, NonStandardPrintFormat::eCurrentLocale_WithZerosStripped};
+        }
 
     public:
         static constexpr NonStandardPrintFormat eCurrentLocale_WithZerosStripped = NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;

@@ -45,9 +45,11 @@ namespace Stroika::Foundation::IO::FileSystem {
             eFullPathName,
 
             eDEFAULT = eFilenameOnly,
-
-            Stroika_Define_Enum_Bounds (eFilenameOnly, eFullPathName)
         };
+        friend constexpr Common::EnumBounds<IteratorReturnType> EnumBoundsOf (IteratorReturnType)
+        {
+            return {IteratorReturnType::eFilenameOnly, IteratorReturnType::eFullPathName};
+        }
 
     public:
         /**

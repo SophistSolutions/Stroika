@@ -14,6 +14,78 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
+     ****************************** Common::EnumBounds ******************************
+     ********************************************************************************
+     */
+    template <typename ENUM>
+    constexpr size_t EnumBounds<ENUM>::Count () const
+    {
+        // the difference in the unsigned type: right for any first <= last, whatever the underlying type's sign
+        using U = make_unsigned_t<underlying_type_t<ENUM>>;
+        return static_cast<size_t> (static_cast<U> (static_cast<U> (fLast) - static_cast<U> (fFirst))) + 1;
+    }
+    template <typename ENUM>
+    constexpr bool EnumBounds<ENUM>::Contains (ENUM e) const
+    {
+        return fFirst <= e and e <= fLast;
+    }
+
+    /*
+     ********************************************************************************
+     ****************************** Common::kEnumBounds *****************************
+     ********************************************************************************
+     */
+    namespace Private_ {
+        // reading a Stroika_Define_Enum_Bounds enum's (DEPRECATED) eSTART and eLAST - which warn - is how its bounds are found
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        // an EnumBoundsOf function, beside ENUM, gives its bounds
+        template <typename ENUM>
+        concept IHasEnumBoundsOf_ = requires (ENUM e) {
+            { EnumBoundsOf (e) } -> same_as<EnumBounds<ENUM>>;
+        };
+        // so does Stroika_Define_Enum_Bounds (DEPRECATED), in the enum
+        template <typename ENUM>
+        concept IHasEnumBoundsMacro_ = requires {
+            ENUM::eSTART;
+            ENUM::eLAST;
+        };
+        template <typename ENUM>
+        constexpr auto ComputeEnumBounds_ ()
+        {
+            if constexpr (IHasEnumBoundsOf_<ENUM>) {
+                constexpr EnumBounds<ENUM> kDeclared = EnumBoundsOf (ENUM{});
+                if constexpr (IHasEnumBoundsMacro_<ENUM>) {
+                    static_assert (kDeclared == EnumBounds<ENUM>{ENUM::eSTART, ENUM::eLAST},
+                                   "an enum's EnumBoundsOf and its Stroika_Define_Enum_Bounds disagree");
+                }
+                return kDeclared;
+            }
+            else if constexpr (IHasEnumBoundsMacro_<ENUM>) {
+                return EnumBounds<ENUM>{ENUM::eSTART, ENUM::eLAST};
+            }
+            else {
+                return NoEnumBounds_{};
+            }
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
+        // e in kEnumBounds<ENUM>, or one past its last - where a loop (Inc) ends - when that fits in ENUM's underlying type
+        template <typename ENUM>
+        constexpr bool InBoundsOrEnd_ (ENUM e)
+        {
+            using U                      = underlying_type_t<ENUM>;
+            constexpr EnumBounds<ENUM> b = kEnumBounds<ENUM>;
+            return b.Contains (e) or
+                   (static_cast<U> (b.fLast) < numeric_limits<U>::max () and static_cast<U> (e) == static_cast<U> (static_cast<U> (b.fLast) + 1));
+        }
+    }
+
+    /*
+     ********************************************************************************
      ******************************** Common::Inc ***********************************
      ********************************************************************************
      */
@@ -32,7 +104,7 @@ namespace Stroika::Foundation::Common {
     inline constexpr underlying_type_t<ENUM> ToInt (ENUM e)
     {
         if constexpr (IBoundedEnum<ENUM>) {
-            Require (ENUM::eSTART <= e and e <= ENUM::eEND);
+            Require (Private_::InBoundsOrEnd_ (e));
         }
         return static_cast<underlying_type_t<ENUM>> (e);
     }
@@ -45,7 +117,7 @@ namespace Stroika::Foundation::Common {
     template <IBoundedEnum ENUM>
     constexpr make_unsigned_t<underlying_type_t<ENUM>> GetDistanceSpanned ()
     {
-        return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ENUM::eCOUNT);
+        return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (kEnumBounds<ENUM>.Count ());
     }
 
     /*
@@ -57,7 +129,7 @@ namespace Stroika::Foundation::Common {
     inline constexpr ENUM ToEnum (underlying_type_t<ENUM> e)
     {
         if constexpr (IBoundedEnum<ENUM>) {
-            Require (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
+            Require (Private_::InBoundsOrEnd_ (static_cast<ENUM> (e)));
         }
         return static_cast<ENUM> (e);
     }
@@ -70,9 +142,7 @@ namespace Stroika::Foundation::Common {
     template <IBoundedEnum ENUM>
     inline constexpr make_unsigned_t<underlying_type_t<ENUM>> OffsetFromStart (ENUM e)
     {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ToInt (e) - ToInt (ENUM::eSTART));
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ToInt (e) - ToInt (kEnumBounds<ENUM>.fFirst));
     }
 
     /*
@@ -392,7 +462,7 @@ namespace Stroika::Foundation::Common {
         template <typename ENUM_TYPE, size_t... I>
         constexpr array<string_view, sizeof...(I)> EnumIdentifiers_ (index_sequence<I...>)
         {
-            return {EnumIdentifier_<static_cast<ENUM_TYPE> (static_cast<long long> (ToInt (ENUM_TYPE::eSTART)) + static_cast<long long> (I))> ()...};
+            return {EnumIdentifier_<static_cast<ENUM_TYPE> (static_cast<long long> (ToInt (kEnumBounds<ENUM_TYPE>.fFirst)) + static_cast<long long> (I))> ()...};
         }
 
         // V's identifier, as UTF-8 and exactly sized, in storage that lasts the program - only for one too long to hold in place
@@ -466,7 +536,7 @@ namespace Stroika::Foundation::Common {
         struct NamingRule_<ENUM_TYPE> {
             using type = typename [:AnnotatedNamingRule_<ENUM_TYPE> ():];
         };
-        // the Named annotation on V's enumerator (the first declared with the value V - not eSTART, ...), if any
+        // the Named annotation on V's enumerator (the first declared with the value V - not an alias), if any
         template <auto V>
         consteval optional<u8string_view> AnnotatedName_ ()
         {
@@ -554,7 +624,7 @@ namespace Stroika::Foundation::Common {
         template <typename ENUM_TYPE, size_t... I>
         constexpr array<EnumNameText, sizeof...(I)> DefaultEnumeratorNames_ (index_sequence<I...>)
         {
-            return {DefaultEnumeratorName_<static_cast<ENUM_TYPE> (static_cast<long long> (ToInt (ENUM_TYPE::eSTART)) + static_cast<long long> (I))> ()...};
+            return {DefaultEnumeratorName_<static_cast<ENUM_TYPE> (static_cast<long long> (ToInt (kEnumBounds<ENUM_TYPE>.fFirst)) + static_cast<long long> (I))> ()...};
         }
     }
 
@@ -570,7 +640,7 @@ namespace Stroika::Foundation::Common {
     constexpr EnumNames<ENUM_TYPE>::EnumNames (const BasicArrayInitializer& init)
     {
         for (const auto& [e, n] : init) {
-            Require (n != nullptr); // a name for each value from eSTART to eLAST
+            Require (n != nullptr); // a name for each value in kEnumBounds<ENUM_TYPE>
             fNames_[fSize_++] = Entry{e, EnumNameText{n}};
         }
     }
@@ -594,7 +664,8 @@ namespace Stroika::Foundation::Common {
         for (size_t i = 0; i < kCapacity; ++i) {
             if (not kIdentifiers[i].empty ()) { // else no enumerator has this value
                 r.fNames_[r.fSize_++] =
-                    Entry{static_cast<ENUM_TYPE> (static_cast<long long> (ToInt (ENUM_TYPE::eSTART)) + static_cast<long long> (i)), kNames[i]};
+                    Entry{static_cast<ENUM_TYPE> (static_cast<long long> (ToInt (kEnumBounds<ENUM_TYPE>.fFirst)) + static_cast<long long> (i)),
+                          kNames[i]};
             }
         }
         return r;
@@ -788,7 +859,8 @@ namespace Stroika::Foundation::Common {
     template <typename ENUM_TYPE>
     struct [[deprecated ("Since Stroika v3.0d26 - read kDefaultNames<ENUM_TYPE>; a table specializing k: name the enum by EnumNamingRule "
                          "and EnumeratorName beside it instead (see kDefaultNames)")]] DefaultNames {
-        static_assert (IBoundedEnum<ENUM_TYPE>, "DefaultNames needs an enum with Stroika_Define_Enum_Bounds");
+        static_assert (IBoundedEnum<ENUM_TYPE>,
+                       "DefaultNames needs an enum with bounds - an EnumBoundsOf function beside it (see EnumBounds)");
 
         // undefined unless a table specializes it - and kDefaultNames asks which (for an enum in an anonymous namespace, clang
         // calls asking a use)

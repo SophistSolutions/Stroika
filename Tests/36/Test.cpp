@@ -75,8 +75,11 @@ namespace {
                 Background,
                 Reference,
                 Sample,
-                Stroika_Define_Enum_Bounds (Background, Sample)
             };
+            constexpr Stroika::Foundation::Common::EnumBounds<ScanKindType_> EnumBoundsOf (ScanKindType_)
+            {
+                return {ScanKindType_::Background, ScanKindType_::Sample};
+            }
             using ScanIDType_                 = uint64_t;
             using SpectrumType_               = Mapping<double, double>;
             using PersistenceScanAuxDataType_ = Mapping<String, String>;

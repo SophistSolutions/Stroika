@@ -633,13 +633,19 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_DataExchange_XML, T6_SAXObjectReader_RepeatedElementReader_Sample_)
-    {
+    namespace T6_ {
         enum class GenderType_ {
             Male,
             Female,
-            Stroika_Define_Enum_Bounds (Male, Female)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<GenderType_> EnumBoundsOf (GenderType_)
+        {
+            return {GenderType_::Male, GenderType_::Female};
+        }
+    }
+    GTEST_TEST (Foundation_DataExchange_XML, T6_SAXObjectReader_RepeatedElementReader_Sample_)
+    {
+        using GenderType_ = T6_::GenderType_;
         struct Person_ {
             String                firstName;
             String                lastName;
@@ -735,8 +741,11 @@ namespace {
             eT2 = 2,
             eT3 = 3,
             eT4 = 4,
-            Stroika_Define_Enum_Bounds (eT1, eT4)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<TunerNumberType_> EnumBoundsOf (TunerNumberType_)
+        {
+            return {TunerNumberType_::eT1, TunerNumberType_::eT4};
+        }
         /*
          *   <blk201605:LaserTemperature>\n"
          *      <blk201605:Temperature Tuner=\"1\">20.899877489241646</blk201605:Temperature>\n"
@@ -1208,8 +1217,11 @@ namespace {
             eT2 = 2,
             eT3 = 3,
             eT4 = 4,
-            Stroika_Define_Enum_Bounds (eT1, eT4)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<TunerNumberType_> EnumBoundsOf (TunerNumberType_)
+        {
+            return {TunerNumberType_::eT1, TunerNumberType_::eT4};
+        }
     }
 }
 namespace {
@@ -1399,13 +1411,19 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_DataExchange_XML, T13_SAXObjectReader_OverrideTypeInStructInfo_)
-    {
+    namespace T13_ {
         enum class GenderType_ {
             Male,
             Female,
-            Stroika_Define_Enum_Bounds (Male, Female)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<GenderType_> EnumBoundsOf (GenderType_)
+        {
+            return {GenderType_::Male, GenderType_::Female};
+        }
+    }
+    GTEST_TEST (Foundation_DataExchange_XML, T13_SAXObjectReader_OverrideTypeInStructInfo_)
+    {
+        using GenderType_ = T13_::GenderType_;
         struct Person_ {
             String      firstName;
             String      lastName;

@@ -42,7 +42,7 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     uint16_t verSubStage =
         static_cast<uint16_t> ((Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8));
     bool verFinal = verSubStageOctet & 0x1;
-    if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
+    if (nMatchingItems != 4 or not(ToInt (kEnumBounds<VersionStage>.fFirst) <= verStage and verStage <= ToInt (kEnumBounds<VersionStage>.fLast))) {
         DbgTrace ("win32Version4DotString={}"_f, win32Version4DotStr);
         Throw (kException_);
     }

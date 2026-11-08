@@ -256,12 +256,7 @@ namespace {
 }
 
 namespace {
-    void DoRegressionTests_SimpleEnumTypes_5_ ()
-    {
-        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_SimpleEnumTypes_5_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
+    namespace SimpleEnumTypes5_ {
         enum class Fred {
             a = -3,
             b,
@@ -271,9 +266,19 @@ namespace {
             f,
             g,
             h,
-
-            Stroika_Define_Enum_Bounds (a, h)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<Fred> EnumBoundsOf (Fred)
+        {
+            return {Fred::a, Fred::h};
+        }
+    }
+    void DoRegressionTests_SimpleEnumTypes_5_ ()
+    {
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_SimpleEnumTypes_5_"};
+        using namespace Traversal;
+        const bool kWrite2FileAsWell_ = true; // just for debugging
+
+        using Fred                               = SimpleEnumTypes5_::Fred;
         const Common::EnumNames<Fred> Fred_NAMES = {
             {Fred::a, L"a"}, {Fred::b, L"b"}, {Fred::c, L"c"}, {Fred::d, L"d"},
             {Fred::e, L"e"}, {Fred::f, L"f"}, {Fred::g, L"g"}, {Fred::h, L"h"},
@@ -710,12 +715,7 @@ namespace {
 }
 
 namespace {
-    void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()
-    {
-        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
+    namespace EnumAsInt12_ {
         enum class Fred {
             a = -3,
             b,
@@ -725,9 +725,19 @@ namespace {
             f,
             g,
             h,
-
-            Stroika_Define_Enum_Bounds (a, h)
         };
+        constexpr Stroika::Foundation::Common::EnumBounds<Fred> EnumBoundsOf (Fred)
+        {
+            return {Fred::a, Fred::h};
+        }
+    }
+    void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()
+    {
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_"};
+        using namespace Traversal;
+        const bool kWrite2FileAsWell_ = true; // just for debugging
+
+        using Fred = EnumAsInt12_::Fred;
 
         struct SharedContactsConfig_ {
             Fred fEnum1{Fred::a};

@@ -12,7 +12,7 @@ namespace Stroika::Foundation::Common {
     constexpr Version::Version ()
         : fMajorVer{0}
         , fMinorVer{0}
-        , fVerStage{VersionStage::eSTART}
+        , fVerStage{kEnumBounds<VersionStage>.fFirst}
         , fVerSubStage{0}
         , fFinalBuild{0}
     {

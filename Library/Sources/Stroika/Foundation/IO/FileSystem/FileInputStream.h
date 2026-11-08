@@ -47,9 +47,11 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     enum class BufferFlag {
         eBuffered,
         eUnbuffered,
-
-        Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
     };
+    constexpr Common::EnumBounds<BufferFlag> EnumBoundsOf (BufferFlag)
+    {
+        return {BufferFlag::eBuffered, BufferFlag::eUnbuffered};
+    }
 
     /**
      */

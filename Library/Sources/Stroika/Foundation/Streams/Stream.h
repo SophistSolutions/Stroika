@@ -29,9 +29,11 @@ namespace Stroika::Foundation::Streams {
         eFromStart,
         eFromCurrent,
         eFromEnd,
-
-        Stroika_Define_Enum_Bounds (eFromStart, eFromEnd)
     };
+    constexpr Common::EnumBounds<Whence> EnumBoundsOf (Whence)
+    {
+        return {Whence::eFromStart, Whence::eFromEnd};
+    }
 
     using Whence::eFromCurrent;
     using Whence::eFromEnd;
@@ -60,9 +62,11 @@ namespace Stroika::Foundation::Streams {
     enum class SeekableFlag {
         eNotSeekable,
         eSeekable,
-
-        Stroika_Define_Enum_Bounds (eNotSeekable, eSeekable)
     };
+    constexpr Common::EnumBounds<SeekableFlag> EnumBoundsOf (SeekableFlag)
+    {
+        return {SeekableFlag::eNotSeekable, SeekableFlag::eSeekable};
+    }
     using SeekableFlag::eNotSeekable;
     using SeekableFlag::eSeekable;
 

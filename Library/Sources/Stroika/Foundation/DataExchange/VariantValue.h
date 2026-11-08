@@ -220,9 +220,11 @@ namespace Stroika::Foundation::DataExchange {
             eString,
             eArray,
             eMap, // Mapping<String,VariantValue>
-
-            Stroika_Define_Enum_Bounds (eNull, eMap)
         };
+        friend constexpr Common::EnumBounds<Type> EnumBoundsOf (Type)
+        {
+            return {Type::eNull, Type::eMap};
+        }
 
     public:
         /**
