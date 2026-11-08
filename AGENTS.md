@@ -593,7 +593,9 @@ still compile". Say which one you did.
   One for a compiler or standard library bug goes behind a `qCompilerAndStdLib_*_Buggy` define (`Common/Private/CompilerAndStdLib_.h`:
   version-gated, the error text above it; reuse one for the same bug), with the natural code in its `#else` - even when
   the workaround compiles everywhere - so dropping the old toolchain leaves clean code. No comment at the use: the
-  define says why.
+  define says why. Except where the standard's own feature-test macro names the faulty feature exactly - as
+  `__cpp_lib_span_initializer_list`, in `Memory::make_span_BWA`: test that macro directly. The periodic scan for
+  feature-test comparisons no supported compiler still needs covers it.
 - **Warnings**: removing a suppression that provably suppresses nothing is welcome - on BOTH supported MSVC versions.
   `-Wno-switch`, `-Wno-sign-compare` and `-Wno-unused-function` stay on purpose (2026-10-05); never silence sign-compare with
   a cast - `std::cmp_less` fixes it. A warning whose fix would make the code worse (MSVC's C4127 on a condition constant on

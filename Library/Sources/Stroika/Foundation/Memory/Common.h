@@ -80,6 +80,24 @@ namespace Stroika::Foundation::Memory {
     static_assert (ISpanOfT<span<int>, int> and ISpanOfT<span<const int>, int> and ISpanOfT<span<const int, 3>, int> and not ISpanOfT<span<int>, char>);
 
     /**
+     *  \brief span<T>{first, count} - written span<T> (first, count) where the library has the C++26 draft's span<const T>
+     *         (initializer_list<T>) constructor (it defines __cpp_lib_span_initializer_list), with which braces can make a span
+     *         of the two values first and count
+     *
+     *  That constructor - P2447, removed by P4144R1 - makes span<const T>{p, n} a span of the two values p and n wherever both
+     *  convert to T (T = bool, say): with libstdc++ 16 and -std=c++26, Sequence<bool>'s == read freed memory (ASan, in Tests/55:
+     *  "stack-use-after-return"). The libraries with it: libstdc++ 15 and 16, and libc++ 18 to 22, in C++26 mode.
+     *
+     *  For generic code, where T can be bool, or a class type a pointer and a count both convert to. It goes - each use written
+     *  span<T>{first, count} again - once no supported library defines __cpp_lib_span_initializer_list.
+     * 
+     *  \note when __cpp_lib_span_initializer_list is no longer defined by any supported library, this function can be removed.
+     *        and calls to it replaced with span<T>{first, count}
+     */
+    template <typename T, typename IT>
+    constexpr span<T> make_span_BWA (IT first, size_t count);
+
+    /**
      *  \brief Can safely cast span<FROM_T,FROM_EXTENT> to a TO_SPAN (where the underlying types are POD - plain old data - types - roughly)
      *
      *  \note - this requires the two spans to have the same number of bytes (cannot always be fully determined at compile time).

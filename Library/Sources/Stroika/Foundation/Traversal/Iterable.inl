@@ -490,8 +490,7 @@ namespace Stroika::Foundation::Traversal {
                         return nullopt;
                     }
                     else {
-                        // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
-                        return spansEqual_ (l, span<const T> (ranges::data (rhs), ranges::size (rhs)));
+                        return spansEqual_ (l, Memory::make_span_BWA<const T> (ranges::data (rhs), ranges::size (rhs)));
                     }
                 };
                 if constexpr (kLHSIsIterable_) {
@@ -503,8 +502,7 @@ namespace Stroika::Foundation::Traversal {
                     }
                 }
                 else {
-                    // (), not {} - with the C++26 draft's span (initializer_list) (libstdc++ 16), {p, n} can be two Ts: T = bool, say
-                    if (auto result = withLHSSpan_ (span<const T> (ranges::data (lhs), ranges::size (lhs)))) {
+                    if (auto result = withLHSSpan_ (Memory::make_span_BWA<const T> (ranges::data (lhs), ranges::size (lhs)))) {
                         return *result;
                     }
                 }
