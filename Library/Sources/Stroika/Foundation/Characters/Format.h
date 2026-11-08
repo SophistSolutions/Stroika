@@ -106,8 +106,9 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        FormatString ()                    = delete;
-        FormatString (const FormatString&) = default;
+        FormatString ()                               = delete;
+        FormatString (const FormatString&)            = default;
+        FormatString& operator= (const FormatString&) = default;
         constexpr FormatString (const basic_string_view<CHAR_T>& s);
 
     public:
