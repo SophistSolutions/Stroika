@@ -1050,16 +1050,27 @@ namespace {
             {
                 stringstream tmp;
                 tmp << encodedRep;
-                VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-                if (Debug::IsRunningUnderValgrind () and vOut != v) {
-                    Stroika::Frameworks::Test::WarnTestIssue (
-                        "JSONONLY_Test_09_ReadWriteNANShouldNotFail_ (valgrind holds long double in 64 bits): v={}, encodedRep={}, vOut={}"_f(
-                            v, String::FromUTF8 (encodedRep), vOut)
-                            .ReplaceAll ("[\\r\\n]"_RegEx, ""));
-                    SkipTestPart ("NaN round trip not checked under valgrind (valgrind holds long double in 64 bits)");
+                if (Debug::IsRunningUnderValgrind ()) {
+                    // valgrind holds long double in 64 bits, so isinf (long double) misses an infinity (it compares with LDBL_MAX,
+                    // infinite there): the writer writes it unquoted, as a number - which the reader may refuse ("-inf"), or read back
+                    // as another value
+                    optional<VariantValue> vOut;
+                    try {
+                        vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
+                    }
+                    catch (...) {
+                        // vOut stays empty
+                    }
+                    if (vOut != v) {
+                        Stroika::Frameworks::Test::WarnTestIssue (
+                            "JSONONLY_Test_09_ReadWriteNANShouldNotFail_ (valgrind holds long double in 64 bits): v={}, encodedRep={}, vOut={}"_f(
+                                v, String::FromUTF8 (encodedRep), vOut ? Characters::ToString (*vOut) : "(the reader threw)"_k)
+                                .ReplaceAll ("[\\r\\n]"_RegEx, ""));
+                        SkipTestPart ("NaN and infinity round trip not checked under valgrind (valgrind holds long double in 64 bits)");
+                    }
                     return;
                 }
-                EXPECT_EQ (vOut, v);
+                EXPECT_EQ (DataExchange::Variant::JSON::Reader{}.Read (tmp), v);
             }
         };
         CheckRoundtrip_encode_decode_unchanged (VariantValue{Math::nan<double> ()});
