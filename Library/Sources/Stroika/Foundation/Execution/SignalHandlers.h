@@ -25,33 +25,8 @@
  *  rules for their manipulation/control. This doesn't eliminate those, but it makes most common cases much easier
  *  to handle safely. In particular, many cases of signals can be 'handled' not as signals (safe signal handlers).
  *
- *
  * TODO:
- *      @todo   https://github.com/SophistSolutions/Stroika/issues/601 (STK-467) Lose shared_ptr<> with SignalHandlerRegistry::SafeSignalsManager::Rep_
- *              and change semantics - assert or autodelete - safe handlers on destroy of safe signal mgr.
- *
- *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug
- *              which was we setup DEFAULT signal handlers, and then in the BasicUNIX Serviced code - did
- *              AddSignalHandler (SIGINT). Issue is that we process BOTH handlers - one to set an event
- *              object to cleanly shutdown and the other to HARD ABORT!
- *
- *              This API encourages that mistake. I changed the Service code to use SetSignalHandler - but
- *              That has the default of being hard to debug/non-modular. Maybe have a "SetDefaultHandler"
- *              or "SetFallbackHandler" - and that is invoked ONLY if no others? Or maybe a property of all
- *              handlers?
- *
- *      @todo   Consider use of threadpool for SafeSignalsManager
- *              Good idea since we may need to handle signals quickly so as to not overflow
- *              fixed size incoming buffer.
- *
- *      @todo   Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow
- *              these to be (more or less) interchangable with regular SignalHandler.
- *
- *      @todo   Consider adding "ThreadSignalHandler" facility - where we register a set of handlers
- *              that ONLY apply when the signal is sent to the given (argument with register) thread.
- *              If we do this - we will want to write cooperating code with the thread start/end
- *              stuff so these get cleared out appropriately.
- *              Consider how this might be useful for stuff like SIGPIPE handling?
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/1287 - a direct handler given the signal's siginfo_t (SA_SIGINFO)
  */
 
 /**
@@ -174,15 +149,13 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
-     *  SignalHandlerRegistry is a singleton object. If used - it itself registers signal handlers
-     *  for each supported signal.
+     *  \brief The singleton (sThe) through which signal handlers are added and removed
      *
-     *  The user can then add in their own 'handlers' for those signals, and they are ALL called -
-     *  one after the other (TDB how threads work with this).
+     *  It registers nothing itself: it installs its handler with the OS (sigaction, signal) for a signal once a SignalHandler
+     *  is added for it, and then calls each of that signal's handlers, one after the other - the direct ones on the thread the
+     *  signal interrupted, the safe ones on SafeSignalsManager's thread (see SignalHandler::Type).
      *
-     *  When an platform signal-handler is installed (via 'sigaction' for example) -
-     *  and then later UNINSTALLED (due to changes in GetHandledSignals) - this code resets the
-     *  signal handler to SIG_DFL (not the previous value).
+     *  When the last of a signal's handlers is removed, the signal reverts to SIG_DFL (not to what it was before).
      *
      *  \note   The SignalHandlerRegistry must only be accessed after the start of main, and must not
      *          be accessed after main has completed.
@@ -318,8 +291,7 @@ namespace Stroika::Foundation::Execution {
          *          This is bad, because we could deadlock in handling the crash. But realistically, we were crashing
          *          anyhow, so the better stack trace maybe worth it.
          *
-         *          @todo we may want to come up with some way to capture / pass along extra info to handlers, like
-         *          the thread which recieved the signal. But for now...
+         *          @todo https://github.com/SophistSolutions/Stroika/issues/1287 - pass the handler the signal's siginfo_t
          */
         nonvirtual void SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler{DefaultCrashSignalHandler, SignalHandler::Type::eDirect},
                                                         const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());

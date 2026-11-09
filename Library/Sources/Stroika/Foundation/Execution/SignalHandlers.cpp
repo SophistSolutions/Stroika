@@ -128,7 +128,10 @@ public:
                                 DbgTrace ("fIncomingSignalCounts_[{}] = {}"_f, i, fIncomingSignalCounts_[i].load ());
                                 fIncomingSignalCounts_[i]--;
                                 Debug::TraceContextBumper trcCtx2{"Invoking SAFE signal handlers"};
-                                for (SignalHandler sh : fHandlers_.rwget ()->LookupValue (i)) {
+                                // a copy, so no lock is held while the handlers run - one may add or remove handlers (since C++23 a
+                                // temporary in a range-for's initializer - as a lock - lives until the loop ends)
+                                Set<SignalHandler> handlers = fHandlers_.cget ()->LookupValue (i);
+                                for (const SignalHandler& sh : handlers) {
                                     Assert (sh.GetType () == SignalHandler::Type::eSafe);
                                     IgnoreExceptionsExceptThreadAbortForCall (sh (i));
                                 }
@@ -370,7 +373,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
 #endif
     }
 
-    auto sigSetHandler = [] (SignalID signal, [[maybe_unused]] void (*fun) (int)) {
+    auto sigSetHandler = [] (SignalID signal, void (*fun) (int)) {
 #if qStroika_Platform_POSIX
         struct sigaction sa{};
         sa.sa_handler = fun;
@@ -378,47 +381,47 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
         Verify (::sigaction (signal, &sa, nullptr) == 0);
 #else
-        Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
+        Verify (::signal (signal, fun) != SIG_ERR);
 #endif
     };
 
-    {
-        auto l = fDirectHandlers_.rwget ();
-        if (directHandlers.empty ()) {
-            l->RemoveIf (signal);
+    // Held to the end - the OS's handler set too - so calls for one signal from several threads at once leave the OS's handler
+    // matching the handlers set last
+    auto l = fDirectHandlers_.rwget ();
+    if (directHandlers.empty ()) {
+        l->RemoveIf (signal);
+    }
+    else {
+        l->Add (signal, directHandlers);
+    }
+    /*
+     *  Update the signal handler's table (fDirectSignalHandlersCache_) - under fDirectHandlers_'s lock, so one update at a time:
+     *  empty the slots of handlers no longer wanted, then put new ones in empty slots - each slot stored on its own, and no
+     *  handler moved, so a signal arriving meanwhile sees each handler at most once. kIGNORED (SIG_IGN) is no function to call.
+     */
+    Require (0 <= signal and signal < static_cast<SignalID> (std::size (fDirectSignalHandlersCache_)));
+    vector<void (*) (SignalID)> wanted;
+    for (const SignalHandler& sh : l->LookupValue (signal)) {
+        Assert (sh.fDirectCall_ != nullptr); // a direct handler is a function pointer - see SignalHandler's constructors
+        if (sh.fDirectCall_ != SIG_IGN) {
+            wanted.push_back (sh.fDirectCall_);
         }
-        else {
-            l->Add (signal, directHandlers);
-        }
-        /*
-         *  Update the signal handler's table (fDirectSignalHandlersCache_) - under fDirectHandlers_'s lock, so one update at a time:
-         *  empty the slots of handlers no longer wanted, then put new ones in empty slots - each slot stored on its own, and no
-         *  handler moved, so a signal arriving meanwhile sees each handler at most once. kIGNORED (SIG_IGN) is no function to call.
-         */
-        Require (0 <= signal and signal < static_cast<SignalID> (std::size (fDirectSignalHandlersCache_)));
-        vector<void (*) (SignalID)> wanted;
-        for (const SignalHandler& sh : l->LookupValue (signal)) {
-            Assert (sh.fDirectCall_ != nullptr); // a direct handler is a function pointer - see SignalHandler's constructors
-            if (sh.fDirectCall_ != SIG_IGN) {
-                wanted.push_back (sh.fDirectCall_);
+    }
+    auto& slots = fDirectSignalHandlersCache_[signal];
+    for (atomic<void (*) (SignalID)>& slot : slots) {
+        if (void (*h) (SignalID) = slot.load ()) {
+            if (auto i = find (wanted.begin (), wanted.end (), h); i != wanted.end ()) {
+                wanted.erase (i); // still wanted - stays where it is
+            }
+            else {
+                slot.store (nullptr);
             }
         }
-        auto& slots = fDirectSignalHandlersCache_[signal];
-        for (atomic<void (*) (SignalID)>& slot : slots) {
-            if (void (*h) (SignalID) = slot.load ()) {
-                if (auto i = find (wanted.begin (), wanted.end (), h); i != wanted.end ()) {
-                    wanted.erase (i); // still wanted - stays where it is
-                }
-                else {
-                    slot.store (nullptr);
-                }
-            }
-        }
-        for (void (*h) (SignalID) : wanted) {
-            auto i = find_if (begin (slots), end (slots), [] (const atomic<void (*) (SignalID)>& slot) { return slot.load () == nullptr; });
-            Require (i != end (slots)); // else raise qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal
-            i->store (h);
-        }
+    }
+    for (void (*h) (SignalID) : wanted) {
+        auto i = find_if (begin (slots), end (slots), [] (const atomic<void (*) (SignalID)>& slot) { return slot.load () == nullptr; });
+        Require (i != end (slots)); // else raise qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal
+        i->store (h);
     }
 
     if (tmp != nullptr) {
