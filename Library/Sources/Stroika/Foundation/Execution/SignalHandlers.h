@@ -54,31 +54,51 @@
  *              Consider how this might be useful for stuff like SIGPIPE handling?
  */
 
+/**
+ *  \brief qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal - how many direct (eDirect) handlers one signal may have
+ *         at once; Stroika adds at most one to any signal
+ *
+ *  The signal handler reads them from a fixed table - it may not use a container (see SignalHandlerRegistry) - so this sizes it.
+ *
+ *  \note In a future version of Stroika, the table could grow instead - a new one published through an atomic pointer,
+ *        the old freed once the handlers using it finish - but nothing has needed more than one direct handler for a signal,
+ *        so it is fixed. To raise it, add to your configure line:
+ *          --c-define '\#define qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal 4'
+ */
+#ifndef qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal
+#define qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal 2
+#endif
+
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  A key feature of SignalHandler versus function<void(SignalID)> is that you can compare them
+     *  \brief A function to call on a signal, with its Type - direct or safe, which decides what it may do (see Type)
      *
-     *  Note that to do so, you must save the original SignalHandler you create to later remove it by value:
-     *  creating another SignalHandler (even with the same arguments) does not compare equal (@see operator<=>).
-     *
-     *  Also, signal handlers come with a flag indicating that they are intended to be run in a 'safe' manner
-     *  or a direct signal handling manner.
-     *
-     *  \note   BEWARE - these may be copied during invocation, which for 'direct' signal handers is a
-     *          dangerous, finicky place. Copy must not do operations (like allocate memory) which would be
-     *          unsafe during signal (direct) handling.
+     *  Only its copies compare equal to it (see operator<=>) - so to remove one from SignalHandlerRegistry, keep the one added.
      */
     class SignalHandler {
     public:
         /**
-         *  A direct (eDirect) signal handler is invoked in the stack context in which the
-         *  signal is delivered. Direct signal handlers are VERY UNSAFE and use carefully,
-         *  since they can EASILY produce deadlocks.
+         *  \brief Where a handler runs - and so what it may do
          *
-         *  A 'safe' (eSafe) signal handler is run in a separate thread context.
+         *  eDirect: in the signal's own context - called from the signal handler Stroika installs, on whichever thread the
+         *  signal interrupted, at whatever point it interrupted it. So it is a signal handler as C++ means it, and may do only
+         *  what the C++ standard calls signal-safe ([support.signal]: https://eel.is/c++draft/support.signal):
+         *      o   plain lock-free atomic operations (atomic<T> where is_always_lock_free), and the few standard library
+         *          functions the standard names signal-safe (abort, _Exit, quick_exit, memcpy, memmove, ...);
+         *      o   on POSIX also its async-signal-safe functions (write, sem_post, ... - the list:
+         *          https://man7.org/linux/man-pages/man7/signal-safety.7.html) - restoring errno if one may set it.
+         *  Anything else is undefined behavior there: allocating, locking, any container or iterator, std::function, a
+         *  shared_ptr copy, a thread_local, throwing, tracing (DbgTrace). In practice that is a deadlock, when the code the
+         *  signal interrupted held the same lock (#128). So a direct handler is a noexcept function pointer that does next to
+         *  nothing - sets a lock-free flag - or ends the process (a crash handler: abort ()).
          *
-         *  @see SignalHandlerRegistry::SafeSignalsManager.
+         *  eSafe: on SafeSignalsManager's thread, soon after: the signal handler only counts the signal's arrival (lock-free),
+         *  and that thread then calls the handler as ordinary code - once per arrival counted - so it may do anything. An
+         *  exception it throws is ignored (but a thread abort). The price: it runs later, and not on the thread the signal
+         *  interrupted. Needs a SafeSignalsManager (see it).
+         *
+         *  \note POSIX itself may merge arrivals of one signal that come while it is pending, before any handler sees them.
          */
         enum class Type {
             eDirect,
@@ -103,18 +123,18 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Any overload can be used for safe exception handlers, but only the noexcept overload may be used
-         *  for 'direct' exception calls (as a documentation hint - no real need).
+         *  A direct (eDirect) handler must be a noexcept function pointer - calling a std::function is not signal-safe (see
+         *  Type). A safe (eSafe) handler may be any of these.
          *
-         *  \note https://stackoverflow.com/questions/38760784/how-will-c17-exception-specifier-type-system-work
-         *        and the existing compiler vs2k17 15.9.3 - dont support this noexcept on function objects, so
-         *        try again later.
+         *  \note   The function overload makes a safe handler; before Stroika v3.0d26 it took a Type too (now deprecated).
          */
         SignalHandler ()                     = delete;
         SignalHandler (const SignalHandler&) = default;
-        SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type = Type::eDEFAULT);
-        SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
-        SignalHandler (const function<void (SignalID)>& signalHandler, Type type = Type::eDEFAULT);
+        SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type = Type::eDEFAULT); ///< \brief A direct or a safe handler
+        SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT); ///< \pre type == eSafe, or signalHandler is SIG_IGN
+        SignalHandler (const function<void (SignalID)>& signalHandler);               ///< \brief A safe (eSafe) handler
+        [[deprecated ("Since Stroika v3.0d26 - a function makes only a safe handler: drop the Type; a direct one is a noexcept "
+                      "function pointer")]] SignalHandler (const function<void (SignalID)>& signalHandler, Type type);
 
     public:
         nonvirtual Type GetType () const;
@@ -144,9 +164,13 @@ namespace Stroika::Foundation::Execution {
         nonvirtual bool operator== (const SignalHandler& rhs) const;
 
     private:
-        Type                            fType_;
-        function<void (SignalID)>       fCall_;
+        Type                      fType_;
+        function<void (SignalID)> fCall_;
+        void (*fDirectCall_) (SignalID){nullptr}; // the same function, as the signal handler can call it - set if made from one
         Common::UniqueID<SignalHandler> fIdentity_{Common::UniqueID<SignalHandler>::New ()}; // a copy keeps it
+
+    private:
+        friend class SignalHandlerRegistry;
     };
 
     /**
@@ -166,11 +190,11 @@ namespace Stroika::Foundation::Execution {
      *  To use 'safe' signal handlers, be sure to read about and use
      *      @see SignalHandlerRegistry::SafeSignalsManager
      *
-     *  \note   Why not Execution::CallbackRegistry, and an ID to remove a handler by, as Stroika's other callbacks are: a direct
-     *          handler runs in the signal's own context, where CallbackRegistry's lock, and the copy each Call makes, are not
-     *          safe; and a signal's handlers are a set of values - got and set whole (GetSignalHandlers, SetSignalHandlers), with
-     *          kIGNORED among them meaning 'ignore it' - which an ID-based registry does not model. So a SignalHandler stays a
-     *          value with an identity: to remove one, keep the one added.
+     *  \note   Why not Execution::CallbackRegistry, and an ID to remove a handler by, as Stroika's other callbacks are: a signal's
+     *          handlers are a set of values - got and set whole (GetSignalHandlers, SetSignalHandlers), with kIGNORED among them
+     *          meaning 'ignore it' - which an ID-based registry does not model. So a SignalHandler stays a value with an
+     *          identity, which serves as its ID: to remove one, keep the one added. (The signal handler itself never reads the
+     *          registry, so the registry's own locks are no concern there: it reads a table of its own - see SignalHandler::Type.)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
@@ -304,8 +328,15 @@ namespace Stroika::Foundation::Execution {
         RWSynchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;
 
     private:
-        mutable atomic<unsigned int>      fDirectSignalHandlersCache_Lock_{0};
-        vector<function<void (SignalID)>> fDirectSignalHandlersCache_[NSIG];
+        /*
+         *  Each signal's direct handlers, as the signal handler (FirstPassSignalHandler_) reads them - it may use no container
+         *  (see SignalHandler::Type) - so a fixed table of function pointers, each slot a lock-free atomic; an empty one is
+         *  nullptr. SetSignalHandlers changes one slot at a time and never moves a handler, so a signal arriving meanwhile calls
+         *  each handler at most once.
+         */
+        static constexpr size_t     kMaxDirectHandlersPerSignal_ = qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal;
+        atomic<void (*) (SignalID)> fDirectSignalHandlersCache_[NSIG][kMaxDirectHandlersPerSignal_]{};
+        static_assert (atomic<void (*) (SignalID)>::is_always_lock_free);
 
     private:
         static void FirstPassSignalHandler_ (SignalID signal);
@@ -320,20 +351,9 @@ namespace Stroika::Foundation::Execution {
     inline SignalHandlerRegistry SignalHandlerRegistry::sThe;
 
     /**
-     *  A direct (eDirect) signal handler is invoked in the stack context in which the
-     *  signal is delivered.
+     *  \brief The thread safe (eSafe) signal handlers run on - see SignalHandler::Type for what that means
      *
-     *  A 'safe' (eSafe) signal handler is run in a separate thread context.
-     *
-     *  Direct is more performant, and has lower latency. However, since many signals are
-     *  delivered on an arbitrary thread, this can easily lead to deadlocks!
-     *              See http://stackoverflow.com/questions/3366307/why-is-malloc-not-async-signal-safe
-     *
-     *  'safe' signal handlers avoid this by automatically moving the signal delivery to a special
-     *  thread that handles the signals one at a time, and careful to avoid any memory allocation
-     *  in the direct signal handling thread.
-     *
-     *  To use this feature, you must construct a SignalHandlerRegistry::SafeSignalsManager.
+     *  To use safe handlers, you must construct a SignalHandlerRegistry::SafeSignalsManager.
      *
      *  \note   This must be constructed BEFORE adding any safe signal handler, and
      *          must be destroyed before exiting main (so it can shutdown its own threads).
@@ -364,6 +384,11 @@ namespace Stroika::Foundation::Execution {
 #else
         static inline shared_ptr<Rep_> sTheRep_{nullptr};
 #endif
+        // The signal handler's way to it - a shared_ptr copy is not signal-safe (see SignalHandler::Type): a raw pointer, and how
+        // many handlers are using it, which ~SafeSignalsManager waits to drain before letting it go
+        static inline atomic<Rep_*>        sTheRepForSignalHandler_{nullptr};
+        static inline atomic<unsigned int> sSignalHandlersUsingRep_{0};
+        static_assert (atomic<Rep_*>::is_always_lock_free and atomic<unsigned int>::is_always_lock_free);
 
     private:
         friend class SignalHandlerRegistry;

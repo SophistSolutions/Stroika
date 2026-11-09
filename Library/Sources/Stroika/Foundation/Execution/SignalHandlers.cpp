@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <algorithm>
 #include <condition_variable>
 #include <mutex>
 
@@ -17,9 +18,7 @@
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #if qStroika_Platform_POSIX
 #include "Stroika/Foundation/Execution/Platform/POSIX/SemWaitableEvent.h"
-#include "Stroika/Foundation/Execution/Platform/POSIX/SignalBlock.h"
 #endif
-#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -232,7 +231,7 @@ private:
 
 private:
     Synchronized<Mapping<SignalID, Set<SignalHandler>>> fHandlers_;
-    bool                                                fHanlderAvailable_[NSIG]{}; // if true post to blocking q
+    atomic<bool> fHanlderAvailable_[NSIG]{}; // if true post to blocking q; the signal handler reads it
 private:
     /*
      *  Instead of maintaining an acutal Q, just maintain a count of number of signals recieved for each signal number.
@@ -260,18 +259,25 @@ private:
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::CTOR"};
+    shared_ptr<Rep_>          rep = MakeSharedPtr<SignalHandlerRegistry::SafeSignalsManager::Rep_> ();
 #if defined(__cpp_lib_atomic_shared_ptr)
     Require (sTheRep_.load () == nullptr);
-    sTheRep_.store (MakeSharedPtr<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
+    sTheRep_.store (rep);
 #else
     Require (atomic_load (&sTheRep_) == nullptr);
-    atomic_store (&sTheRep_, MakeSharedPtr<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
+    atomic_store (&sTheRep_, rep);
 #endif
+    sTheRepForSignalHandler_.store (rep.get ());
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR"};
+    // No signal handler gets the Rep_ once this is null; those already using it finish before it is let go
+    sTheRepForSignalHandler_.store (nullptr);
+    while (sSignalHandlersUsingRep_.load () != 0) {
+        this_thread::yield ();
+    }
 #if defined(__cpp_lib_atomic_shared_ptr)
     SignalHandlerRegistry::SafeSignalsManager::sTheRep_.store (shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
 #else
@@ -395,27 +401,34 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         else {
             l->Add (signal, directHandlers);
         }
-        // @todo see https://github.com/SophistSolutions/Stroika/issues/599 (STK-465)
+        /*
+         *  Update the signal handler's table (fDirectSignalHandlersCache_) - under fDirectHandlers_'s lock, so one update at a time:
+         *  empty the slots of handlers no longer wanted, then put new ones in empty slots - each slot stored on its own, and no
+         *  handler moved, so a signal arriving meanwhile sees each handler at most once. kIGNORED (SIG_IGN) is no function to call.
+         */
         Require (0 <= signal and signal < static_cast<SignalID> (std::size (fDirectSignalHandlersCache_)));
-        vector<function<void (SignalID)>> shs;
+        vector<void (*) (SignalID)> wanted;
         for (const SignalHandler& sh : l->LookupValue (signal)) {
-            shs.push_back (sh);
+            Assert (sh.fDirectCall_ != nullptr); // a direct handler is a function pointer - see SignalHandler's constructors
+            if (sh.fDirectCall_ != SIG_IGN) {
+                wanted.push_back (sh.fDirectCall_);
+            }
         }
-        {
-// Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
-#if qStroika_Platform_POSIX
-            // Can easily deadlock if we try to access this lock while recieving the signal
-            Platform::POSIX::ScopedBlockCurrentThreadSignal blockAllSignals2ThisThread{};
-#endif
-        Again:
-            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { fDirectSignalHandlersCache_Lock_--; });
-            if (fDirectSignalHandlersCache_Lock_++ == 0) {
-                fDirectSignalHandlersCache_[signal] = shs;
+        auto& slots = fDirectSignalHandlersCache_[signal];
+        for (atomic<void (*) (SignalID)>& slot : slots) {
+            if (void (*h) (SignalID) = slot.load ()) {
+                if (auto i = find (wanted.begin (), wanted.end (), h); i != wanted.end ()) {
+                    wanted.erase (i); // still wanted - stays where it is
+                }
+                else {
+                    slot.store (nullptr);
+                }
             }
-            else {
-                Execution::Sleep (1ms); // not sure how long 2 wait
-                goto Again;
-            }
+        }
+        for (void (*h) (SignalID) : wanted) {
+            auto i = find_if (begin (slots), end (slots), [] (const atomic<void (*) (SignalID)>& slot) { return slot.load () == nullptr; });
+            Require (i != end (slots)); // else raise qStroika_Foundation_Execution_SignalHandlers_MaxDirectPerSignal
+            i->store (h);
         }
     }
 
@@ -599,48 +612,20 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
 #endif
 
     /*
-     *  This (SignalHandlerRegistry::sThe SHOULD be safe. It can allocate memory, but only the first time
-     *  called, and this cannot be our first call.
+     *  This is the signal handler: it may do only what SignalHandler::Type allows a direct one (in SignalHandlers.h). So only
+     *  plain arrays, function pointers and lock-free atomics here - and sem_post (the safe handlers' wakeup, which keeps errno
+     *  as it was). For instance with libstdc++ a debug-mode iterator, or (before libstdc++ 12) a shared_ptr atomic, takes one
+     *  of a pool of mutexes - so used here, a signal arriving while its thread held that mutex would never return (#128).
      */
-    SignalHandlerRegistry& SHR = sThe;
-
-    {
-        /*
-         *  Pretty sure this all allocates no memory, so should be safe/lock free
-         *
-         *  @todo see https://github.com/SophistSolutions/Stroika/issues/599 (STK-465)
-         *
-         *  Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
-         *
-         *  \note If you see a thread-sanitizer warning here - see 
-         *          https://github.com/SophistSolutions/Stroika/issues/128 (STK-647)
-         */
-        Require (0 <= signal and signal < static_cast<SignalID> (std::size (SHR.fDirectSignalHandlersCache_)));
-    Again:
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"")
-        [[maybe_unused]] auto&& cleanup = Finally ([&SHR] () noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"")
-        if (SHR.fDirectSignalHandlersCache_Lock_++ == 0) {
-            const vector<function<void (SignalID)>>* shs = &SHR.fDirectSignalHandlersCache_[signal];
-            for (auto shi = shs->begin (); shi != shs->end (); ++shi) {
-                (*shi) (signal);
-            }
-        }
-        else {
-            goto Again;
+    Require (0 <= signal and signal < NSIG);
+    for (const atomic<void (*) (SignalID)>& slot : sThe.fDirectSignalHandlersCache_[signal]) {
+        if (void (*h) (SignalID) = slot.load ()) {
+            h (signal);
         }
     }
-
-    //
-    // I THINK/HOPE it safe to increment/decrement the reference count on the shared_ptr.
-    // But this isn't guaranteed by anything I'm aware of.
-    //
-#if defined(__cpp_lib_atomic_shared_ptr)
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_.load ();
-#else
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = atomic_load (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_);
-#endif
-    if (tmp != nullptr) {
-        tmp->NotifyOfArrivalOfPossiblySafeSignal (signal);
+    ++SafeSignalsManager::sSignalHandlersUsingRep_;
+    if (SafeSignalsManager::Rep_* rep = SafeSignalsManager::sTheRepForSignalHandler_.load ()) {
+        rep->NotifyOfArrivalOfPossiblySafeSignal (signal);
     }
+    --SafeSignalsManager::sSignalHandlersUsingRep_;
 }

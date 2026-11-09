@@ -1790,6 +1790,79 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest30_AbortWhileBusyInStdLibrary_ {
+        /*
+         *  Abort () interrupts a thread with a signal (POSIX), which can land anywhere in it - here, inside the standard library:
+         *  debug-mode container iterators, and shared_ptr atomics, which may each hold a lock for a moment. A signal handler that
+         *  needs the same lock deadlocks the thread on itself (#128) - and then any thread that next needs that lock, this one
+         *  too. So a watchdog on a thread of its own, touching no container, aborts the process if the trials stop: for a core
+         *  dump, and a prompt failure rather than a hung test run.
+         *
+         *  Abort () sets the thread's abort flag before it sends the signal, so the thread looks for the flag only every few
+         *  milliseconds - else it would usually see it, and be on its way out, before the signal came.
+         */
+        void Test ()
+        {
+            Debug::TraceContextBumper traceCtx{"RegressionTest30_AbortWhileBusyInStdLibrary_"};
+            const unsigned int        kTrials = Debug::IsRunningUnderValgrind () ? 20 : 500;
+            atomic<unsigned int>      trialsDone{0};
+            atomic<bool>              finished{false};
+            std::thread               watchdog{[&] () {
+                unsigned int lastSeen    = 0;
+                auto         lastChanged = chrono::steady_clock::now ();
+                while (not finished) {
+                    this_thread::sleep_for (100ms);
+                    if (unsigned int done = trialsDone; done != lastSeen) {
+                        lastSeen    = done;
+                        lastChanged = chrono::steady_clock::now ();
+                    }
+                    else if (chrono::steady_clock::now () - lastChanged > 60s) {
+                        cerr << "RegressionTest30_AbortWhileBusyInStdLibrary_: stuck at trial " << done
+                             << " for 60s - deadlocked in the signal handler? - aborting for a core dump" << endl;
+                        abort ();
+                    }
+                }
+            }};
+            [[maybe_unused]] auto&&   stopWatchdog = Finally ([&] () noexcept {
+                finished = true;
+                watchdog.join ();
+            });
+            for (unsigned int trial = 0; trial < kTrials; ++trial) {
+                atomic<bool> running{false};
+                Thread::Ptr  t = Thread::New (
+                    [&running] () {
+                        vector<vector<int>> vs (64, vector<int> (2)); // many containers, so their locks cover the pool
+#if not defined(__cpp_lib_atomic_shared_ptr)
+                        shared_ptr<int> sp = make_shared<int> (1);
+#endif
+                        running        = true;
+                        auto nextCheck = chrono::steady_clock::now () + 2ms;
+                        while (true) {
+                            for (const vector<int>& v : vs) {
+                                for (auto i = v.begin (); i != v.end (); ++i) {
+                                }
+                            }
+#if not defined(__cpp_lib_atomic_shared_ptr)
+                            [[maybe_unused]] shared_ptr<int> copy = atomic_load (&sp);
+#endif
+                            if (chrono::steady_clock::now () > nextCheck) {
+                                Thread::CheckForInterruption ();
+                                nextCheck = chrono::steady_clock::now () + 2ms;
+                            }
+                        }
+                    },
+                    Thread::eAutoStart, "busy"sv);
+                while (not running) {
+                    this_thread::yield ();
+                }
+                t.AbortAndWaitForDone ();
+                ++trialsDone;
+            }
+        }
+    }
+}
+
+namespace {
     namespace RegressionTest25_AbortNotYetStartedThread_ {
         void Test ()
         {
@@ -1842,6 +1915,7 @@ namespace {
         RegressionTest27_EventFD_::Test ();
         RegressionTest28_EventFDSetClearRace_::Test ();
         RegressionTest29_UpdatableWaitForIOReadyDurationOverload_::Test ();
+        RegressionTest30_AbortWhileBusyInStdLibrary_::Test ();
     }
 }
 #endif

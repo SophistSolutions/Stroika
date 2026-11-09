@@ -30,12 +30,14 @@ namespace {
         Set<SignalHandler>      saved   = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
         {
-            bool called = false;
+            // a direct handler is a noexcept function pointer - so a lambda without captures, and what it sets a lock-free atomic
+            static atomic<bool> sCalled;
+            sCalled = false;
             SignalHandlerRegistry::sThe.SetSignalHandlers (
-                SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) noexcept -> void { called = true; }, SignalHandler::eDirect});
+                SIGINT, SignalHandler{+[] ([[maybe_unused]] SignalID signal) noexcept -> void { sCalled = true; }, SignalHandler::eDirect});
             [[maybe_unused]] auto&& cleanup2 = Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
-            EXPECT_TRUE (called);
+            EXPECT_TRUE (sCalled);
         }
     }
 }
