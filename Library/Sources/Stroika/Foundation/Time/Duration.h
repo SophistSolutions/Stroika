@@ -556,11 +556,31 @@ namespace Stroika::Foundation::Time {
     }
 
     /**
-     *  Return the sum of the two durations.
+     *  \brief The sum of two Durations - a Duration; and of a Duration and a chrono::duration, either way round
      *
-     *  Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
+     *  chrono::duration's own give a chrono::duration.
+     *
+     *  \par Example Usage
+     *      \code
+     *          EXPECT_EQ ((Duration{"PT3S"} + 2s).As<String> (), "PT5S");
+     *      \endcode
      */
-    Duration operator+ (const DurationSeconds& lhs, const Duration& rhs);
+    Duration operator+ (const Duration& lhs, const Duration& rhs);
+    template <Common::IDuration D>
+    Duration operator+ (const Duration& lhs, const D& rhs); ///< \brief A Duration plus a chrono::duration - a Duration
+    template <Common::IDuration D>
+    Duration operator+ (const D& lhs, const Duration& rhs); ///< \brief A chrono::duration plus a Duration - a Duration
+
+    /**
+     *  \brief The difference of two Durations - a Duration; and of a Duration and a chrono::duration, either way round
+     *
+     *  chrono::duration's own give a chrono::duration.
+     */
+    Duration operator- (const Duration& lhs, const Duration& rhs);
+    template <Common::IDuration D>
+    Duration operator- (const Duration& lhs, const D& rhs); ///< \brief A Duration minus a chrono::duration - a Duration
+    template <Common::IDuration D>
+    Duration operator- (const D& lhs, const Duration& rhs); ///< \brief A chrono::duration minus a Duration - a Duration
 
     /**
      *  \brief A Duration times a number, either way round - a Duration
@@ -578,6 +598,13 @@ namespace Stroika::Foundation::Time {
     Duration operator* (T lhs, const Duration& rhs);
     template <Common::IBuiltinArithmetic T>
     Duration operator* (const Duration& lhs, T rhs); ///< \brief A Duration times a number - a Duration
+    /**
+     *  \brief Deleted: a Duration times a Duration is in seconds squared, not a time
+     *
+     *  Without it, chrono::duration's operator* takes the right-hand Duration as a number: some standard libraries give a
+     *  chrono::duration<Duration>, others call it ambiguous.
+     */
+    Duration operator* (const Duration& lhs, const Duration& rhs) = delete;
 
     /**
      *  \brief A Duration divided by a number - a Duration; or by a Duration - a number, how many times rhs goes into lhs

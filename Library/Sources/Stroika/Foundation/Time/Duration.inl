@@ -391,9 +391,33 @@ namespace Stroika::Foundation::Time {
      ***************************** Duration operators *******************************
      ********************************************************************************
      */
-    inline Duration operator+ (const DurationSeconds& lhs, const Duration& rhs)
+    inline Duration operator+ (const Duration& lhs, const Duration& rhs)
+    {
+        return Duration{lhs.As<DurationSeconds> () + rhs.As<DurationSeconds> ()};
+    }
+    template <Common::IDuration D>
+    inline Duration operator+ (const Duration& lhs, const D& rhs)
+    {
+        return Duration{lhs.As<DurationSeconds> () + rhs};
+    }
+    template <Common::IDuration D>
+    inline Duration operator+ (const D& lhs, const Duration& rhs)
     {
         return Duration{lhs + rhs.As<DurationSeconds> ()};
+    }
+    inline Duration operator- (const Duration& lhs, const Duration& rhs)
+    {
+        return Duration{lhs.As<DurationSeconds> () - rhs.As<DurationSeconds> ()};
+    }
+    template <Common::IDuration D>
+    inline Duration operator- (const Duration& lhs, const D& rhs)
+    {
+        return Duration{lhs.As<DurationSeconds> () - rhs};
+    }
+    template <Common::IDuration D>
+    inline Duration operator- (const D& lhs, const Duration& rhs)
+    {
+        return Duration{lhs - rhs.As<DurationSeconds> ()};
     }
     template <Common::IBuiltinArithmetic T>
     inline Duration operator* (T lhs, const Duration& rhs)

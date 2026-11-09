@@ -846,6 +846,9 @@ namespace {
 }
 
 namespace {
+    template <typename A, typename B>
+    concept IMultipliable_ = requires (A a, B b) { a * b; };
+
     GTEST_TEST (Foundation_Time, Duration_)
     {
         TraceContextBumper ctx{"Duration_"};
@@ -1006,6 +1009,26 @@ namespace {
             EXPECT_EQ (Duration{1e30}.AsSaturated<int> (), numeric_limits<int>::max ());
             EXPECT_EQ (Duration{-1e30}.AsSaturated<int> (), numeric_limits<int>::min ());
             EXPECT_EQ (Duration{30}.AsSaturated<int> (), 30);
+        }
+        {
+            // a Duration plus or minus another, or a chrono::duration either way round, is a Duration; a Duration times a Duration
+            // (seconds squared) does not compile
+            const Duration                 d{3};
+            constexpr chrono::seconds      s{2};
+            constexpr chrono::milliseconds ms{500};
+            static_assert (same_as<decltype (d + d), Duration>);
+            static_assert (same_as<decltype (d - d), Duration>);
+            static_assert (same_as<decltype (d + s), Duration>);
+            static_assert (same_as<decltype (s + d), Duration>);
+            static_assert (same_as<decltype (d - s), Duration>);
+            static_assert (same_as<decltype (s - d), Duration>);
+            static_assert (same_as<decltype (d - ms), Duration>);
+            static_assert (not IMultipliable_<Duration, Duration>);
+            EXPECT_EQ (d - Duration{1}, Duration{2});
+            EXPECT_EQ (d + s, Duration{5});
+            EXPECT_EQ (s - d, Duration{-1});
+            EXPECT_EQ (d - ms, Duration{2.5});
+            EXPECT_EQ ((Duration{"PT3S"} - Duration{"PT1S"}).As<String> (), "PT2S");
         }
         {
             Duration d = Duration{"PT0.1S"};
