@@ -52,6 +52,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
             return {Algorithm::eStroikaNative, Algorithm::eStroikaNative};
         }
 #endif
+        friend Common::StroikaNaming EnumNamingRule (Algorithm);
         using Algorithm::eStroikaNative;
 #if __has_include("boost/json.hpp")
         using Algorithm::eBoost;

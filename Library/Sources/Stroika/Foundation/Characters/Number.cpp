@@ -83,18 +83,7 @@ String Characters::Number::Punctuation::ToString () const
 String Characters::Number::FloatToStringOptions::ToString () const
 {
     StringBuilder sb;
-    sb << "{Notation: "sv;
-    switch (fNotation) {
-        case Notation::eGeneral:
-            sb << "General"sv;
-            break;
-        case Notation::ePlain:
-            sb << "Plain"sv;
-            break;
-        case Notation::eScientific:
-            sb << "Scientific"sv;
-            break;
-    }
+    sb << "{Notation: "sv << fNotation;
     sb << ", Precision: "sv << fPrecision.ToString () << ", Punctuation: "sv;
     if (const Punctuation* p = get_if<Punctuation> (&fPunctuation)) {
         sb << p->ToString ();

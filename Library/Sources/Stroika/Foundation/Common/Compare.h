@@ -100,6 +100,7 @@ namespace Stroika::Foundation::Common {
     {
         return {ComparisonRelationType::eEquals, ComparisonRelationType::eThreeWayCompare};
     }
+    Common::StroikaNaming EnumNamingRule (ComparisonRelationType);
 
     namespace Private_ {
         template <typename ARG_T, typename COMPARE_FUNCTION>

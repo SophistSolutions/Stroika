@@ -50,6 +50,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         {
             return {IteratorReturnType::eFilenameOnly, IteratorReturnType::eFullPathName};
         }
+        friend Common::StroikaNaming EnumNamingRule (IteratorReturnType);
 
     public:
         /**

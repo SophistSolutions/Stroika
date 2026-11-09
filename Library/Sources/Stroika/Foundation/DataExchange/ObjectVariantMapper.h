@@ -1203,6 +1203,7 @@ namespace Stroika::Foundation::DataExchange {
         {
             return {NullFieldHandling::eOmit, NullFieldHandling::eInclude};
         }
+        friend Common::StroikaNaming EnumNamingRule (NullFieldHandling);
 
     private:
         /*

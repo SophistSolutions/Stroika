@@ -52,6 +52,7 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     {
         return {BufferFlag::eBuffered, BufferFlag::eUnbuffered};
     }
+    Common::StroikaNaming EnumNamingRule (BufferFlag);
 
     /**
      */

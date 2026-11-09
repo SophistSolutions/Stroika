@@ -53,6 +53,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         {
             return {NameType::eElement, NameType::eValue};
         }
+        friend Common::StroikaNaming EnumNamingRule (NameType);
+
         NameType fType{eElement};
 
         /**

@@ -20,6 +20,8 @@ namespace Stroika::Foundation::Execution {
     {
         return {UserNameFormat::ePrettyName, UserNameFormat::ePrettyName};
     }
+    Common::StroikaNaming EnumNamingRule (UserNameFormat);
+
     Characters::String GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT);
 
 }

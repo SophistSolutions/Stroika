@@ -158,6 +158,7 @@ namespace Stroika::Foundation::IO::Network {
         {
             return {ShutdownTarget::eReads, ShutdownTarget::eBoth};
         }
+        Common::StroikaNaming EnumNamingRule (ShutdownTarget);
 
         /**
          *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).

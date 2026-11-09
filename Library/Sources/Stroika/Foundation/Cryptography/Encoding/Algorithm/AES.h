@@ -51,6 +51,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     {
         return {AESOptions::e128_CBC, AESOptions::e256_CFB128};
     }
+    Common::StroikaNaming EnumNamingRule (AESOptions);
 
 #if qStroika_HasComponent_OpenSSL
     /**

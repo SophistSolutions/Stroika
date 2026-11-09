@@ -47,6 +47,8 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
     {
         return {FlushFlag::eToOperatingSystem, FlushFlag::eToDisk};
     }
+    Common::StroikaNaming EnumNamingRule (FlushFlag);
+
     constexpr FlushFlag eToOperatingSystem = FlushFlag::eToOperatingSystem;
     constexpr FlushFlag eToDisk            = FlushFlag::eToDisk;
 
@@ -63,6 +65,8 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
     {
         return {AppendFlag::eStartFromStart, AppendFlag::eAppend};
     }
+    Common::StroikaNaming EnumNamingRule (AppendFlag);
+
     constexpr AppendFlag eStartFromStart = AppendFlag::eStartFromStart;
     constexpr AppendFlag eAppend         = AppendFlag::eAppend;
 
@@ -74,6 +78,8 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
     {
         return {BufferFlag::eBuffered, BufferFlag::eUnbuffered};
     }
+    Common::StroikaNaming EnumNamingRule (BufferFlag);
+
     constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
     constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 

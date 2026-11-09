@@ -34,6 +34,7 @@ namespace Stroika::Foundation::Streams {
     {
         return {Whence::eFromStart, Whence::eFromEnd};
     }
+    Common::StroikaNaming EnumNamingRule (Whence);
 
     using Whence::eFromCurrent;
     using Whence::eFromEnd;

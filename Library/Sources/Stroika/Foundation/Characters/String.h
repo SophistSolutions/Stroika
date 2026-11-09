@@ -107,6 +107,7 @@ namespace Stroika::Foundation::Characters {
     {
         return {StringShorteningPreference::ePreferKeepLeft, StringShorteningPreference::ePreferKeepMid};
     }
+    Common::StroikaNaming EnumNamingRule (StringShorteningPreference);
     using StringShorteningPreference::ePreferKeepLeft;
     using StringShorteningPreference::ePreferKeepMid;
     using StringShorteningPreference::ePreferKeepRight;

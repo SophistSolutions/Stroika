@@ -7,8 +7,10 @@
 #include <fstream>
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Endian.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
@@ -19,13 +21,26 @@
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Common/Version.h"
+#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/Name.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Users.h"
+#include "Stroika/Foundation/IO/FileSystem/DirectoryIterator.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include "Stroika/Foundation/IO/Network/InternetProtocol/IP.h"
+#include "Stroika/Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/Math/Angle.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
+#include "Stroika/Foundation/Streams/Stream.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
@@ -593,6 +608,41 @@ namespace {
         EXPECT_EQ (byteswap (byteswap (uint32_t{0x12345678})), uint32_t{0x12345678});
         EXPECT_EQ (static_cast<uint32_t> (byteswap (char16_t{0x0041})), 0x4100u);
         EXPECT_EQ (static_cast<uint32_t> (byteswap (char32_t{0x00000041})), 0x41000000u);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Common, LibraryEnumsByStroikaNaming_)
+    {
+        // Stroika's own enums are named by its convention (StroikaNaming) - eFromStart is "FromStart" - not by IdentifierNaming
+        using namespace DataExchange;
+        using namespace IO;
+        static_assert (kDefaultNames<Characters::StringShorteningPreference>.GetName (Characters::StringShorteningPreference::ePreferKeepLeft) ==
+                       u8"PreferKeepLeft");
+        static_assert (kDefaultNames<Characters::Number::Notation>.GetName (Characters::Number::Notation::ePlain) == u8"Plain");
+        static_assert (kDefaultNames<ComparisonRelationType>.GetName (ComparisonRelationType::eEquals) == u8"Equals");
+        static_assert (kDefaultNames<Cryptography::Encoding::Algorithm::AESOptions>.GetName (Cryptography::Encoding::Algorithm::AESOptions::e128_CBC) ==
+                       u8"128_CBC");
+        static_assert (kDefaultNames<ObjectVariantMapper::StructFieldInfo::NullFieldHandling>.GetName (
+                           ObjectVariantMapper::StructFieldInfo::NullFieldHandling::eOmit) == u8"Omit");
+        static_assert (kDefaultNames<StructuredStreamEvents::Name::NameType>.GetName (StructuredStreamEvents::Name::eElement) ==
+                       u8"Element");
+        static_assert (kDefaultNames<Variant::JSON::ReaderOptions::Algorithm>.GetName (Variant::JSON::ReaderOptions::Algorithm::eStroikaNative) ==
+                       u8"StroikaNative");
+        static_assert (kDefaultNames<Execution::SequencePolicy>.GetName (Execution::SequencePolicy::eSeq) == u8"Seq");
+        static_assert (kDefaultNames<Execution::UserNameFormat>.GetName (Execution::UserNameFormat::ePrettyName) == u8"PrettyName");
+        static_assert (kDefaultNames<FileSystem::DirectoryIterator::IteratorReturnType>.GetName (
+                           FileSystem::DirectoryIterator::IteratorReturnType::eFilenameOnly) == u8"FilenameOnly");
+        static_assert (kDefaultNames<FileSystem::FileInputStream::BufferFlag>.GetName (FileSystem::FileInputStream::BufferFlag::eBuffered) == u8"Buffered");
+        static_assert (kDefaultNames<FileSystem::FileOutputStream::FlushFlag>.GetName (FileSystem::FileOutputStream::FlushFlag::eToDisk) == u8"ToDisk");
+        static_assert (kDefaultNames<FileSystem::FileOutputStream::AppendFlag>.GetName (FileSystem::FileOutputStream::AppendFlag::eAppend) == u8"Append");
+        static_assert (kDefaultNames<FileSystem::FileOutputStream::BufferFlag>.GetName (FileSystem::FileOutputStream::BufferFlag::eUnbuffered) == u8"Unbuffered");
+        static_assert (kDefaultNames<Network::InternetProtocol::IP::IPVersionSupport>.GetName (
+                           Network::InternetProtocol::IP::IPVersionSupport::eIPV4Only) == u8"IPV4Only");
+        static_assert (kDefaultNames<Network::Socket::ShutdownTarget>.GetName (Network::Socket::ShutdownTarget::eReads) == u8"Reads");
+        static_assert (kDefaultNames<Math::Angle::AngleFormat>.GetName (Math::Angle::AngleFormat::eRadians) == u8"Radians");
+        static_assert (kDefaultNames<Streams::Whence>.GetName (Streams::Whence::eFromStart) == u8"FromStart");
+        EXPECT_EQ (Characters::ToString (Streams::Whence::eFromEnd), "FromEnd");
     }
 }
 

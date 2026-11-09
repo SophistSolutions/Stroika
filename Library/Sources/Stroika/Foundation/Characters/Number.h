@@ -75,6 +75,11 @@ namespace Stroika::Foundation::Characters::Number {
          */
         eScientific,
     };
+    constexpr Common::EnumBounds<Notation> EnumBoundsOf (Notation)
+    {
+        return {Notation::eGeneral, Notation::eScientific};
+    }
+    Common::StroikaNaming EnumNamingRule (Notation);
 
     /**
      *  \brief How many digits a floating point number is written with, and what they count: significant figures, or digits after

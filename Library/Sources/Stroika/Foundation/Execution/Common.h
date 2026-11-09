@@ -101,6 +101,7 @@ namespace Stroika::Foundation::Execution {
     {
         return {SequencePolicy::eSeq, SequencePolicy::eUnseq};
     }
+    Common::StroikaNaming EnumNamingRule (SequencePolicy);
 
 }
 

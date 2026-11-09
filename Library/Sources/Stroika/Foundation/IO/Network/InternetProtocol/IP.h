@@ -44,6 +44,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
     {
         return {IPVersionSupport::eIPV4Only, IPVersionSupport::eIPV4AndIPV6};
     }
+    Common::StroikaNaming EnumNamingRule (IPVersionSupport);
 
     /**
      *  Trivial helper so you can do:

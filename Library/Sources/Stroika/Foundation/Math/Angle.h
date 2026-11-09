@@ -37,6 +37,7 @@ namespace Stroika::Foundation::Math {
         {
             return {AngleFormat::eRadians, AngleFormat::eGradians};
         }
+        friend Common::StroikaNaming EnumNamingRule (AngleFormat);
 
     public:
         static constexpr AngleFormat eRadians  = AngleFormat::eRadians;
