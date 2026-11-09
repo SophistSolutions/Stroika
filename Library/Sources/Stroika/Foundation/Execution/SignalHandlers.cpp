@@ -4,8 +4,9 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
-#include <condition_variable>
-#include <mutex>
+#if qStroika_Platform_Windows
+#include <windows.h>
+#endif
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
@@ -48,14 +49,6 @@ using Containers::Set;
 #define qDoBacktraceOnFirstPassSignalHandler_ 0
 #endif
 
-// Use this for POSIX, since condition_variables aren't safe on POSIX (signals)
-// https://github.com/SophistSolutions/Stroika/issues/753 (STK-617)
-// https://stackoverflow.com/questions/31117959/waking-up-thread-from-signal-handler
-// -- LGP 2017-09-10
-#ifndef qConditionVariablesSafeInAsyncSignalHandlers_
-#define qConditionVariablesSafeInAsyncSignalHandlers_ !qStroika_Platform_POSIX
-#endif
-
 /*
  ********************************************************************************
  *************************** Execution::SignalHandler ***************************
@@ -92,27 +85,21 @@ class SignalHandlerRegistry::SafeSignalsManager::Rep_ final {
 private:
     void waitForNextSig_ ()
     {
-#if qConditionVariablesSafeInAsyncSignalHandlers_
-        Assert (not qStroika_Platform_POSIX); // this strategy not safe with POSIX signals
-        unique_lock<mutex> lk{fRecievedSig_NotSureWhatMutexFor_};
-        fRecievedSig_.wait_for (lk, chrono::seconds (100), [this] () { return fWorkMaybeAvailable_.load (); });
-#else
+#if qStroika_Platform_POSIX
         fRecievedSig_.Wait ();
+#elif qStroika_Platform_Windows
+        Verify (::WaitForSingleObject (fRecievedSig_, INFINITE) == WAIT_OBJECT_0);
 #endif
     }
+    // Called by the signal handler (NotifyOfArrivalOfPossiblySafeSignal), so it takes no lock (see SignalHandler::Type): sem_post,
+    // or a Win32 event - not a mutex and condition_variable
     void tell2WakeAfterDataUpdate_ ()
     {
-#if qConditionVariablesSafeInAsyncSignalHandlers_
-        Assert (not qStroika_Platform_POSIX); // this strategy not safe with POSIX signals
-        fRecievedSig_.notify_one ();
-        {
-            [[maybe_unused]] auto&& lk = lock_guard{fRecievedSig_NotSureWhatMutexFor_};
-            fWorkMaybeAvailable_       = true;
-        }
-        fRecievedSig_.notify_one ();
-#else
         fWorkMaybeAvailable_ = true;
+#if qStroika_Platform_POSIX
         fRecievedSig_.Set ();
+#elif qStroika_Platform_Windows
+        (void)::SetEvent (fRecievedSig_);
 #endif
     }
 
@@ -178,6 +165,9 @@ public:
         fBlockingQueuePusherThread_.Abort ();
         tell2WakeAfterDataUpdate_ ();
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+#if qStroika_Platform_Windows
+        Verify (::CloseHandle (fRecievedSig_));
+#endif
     }
 
 public:
@@ -243,11 +233,10 @@ private:
     Thread::Ptr fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
     atomic<bool> fWorkMaybeAvailable_{false};
-#if qConditionVariablesSafeInAsyncSignalHandlers_
-    mutex              fRecievedSig_NotSureWhatMutexFor_;
-    condition_variable fRecievedSig_;
-#else
+#if qStroika_Platform_POSIX
     Execution::Platform::POSIX::SemWaitableEvent fRecievedSig_;
+#elif qStroika_Platform_Windows
+    HANDLE fRecievedSig_{::CreateEvent (nullptr, FALSE, FALSE, nullptr)}; // auto-reset
 #endif
 };
 
