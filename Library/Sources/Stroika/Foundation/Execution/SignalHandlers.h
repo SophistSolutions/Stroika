@@ -292,9 +292,29 @@ namespace Stroika::Foundation::Execution {
          *          anyhow, so the better stack trace maybe worth it.
          *
          *          @todo https://github.com/SophistSolutions/Stroika/issues/1287 - pass the handler the signal's siginfo_t
+         *
+         *  After a stack overflow the handler cannot run - unless the thread has an alternate signal stack: @see
+         *  InstallAlternateSignalStack (POSIX).
          */
         nonvirtual void SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler{DefaultCrashSignalHandler, SignalHandler::Type::eDirect},
                                                         const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
+
+#if qStroika_Platform_POSIX
+    public:
+        /**
+         *  \brief Give the calling thread an alternate signal stack (sigaltstack), so a signal handler runs even when the
+         *         thread's own stack is used up - after a stack overflow
+         *
+         *  Stroika installs its signal handler with SA_ONSTACK, so on a thread with an alternate signal stack, signal handlers
+         *  run there. Opt in, per thread: nothing calls this for you (TestHarness::Setup does, for a test program's main thread).
+         *  Each call's thread holds the stack - about SIGSTKSZ + 64KB, 77KB on Linux x86_64 - until it exits; a thread that has
+         *  an alternate signal stack already keeps it (a sanitizer sets its own). Most crashes are not stack overflows, and
+         *  without it a stack overflow still ends the program (SIGSEGV), just without the crash handler's report.
+         *
+         *  POSIX only: on Windows a stack overflow is not a signal (it is an SEH exception), so no signal handler runs for it.
+         */
+        static void InstallAlternateSignalStack ();
+#endif
 
     private:
         RWSynchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;

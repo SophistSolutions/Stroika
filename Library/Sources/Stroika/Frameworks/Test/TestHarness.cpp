@@ -94,6 +94,9 @@ vector<string> Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const ch
     Debug::RegisterDefaultFatalErrorHandlers (FatalErrorHandler_);
     using namespace Execution;
     SignalHandlerRegistry::sThe.SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
+#if qStroika_Platform_POSIX
+    SignalHandlerRegistry::InstallAlternateSignalStack (); // so a stack overflow in a test (on its main thread) still reports
+#endif
 #if qStroika_HasComponent_googletest
     // @todo fix to COPY so safe...
     testing::InitGoogleTest (&argc, const_cast<char**> (argv));

@@ -6,13 +6,22 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <limits>
+#if qStroika_Platform_POSIX
+#include <sys/resource.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -135,6 +144,73 @@ namespace {
     }
 }
 
+#if qStroika_Platform_POSIX
+namespace {
+    // Overflows any stack: each call's volatile frame stays on it, and the limit - never reached - stops the compiler from
+    // treating this as endless recursion
+    volatile int sRecursionLimit_ = numeric_limits<int>::max ();
+    int          Recurse_ (int depth)
+    {
+        volatile char frame[1024];
+        frame[0] = static_cast<char> (depth);
+        return depth < sRecursionLimit_ ? Recurse_ (depth + 1) + frame[0] : frame[0];
+    }
+    void Test6_CrashHandlerRunsAfterStackOverflow_ ()
+    {
+        // A thread opts in to an alternate signal stack (InstallAlternateSignalStack) - none is made for it otherwise - and its
+        // signal handlers then run there, so a crash handler runs after a stack overflow too
+        auto hasAlternateStack = [] (bool install) {
+            stack_t     current{};
+            Thread::Ptr t = Thread::New (
+                [&] () {
+                    if (install) {
+                        SignalHandlerRegistry::InstallAlternateSignalStack ();
+                    }
+                    Verify (::sigaltstack (nullptr, &current) == 0);
+                },
+                Thread::eAutoStart);
+            t.Join ();
+            return (current.ss_flags & SS_DISABLE) == 0;
+        };
+        EXPECT_TRUE (hasAlternateStack (true));
+        if (Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ()) {
+            return; // each may give a thread its own alternate stack, and handles a stack overflow itself
+        }
+        EXPECT_FALSE (hasAlternateStack (false));                               // a thread that does not ask pays nothing
+        Set<SignalID>                         overflowSignals{SIGSEGV, SIGBUS}; // SIGBUS on macOS
+        Mapping<SignalID, Set<SignalHandler>> saved;
+        for (SignalID s : overflowSignals) {
+            saved.Add (s, SignalHandlerRegistry::sThe.GetSignalHandlers (s));
+        }
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
+            for (const auto& [s, handlers] : saved) {
+                SignalHandlerRegistry::sThe.SetSignalHandlers (s, handlers);
+            }
+        });
+        SignalHandler           exit42{+[] ([[maybe_unused]] SignalID signal) noexcept -> void { ::_exit (42); }, SignalHandler::eDirect};
+        SignalHandlerRegistry::sThe.SetStandardCrashHandlerSignals (exit42, overflowSignals);
+        // A stack overflow ends the process it happens in, so it happens in a forked copy of this one: fork copies only the calling
+        // thread - this, the main thread - with its alternate signal stack, so that is the thread that opts in
+        SignalHandlerRegistry::InstallAlternateSignalStack ();
+        pid_t child = ::fork ();
+        ASSERT_NE (child, -1);
+        if (child == 0) {
+            // the child overflows its (main thread's) stack - at most 1MB, so the overflow comes quickly even with no stack limit
+            rlimit stackLimit{};
+            (void)::getrlimit (RLIMIT_STACK, &stackLimit);
+            stackLimit.rlim_cur = min<rlim_t> (stackLimit.rlim_cur, 1024 * 1024);
+            (void)::setrlimit (RLIMIT_STACK, &stackLimit);
+            (void)Recurse_ (0);
+            ::_exit (1);
+        }
+        int status{};
+        Verify (::waitpid (child, &status, 0) == child);
+        EXPECT_TRUE (WIFEXITED (status) and WEXITSTATUS (status) == 42)
+            << "wait status " << status << " (killed by signal " << (WIFSIGNALED (status) ? WTERMSIG (status) : 0) << ")";
+    }
+}
+#endif
+
 namespace {
     GTEST_TEST (Foundation_Execution_Signals, all)
     {
@@ -143,6 +219,9 @@ namespace {
         Test3_StandardCrashHandlersByDefault_ ();
         Test4_SafeHandlersGoWithTheirManager_ ();
         Test5_HandlerStaysInstalled_ ();
+#if qStroika_Platform_POSIX
+        Test6_CrashHandlerRunsAfterStackOverflow_ ();
+#endif
     }
 }
 #endif

@@ -399,7 +399,9 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         struct sigaction sa{};
         sa.sa_handler = fun;
         Verify (sigemptyset (&sa.sa_mask) == 0); // nb: cannot use :: on macos - macro - LGP 2016-12-30
-        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
+        // SA_ONSTACK: on the thread's alternate signal stack where it has one (InstallAlternateSignalStack), so a crash handler runs
+        // after a stack overflow too. Important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
+        sa.sa_flags = SA_ONSTACK;
         Verify (::sigaction (signal, &sa, nullptr) == 0);
 #elif qStroika_Platform_Windows
         sInstalledForSignal_[signal].store (fun);
@@ -510,6 +512,41 @@ void SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handle
         }
     }
 }
+
+#if qStroika_Platform_POSIX
+void SignalHandlerRegistry::InstallAlternateSignalStack ()
+{
+    /*
+     *  One per thread, made on the thread's first call (thread_local), and removed then freed as the thread exits. Left alone
+     *  where the thread has one already. Room for DefaultCrashSignalHandler's DbgTrace, beyond the minimum (SIGSTKSZ).
+     */
+    struct AlternateStack_ {
+        unique_ptr<char[]> fStack_;
+        AlternateStack_ ()
+        {
+            stack_t current{};
+            Verify (::sigaltstack (nullptr, &current) == 0);
+            if ((current.ss_flags & SS_DISABLE) != 0) {
+                size_t size = SIGSTKSZ + 64 * 1024;
+                fStack_.reset (new char[size]);
+                stack_t ss{};
+                ss.ss_sp   = fStack_.get ();
+                ss.ss_size = size;
+                Verify (::sigaltstack (&ss, nullptr) == 0);
+            }
+        }
+        ~AlternateStack_ ()
+        {
+            if (fStack_ != nullptr) {
+                stack_t ss{};
+                ss.ss_flags = SS_DISABLE;
+                Verify (::sigaltstack (&ss, nullptr) == 0);
+            }
+        }
+    };
+    [[maybe_unused]] static thread_local AlternateStack_ tAlternateStack_;
+}
+#endif
 
 // use no_sanitize(thread) to workaround https://github.com/SophistSolutions/Stroika/issues/812 (STK-677)
 Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
