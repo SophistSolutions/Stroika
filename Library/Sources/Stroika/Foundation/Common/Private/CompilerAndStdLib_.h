@@ -1490,6 +1490,8 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
  *
  *  g++ before 14 cannot tell at compile time whether it is building with the undefined behavior sanitizer (Debug/Sanitizer.h),
  *  so this is set for every g++. The workaround tests what says the same without the pointer (EnumNameText: its length).
+ *
+ *  The name is for the case first seen, an inline variable template's address; a function's static has the bug too.
  */
 #ifndef qCompilerAndStdLib_constexpr_inline_variable_address_compared_to_null_Buggy
 #if defined(__GNUC__) and not defined(__clang__)
