@@ -49,6 +49,14 @@ using Containers::Set;
 #define qDoBacktraceOnFirstPassSignalHandler_ 0
 #endif
 
+#if qStroika_Platform_Windows
+namespace {
+    // What SetSignalHandlers last gave the OS for each signal: the CRT resets a signal to SIG_DFL before calling its handler (all
+    // but SIGFPE - https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/signal), so FirstPassSignalHandler_ puts it back
+    atomic<void (*) (int)> sInstalledForSignal_[NSIG]{};
+}
+#endif
+
 /*
  ********************************************************************************
  *************************** Execution::SignalHandler ***************************
@@ -393,7 +401,8 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         Verify (sigemptyset (&sa.sa_mask) == 0); // nb: cannot use :: on macos - macro - LGP 2016-12-30
         sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
         Verify (::sigaction (signal, &sa, nullptr) == 0);
-#else
+#elif qStroika_Platform_Windows
+        sInstalledForSignal_[signal].store (fun);
         Verify (::signal (signal, fun) != SIG_ERR);
 #endif
     };
@@ -619,10 +628,20 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
     /*
      *  This is the signal handler: it may do only what SignalHandler::Type allows a direct one (in SignalHandlers.h). So only
      *  plain arrays, function pointers and lock-free atomics here - and sem_post (the safe handlers' wakeup, which keeps errno
-     *  as it was). For instance with libstdc++ a debug-mode iterator, or (before libstdc++ 12) a shared_ptr atomic, takes one
-     *  of a pool of mutexes - so used here, a signal arriving while its thread held that mutex would never return (#128).
+     *  as it was), or on Windows SetEvent, and signal () for this signal. For instance with libstdc++ a debug-mode iterator, or
+     *  (before libstdc++ 12) a shared_ptr atomic, takes one of a pool of mutexes - so used here, a signal arriving while its thread
+     *  held that mutex would never return (#128).
      */
     Require (0 <= signal and signal < NSIG);
+#if qStroika_Platform_Windows
+    // The CRT set the signal to SIG_DFL before calling this: put back what SetSignalHandlers installed - this handler, unless a
+    // SetSignalHandlers since changed it, so that is read after re-installing. Calling signal () for the signal being handled is
+    // signal-safe ([support.signal] p4)
+    (void)::signal (signal, FirstPassSignalHandler_);
+    if (void (*installed) (int) = sInstalledForSignal_[signal].load (); installed != FirstPassSignalHandler_) {
+        (void)::signal (signal, installed);
+    }
+#endif
     for (const atomic<void (*) (SignalID)>& slot : sThe.fDirectSignalHandlersCache_[signal]) {
         if (void (*h) (SignalID) = slot.load ()) {
             h (signal);

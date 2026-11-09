@@ -119,12 +119,30 @@ namespace {
 }
 
 namespace {
+    void Test5_HandlerStaysInstalled_ ()
+    {
+        // a handler stays installed once called - the Windows CRT resets a signal to SIG_DFL before calling its handler, so
+        // without Stroika putting it back, SIGINT's second arrival ends the program
+        Set<SignalHandler>      saved   = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
+        static atomic<int>      sCalls;
+        sCalls = 0;
+        SignalHandlerRegistry::sThe.SetSignalHandlers (
+            SIGINT, SignalHandler{+[] ([[maybe_unused]] SignalID signal) noexcept -> void { ++sCalls; }, SignalHandler::eDirect});
+        ::raise (SIGINT);
+        ::raise (SIGINT);
+        EXPECT_EQ (sCalls, 2);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution_Signals, all)
     {
         Test1_Direct_ ();
         Test2_Safe_ ();
         Test3_StandardCrashHandlersByDefault_ ();
         Test4_SafeHandlersGoWithTheirManager_ ();
+        Test5_HandlerStaysInstalled_ ();
     }
 }
 #endif
