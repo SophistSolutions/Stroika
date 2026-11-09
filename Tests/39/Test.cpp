@@ -46,6 +46,7 @@ namespace {
 namespace {
     void Test2_Safe_ ()
     {
+        SignalHandlerRegistry::SafeSignalsManager safeSignals; // first, so last to go
         // safe signal handlers all run through another thread, so this amounts to thread sync
         {
             Set<SignalHandler>      saved   = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
@@ -99,18 +100,37 @@ namespace {
 }
 
 namespace {
+    void Test4_SafeHandlersGoWithTheirManager_ ()
+    {
+        // destroying the SafeSignalsManager removes the safe handlers it runs, and a signal left with no handler reverts to its
+        // default - rather than keep a handler whose signals would be lost, with no thread to run them
+        Set<SignalHandler>      saved   = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
+        SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT);
+        {
+            SignalHandlerRegistry::SafeSignalsManager safeSignals;
+            SignalHandlerRegistry::sThe.AddSignalHandler (SIGINT, SignalHandler{function<void (SignalID)>{[] (SignalID) {}}});
+            EXPECT_EQ (SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT).size (), 1u);
+        }
+        EXPECT_TRUE (SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT).empty ());
+        auto installed = ::signal (SIGINT, SIG_DFL); // reads what the OS calls on SIGINT (setting what it should already be)
+        EXPECT_EQ (installed, SIG_DFL);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution_Signals, all)
     {
         Test1_Direct_ ();
         Test2_Safe_ ();
         Test3_StandardCrashHandlersByDefault_ ();
+        Test4_SafeHandlersGoWithTheirManager_ ();
     }
 }
 #endif
 
 int main (int argc, const char* argv[])
 {
-    SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();

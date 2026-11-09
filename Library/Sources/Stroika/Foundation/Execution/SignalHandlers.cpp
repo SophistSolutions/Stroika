@@ -265,6 +265,19 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR"};
+    // The safe handlers it runs go with it - each signal keeps its direct handlers, or with none reverts to its default: else a
+    // signal arriving later would find safe handlers with no thread to run them, and be lost
+#if defined(__cpp_lib_atomic_shared_ptr)
+    if (shared_ptr<Rep_> rep = sTheRep_.load ()) {
+#else
+    if (shared_ptr<Rep_> rep = atomic_load (&sTheRep_)) {
+#endif
+        for (SignalID s : rep->GetHandledSignals ()) {
+            // a copy, so the read lock is gone before SetSignalHandlers takes the write lock
+            Set<SignalHandler> directHandlers = sThe.fDirectHandlers_.cget ()->LookupValue (s);
+            sThe.SetSignalHandlers (s, directHandlers);
+        }
+    }
     // No signal handler gets the Rep_ once this is null; those already using it finish before it is let go
     sTheRepForSignalHandler_.store (nullptr);
     while (sSignalHandlersUsingRep_.load () != 0) {

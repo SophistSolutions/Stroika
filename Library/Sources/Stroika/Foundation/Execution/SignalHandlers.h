@@ -332,9 +332,19 @@ namespace Stroika::Foundation::Execution {
      *
      *          And only one SafeSignalsManager instance can exist at a time.
      *
-     *  The easiest (and recommened) way to do this is to add the line:
-     *      SignalHandlerRegistry::SafeSignalsManager   safeSignalsMgr;
-     *  to the beginning of main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])...
+     *  Destroying it removes the safe handlers it runs: each signal keeps its direct handlers, or with none reverts to its
+     *  default.
+     *
+     *  \par Example Usage
+     *      \code
+     *          int main (int argc, const char* argv[])
+     *          {
+     *              SignalHandlerRegistry::SafeSignalsManager safeSignals; // first in main, so it outlives the handlers
+     *              atomic<bool>                              quit{false};
+     *              SignalHandlerRegistry::sThe.AddSignalHandler (SIGINT, SignalHandler{[&quit] (SignalID) { quit = true; }}); // safe
+     *              ...
+     *          }
+     *      \endcode
      */
     class SignalHandlerRegistry::SafeSignalsManager {
     public:
