@@ -127,7 +127,7 @@ namespace {
             const byte*     end = elts.data () + elts.size ();
             while (i < end) {
 #if qStroika_Platform_Windows
-                int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
+                int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Common::StdCompat::saturate_cast<unsigned int> (end - i)));
 #else
                 int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
 #endif

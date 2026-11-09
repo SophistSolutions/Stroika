@@ -174,21 +174,11 @@ namespace Stroika::Foundation::Math {
     constexpr T AtMost (T initialValue, T upperBound);
 
     /**
-     *  This returns the given value, as the new type NEW_T, but if the value wont fit in NEW_T, it returns
-     *  the largest value that would.
-     *
-     *  This is handy for stuff like ::write() system calls, where you might be given a ptrdiff_t, and have to
-     *  call something taking int, and given how these types might be different sizes, it simplifies picking
-     *  the right size to call write with.
-     *
-     *  \par Example Usage
-     *      \code
-     *          size_t  nRequested  =   intoEnd - intoStart;
-     *          return static_cast<size_t> (Execution::ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
-     *      \endcode
+     *  The given value as type NEW_T - or NEW_T's max, if it is larger. One below NEW_T's min is not held there (it wraps):
+     *  Common::StdCompat::saturate_cast holds both ends.
      */
     template <typename NEW_T, typename T>
-    constexpr NEW_T PinToMaxForType (T initialValue);
+    [[deprecated ("Since Stroika v3.0d26 use Common::StdCompat::saturate_cast")]] constexpr NEW_T PinToMaxForType (T initialValue);
 
     /**
      *      \note   we define this as an alternative to std::abs () - since that is not extendible to other types (just an overload for floating point and int types)

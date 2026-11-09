@@ -204,7 +204,7 @@ namespace {
              */
 #if qStroika_Platform_Windows
             return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (
-                                              ::_read (fFD_, intoBuffer.data (), Math::PinToMaxForType<unsigned int> (nRequested)))));
+                                              ::_read (fFD_, intoBuffer.data (), Common::StdCompat::saturate_cast<unsigned int> (nRequested)))));
 #else
             return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoBuffer.data (), nRequested))));
 #endif

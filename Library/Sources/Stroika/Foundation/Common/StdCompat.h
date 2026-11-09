@@ -12,7 +12,11 @@
 #include <compare>
 #include <concepts>
 #include <cstdarg>
+#include <limits>
+#include <numeric>
 #include <ranges>
+#include <type_traits>
+#include <utility>
 
 #if __cpp_lib_expected >= 202211L
 #include <expected>
@@ -263,6 +267,137 @@ namespace Stroika::Foundation::Common::StdCompat {
     {
         return std::isnan (v);
     }
+
+    /*
+     *  C++26's saturation arithmetic (<numeric>): a result the type cannot hold is held at its limit - numeric_limits<T>::min ()
+     *  or max () - rather than wrapping or being undefined. std's where the standard library has it, else equivalents - so every
+     *  build before C++26 uses the versions below. As std's, for integer types only - not bool, nor a character type.
+     */
+#if __cpp_lib_saturation_arithmetic >= 202311L
+    using std::add_sat;
+    using std::div_sat;
+    using std::mul_sat;
+    using std::saturate_cast;
+    using std::sub_sat;
+#else
+    namespace Private_ {
+        template <typename T>
+        concept ISignedOrUnsignedInteger_ = integral<T> and not same_as<remove_cv_t<T>, bool> and not same_as<remove_cv_t<T>, char> and
+                                            not same_as<remove_cv_t<T>, wchar_t> and not same_as<remove_cv_t<T>, char8_t> and
+                                            not same_as<remove_cv_t<T>, char16_t> and not same_as<remove_cv_t<T>, char32_t>;
+    }
+
+    /**
+     *  \brief x as type R - or R's min or max, if x is beyond what R can hold
+     *
+     *  \par Example Usage
+     *      \code
+     *          int n = StdCompat::saturate_cast<int> (into.size ());   // a size over INT_MAX gives INT_MAX
+     *      \endcode
+     */
+    template <typename R, typename T>
+        requires (Private_::ISignedOrUnsignedInteger_<R> and Private_::ISignedOrUnsignedInteger_<T>)
+    constexpr R saturate_cast (T x) noexcept
+    {
+        if (cmp_less (x, numeric_limits<R>::min ())) {
+            return numeric_limits<R>::min ();
+        }
+        if (cmp_greater (x, numeric_limits<R>::max ())) {
+            return numeric_limits<R>::max ();
+        }
+        return static_cast<R> (x);
+    }
+
+    /**
+     *  \brief x + y - or T's min or max, if the sum is beyond what T can hold
+     */
+    template <typename T>
+        requires (Private_::ISignedOrUnsignedInteger_<T>)
+    constexpr T add_sat (T x, T y) noexcept
+    {
+        if constexpr (is_unsigned_v<T>) {
+            T r = static_cast<T> (x + y);
+            return r < x ? numeric_limits<T>::max () : r;
+        }
+        else {
+            if (y > 0 and x > numeric_limits<T>::max () - y) {
+                return numeric_limits<T>::max ();
+            }
+            if (y < 0 and x < numeric_limits<T>::min () - y) {
+                return numeric_limits<T>::min ();
+            }
+            return static_cast<T> (x + y);
+        }
+    }
+
+    /**
+     *  \brief x - y - or T's min or max, if the difference is beyond what T can hold
+     */
+    template <typename T>
+        requires (Private_::ISignedOrUnsignedInteger_<T>)
+    constexpr T sub_sat (T x, T y) noexcept
+    {
+        if constexpr (is_unsigned_v<T>) {
+            return x < y ? T{0} : static_cast<T> (x - y);
+        }
+        else {
+            if (y < 0 and x > numeric_limits<T>::max () + y) {
+                return numeric_limits<T>::max ();
+            }
+            if (y > 0 and x < numeric_limits<T>::min () + y) {
+                return numeric_limits<T>::min ();
+            }
+            return static_cast<T> (x - y);
+        }
+    }
+
+    /**
+     *  \brief x * y - or T's min or max, if the product is beyond what T can hold
+     */
+    template <typename T>
+        requires (Private_::ISignedOrUnsignedInteger_<T>)
+    constexpr T mul_sat (T x, T y) noexcept
+    {
+        if (x == 0 or y == 0) {
+            return T{0};
+        }
+        if constexpr (is_unsigned_v<T>) {
+            if (y > numeric_limits<T>::max () / x) {
+                return numeric_limits<T>::max ();
+            }
+        }
+        else if ((x > 0) == (y > 0)) {
+            // positive product: with x negative, dividing by it turns the comparison around
+            if (x > 0 ? y > numeric_limits<T>::max () / x : y < numeric_limits<T>::max () / x) {
+                return numeric_limits<T>::max ();
+            }
+        }
+        else {
+            // negative product: divide by whichever is positive
+            if (x > 0 ? y < numeric_limits<T>::min () / x : x < numeric_limits<T>::min () / y) {
+                return numeric_limits<T>::min ();
+            }
+        }
+        return static_cast<T> (x * y);
+    }
+
+    /**
+     *  \brief x / y - which overflows only for a signed T's min / -1, giving T's max
+     *
+     *  \pre y != 0
+     */
+    template <typename T>
+        requires (Private_::ISignedOrUnsignedInteger_<T>)
+    constexpr T div_sat (T x, T y) noexcept
+    {
+        if constexpr (is_signed_v<T>) {
+            if (x == numeric_limits<T>::min () and y == -1) {
+                return numeric_limits<T>::max ();
+            }
+        }
+        return static_cast<T> (x / y);
+    }
+#endif
 
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
     struct compare_three_way {

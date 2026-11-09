@@ -495,6 +495,15 @@ namespace {
             d      = d + 1;
             EXPECT_EQ (d, (1906y / May / 13d));
         }
+        {
+            Date d1 = 2026y / November / 1d;
+            Date d2 = 2026y / November / 9d;
+            EXPECT_EQ (DayDifference (d2, d1), 8);
+            EXPECT_EQ (DayDifference (d1, d2), -8);
+            EXPECT_EQ (DayDifference (d1, d1), 0);
+            EXPECT_EQ (DayDifference (Date::kMax, Date::kMin), static_cast<int> (Date::kMax.GetJulianRep () - Date::kMin.GetJulianRep ()));
+            EXPECT_EQ (DayDifference (Date::kMin, Date::kMax), -static_cast<int> (Date::kMax.GetJulianRep () - Date::kMin.GetJulianRep ()));
+        }
     }
 }
 

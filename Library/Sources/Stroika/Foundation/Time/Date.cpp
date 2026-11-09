@@ -258,33 +258,8 @@ weekday Date::GetDayOfWeek () const
  */
 Date::SignedJulianDayNumber Time::DayDifference (const Date& lhs, const Date& rhs)
 {
-    // mostly right, but not complete correct edge cases with type/size stuff...
-    Date::JulianDayNumber l = lhs.GetJulianRep ();
-    Date::JulianDayNumber r = rhs.GetJulianRep ();
-    if (l == r) {
-        return 0;
-    }
-    if (l < r) {
-        unsigned int diff = r - l;
-        Assert (INT_MIN <= -INT_MAX);
-        if (diff >= static_cast<unsigned int> (INT_MAX)) {
-            return INT_MIN;
-        }
-        else {
-            return -static_cast<int> (diff);
-        }
-    }
-    else {
-        unsigned int diff = l - r;
-        if (diff >= static_cast<unsigned int> (INT_MAX)) {
-            return INT_MAX;
-        }
-        else {
-            return static_cast<int> (diff);
-        }
-    }
-    AssertNotReached ();
-    return 0;
+    return Common::StdCompat::saturate_cast<Date::SignedJulianDayNumber> (static_cast<int64_t> (lhs.GetJulianRep ()) -
+                                                                          static_cast<int64_t> (rhs.GetJulianRep ()));
 }
 
 /*

@@ -1229,7 +1229,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
                         const byte* e = p + nbytes;
                         while (p < e) {
                             DWORD written = 0;
-                            if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
+                            if (::WriteFile (useSTDIN, p, Common::StdCompat::saturate_cast<DWORD> (e - p), &written, nullptr) == 0) {
                                 DWORD lastErr = ::GetLastError ();
                                 // sometimes we fail because the target process hasn't read enough and the pipe is full.
                                 // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear

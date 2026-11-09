@@ -209,7 +209,7 @@ namespace {
                 0, Handle_ErrNoResultInterruption ([this, &into] () -> int { return ::read (fSD_, into.data (), into.size ()); }));
 #elif qStroika_Platform_Windows
             int  flags        = 0;
-            int  nBytesToRead = static_cast<int> (min<size_t> (into.size (), numeric_limits<int>::max ()));
+            int  nBytesToRead = Common::StdCompat::saturate_cast<int> (into.size ());
             auto result       = into.subspan (0, static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (
                                                      ::recv (fSD_, reinterpret_cast<char*> (into.data ()), nBytesToRead, flags))));
 #else
