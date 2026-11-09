@@ -1,5 +1,5 @@
 #
-#   Stroika's valgrind memcheck suppressions - empty on purpose.
+#   Stroika's valgrind memcheck suppressions.
 #
 #   Every earlier entry (135, in this file and the x86_64, armhf and BlockAllocation ones) was removed in 2026-09 (#1177,
 #   #1167) after a full valgrind run on Ubuntu 26.04 matched none of them. Add an entry only for a report confirmed to be a
@@ -7,3 +7,13 @@
 #   and why it is not a Stroika bug, so it can be dropped once that no longer applies. An entry that only one architecture
 #   needs goes in Valgrind-MemCheck-Common-<ARCH>.supp, which Tests/Makefile picks up automatically when it exists.
 #
+
+#   FloatToString_<double> - seen 2026-11-08 on Ubuntu 24.04 x86_64, g++ 13.3 Release (LTO), valgrind 3.22; not with g++ 11
+#   (22.04) or g++ 15 (26.04). Not a Stroika bug: for `s and s->fMin == s->fMax ...` (ToString.inl), s an empty
+#   optional<MinMax>, g++ 13 compares the payload before testing the flag - legal, as both paths agree when s is empty - and
+#   memcheck reports that branch on the uninitialized payload. Drop it when g++ 13 no longer builds a valgrind configuration.
+{
+   FloatToString_<double>: g++ 13 tests an empty optional's payload before its flag
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation10Characters8Private_14FloatToString_IdEENS1_6StringET_RKNS1_6Number20FloatToStringOptionsE
+}
