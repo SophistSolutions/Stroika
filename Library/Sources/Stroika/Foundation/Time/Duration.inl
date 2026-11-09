@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Time {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <typename T>
-    inline T Duration::AsPinned () const
+    inline T Duration::AsSaturated () const
         requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or
                   Common::ITimePoint<T>)
     {
@@ -311,8 +311,15 @@ namespace Stroika::Foundation::Time {
             return As<T> ();
         }
         else if constexpr (Common::ITimePoint<T>) {
-            return T{this->AsPinned<typename T::duration> ()};
+            return T{this->AsSaturated<typename T::duration> ()};
         }
+    }
+    template <typename T>
+    inline T Duration::AsPinned () const
+        requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or
+                  Common::ITimePoint<T>)
+    {
+        return AsSaturated<T> ();
     }
     inline Characters::String Duration::PrettyPrint () const
     {

@@ -992,6 +992,13 @@ namespace {
         EXPECT_TRUE (Duration::min () != Duration::max ());
         EXPECT_TRUE (Duration::min () < Duration{"PT30S"} and Duration{"PT30S"} < Duration::max ());
         {
+            EXPECT_EQ (Duration::max ().AsSaturated<chrono::seconds> (), chrono::seconds::max ());
+            EXPECT_EQ (Duration::min ().AsSaturated<chrono::seconds> (), chrono::seconds::min ());
+            EXPECT_EQ (Duration{1e30}.AsSaturated<int> (), numeric_limits<int>::max ());
+            EXPECT_EQ (Duration{-1e30}.AsSaturated<int> (), numeric_limits<int>::min ());
+            EXPECT_EQ (Duration{30}.AsSaturated<int> (), 30);
+        }
+        {
             Duration d = Duration{"PT0.1S"};
             EXPECT_EQ (d, "PT0.1S"_duration);
             d += chrono::milliseconds{30};

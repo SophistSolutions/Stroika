@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Time {
          *  As<String> () gives back the text a Duration was read from, if it was; else writes it as the calling thread's
          *  AsStringOptions say (AsStringOptions::GetThreadDefault ()). As<String> (options) writes it as options says.
          *
-         *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
+         *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsSaturated()
          * 
          *      \note Stroika v2.1 also supported wstring, which was (tentatively) de-supported in Stroika v3.0d5
          * 
@@ -325,15 +325,20 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \see As<T>, but automatically takes care of pinning values so always safe and in range.
+         *  \brief As<T> (), saturated: a value beyond what T can hold gives T's limit (its min or max), not an overflow
          *
-         *  Same as As<> - except that it handles overflows, so if you pass in Duration {numeric_limits<long double>::max ()} and convert to seconds, you wont overflow,
-         *  but get chrono::seconds::max
-         * 
+         *  So Duration::max ().AsSaturated<chrono::seconds> () is chrono::seconds::max (). For timeval, only the top is saturated.
+         *
+         *  \note   Alias: called AsPinned before Stroika v3.0d26
+         *
          *      @todo same requires stuff as we have with As<T>()
          */
         template <typename T>
-        nonvirtual T AsPinned () const
+        nonvirtual T AsSaturated () const
+            requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or
+                      Common::ITimePoint<T>);
+        template <typename T>
+        [[deprecated ("Since Stroika v3.0d26 use AsSaturated")]] nonvirtual T AsPinned () const
             requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or
                       Common::ITimePoint<T>);
 
