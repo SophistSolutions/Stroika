@@ -177,9 +177,11 @@ namespace {
     GTEST_TEST (Foundation_Memory_, MakeSpan_BWA_)
     {
         // a span of the 3 bools, not of the 2 values p and 3 - which braces made, with the C++26 draft's span (initializer_list)
-        static constexpr bool      kBools[] = {true, false, true};
-        constexpr span<const bool> s        = Memory::make_span_BWA<const bool> (kBools, 3);
+        static constexpr bool kBools[] = {true, false, true};
+#if not qCompilerAndStdLib_constexpr_inline_variable_address_compared_to_null_Buggy
+        constexpr span<const bool> s = Memory::make_span_BWA<const bool> (kBools, 3);
         static_assert (s.size () == 3 and s[1] == false);
+#endif
         EXPECT_EQ (Memory::make_span_BWA<const bool> (kBools, 3).size (), 3u);
     }
 }
