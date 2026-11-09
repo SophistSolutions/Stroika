@@ -53,7 +53,8 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVar
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
-CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+# its CMakeLists.txt builds it as C++14 (its -std= after ours), so without what needs C++26 - g++ refuses -freflection otherwise
+CXXFLAGS 	:= 	$(filter-out -freflection,${PLATFORM_CXXFLAGS})
 
 
 
