@@ -43,6 +43,12 @@ Generally will track stuff here between releases
      Stroika's Options structs and option classes for constructors that merge option sets or convert from each field's
      type, and `optional<>` fields there only to overlay; convert those whose callers lay settings over a base
      (Design-Overview.md, "Options structs", has the style).
+   - **Common::EnumNamingRule's docs assume the reader knows the ADL pattern** (LGP 2026-11-09) - Enumeration.h:443's
+     `void EnumNamingRule (auto) = delete` is there only to carry the docs, and to make an enum without a rule of its own fall
+     back to IdentifierNaming; the user's EnumNamingRule (E) beside the enum is a different function, found by ADL, and NEVER
+     defined (only its return type is read). Say all of that plainly, in one place (on it, or on IEnumNamingRule at :405), with
+     the friend form for an enum in a class spelled out, not just mentioned. Check EnumBoundsOf (:125) and EnumeratorName
+     (:459), the same pattern but defined, for the same gaps.
 
 ## Watching
 
