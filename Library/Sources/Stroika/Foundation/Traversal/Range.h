@@ -429,17 +429,25 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Compare v with the upper and lower bounds of this range, and return a value as close as
-         *  possible to v but in range.
+         *  \brief std::clamp (v, GetLowerBound (), GetUpperBound ()) - domain-extended to open ends, where the result is the nearest value inside
          *
-         *  If 'v' is not in range, and this Range is open, GetNext or GetPrevious maybe used to find a value
-         *  in range.
+         *  An open end is not in the range, so where v reaches or passes one, the result is that bound's GetNext or GetPrevious.
          *
          *  \pre not empty ()
          *
-         *  @see std::clamp
+         *  \note   Alias: called Pin before Stroika v3.0d26
+         *
+         *  \par Example Usage
+         *      \code
+         *          EXPECT_EQ ((Range<int>{3, 5, Openness::eClosed, Openness::eClosed}.Clamp (8)), 5);
+         *          EXPECT_EQ ((Range<int>{3, 5, Openness::eOpen, Openness::eOpen}.Clamp (2)), 4);
+         *      \endcode
          */
-        constexpr T Pin (T v) const
+        constexpr T Clamp (T v) const
+            requires IAdvanceAndRetreatable<TRAITS, T>;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d26 use Clamp")]] constexpr T Pin (T v) const
             requires IAdvanceAndRetreatable<TRAITS, T>;
 
     public:

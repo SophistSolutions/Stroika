@@ -74,7 +74,7 @@ String Pinger::ResultType::ToString () const
 Pinger::Pinger (const InternetAddress& addr, const Options& options)
     : fDestination_{addr}
     , fOptions_{options}
-    , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize) + sizeof (ICMP::V4::PacketHeader)}
+    , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Clamp (options.fPacketPayloadSize) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}
     , fNextSequenceNumber_{static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_))}

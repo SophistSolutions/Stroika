@@ -101,24 +101,24 @@ namespace {
         {
             using namespace RangeTraits;
             auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eOpen, Openness::eOpen>>>{3, 6};
-            EXPECT_TRUE (r1.Pin (3) == 4);
-            EXPECT_TRUE (r1.Pin (2) == 4);
-            EXPECT_TRUE (r1.Pin (8) == 5);
+            EXPECT_TRUE (r1.Clamp (3) == 4);
+            EXPECT_TRUE (r1.Clamp (2) == 4);
+            EXPECT_TRUE (r1.Clamp (8) == 5);
         }
         {
             using namespace RangeTraits;
             auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>{3, 6};
-            EXPECT_TRUE (r1.Pin (3) == 3);
-            EXPECT_TRUE (r1.Pin (2) == 3);
-            EXPECT_TRUE (r1.Pin (4) == 4);
-            EXPECT_TRUE (r1.Pin (8) == 6);
+            EXPECT_TRUE (r1.Clamp (3) == 3);
+            EXPECT_TRUE (r1.Clamp (2) == 3);
+            EXPECT_TRUE (r1.Clamp (4) == 4);
+            EXPECT_TRUE (r1.Clamp (8) == 6);
         }
         {
             using namespace RangeTraits;
             auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>{3, 3};
-            EXPECT_TRUE (r1.Pin (3) == 3);
-            EXPECT_TRUE (r1.Pin (2) == 3);
-            EXPECT_TRUE (r1.Pin (8) == 3);
+            EXPECT_TRUE (r1.Clamp (3) == 3);
+            EXPECT_TRUE (r1.Clamp (2) == 3);
+            EXPECT_TRUE (r1.Clamp (8) == 3);
         }
         {
             // test helper to assure answer for (A,B) is same as (B,A) - commutative
@@ -950,10 +950,10 @@ namespace {
         }
         {
             Range<Duration> a{Duration{"PT0.5S"}, Duration{"PT2M"}};
-            EXPECT_EQ (a.Pin (Duration{"PT0.5S"}), Duration{"PT0.5S"});
-            EXPECT_EQ (a.Pin (Duration{"PT0S"}), Duration{"PT0.5S"});
-            EXPECT_EQ (a.Pin (Duration{"PT5M"}), Duration{"PT2M"});
-            EXPECT_EQ (a.Pin (Duration{"PT10S"}), Duration{"PT10S"});
+            EXPECT_EQ (a.Clamp (Duration{"PT0.5S"}), Duration{"PT0.5S"});
+            EXPECT_EQ (a.Clamp (Duration{"PT0S"}), Duration{"PT0.5S"});
+            EXPECT_EQ (a.Clamp (Duration{"PT5M"}), Duration{"PT2M"});
+            EXPECT_EQ (a.Clamp (Duration{"PT10S"}), Duration{"PT10S"});
         }
     }
 }

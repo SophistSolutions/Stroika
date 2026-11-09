@@ -106,8 +106,8 @@ int main (int argc, const char* argv[])
         switch (majorOp) {
             case MajorOp::ePing: {
                 Ping::Options options{};
-                options.fPacketPayloadSize = Ping::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
-                options.fMaxHops           = maxHops;
+                options.fPacketPayloadSize = Ping::Options::kAllowedICMPPayloadSizeRange.Clamp (packetSize - sizeof (ICMP::V4::PacketHeader));
+                options.fMaxHops = maxHops;
                 //   options.fSampleInfo                   = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
                 NetworkMonitor::Ping::SampleResults t =
                     NetworkMonitor::Ping::Sample (addr, Ping::SampleOptions{kInterSampleTime_, sampleCount}, options);
@@ -115,7 +115,7 @@ int main (int argc, const char* argv[])
             } break;
             case MajorOp::eTraceroute: {
                 Traceroute::Options options{};
-                options.fPacketPayloadSize = Traceroute::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
+                options.fPacketPayloadSize = Traceroute::Options::kAllowedICMPPayloadSizeRange.Clamp (packetSize - sizeof (ICMP::V4::PacketHeader));
                 options.fMaxHops = maxHops;
 
                 cout << "Tracing Route to " << targetAddress << " [" << Characters::ToString (addr) << "] over a maximum of " << maxHops
