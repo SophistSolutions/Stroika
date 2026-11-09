@@ -29,11 +29,16 @@ Then summarize them into Release-Notes.md, laid out as the previous release's se
 
 ## Update STROIKA\-VERSION file
 
-Just delete the 'x' in the version#, and save/checkin/commit.
+Just delete the 'x' in the version#, and save/checkin/commit - and push it before the docker step below, which reads the version
+from the commit it runs on.
 
 ## Docker tag the latest containers, and push
 
-Rebuild and publish latest containers using the github action 'build-v3-Docker-Containers' (and blow away and reload docker containers after build on local systems doing builds or rebuild locally).
+Rebuild and publish latest containers using the github action 'build-Dev-Docker-Containers' (and blow away and reload docker containers after build on local systems doing builds or rebuild locally).
+
+Run it on the commit that dropped the 'x', with "run all" checked (no entry in its matrix is marked for a branch). Only then do
+the images get `:<version>`, which downstream projects pin (WTF's docker builds): Build/Docker/Makefile's tag-images adds it
+only when STROIKA_VERSION has no 'x' - run on any other commit, the images get just `:v3` and `:latest`.
 
 ## Do most builds on medusa-windows-dev VM
 
@@ -55,7 +60,13 @@ If anything looks iffy, fix before release (repeat much of above). But when all 
 
 ## Update STROIKA\_-_VERSION file
 
-Change to next version, including the suffix 'x' on version name.
+First check that Docker Hub has `:<version>` on every image the docker step built - each line should say 200:
+
+```bash
+VER=$(tr -d '\r\n' < STROIKA_VERSION); for i in `grep -o 'sophistsolutionsinc/[a-z0-9-]*' .github/workflows/build-Dev-Docker-Containers-Matrix.json | sort -u`; do echo "$(curl -s -o /dev/null -w '%{http_code}' https://hub.docker.com/v2/repositories/$i/tags/$VER) $i:$VER"; done
+```
+
+Then change to next version, including the suffix 'x' on version name.
 
 
 ## Checkin results
