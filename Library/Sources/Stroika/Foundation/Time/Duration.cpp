@@ -79,6 +79,30 @@ Duration& Duration::operator-= (const Duration& rhs)
     return *this;
 }
 
+Duration& Duration::operator++ ()
+{
+    return *this += Duration{1};
+}
+
+Duration Duration::operator++ (int)
+{
+    Duration result = *this;
+    ++*this;
+    return result;
+}
+
+Duration& Duration::operator-- ()
+{
+    return *this -= Duration{1};
+}
+
+Duration Duration::operator-- (int)
+{
+    Duration result = *this;
+    --*this;
+    return result;
+}
+
 namespace {
     // ISO 8601's digits: '0' to '9'. Not std::isdigit: undefined for a negative char, and a std::string's bytes reach the
     // parser unchecked for ASCII. Not Character::IsDigit: Character (char) throws on such a byte

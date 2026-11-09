@@ -1014,6 +1014,28 @@ namespace {
             EXPECT_EQ (Duration{6} / d, 2.0);
         }
         {
+            // changed in place, a Duration read from text writes its new value, not that text
+            Duration d1{"PT3S"};
+            d1 *= 2;
+            EXPECT_EQ (d1.As<String> (), "PT6S");
+            Duration d2{"PT3S"};
+            d2 /= 2;
+            EXPECT_EQ (d2.As<String> (), "PT1.5S");
+            Duration d3{"PT3S"};
+            ++d3;
+            EXPECT_EQ (d3.As<String> (), "PT4S");
+            Duration d4{"PT3S"};
+            Duration d4Before = d4++;
+            EXPECT_EQ (d4Before.As<String> (), "PT3S");
+            EXPECT_EQ (d4.As<String> (), "PT4S");
+            Duration d5{"PT3S"};
+            --d5;
+            EXPECT_EQ (d5.As<String> (), "PT2S");
+            Duration d6{"PT3S"};
+            d6--;
+            EXPECT_EQ (d6.As<String> (), "PT2S");
+        }
+        {
             EXPECT_EQ (Duration{"PT1.4S"}.FormatAge (), "now");
             EXPECT_EQ (Duration{"-PT9M"}.FormatAge (), "now");
             EXPECT_EQ (Duration{"-PT20M"}.FormatAge (), "20 minutes ago");

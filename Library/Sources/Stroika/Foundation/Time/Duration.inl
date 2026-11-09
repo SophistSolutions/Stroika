@@ -198,6 +198,18 @@ namespace Stroika::Foundation::Time {
         }
         return *this;
     }
+    template <Common::IBuiltinArithmetic T>
+    inline Duration& Duration::operator*= (T rhs)
+    {
+        *this = *this * rhs;
+        return *this;
+    }
+    template <Common::IBuiltinArithmetic T>
+    inline Duration& Duration::operator/= (T rhs)
+    {
+        *this = *this / rhs;
+        return *this;
+    }
     inline constexpr void Duration::destroy_ ()
     {
         if (fRepType_ == eString_) {

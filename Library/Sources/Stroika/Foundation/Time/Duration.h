@@ -252,6 +252,37 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  \brief Multiply this by rhs - the same as *this = *this * rhs
+         *
+         *  Duration declares its own compound assignments and increments, though chrono::duration has them: chrono's change
+         *  only the count, so a Duration read from text would go on writing that text (As<String>), not its new value.
+         */
+        template <Common::IBuiltinArithmetic T>
+        nonvirtual Duration& operator*= (T rhs);
+
+    public:
+        /**
+         *  \brief Divide this by rhs - the same as *this = *this / rhs
+         */
+        template <Common::IBuiltinArithmetic T>
+        nonvirtual Duration& operator/= (T rhs);
+
+    public:
+        /**
+         *  \brief Add one second - chrono::duration<double>'s tick
+         */
+        nonvirtual Duration& operator++ ();
+        nonvirtual Duration  operator++ (int); ///< \brief Add one second, returning the Duration before
+
+    public:
+        /**
+         *  \brief Subtract one second - chrono::duration<double>'s tick
+         */
+        nonvirtual Duration& operator-- ();
+        nonvirtual Duration  operator-- (int); ///< \brief Subtract one second, returning the Duration before
+
+    public:
+        /**
          * Only specifically specialized variants are supported. Defined for
          *  o   timeval
          *  o   integral<T>
