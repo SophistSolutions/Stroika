@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Execution {
          * This signal handler simply prints error to the trace log, and calls 'abort' - which on most operating systems will allow the
          * debugger to examine the errant code.
          */
-        static void DefaultCrashSignalHandler (SignalID signal);
+        static void DefaultCrashSignalHandler (SignalID signal) noexcept;
 
     public:
         /**

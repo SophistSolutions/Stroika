@@ -21,6 +21,7 @@ using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 
+using Containers::Mapping;
 using Containers::Set;
 
 #if qStroika_HasComponent_googletest
@@ -74,10 +75,35 @@ namespace {
 }
 
 namespace {
+    void Test3_StandardCrashHandlersByDefault_ ()
+    {
+        // SetStandardCrashHandlerSignals () with its defaults: DefaultCrashSignalHandler, a direct handler, on each crash signal
+        Set<SignalID> crashSignals = SignalHandlerRegistry::GetStandardCrashSignals ();
+        crashSignals.Remove (SIGABRT); // SetStandardCrashHandlerSignals leaves it alone
+        Mapping<SignalID, Set<SignalHandler>> saved;
+        for (SignalID s : crashSignals) {
+            saved.Add (s, SignalHandlerRegistry::sThe.GetSignalHandlers (s));
+        }
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
+            for (const auto& [s, handlers] : saved) {
+                SignalHandlerRegistry::sThe.SetSignalHandlers (s, handlers);
+            }
+        });
+        SignalHandlerRegistry::sThe.SetStandardCrashHandlerSignals ();
+        for (SignalID s : crashSignals) {
+            Set<SignalHandler> handlers = SignalHandlerRegistry::sThe.GetSignalHandlers (s);
+            EXPECT_EQ (handlers.size (), 1u);
+            EXPECT_TRUE (handlers.All ([] (const SignalHandler& h) { return h.GetType () == SignalHandler::Type::eDirect; }));
+        }
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution_Signals, all)
     {
         Test1_Direct_ ();
         Test2_Safe_ ();
+        Test3_StandardCrashHandlersByDefault_ ();
     }
 }
 #endif
