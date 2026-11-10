@@ -596,6 +596,14 @@ still compile". Say which one you did.
   define says why. Except where the standard's own feature-test macro names the faulty feature exactly - as
   `__cpp_lib_span_initializer_list`, in `Memory::make_span_BWA`: test that macro directly. The periodic scan for
   feature-test comparisons no supported compiler still needs covers it.
+- **Odd code forced by a non-conforming platform says why, and is limited to where it is needed** (LGP, 2026-11-10). Where
+  the standard or the documentation makes one way clear, but a platform does not conform (an OS; libstdc++ vs libc++), the
+  workaround ALWAYS carries a comment naming what does not conform, and the version last seen - or a later reader "fixes"
+  it, untested. Lean towards applying it only there - `#if qStroika_Platform_MacOS`, as `InstallAlternateSignalStack` does
+  for macOS's `sigaltstack` - so other platforms run the plain code, and the `#if` itself shows the scope. A judgment, not a
+  rule: where telling the affected case apart costs more than it saves (one macOS release among many - a run-time check),
+  apply it everywhere, still with the comment. A compiler or standard library bug that a version can gate takes the
+  `qCompilerAndStdLib_*_Buggy` define (the bullet above).
 - **Warnings**: removing a suppression that provably suppresses nothing is welcome - on BOTH supported MSVC versions.
   `-Wno-switch`, `-Wno-sign-compare` and `-Wno-unused-function` stay on purpose (2026-10-05); never silence sign-compare with
   a cast - `std::cmp_less` fixes it. A warning whose fix would make the code worse (MSVC's C4127 on a condition constant on
