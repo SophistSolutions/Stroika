@@ -81,24 +81,19 @@ bool Route::Matches (const String& method, const String& hostRelPath, const Requ
  ********************************************************************************
  */
 struct Router::Rep_ final : Interceptor::_IRep {
-    static const optional<Set<String>> MapStartToNullOpt_ (const optional<Set<String>>& o)
+    static const optional<Set<String>> MapStartToNullOpt_ (const Set<String>& s)
     {
-        // internally we treat missing as wildcard but caller may not, so map
-        optional<Set<String>> m = o;
-        if (m and m->Contains (CORSOptions::kAccessControlWildcard)) {
-            m = nullopt;
+        // internally we treat missing as wildcard
+        if (s.Contains (CORSOptions::kAccessControlWildcard)) {
+            return nullopt;
         }
-        if (m) {
-            m = Set<String>{HTTP::kHeaderNameEqualsComparer, *m};
-        }
-        return m;
+        return Set<String>{HTTP::kHeaderNameEqualsComparer, s};
     }
-    // requires all optional values filled in on corsOptions
-    Rep_ (const Sequence<Route>& routes, const CORSOptions& filledInCORSOptions)
-        : fAllowedOrigins_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedOrigins)}
-        , fAllowedHeaders_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedHeaders)}
-        , fAllowCredentials_{*filledInCORSOptions.fAllowCredentials}
-        , fAccessControlMaxAgeValue_{"{}"_f(*filledInCORSOptions.fAccessControlMaxAge)}
+    Rep_ (const Sequence<Route>& routes, const CORSOptions& corsOptions)
+        : fAllowedOrigins_{MapStartToNullOpt_ (corsOptions.fAllowedOrigins)}
+        , fAllowedHeaders_{MapStartToNullOpt_ (corsOptions.fAllowedHeaders)}
+        , fAllowCredentials_{corsOptions.fAllowCredentials}
+        , fAccessControlMaxAgeValue_{"{}"_f(corsOptions.fAccessControlMaxAge)}
         , fRoutes_{routes}
     {
     }
@@ -285,18 +280,8 @@ struct Router::Rep_ final : Interceptor::_IRep {
  *************************** WebServer::Router **********************************
  ********************************************************************************
  */
-namespace {
-    CORSOptions FillIn_ (CORSOptions corsOptions)
-    {
-        corsOptions.fAllowCredentials = Memory::NullCoalesce (corsOptions.fAllowCredentials, kDefault_CORSOptions.fAllowCredentials);
-        corsOptions.fAccessControlMaxAge = Memory::NullCoalesce (corsOptions.fAccessControlMaxAge, kDefault_CORSOptions.fAccessControlMaxAge);
-        corsOptions.fAllowedHeaders = Memory::NullCoalesce (corsOptions.fAllowedHeaders, kDefault_CORSOptions.fAllowedHeaders);
-        corsOptions.fAllowedOrigins = Memory::NullCoalesce (corsOptions.fAllowedOrigins, kDefault_CORSOptions.fAllowedOrigins);
-        return corsOptions;
-    }
-}
 Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
-    : inherited{MakeSharedPtr<Rep_> (routes, FillIn_ (corsOptions))}
+    : inherited{MakeSharedPtr<Rep_> (routes, corsOptions)}
 {
 }
 

@@ -23,6 +23,18 @@ namespace Stroika::Frameworks::WebServer {
      *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
      */
     struct CORSOptions {
+        /**
+         */
+        static constexpr bool kAllowCredentials_Default{true};
+
+        /**
+         */
+        static constexpr unsigned int kAccessControlMaxAge_Default{24 * 60 * 60};
+
+        /**
+         *  \brief any origin, or any header (in fAllowedOrigins, fAllowedHeaders)
+         */
+        static constexpr string_view kAccessControlWildcard = "*"sv;
 
         /**
          *   true or false if credentials allowed on CORS request
@@ -31,43 +43,36 @@ namespace Stroika::Frameworks::WebServer {
          *  \note Allowed only for an origin fAllowedOrigins names - not with it * (any origin), beside which a browser refuses
          *        credentials (https://fetch.spec.whatwg.org/#cors-protocol-and-credentials).
          */
-        optional<bool> fAllowCredentials;
-
-        /**
-         */
-        static constexpr bool kAllowCredentials_Default{true};
+        bool fAllowCredentials{kAllowCredentials_Default};
 
         /**
          *  `Access-Control-Max-Age` header. How long the `Access-Control-Allow-Methods` and `Access-Control-Allow-Headers` headers can be cached.
          *  (rarely set - default good)
          */
-        optional<unsigned int> fAccessControlMaxAge;
-
-        static constexpr unsigned int kAccessControlMaxAge_Default{24 * 60 * 60};
+        unsigned int fAccessControlMaxAge{kAccessControlMaxAge_Default};
 
         /**
-         *  This can be {"*"} meaning any origin (default). 
+         *  This can be {"*"} meaning any origin (default).
          *  Or it can be a list of values present in HTTP Origin Headers (typically just hostname but can be Host:port)
          */
-        optional<Set<String>> fAllowedOrigins;
-
-        /**
-         */
-        static constexpr string_view kAccessControlWildcard = "*"sv;
+        Set<String> fAllowedOrigins{kAccessControlWildcard};
 
         /**
          *  This is the set of headers which will be allowed by Access-Control-Request-Headers OPTIONS requests.
          *  The default - * - kAccessControlWildcard - any - is typically just fine.
          */
-        optional<Set<String>> fAllowedHeaders;
+        Set<String> fAllowedHeaders{kAccessControlWildcard};
 
         /**
          *  @see Characters::ToString ();
          */
         Characters::String ToString () const;
     };
-    inline const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default,
-                                                  Set<String>{CORSOptions::kAccessControlWildcard}, Set<String>{CORSOptions::kAccessControlWildcard}};
+
+    /**
+     *  \brief CORSOptions{} - each field its default
+     */
+    inline const CORSOptions kDefault_CORSOptions{};
 
 }
 

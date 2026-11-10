@@ -120,7 +120,7 @@ namespace Stroika::Frameworks::WebServer {
             /**
              *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
              */
-            optional<CORSOptions> fCORS;
+            CORSOptions fCORS;
 
             /**
              *  \brief sets the initial value for each Response. Harmless except for the slight performance cost (wont always work) - see Response::autoComputeETag

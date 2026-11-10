@@ -23,18 +23,10 @@ Characters::String CORSOptions::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    if (fAllowCredentials) {
-        sb << "allowCredentials"sv << fAllowCredentials;
-    }
-    if (fAccessControlMaxAge) {
-        sb << ", accessControlMaxAge"sv << fAccessControlMaxAge;
-    }
-    if (fAllowedOrigins) {
-        sb << ", allowedOrigins"sv << fAllowedOrigins;
-    }
-    if (fAllowedHeaders) {
-        sb << ", allowedHeaders"sv << fAllowedHeaders;
-    }
+    sb << "allowCredentials: "sv << fAllowCredentials;
+    sb << ", accessControlMaxAge: "sv << fAccessControlMaxAge;
+    sb << ", allowedOrigins: "sv << fAllowedOrigins;
+    sb << ", allowedHeaders: "sv << fAllowedHeaders;
     sb << "}"sv;
     return sb;
 }

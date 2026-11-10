@@ -147,7 +147,6 @@ namespace {
     {
         using Options = ConnectionManager::Options;
         Options result{o};
-        result.fCORS = NullCoalesce (result.fCORS, Options::kDefault_CORS);
         result.fMaxConcurrentlyHandledConnections = NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
         result.fBindFlags               = NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
         result.fDefaultResponseHeaders  = NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
@@ -264,7 +263,7 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_)}
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
-    , fRouter_{routes, *fEffectiveOptions_.fCORS}
+    , fRouter_{routes, fEffectiveOptions_.fCORS}
     // note since Stroika v3.0d5, we set fQMax = so we don't get lots of useless requests that fill the Q. Probably shouldn't happen
     // anyhow, since we have set 'backlog' - but in case, better failure mode ; arguably could be zero length, but for latency of threads waking up to pickup work;
     // --LGP 2023-11-27
