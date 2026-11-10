@@ -26,6 +26,19 @@ using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Frameworks::Test;
 
 namespace {
+    // These handlers replace Stroika's defaults - why, and how they differ: Setup's docs (TestHarness.h)
+
+    // A failed assertion or fatal error ends the test here. On POSIX by abort (), as assert does - so a core file, where the
+    // environment allows one, shows the state at the failure. On Windows by _Exit (1): no core files there (a crash dump comes from
+    // Windows Error Reporting), and a Debug build's abort () would stop an unattended run with a dialog
+    [[noreturn]] void FailTest_ () noexcept
+    {
+#if qStroika_Platform_POSIX
+        abort ();
+#else
+        _Exit (EXIT_FAILURE);
+#endif
+    }
     void ASSERT_HANDLER_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum, const wchar_t* functionName) noexcept
     {
         if (assertCategory == nullptr) {
@@ -45,7 +58,7 @@ namespace {
 
         Debug::DropIntoDebuggerIfPresent ();
 
-        _Exit (EXIT_FAILURE); // skip
+        FailTest_ ();
     }
     void WEAK_ASSERT_HANDLER_ (const wchar_t* assertCategory, const wchar_t* assertionText, const wchar_t* fileName, int lineNum,
                                const wchar_t* functionName) noexcept
@@ -74,14 +87,21 @@ namespace {
         cerr << "FAILED: " << msg << endl;
 #endif
         Debug::DropIntoDebuggerIfPresent ();
-        _Exit (EXIT_FAILURE); // skip
+        FailTest_ ();
     }
     void FatalSignalHandler_ (Execution::SignalID signal) noexcept
     {
         cerr << "FAILED: SIGNAL= " << Execution::SignalToName (signal) << endl;
         DbgTrace ("FAILED: SIGNAL= {}"_f, Execution::SignalToName (signal));
         Debug::DropIntoDebuggerIfPresent ();
-        _Exit (EXIT_FAILURE); // skip
+#if qStroika_Platform_POSIX
+        // Die of the signal, as with no handler, so a core file - where the environment allows one - shows the crash itself: the
+        // signal stays blocked while this runs, so the raise arrives as this returns
+        (void)::signal (signal, SIG_DFL);
+        (void)::raise (signal);
+#else
+        FailTest_ ();
+#endif
     }
 }
 

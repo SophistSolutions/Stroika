@@ -63,6 +63,19 @@ namespace Stroika::Frameworks::Test {
      *  if qStroika_HasComponent_googletest is enabled, this calls testing::InitGoogleTest(), which may remove some values from argc/argv.
      *  Use the value returned from Setup() to get the adjusted args list. Note - no character-set mapping is done in this routine. Just copying of the same
      *  starting raw data.
+     *
+     *  Setup replaces Stroika's default handlers - for a failed assertion and weak assertion, a fatal error (std::terminate) and a
+     *  crash signal (SIGSEGV ...) - with the test harness's own. The defaults (Debug/Assertions.cpp, Debug/Fatal.cpp,
+     *  SignalHandlerRegistry::DefaultCrashSignalHandler) suit any application; these suit a regression test run:
+     *      o   Each failure prints a line to stderr, on every platform, starting "FAILED: " ("WARNING: " for a weak assertion): the
+     *          marker the regression scripts count (Build/Scripts/RegressionTests, Tests/Scripts/RunTest). The defaults write to the
+     *          trace log (an assertion to stderr too, on POSIX only), without that marker.
+     *      o   On POSIX a failure ends the test with abort (), as the defaults do - a crash by its own signal, re-raised - so a core
+     *          file, where the environment allows one, shows the failure. On Windows it ends with _Exit (1): a Debug build's
+     *          abort () would stop an unattended run with a dialog.
+     *      o   Either way nothing runs after a failure - no static destructors, on a broken state.
+     *  Each is an ordinary hook (Debug::SetAssertionHandler, Debug::RegisterDefaultFatalErrorHandlers,
+     *  SignalHandlerRegistry::SetStandardCrashHandlerSignals), so a test can install its own after Setup.
      */
     vector<string> Setup (int argc, const char* argv[]);
 
