@@ -449,7 +449,7 @@ namespace {
                     Debug::TraceContextSuppressor suppressTraceInThisBlock; // needlessly noisy on linux systems (due to frequent throw), and more heat than light
 #endif
                     try {
-                        auto fs = FileInputStream::New (filesystem::path{"/sys/class/net"} / id, IO::FileSystem::FileInputStream::eNotSeekable);
+                        auto fs = FileInputStream::New (filesystem::path{"/sys/class/net"} / id / "carrier", IO::FileSystem::FileInputStream::eNotSeekable);
                         Memory::BLOB b = fs.ReadAll ();
                         if (b.size () >= 1 and b[0] == static_cast<byte> ('1')) {
                             return true;
