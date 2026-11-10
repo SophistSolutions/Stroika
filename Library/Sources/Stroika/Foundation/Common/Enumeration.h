@@ -119,8 +119,13 @@ namespace Stroika::Foundation::Common {
      *          constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
      *      \endcode
      *
-     *  Stroika finds yours by argument-dependent lookup - it is a better match than this one, always - and reads it only through
-     *  kEnumBounds. This one is deleted, so an enum without one of its own has no bounds. Do not specialize it.
+     *  To use this for an enum, define an overload of EnumBoundsOf, typically just after the enum (for an enum in a class, a
+     *  friend in the class - see EnumBounds).
+     *
+     *  kEnumBounds then finds it by argument-dependent lookup, and prefers it to this one, always. This one is deleted, so an
+     *  enum without one of its own has no bounds. Do not specialize it.
+     *
+     *  EnumNamingRule's docs say how the lookup works, and why this one is declared at all.
      */
     void EnumBoundsOf (auto) = delete;
 
@@ -390,14 +395,15 @@ namespace Stroika::Foundation::Common {
      *  \brief A naming rule: how an enum's enumerators are named from their identifiers, as written ("eWithCase"), at compile
      *  time - a type with a static constexpr EnumNameText Apply (const EnumNameText& identifier)
      *
-     *  An enum picks its rule by a declaration beside it, found by argument-dependent lookup and never defined - only its
-     *  return type is used (for an enum in a class, a friend declaration in the class):
+     *  An enum picks its rule by an EnumNamingRule declaration beside it, never defined - only its return type is used (see
+     *  EnumNamingRule: how Stroika finds it, and the form for an enum in a class):
      *      \code
      *          enum class Color { eRed, eGreen, eBlue };
      *          constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
      *          Common::StroikaNaming EnumNamingRule (Color);       // names "Red", "Green", "Blue"
      *      \endcode
-     *  An enum with none is named by IdentifierNaming. EnumeratorName, beside the enum too, may then rename any enumerator.
+     *  An enum with no EnumNamingRule is named by IdentifierNaming.
+     *  EnumeratorName, beside the enum too, may then rename any enumerator.
      *
      *  \see kDefaultNames
      */
@@ -430,15 +436,38 @@ namespace Stroika::Foundation::Common {
     static_assert (IEnumNamingRule<StroikaNaming>); // see Satisfies Concepts
 
     /**
-     *  \brief How an enum picks its naming rule: declare one for your enum, beside it, never defined - only its return type is
-     *         used (see IEnumNamingRule) - not this one, which is here only to document the name
+     *  \brief How an enum picks its naming rule: declare a function of this name for your enum, beside it - not this one, which
+     *         is here only to document the name, and so that an enum without one is named by IdentifierNaming
      *
+     *  Yours is a different function from this one - an overload of the name, in your enum's namespace - taking your enum, and
+     *  returning the rule (an IEnumNamingRule). Declare it, and do not define it: Stroika only reads its return type (decltype),
+     *  never calls it, so it needs no body:
      *      \code
-     *          Common::StroikaNaming EnumNamingRule (Color); // names "Red", "Green", "Blue"
+     *          namespace MyApp {
+     *              enum class Color { eRed, eGreen, eBlue };
+     *              constexpr Common::EnumBounds<Color> EnumBoundsOf (Color) { return {Color::eRed, Color::eBlue}; }
+     *              Common::StroikaNaming EnumNamingRule (Color); // names "Red", "Green", "Blue"
+     *          }
+     *      \endcode
+     *  For an enum in a class, declare it in the class, as a friend - argument-dependent lookup finds a class's friends through
+     *  an enum that is a member of the class:
+     *      \code
+     *          struct Light {
+     *              enum class State { eOff, eDim, eOn };
+     *              friend constexpr Common::EnumBounds<State> EnumBoundsOf (State) { return {State::eOff, State::eOn}; }
+     *              friend Common::StroikaNaming EnumNamingRule (State); // names "Off", "Dim", "On"
+     *          };
      *      \endcode
      *
-     *  Stroika finds yours by argument-dependent lookup - it is a better match than this one, always. This one is deleted, so an
-     *  enum without one of its own is named by IdentifierNaming. Do not specialize it.
+     *  How Stroika finds yours: its code, in this namespace, asks whether EnumNamingRule (e) - e of your enum type - names a
+     *  function. Argument-dependent lookup adds the functions of that name beside the enum (in its namespace, and the friends
+     *  of its class) to this one, and yours is not a template, so it is preferred, always. With no declaration of yours, the
+     *  call finds only this one, which is deleted: the call does not compile, which Stroika reads as "no rule", and the enum is
+     *  named by IdentifierNaming. And because this one is declared here, ordinary lookup stops here: no other function named
+     *  EnumNamingRule, in an enclosing namespace, is found by mistake.
+     *
+     *  EnumBoundsOf and EnumeratorName are found the same way, for the same reasons - except that yours are defined (constexpr),
+     *  since Stroika calls them, at compile time. Never specialize any of the three: write your own beside the enum.
      */
     void EnumNamingRule (auto) = delete;
 
@@ -453,8 +482,25 @@ namespace Stroika::Foundation::Common {
      *          }
      *      \endcode
      *
-     *  Stroika finds yours by argument-dependent lookup - it is a better match than this one, always. This one is deleted, so an
-     *  enum without one of its own keeps its naming rule's names. Do not specialize it.
+     *  For an enum in a class, define it in the class, as a friend:
+     *      \code
+     *          struct Light {
+     *              enum class State { eOff, eDim, eOn };
+     *              friend constexpr Common::EnumBounds<State> EnumBoundsOf (State) { return {State::eOff, State::eOn}; }
+     *              friend constexpr Common::EnumNameText EnumeratorName (State s, Common::EnumNameText byRule)
+     *              {
+     *                  return s == State::eDim ? Common::EnumNameText{"Dimmed"} : byRule; // "eOff", "Dimmed", "eOn"
+     *              }
+     *          };
+     *      \endcode
+     *
+     *  To use this for an enum, define an overload of EnumeratorName, typically just after the enum (for an enum in a class, a
+     *  friend in the class, as above).
+     *
+     *  Stroika then finds it by argument-dependent lookup, and prefers it to this one, always. This one is deleted, so an enum
+     *  without one of its own keeps its naming rule's names. Do not specialize it.
+     *
+     *  EnumNamingRule's docs say how the lookup works, and why this one is declared at all.
      */
     void EnumeratorName (auto, auto) = delete;
 
