@@ -183,6 +183,9 @@ namespace Stroika::Foundation::IO::Network {
              *
              *  returns a subspan (initial segment) of into, of length number of bytes read in packet.
              *
+             *  It waits up to timeout for a packet, then throws a timed_out error; a timeout of zero or less waits for none - only a
+             *  packet already arrived is read - so a caller may pass what is left of a deadline, even once it has passed.
+             *
              *  @todo DOCUMENT WHAT HAPPENS IF PACKET DOESNT FIT IN BUF!????
              *
              *  @todo Let SendTo pick the interface (and source address) a datagram goes out of -

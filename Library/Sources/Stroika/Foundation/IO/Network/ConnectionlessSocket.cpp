@@ -30,6 +30,7 @@
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/Socket-Private_.h"
+#include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ConnectionlessSocket.h"
@@ -180,9 +181,13 @@ namespace {
         {
             AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
 
+            // a deadline, turned back into time left only at each wait: so a wait resumed (after EINTR, say) gets only what is left,
+            // and a timeout below zero - or one passed - none
+            const Time::TimePointSeconds timeoutAt = Time::GetTickCount () + timeout;
+
             if constexpr (qStroika_Platform_Windows) {
                 // TMPHACK for - https://github.com/SophistSolutions/Stroika/issues/1096 (STK-964)
-                auto s = Execution::WaitForIOReady{fSD_}.WaitQuietly (timeout);
+                auto s = Execution::WaitForIOReady{fSD_}.WaitQuietlyUntil (timeoutAt);
                 Execution::Thread::CheckForInterruption ();
                 if (s.empty ()) {
                     Execution::ThrowError (errc::timed_out);
@@ -193,17 +198,20 @@ namespace {
             // cleaner...
             constexpr Time::DurationSeconds kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
             if (timeout < kMaxPolltime_) {
-                int    timeout_millisecs = Math::Round<int> (timeout.count () * 1000);
+                // what is left, when the OS is asked - never below zero, which poll () reads as no timeout at all
+                auto millisecondsLeft = [&] () {
+                    return Math::Round<int> (Math::AtLeast<Time::DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s).count () * 1000);
+                };
                 pollfd pollData{};
                 pollData.fd     = fSD_;
                 pollData.events = POLLIN;
 #if qStroika_Platform_Windows
                 int nresults;
-                if ((nresults = ::WSAPoll (&pollData, 1, timeout_millisecs)) == SOCKET_ERROR) {
+                if ((nresults = ::WSAPoll (&pollData, 1, millisecondsLeft ())) == SOCKET_ERROR) {
                     Execution::ThrowSystemErrNo (::WSAGetLastError ());
                 }
 #else
-                int nresults = Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, timeout_millisecs); });
+                int nresults = Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, millisecondsLeft ()); });
 #endif
                 if (nresults == 0) [[unlikely]] {
                     Execution::ThrowError (errc::timed_out);

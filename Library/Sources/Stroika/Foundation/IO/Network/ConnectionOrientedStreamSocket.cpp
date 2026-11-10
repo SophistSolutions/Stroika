@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/Socket-Private_.h"
+#include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -93,8 +94,12 @@ namespace {
             AssertNotImplemented ();
 #endif
         }
-        nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout) const
+        nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, Time::TimePointSeconds timeoutAt) const
         {
+            // what is left of the deadline, when the OS is asked - never below zero, which select () rejects
+            auto timeLeft = [timeoutAt] () {
+                return Time::Duration{Math::AtLeast<Time::DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s)}.As<timeval> ();
+            };
             AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                                 useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qStroika_Platform_POSIX
@@ -114,12 +119,13 @@ namespace {
                     case EINTR:
                         break; // ignore - try again
                     case EINPROGRESS: {
-                        Stroika_ATTRIBUTE_INDETERMINATE fd_set myset;
-                        FD_ZERO (&myset);
-                        FD_SET (fSD_, &myset);
-                        timeval time_out = timeout.As<timeval> ();
                         Handle_ErrNoResultInterruption ([&] () -> int {
-                            auto r = ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
+                            // set up at each try: after EINTR, select () leaves its fd_set and timeval unspecified
+                            Stroika_ATTRIBUTE_INDETERMINATE fd_set myset;
+                            FD_ZERO (&myset);
+                            FD_SET (fSD_, &myset);
+                            timeval time_out = timeLeft ();
+                            auto    r        = ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
                             if (r == 0) {
                                 // https://man7.org/linux/man-pages/man2/select.2.html - "The return value may be zero if the timeout expired before any file descriptors became ready"
                                 Execution::ThrowError (errc::timed_out);
@@ -163,7 +169,7 @@ namespace {
                 Stroika_ATTRIBUTE_INDETERMINATE fd_set setE;
                 FD_ZERO (&setE);
                 FD_SET (fSD_, &setE);
-                timeval time_out = timeout.As<timeval> ();
+                timeval time_out = timeLeft ();
                 int     ret      = ::select (0, NULL, &setW, &setE, &time_out);
                 if (ret <= 0) {
                     // select() failed or connection timed out
@@ -186,7 +192,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"ConnectionOrientedStreamSocket_IMPL_::Connect", "sockAddr={}, timeout={}"_f, sockAddr, timeout};
             if (timeout) {
-                Connect_AsyncWTimeout_ (sockAddr, *timeout);
+                Connect_AsyncWTimeout_ (sockAddr, Time::GetTickCount () + *timeout); // a deadline: time left is computed at each wait
             }
             else {
                 Connect_Sync_ (sockAddr);

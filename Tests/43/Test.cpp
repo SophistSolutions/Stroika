@@ -978,6 +978,25 @@ GTEST_TEST (Foundation_IO_Network, Test3_PacketInfo_)
     }
 }
 
+GTEST_TEST (Foundation_IO_Network, Test3_ReceiveFromNegativeTimeout_)
+{
+    // A timeout below zero - what is left of a deadline once it has passed - waits for nothing: with no packet there, it times
+    // out at once, rather than waiting for ever
+    Debug::TraceContextBumper trcCtx{"Test3_ReceiveFromNegativeTimeout_"};
+    ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+    s.Bind (SocketAddress{V4::kLocalhost, 0});
+    std::byte              buf[16];
+    Time::TimePointSeconds start = Time::GetTickCount ();
+    try {
+        (void)s.ReceiveFrom (buf, 0, nullptr, -1s);
+        ADD_FAILURE () << "a packet arrived, though none was sent";
+    }
+    catch (const system_error& e) {
+        EXPECT_TRUE (e.code () == errc::timed_out) << e.what ();
+    }
+    EXPECT_LT (Time::GetTickCount () - start, 5s);
+}
+
 GTEST_TEST (Foundation_IO_Network, Test4_DNS_)
 {
     Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
