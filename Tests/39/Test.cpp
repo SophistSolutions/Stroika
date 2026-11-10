@@ -176,7 +176,12 @@ namespace {
         if (Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ()) {
             return; // each may give a thread its own alternate stack, and handles a stack overflow itself
         }
-        EXPECT_FALSE (hasAlternateStack (false));                               // a thread that does not ask pays nothing
+        EXPECT_FALSE (hasAlternateStack (false)); // a thread that does not ask pays nothing
+#if qStroika_Platform_MacOS
+        // The overflow below happens in a fork child, and on macOS a fork child does not keep its parent's alternate signal stack
+        // (Linux's does): with no stack for the handler, the kernel kills the child with SIGILL
+        return;
+#endif
         Set<SignalID>                         overflowSignals{SIGSEGV, SIGBUS}; // SIGBUS on macOS
         Mapping<SignalID, Set<SignalHandler>> saved;
         for (SignalID s : overflowSignals) {
