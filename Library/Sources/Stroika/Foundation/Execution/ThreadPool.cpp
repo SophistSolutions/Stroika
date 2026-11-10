@@ -366,6 +366,23 @@ auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
     return result;
 }
 
+auto ThreadPool::GetTaskInfo (TaskID task) const -> optional<TaskInfo>
+{
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    for (const auto& ti : fPendingTasks_) {
+        if (ti.fID == task) {
+            return TaskInfo{.fID = ti.fID, .fTask = ti.fTask, .fName = ti.fName};
+        }
+    }
+    for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        if (i->fRunnable->IsRunning (task)) {
+            const PendingTaskInfo_& cur = i->fRunnable->fCurTask;
+            return TaskInfo{.fID = cur.fID, .fTask = cur.fTask, .fName = cur.fName, .fRunningSince = i->fRunnable->fCurTaskStartedAt};
+        }
+    }
+    return nullopt;
+}
+
 auto ThreadPool::GetRunningTasks () const -> Collection<TaskID>
 {
     Collection<TaskID>          result;

@@ -1917,6 +1917,38 @@ namespace {
 #endif
     }
 
+    /*
+     *  ThreadPool::GetTaskInfo: a running task's, a pending one's, and nullopt once each is done
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ThreadPool_GetTaskInfo_)
+    {
+        Debug::TraceContextBumper traceCtx{"ThreadPool_GetTaskInfo_"};
+        ThreadPool                p{ThreadPool::Options{.fThreadCount = 1}};
+        WaitableEvent             started;
+        WaitableEvent             go;
+        ThreadPool::TaskID        running = p.AddTask (
+            [&] () {
+                started.Set ();
+                go.Wait ();
+            },
+            "running"sv);
+        ThreadPool::TaskID pending = p.AddTask ([] () {}, "pending"sv);
+        started.Wait ();
+        optional<ThreadPool::TaskInfo> runningInfo = p.GetTaskInfo (running);
+        ASSERT_TRUE (runningInfo.has_value ());
+        EXPECT_EQ (runningInfo->fID, running);
+        EXPECT_EQ (runningInfo->fName, "running"sv);
+        EXPECT_TRUE (runningInfo->IsRunning ());
+        optional<ThreadPool::TaskInfo> pendingInfo = p.GetTaskInfo (pending);
+        ASSERT_TRUE (pendingInfo.has_value ());
+        EXPECT_EQ (pendingInfo->fName, "pending"sv);
+        EXPECT_FALSE (pendingInfo->IsRunning ());
+        go.Set ();
+        p.WaitForTasksDone (5s);
+        EXPECT_FALSE (p.GetTaskInfo (running).has_value ());
+        EXPECT_FALSE (p.GetTaskInfo (pending).has_value ());
+    }
+
     GTEST_TEST (Foundation_Execution_Threads, all)
     {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics

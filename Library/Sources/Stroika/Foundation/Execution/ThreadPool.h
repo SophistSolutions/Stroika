@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Execution {
      *  eventually executed.
      *
      *  If as Task in the thread pool raises an exception - this will be IGNORED (except for the
-     *  special case of Thread::AbortException which  is used internally to end the threadpool or
+     *  special case of Thread::AbortException which is used internally to end the threadpool or
      *  remove some threads). Because of this, your submitted runnable should take care of its own
      *  error handling internally.
      *
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Execution {
      *  of constructing the thread is significant compared to the cost of performing the action,
      *  and where the priority & stacksize can all be predetermined and 'shared'.
      *  Also - where you want to CONTROL the level of thread creation (possibly to avoid
-     *  DOS attacks or just accidental overloading).
+     *  denial-of-service (DOS) attacks or just accidental overloading).
      *
      *  \pre     Debug::AppearsDuringMainLifetime (); during the lifetime of the ThreadPool
      *
@@ -271,6 +271,13 @@ namespace Stroika::Foundation::Execution {
          *  \brief returns GetPendingTasks () + GetRunningTasks () - but also some extra information about each task
          */
         nonvirtual Containers::Collection<TaskInfo> GetTasks () const;
+
+    public:
+        /**
+         *  \brief The given task's TaskInfo, as GetTasks () gives it - or nullopt if it is not present: done (or aborted), or
+         *         never added
+         */
+        nonvirtual optional<TaskInfo> GetTaskInfo (TaskID task) const;
 
     public:
         /**
