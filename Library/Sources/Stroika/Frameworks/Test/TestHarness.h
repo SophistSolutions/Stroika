@@ -60,9 +60,10 @@ namespace Stroika::Frameworks::Test {
      *          }
      *      \endcode
      * 
-     *  if qStroika_HasComponent_googletest is enabled, this calls testing::InitGoogleTest(), which may remove some values from argc/argv.
-     *  Use the value returned from Setup() to get the adjusted args list. Note - no character-set mapping is done in this routine. Just copying of the same
-     *  starting raw data.
+     *  Setup returns argv less googletest's own arguments (those starting --gtest_): with qStroika_HasComponent_googletest,
+     *  testing::InitGoogleTest() takes them; built without googletest, Setup drops them - so a test that parses its own command
+     *  line sees the same arguments either way (the regression scripts pass --gtest_brief to every test). No character-set
+     *  mapping is done: each is a copy of argv's raw string.
      *
      *  Setup replaces Stroika's default handlers - for a failed assertion and weak assertion, a fatal error (std::terminate) and a
      *  crash signal (SIGSEGV ...) - with the test harness's own. The defaults (Debug/Assertions.cpp, Debug/Fatal.cpp,

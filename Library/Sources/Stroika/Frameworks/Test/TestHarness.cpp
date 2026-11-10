@@ -123,6 +123,12 @@ vector<string> Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const ch
 #endif
     vector<string> v;
     for (int i = 0; i < argc; ++i) {
+#if not qStroika_HasComponent_googletest
+        // googletest's own, which InitGoogleTest would have taken (@see Setup's docs)
+        if (string_view{argv[i]}.starts_with ("--gtest_")) {
+            continue;
+        }
+#endif
         v.push_back (argv[i]);
     }
     return v;
