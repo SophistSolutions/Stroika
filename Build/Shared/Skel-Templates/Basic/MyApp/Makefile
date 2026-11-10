@@ -24,4 +24,4 @@ clean clobber::
 
 
 format-code:
-	@$(StroikaRoot)Build/Scripts/FormatCode Sources *.h *.inl *.cpp
+	@$(StroikaRoot)Build/Scripts/FormatCode Sources '*.h' '*.inl' '*.cpp'

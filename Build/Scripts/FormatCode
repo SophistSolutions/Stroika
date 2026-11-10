@@ -5,7 +5,7 @@
 ##		Build/Scripts/FormatCode DIRECTORY [WILDCARD PATTERNS]+
 ##
 ## EXAMPLE USAGE
-##		Build/Scripts/FormatCode Library *.h *.inl *.cpp
+##		Build/Scripts/FormatCode Library '*.h' '*.inl' '*.cpp'
 ##		Build/Scripts/FormatCode Library/Sources/Stroika/Foundation/Execution NullLock.h
 ##
 ##	NOTE ALSO - can override default clang settings with
@@ -48,7 +48,7 @@ fi
 dirPattern=$1
 
 # EXCLUDES="-prune node_modules"
-EXCLUDES="-not -path */node_modules/*"
+EXCLUDES=(-not -path '*/node_modules/*')
 
 FORMATTER="${FORMATTER:-clang-format}"
 hash $FORMATTER 2> /dev/null
@@ -60,5 +60,5 @@ fi
 
 for filePattern in "${@:2}"
 do
-    $FIND $dirPattern -name $filePattern $EXCLUDES -exec sh -c "$EXPAND -t 4 {} | $FORMATTER --assume-filename={} > {}.tmp && if cmp -s {} {}.tmp ; then rm -f {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
+    $FIND "$dirPattern" -name "$filePattern" "${EXCLUDES[@]}" -exec sh -c "$EXPAND -t 4 {} | $FORMATTER --assume-filename={} > {}.tmp && if cmp -s {} {}.tmp ; then rm -f {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
 done

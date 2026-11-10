@@ -337,11 +337,11 @@ endif
 
 format-code:
 	@$(ECHO) Formatting Code:
-	@Build/Scripts/FormatCode Library *.h *.inl *.cpp
-	@Build/Scripts/FormatCode Samples *.h *.inl *.cpp
-	@Build/Scripts/FormatCode Tests *.h *.inl *.cpp
-	@Build/Scripts/FormatCode Tools *.h *.inl *.cpp
-	@Build/Scripts/FormatCode Build/Tools/Src *.h *.inl *.cpp
+	@Build/Scripts/FormatCode Library '*.h' '*.inl' '*.cpp'
+	@Build/Scripts/FormatCode Samples '*.h' '*.inl' '*.cpp'
+	@Build/Scripts/FormatCode Tests '*.h' '*.inl' '*.cpp'
+	@Build/Scripts/FormatCode Tools '*.h' '*.inl' '*.cpp'
+	@Build/Scripts/FormatCode Build/Tools/Src '*.h' '*.inl' '*.cpp'
 
 
 
