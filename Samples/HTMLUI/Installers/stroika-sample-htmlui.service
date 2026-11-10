@@ -12,7 +12,8 @@ After=syslog.target
 Type=forking
 
 # In stroika, this defaults to IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + ".pid"_k;
-PIDFile=/var/run/Stroika-Sample-HTMLUI.pid
+# - /var/run/, a symlink to /run/ on current distributions; named by /run here, as systemd warns of a PIDFile below /var/run
+PIDFile=/run/Stroika-Sample-HTMLUI.pid
 ExecStart=/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI --start
 ExecReload=/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI --restart
 ExecStop=/opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI --stop
