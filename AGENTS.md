@@ -479,6 +479,11 @@ still compile". Say which one you did.
   Exceptions are explicitly named `...Ptr` (e.g. `Thread::Ptr`, `Socket::Ptr`,
   `InputStream::Ptr`) — these are reference/shared-pointer semantics to things that can't
   logically be duplicated.
+- **A container type is an API plus a default factory, best thought of as its contract** (LGP, 2026-10-23): `Mapping`,
+  `Set`, `Collection`, ... each promise what their header says (a `Mapping`: no ordering among its elements).
+  `Mapping<K,V>` is also a concrete type, which gets whatever backend its factory picks (`Mapping_HashTable` today;
+  `SortedMapping_stdmap`, ...), and those defaults will change. So reason, and write comments, from the contract; name a
+  backend only when the point is about that backend.
 - **Assertions are load-bearing documentation.** Nearly every API has `Require`/`Ensure`
   pre/post-condition assertions. They fully evaluate (and abort on failure) in Debug builds and
   compile to zero cost in Release builds — write and rely on them freely.
