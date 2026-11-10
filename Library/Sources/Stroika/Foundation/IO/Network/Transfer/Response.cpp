@@ -47,6 +47,14 @@ String Response::SSLResultInfo::ToString () const
  ******************************* Transfer::Response *****************************
  ********************************************************************************
  */
+Response::Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const optional<SSLResultInfo>& sslInfo)
+    : fData_{data}
+    , fHeaders_{HTTP::kHeaderNameEqualsComparer, headers}
+    , fStatus_{status}
+    , fServerEndpointSSLInfo_{sslInfo}
+{
+}
+
 optional<InternetMediaType> Response::GetContentType () const
 {
     if (optional<String> i = fHeaders_.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType))) {

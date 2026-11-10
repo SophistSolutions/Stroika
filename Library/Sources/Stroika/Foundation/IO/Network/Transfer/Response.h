@@ -112,6 +112,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
+         *  The headers are kept by name ignoring case, as HTTP compares them (RFC 9110, 5.1) - see GetHeaders.
          */
         Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers,
                   const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo>{});
@@ -189,6 +190,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
+         *  A Mapping whose keys - header names - compare ignoring case (HTTP::kHeaderNameEqualsComparer), as HTTP's do: a server
+         *  may send "etag" or "content-type", and Lookup (HTTP::HeaderName::kETag) still finds it. Iterating gives each name as
+         *  the server sent it.
          */
         nonvirtual Mapping<String, String> GetHeaders () const;
 

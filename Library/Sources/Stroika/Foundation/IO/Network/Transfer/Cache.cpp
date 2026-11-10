@@ -136,7 +136,7 @@ namespace {
                             // them - or by the default TTL - and stored again
                             Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
                             for (const auto& [name, value] : response->GetHeaders ()) {
-                                if (name != HTTP::HeaderName::kContentLength) {
+                                if (not HTTP::kHeaderNameEqualsComparer (name, HTTP::HeaderName::kContentLength)) {
                                     headers.Add (name, value);
                                 }
                             }
@@ -201,7 +201,7 @@ Transfer::Cache::Element::Element (const Response& response)
         //      The preferred format is
         //      a fixed - length and single - zone subset of the date and time specification used by the Internet Message Format[RFC5322].
         //
-        if (hi->fKey == HTTP::HeaderName::kETag) {
+        if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kETag)) {
             // "xyz", or W/"xyz" - a weak one (RFC 9110, 8.8.3)
             String etag   = hi->fValue;
             bool   isWeak = etag.StartsWith ("W/"sv);
@@ -215,7 +215,7 @@ Transfer::Cache::Element::Element (const Response& response)
             fETagIsWeak = isWeak;
             hi          = headers.erase (hi);
         }
-        else if (hi->fKey == HTTP::HeaderName::kExpires) {
+        else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kExpires)) {
             try {
                 fExpires = DateTime::Parse (hi->fValue, DateTime::kHTTPDateFormat);
             }
@@ -227,7 +227,7 @@ Transfer::Cache::Element::Element (const Response& response)
             }
             hi = headers.erase (hi);
         }
-        else if (hi->fKey == HTTP::HeaderName::kLastModified) {
+        else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kLastModified)) {
             try {
                 fLastModified = DateTime::Parse (hi->fValue, DateTime::kHTTPDateFormat);
             }
@@ -236,7 +236,7 @@ Transfer::Cache::Element::Element (const Response& response)
             }
             hi = headers.erase (hi);
         }
-        else if (hi->fKey == HTTP::HeaderName::kCacheControl) {
+        else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kCacheControl)) {
             fCacheControl = hi->fValue.Tokenize ({','}).Map<Set<String>> ([] (const String& d) { return d.Trim (); }); // "private, no-store"
             // a max-age that is not a number reads as 0: stale, as RFC 9111 (4.2.1) encourages
             if (optional<uint32_t> maxAge = HTTP::CacheControl::Parse (hi->fValue).fMaxAge) {
@@ -244,7 +244,7 @@ Transfer::Cache::Element::Element (const Response& response)
             }
             hi = headers.erase (hi);
         }
-        else if (hi->fKey == HTTP::HeaderName::kContentType) {
+        else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kContentType)) {
             fContentType = DataExchange::InternetMediaType{hi->fValue};
             hi           = headers.erase (hi);
         }

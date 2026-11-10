@@ -834,6 +834,24 @@ namespace {
         ASSERT_TRUE (validUntil.has_value ());
         EXPECT_TRUE (*validUntil > Time::DateTime::Now ());
     }
+
+    /*
+     *  HTTP header names are case-insensitive (RFC 9110, 5.1): a server may send "etag", "cache-control" or "content-type" - the
+     *  same headers as ETag, Cache-Control and Content-Type
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, HeaderNamesIgnoreCase_)
+    {
+        Containers::Mapping<String, String> headers{{"etag"sv, "\"v1\""sv}, {"cache-control"sv, "max-age=300"sv}, {"content-type"sv, "text/plain"sv}};
+        Response response{Memory::BLOB{}, HTTP::StatusCodes::kOK, headers};
+        EXPECT_EQ (response.GetHeaders ().LookupValue (String{HTTP::HeaderName::kETag}), "\"v1\""sv);
+        EXPECT_TRUE (response.GetContentType () == InternetMediaType{"text/plain"sv});
+
+        Cache::Element element{response};
+        EXPECT_EQ (element.fETag.value_or (String{}), "v1"sv);
+        optional<Time::DateTime> validUntil = element.IsValidUntil (); // by its max-age
+        ASSERT_TRUE (validUntil.has_value ());
+        EXPECT_TRUE (*validUntil > Time::DateTime::Now ());
+    }
 }
 
 namespace {
