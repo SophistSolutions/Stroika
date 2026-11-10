@@ -273,7 +273,7 @@ public:
                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
                   auto statistics = fConnectionMgr_.statistics ();
                   OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (statistics.fConnections.fNumberOfOpenConnections);
-                  OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (statistics.fConnections.fNumberOfActiveConnections);
+                  OperationalStatisticsMgr::sThe.RecordProcessingConnectionCount (statistics.fConnections.fNumberOfActiveConnections);
               },
               15s, IntervalTimer::Adder::eRunImmediately}
     {
