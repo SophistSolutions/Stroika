@@ -121,7 +121,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         constexpr size_t kExtraSluff_{100}; // Leave a little extra room in case some packets return extra
         StackBuffer<byte> recv_buf{Memory::eUninitialized, fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) +
                                                                kExtraSluff_}; // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
-        size_t n = fSocket_.ReceiveFrom (recv_buf, 0, &fromAddress, fPingTimeout_).size ();
+        size_t n = fSocket_.ReceiveFrom (recv_buf, 0, &fromAddress, pingTimeoutAfter - Time::GetTickCount ()).size ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("got back packet from {}"_f, fromAddress);
 #endif
@@ -156,6 +156,14 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
                     (const ICMP::V4::PacketHeader*)((const byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
                 echoedID = echoedICMPHeader->id;
             } break;
+            default: {
+                // Not a reply to any echo request - the raw socket gets every ICMP packet this host does: this request itself, when
+                // pinging one of this host's own addresses, or another host's echo request - so skip it, as one for another pinger
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("ignoring ICMP packet of type {} from {}"_f, static_cast<int> (replyICMPHeader->type), fromAddress);
+#endif
+                continue;
+            }
         }
         if (echoedID and echoedID != pingRequest.id) {
             DbgTrace ("echoedID ({} != pingRequest.id (0x{:x})) so ignoring this reply"_f, echoedID, static_cast<int> (pingRequest.id));
@@ -193,7 +201,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
                 Execution::Throw (ICMP::V4::DestinationUnreachableException{replyICMPHeader->code, InternetAddress{replyIPHeader->saddr}});
             };
             default: {
-                Execution::Throw (ICMP::V4::UnknownICMPPacket{replyICMPHeader->type});
+                AssertNotReached (); // skipped above
             }
         }
     }
