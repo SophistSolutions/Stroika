@@ -236,12 +236,15 @@ namespace {
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_COOKIEFILE, "/dev/null"));
             }
 
-            Mapping<String, String> overrideHeaders = useRequest.fOverrideHeaders;
+            // names compare as HTTP's do, ignoring case: the request's headers replace the silenced ones, and the Authorization
+            // added below replaces the request's
+            Mapping<String, String> overrideHeaders{kHeaderNameEqualsComparer};
             if (fOptions_.fAssumeLowestCommonDenominatorHTTPServer) {
-                static const Mapping<String, String> kSilenceTheseHeaders_{
-                    {pair<String, String>{"Expect"sv, {}}, pair<String, String>{"Transfer-Encoding"sv, {}}}};
-                overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
+                // silenced, unless the request sets them itself
+                overrideHeaders.Add (HeaderName::kExpect, String{});
+                overrideHeaders.Add (HeaderName::kTransferEncoding, String{});
             }
+            overrideHeaders.AddAll (useRequest.fOverrideHeaders.As<Mapping<String, String>> ());
             if (fOptions_.fAuthentication and
                 fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
                 overrideHeaders.Add (String::FromStringConstant (HeaderName::kAuthorization), fOptions_.fAuthentication->GetAuthToken ());

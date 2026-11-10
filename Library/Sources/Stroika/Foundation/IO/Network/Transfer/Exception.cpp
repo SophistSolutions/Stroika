@@ -53,10 +53,9 @@ namespace {
         using namespace Streams;
         //DbgTrace ("response headers={}"_f, response.GetHeaders ());
         //DbgTrace ("response body={}"_f, Streams::BinaryToText::Reader::New (response.GetData()).ReadAll());
-        if (auto ctHdr = response.GetHeaders ().Lookup ("Content-Type"sv)) {
-            InternetMediaType ct{*ctHdr};
-            if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::Wildcards::kText, ct)) {
-                if (ct == InternetMediaTypes::kText_PLAIN) {
+        if (optional<InternetMediaType> ct = response.GetContentType ()) {
+            if (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::Wildcards::kText, *ct)) {
+                if (*ct == InternetMediaTypes::kText_PLAIN) {
                     return Streams::BinaryToText::Reader::New (response.GetData ()).ReadLine ();
                 }
                 else {

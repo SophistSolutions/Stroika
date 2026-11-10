@@ -218,6 +218,18 @@ namespace {
 }
 
 namespace {
+    /*
+     *  As<String> writes a media type as HTTP sends it (RFC 9110, 8.3.1): each parameter name=value, a value that is not a token
+     *  quoted - so what it writes reads back the same
+     */
+    GTEST_TEST (Foundation_DataExchange_Other, InternetMediaType_AsString_)
+    {
+        EXPECT_EQ (InternetMediaType{"text/xml; charset=\"utf-8\""}.As<String> (), "text/xml; charset=utf-8");
+        InternetMediaType needsQuotes{"multipart/form-data; boundary=\"a/b\""}; // '/' is no token character
+        EXPECT_EQ (needsQuotes.As<String> (), "multipart/form-data; boundary=\"a/b\"");
+        EXPECT_EQ (InternetMediaType{needsQuotes.As<String> ()}, needsQuotes);
+    }
+
     GTEST_TEST (Foundation_DataExchange_Other, InternetMediaType_)
     {
         Debug::TraceContextBumper ctx{"{}::InternetMediaType_"};

@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
@@ -49,7 +50,23 @@ String Response::SSLResultInfo::ToString () const
  */
 Response::Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const optional<SSLResultInfo>& sslInfo)
     : fData_{data}
-    , fHeaders_{HTTP::kHeaderNameEqualsComparer, headers}
+    , fStatus_{status}
+    , fServerEndpointSSLInfo_{sslInfo}
+{
+    for (const auto& [name, value] : headers) {
+        try {
+            fHeaders_.Add (name, value);
+        }
+        catch (...) {
+            // what a server sent: a value HTTP::Headers cannot read is left out, rather than making the whole response unreadable
+            DbgTrace ("Transfer::Response: left out header {}: {} - {}"_f, name, value, current_exception ());
+        }
+    }
+}
+
+Response::Response (const BLOB& data, HTTP::Status status, const HTTP::Headers& headers, const optional<SSLResultInfo>& sslInfo)
+    : fData_{data}
+    , fHeaders_{headers}
     , fStatus_{status}
     , fServerEndpointSSLInfo_{sslInfo}
 {
@@ -57,15 +74,12 @@ Response::Response (const BLOB& data, HTTP::Status status, const Mapping<String,
 
 optional<InternetMediaType> Response::GetContentType () const
 {
-    if (optional<String> i = fHeaders_.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType))) {
-        return InternetMediaType{*i};
-    }
-    return nullopt;
+    return fHeaders_.contentType ();
 }
 
 optional<Charset> Response::GetCharset () const
 {
-    if (optional<String> hi = fHeaders_.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType))) {
+    if (optional<String> hi = fHeaders_.LookupOne (String::FromStringConstant (HTTP::HeaderName::kContentType))) {
         static const RegularExpression kLBL_ = ";[ ]*charset="_RegEx;
         if (optional<pair<size_t, size_t>> oi = hi->Find (kLBL_)) {
             return Charset{hi->SubString (oi->second)};

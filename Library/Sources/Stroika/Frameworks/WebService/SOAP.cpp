@@ -390,7 +390,7 @@ SOAP::Response SOAP::Invoke (Transfer::Connection::Ptr c, const URI& url, const 
     Transfer::Request r;
     r.fMethod               = HTTP::Methods::kPost;
     r.fAuthorityRelativeURL = url.GetAuthorityRelativeResource<URI> ();
-    r.fOverrideHeaders      = Containers::Mapping<String, String>{{String{HTTP::HeaderName::kSOAPAction}, soapAction}};
+    r.fOverrideHeaders.Add (HTTP::HeaderName::kSOAPAction, soapAction);
     r.SetTypedBLOB (TypedBLOB{.fData = Serialize (request, options), .fType = kContentType});
     Transfer::Response answer = c.Send (r); // not SendAndThrowOnFailure: a fault's answer - status 500 - says what the fault was
     if (answer.GetSucceeded ()) {

@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
 
 #include "Stroika/Foundation/IO/Network/Transfer/Request.h"
@@ -112,10 +113,14 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-         *  The headers are kept by name ignoring case, as HTTP compares them (RFC 9110, 5.1) - see GetHeaders.
+         *  The headers are what a server sent, so given as a Mapping, each is added to an HTTP::Headers (GetHeaders) - and one whose
+         *  value Headers cannot read (a Content-Type that is no media type, say) is left out, with a trace line, rather than
+         *  making this throw.
          */
         Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers,
                   const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo>{});
+        Response (const BLOB& data, HTTP::Status status, const HTTP::Headers& headers,
+                  const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo>{}); ///< \brief headers already read
 
     public:
         /**
@@ -190,11 +195,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
-         *  A Mapping whose keys - header names - compare ignoring case (HTTP::kHeaderNameEqualsComparer), as HTTP's do: a server
-         *  may send "etag" or "content-type", and Lookup (HTTP::HeaderName::kETag) still finds it. Iterating gives each name as
-         *  the server sent it.
+         *  An HTTP::Headers, so names compare ignoring case, as HTTP's do (a server may send "etag" or "content-type"), and the
+         *  well-known headers read as typed properties (contentType, ETag, cacheControl ...). As<Mapping<String, String>> () gives
+         *  them as a Mapping.
          */
-        nonvirtual Mapping<String, String> GetHeaders () const;
+        nonvirtual HTTP::Headers GetHeaders () const;
 
     public:
         /**
@@ -220,7 +225,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         BLOB fData_;                                                               // usually empty, but provided for some methods like POST
         mutable optional<Streams::InputStream::Ptr<byte>> fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
         mutable optional<Streams::InputStream::Ptr<Characters::Character>> fDataTextInputStream_;
-        Mapping<String, String>                                            fHeaders_;
+        HTTP::Headers                                                      fHeaders_;
         HTTP::Status                                                       fStatus_{};
         optional<SSLResultInfo>                                            fServerEndpointSSLInfo_;
     };

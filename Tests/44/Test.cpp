@@ -205,6 +205,29 @@ namespace {
         String asBytes = adapter.ToString (MessageStartTextInputStreamBinaryAdapter::eAsBytes); // hex - it threw format_error
         EXPECT_TRUE (asBytes.Contains ("x47, x45, x54, xab, "sv)) << asBytes.AsNarrowSDKString ();
     }
+
+    /*
+     *  A weak entity-tag is W/"..." (RFC 9110, 8.8.3): read, and written back, as that - in an ETag header, and among an
+     *  If-None-Match header's tags
+     */
+    GTEST_TEST (Foundation_IO_Network_HTTP, WeakETag_)
+    {
+        optional<ETag> weak = ETag::Parse ("W/\"v1\""sv);
+        ASSERT_TRUE (weak.has_value ());
+        EXPECT_TRUE (weak->fWeak);
+        EXPECT_EQ (weak->fValue, "v1"sv);
+        EXPECT_EQ (weak->As<String> (), "W/\"v1\""sv);
+        optional<ETag> strong = ETag::Parse ("\"v2\""sv);
+        ASSERT_TRUE (strong.has_value ());
+        EXPECT_FALSE (strong->fWeak);
+        EXPECT_EQ (strong->As<String> (), "\"v2\""sv);
+
+        Headers h;
+        h.Add (String{HeaderName::kETag}, "W/\"v1\""sv);
+        EXPECT_EQ (h.LookupOne (String{HeaderName::kETag}), "W/\"v1\""sv);
+        h.Add (String{HeaderName::kIfNoneMatch}, "W/\"v1\", \"v2\""sv);
+        EXPECT_EQ (h.LookupOne (String{HeaderName::kIfNoneMatch}), "W/\"v1\", \"v2\""sv);
+    }
 }
 
 namespace {

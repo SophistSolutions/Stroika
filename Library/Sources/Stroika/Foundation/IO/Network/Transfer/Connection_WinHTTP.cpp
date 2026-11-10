@@ -165,19 +165,21 @@ namespace {
              * when called within HealthFrameWorks - for example.
              *
              */
-            String                  userAgent     = fOptions_.fUserAgent;
-            Mapping<String, String> useHeadersMap = useRequest.fOverrideHeaders;
-            {
-                // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
-                // appears to not decode (and neither do I).
-                useHeadersMap.Add (HeaderName::kAcceptEncoding, String{});
-            }
+            String             userAgent = fOptions_.fUserAgent;
             Cache::EvalContext cacheContext;
             if (fOptions_.fCache != nullptr) {
                 if (auto r = fOptions_.fCache->OnBeforeFetch (&cacheContext, fURL_.GetSchemeAndAuthority (), &useRequest)) {
                     // shortcut - we already have a cached answer
                     return *r;
                 }
+            }
+            // after OnBeforeFetch, which may add the cache's revalidation headers (If-None-Match, If-Modified-Since); names compare
+            // as HTTP's do, so a header added below replaces the request's of that name in any case
+            Mapping<String, String> useHeadersMap{kHeaderNameEqualsComparer, useRequest.fOverrideHeaders.As<Mapping<String, String>> ()};
+            {
+                // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
+                // appears to not decode (and neither do I).
+                useHeadersMap.Add (HeaderName::kAcceptEncoding, String{});
             }
             {
                 if (useHeadersMap.Lookup (HeaderName::kUserAgent, &userAgent)) {

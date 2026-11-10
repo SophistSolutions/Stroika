@@ -3243,18 +3243,13 @@ namespace {
         Request r;
         r.fMethod               = method;
         r.fAuthorityRelativeURL = URI::ParseRelative ("/event"sv);
-        r.fOverrideHeaders      = headers;
+        r.fOverrideHeaders      = IO::Network::HTTP::Headers{headers};
         return c.Send (r);
     }
     // a response header, by name - whatever its case
     String GENAHeader_ (const IO::Network::Transfer::Response& r, const String& name)
     {
-        for (const Common::KeyValuePair<String, String>& h : r.GetHeaders ()) {
-            if (String::EqualsComparer{eCaseInsensitive}(h.fKey, name)) {
-                return h.fValue.Trim ();
-            }
-        }
-        return String{};
+        return r.GetHeaders ().LookupOne (name).value_or (String{}).Trim ();
     }
 
     /*

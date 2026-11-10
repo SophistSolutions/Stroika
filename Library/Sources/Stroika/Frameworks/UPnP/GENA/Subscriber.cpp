@@ -42,10 +42,8 @@ namespace {
     // a response header, by name - whatever its case
     optional<String> Header_ (const Transfer::Response& r, const String& name)
     {
-        for (const KeyValuePair<String, String>& h : r.GetHeaders ()) {
-            if (String::EqualsComparer{eCaseInsensitive}(h.fKey, name)) {
-                return h.fValue.Trim ();
-            }
+        if (optional<String> v = r.GetHeaders ().LookupOne (name)) {
+            return v->Trim ();
         }
         return nullopt;
     }
@@ -161,7 +159,7 @@ public:
         Transfer::Request r;
         r.fMethod               = method;
         r.fAuthorityRelativeURL = fEventSubURL_.GetAuthorityRelativeResource<URI> ();
-        r.fOverrideHeaders      = headers;
+        r.fOverrideHeaders      = IO::Network::HTTP::Headers{headers};
         return c.SendAndThrowOnFailure (r);
     }
     // a SUBSCRIBE - new, or the renewal of sid - and what it granted: the SID, and TIMEOUT (also kept in fGranted_)

@@ -306,7 +306,7 @@ namespace {
                     c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer", "useChunked=true"sv});
                 EXPECT_TRUE (r.GetSucceeded ());
                 //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
-                EXPECT_TRUE (r.GetHeaders ().LookupValue (IO ::Network::HTTP::HeaderName::kTransferEncoding).Contains ("chunked"));
+                EXPECT_TRUE (r.GetHeaders ().LookupOne (String{IO::Network::HTTP::HeaderName::kTransferEncoding}).value_or (String{}).Contains ("chunked"));
                 EXPECT_GT (r.GetData ().size (), 100u);
             }
             {
@@ -314,7 +314,7 @@ namespace {
                     c.GET (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/test-chunked-transfer", "useChunked=false"sv});
                 //DbgTrace ("respheaders={}"_f, r.GetHeaders ());
                 EXPECT_TRUE (r.GetSucceeded ());
-                EXPECT_EQ (r.GetHeaders ().Lookup (IO ::Network::HTTP::HeaderName::kTransferEncoding), nullopt);
+                EXPECT_EQ (r.GetHeaders ().LookupOne (String{IO::Network::HTTP::HeaderName::kTransferEncoding}), nullopt);
                 EXPECT_GT (r.GetData ().size (), 100u);
             }
         }
@@ -334,7 +334,7 @@ namespace {
         IO::Network::Transfer::Request r;
         r.fMethod               = method;
         r.fAuthorityRelativeURL = URI{path};
-        r.fOverrideHeaders      = headers;
+        r.fOverrideHeaders      = IO::Network::HTTP::Headers{headers};
         return c.Send (r);
     }
     const Route kFRED_{"FRED"_RegEx, [] (Request&, Response& response) {
@@ -389,8 +389,8 @@ namespace {
                               {String{HeaderName::kAccessControlRequestHeaders}, requestHeaders}})
                     .GetHeaders ();
             };
-            EXPECT_EQ (preflight ("X-Custom"sv).Lookup (String{HeaderName::kAccessControlAllowHeaders}), "X-Custom"sv);
-            EXPECT_EQ (preflight ("X-Other"sv).Lookup (String{HeaderName::kAccessControlAllowHeaders}), nullopt);
+            EXPECT_EQ (preflight ("X-Custom"sv).LookupOne (String{HeaderName::kAccessControlAllowHeaders}), "X-Custom"sv);
+            EXPECT_EQ (preflight ("X-Other"sv).LookupOne (String{HeaderName::kAccessControlAllowHeaders}), nullopt);
         }
         catch (const RequiredComponentMissingException&) {
             DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
@@ -415,7 +415,7 @@ namespace {
             if (method == Methods::kOptions) {
                 headers.Add ("Access-Control-Request-Method"sv, String{Methods::kGet});
             }
-            Mapping<String, String> r = Ask_ (method, "/FRED"sv, headers).GetHeaders ();
+            Mapping<String, String> r = Ask_ (method, "/FRED"sv, headers).GetHeaders ().As<Mapping<String, String>> ();
             return make_pair (r.Lookup (String{HeaderName::kAccessControlAllowOrigin}), r.Lookup (String{HeaderName::kAccessControlAllowCredentials}));
         };
         try {

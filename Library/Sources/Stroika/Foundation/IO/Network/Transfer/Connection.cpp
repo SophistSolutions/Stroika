@@ -80,7 +80,7 @@ Response Connection::Ptr::GET (const URI& l, const Mapping<String, String>& extr
     Request r;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kGet;
-    r.fOverrideHeaders      = extraHeaders;
+    r.fOverrideHeaders      = HTTP::Headers{extraHeaders};
     return SendAndThrowOnFailure (r);
 }
 
@@ -92,7 +92,7 @@ Response Connection::Ptr::PATCH (const URI& l, const TypedBLOB& body, const Mapp
     Request r;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kPatch;
-    r.fOverrideHeaders      = extraHeaders;
+    r.fOverrideHeaders      = HTTP::Headers{extraHeaders};
     r.SetTypedBLOB (body);
     return SendAndThrowOnFailure (r);
 }
@@ -105,7 +105,7 @@ Response Connection::Ptr::POST (const URI& l, const TypedBLOB& body, const Mappi
     Request r;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kPost;
-    r.fOverrideHeaders      = extraHeaders;
+    r.fOverrideHeaders      = HTTP::Headers{extraHeaders};
     r.SetTypedBLOB (body);
     return SendAndThrowOnFailure (r);
 }
@@ -118,7 +118,7 @@ Response Connection::Ptr::DELETE (const URI& l, const Mapping<String, String>& e
     Request r;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kDelete;
-    r.fOverrideHeaders      = extraHeaders;
+    r.fOverrideHeaders      = HTTP::Headers{extraHeaders};
     return SendAndThrowOnFailure (r);
 }
 
@@ -130,7 +130,7 @@ Response Connection::Ptr::PUT (const URI& l, const TypedBLOB& body, const Mappin
     Request r;
     r.fMethod               = HTTP::Methods::kPut;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
-    r.fOverrideHeaders      = extraHeaders;
+    r.fOverrideHeaders      = HTTP::Headers{extraHeaders};
     r.SetTypedBLOB (body);
     return SendAndThrowOnFailure (r);
 }
@@ -143,7 +143,7 @@ Response Connection::Ptr::OPTIONS (const URI& l, const Mapping<String, String>& 
     Request r;
     r.fMethod               = HTTP::Methods::kOptions;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
-    r.fOverrideHeaders      = extraHeaders;
+    r.fOverrideHeaders      = HTTP::Headers{extraHeaders};
     return SendAndThrowOnFailure (r);
 }
 

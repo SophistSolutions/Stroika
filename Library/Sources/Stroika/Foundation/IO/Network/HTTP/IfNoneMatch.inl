@@ -34,11 +34,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         Containers::Sequence<ETag> result;
         wstring                    t = wireFormat.As<wstring> ();
         wstring                    curETagToken;
-        bool                       readingETag = false;
+        bool                       readingETag   = false;
+        int                        quotesInToken = 0; // a tag ends at its second quote - the first opens it, after any W/
         for (auto i = t.begin (); i != t.end (); ++i) {
             if (readingETag) {
                 curETagToken += *i;
-                if (*i == '\"') {
+                if (*i == '\"' and ++quotesInToken == 2) {
                     if (auto oe = ETag::Parse (curETagToken)) {
                         result += *oe;
                         readingETag = false;
@@ -53,7 +54,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
             else {
                 if (*i == 'W' or *i == '\"') {
                     curETagToken += *i;
-                    readingETag = true;
+                    readingETag   = true;
+                    quotesInToken = *i == '\"' ? 1 : 0;
                 }
             }
         }

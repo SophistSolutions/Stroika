@@ -88,8 +88,19 @@ String InternetMediaType::As () const
     if (fSuffix_) {
         sb << "+"sv << fSuffix_->GetPrintName ();
     }
+    // each parameter as name=value, a value that is not a token quoted (RFC 9110, 5.6.4 and 5.6.6)
+    static constexpr string_view kTokenPunctuation_ = "!#$%&'*+-.^_`|~"sv;
+    auto                         isTokenChar        = [] (Character c) {
+        return c.IsASCII () and (c.IsAlphaNumeric () or kTokenPunctuation_.find (c.GetAsciiCode ()) != string_view::npos);
+    };
     for (const auto& p : fParameters_) {
-        sb << "; "sv << p.fKey << ": "sv << p.fValue;
+        sb << "; "sv << p.fKey << "="sv;
+        if (not p.fValue.empty () and p.fValue.All (isTokenChar)) {
+            sb << p.fValue;
+        }
+        else {
+            sb << "\""sv << p.fValue.ReplaceAll ("\\"sv, "\\\\"sv).ReplaceAll ("\""sv, "\\\""sv) << "\""sv;
+        }
     }
     return sb;
 }

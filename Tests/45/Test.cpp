@@ -4,6 +4,8 @@
 //  TEST    Foundation::IO::Network::Transfer
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <random>
 
@@ -382,7 +384,7 @@ namespace {
         {
             Response r = c.GET (URI{"http://www.google.com"});
             VerifyTestResultWarning (r.GetSucceeded ());
-            for (auto i : r.GetHeaders ()) {
+            for (auto i : r.GetHeaders ().As<Containers::Mapping<String, String>> ()) {
                 DbgTrace ("{}={}"_f, i.fKey, i.fValue);
             }
             InternetMediaType contentType  = r.GetContentType ().value_or (InternetMediaType{});
@@ -599,11 +601,11 @@ namespace {
             for (URI u : initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}) {
                 try {
                     Response r = c.GET (u);
-                    EXPECT_TRUE (not r.GetHeaders ().ContainsKey (Cache::Options::kCachedResultHeaderDefault));
+                    EXPECT_TRUE (not r.GetHeaders ().LookupOne (Cache::Options::kCachedResultHeaderDefault).has_value ());
                     EXPECT_TRUE (r.GetSucceeded ());
                     EXPECT_TRUE (r.GetData ().size () > 1);
                     Response r2           = c.GET (u);
-                    bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::Options::kCachedResultHeaderDefault);
+                    bool     wasFromCache = r2.GetHeaders ().LookupOne (Cache::Options::kCachedResultHeaderDefault).has_value ();
                     EXPECT_TRUE (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
                     DbgTrace ("2nd lookup ({}) wasFromCache={}"_f, Characters::ToString (u),
                               Characters::ToString (wasFromCache)); // cannot assert cuz some servers cachable, others not
@@ -678,8 +680,8 @@ namespace {
         // expired, so not answered from the cache - but asked for only if changed
         Cache::EvalContext context;
         EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request));
-        EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfModifiedSince}), "Wed, 09 Jun 2021 10:18:14 GMT"sv);
-        EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfNoneMatch}), "\"v1\""sv);
+        EXPECT_EQ (request.fOverrideHeaders.LookupOne (String{HTTP::HeaderName::kIfModifiedSince}), "Wed, 09 Jun 2021 10:18:14 GMT"sv);
+        EXPECT_EQ (request.fOverrideHeaders.LookupOne (String{HTTP::HeaderName::kIfNoneMatch}), "\"v1\""sv);
     }
 
     /*
@@ -768,7 +770,7 @@ namespace {
         // no expiry given, so stale at once - and asked for only if changed
         Cache::EvalContext context;
         EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request));
-        EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfNoneMatch}), "W/\"v1\""sv);
+        EXPECT_EQ (request.fOverrideHeaders.LookupOne (String{HTTP::HeaderName::kIfNoneMatch}), "W/\"v1\""sv);
     }
 
     /*
@@ -843,7 +845,7 @@ namespace {
     {
         Containers::Mapping<String, String> headers{{"etag"sv, "\"v1\""sv}, {"cache-control"sv, "max-age=300"sv}, {"content-type"sv, "text/plain"sv}};
         Response response{Memory::BLOB{}, HTTP::StatusCodes::kOK, headers};
-        EXPECT_EQ (response.GetHeaders ().LookupValue (String{HTTP::HeaderName::kETag}), "\"v1\""sv);
+        EXPECT_EQ (response.GetHeaders ().LookupOne (String{HTTP::HeaderName::kETag}), "\"v1\""sv);
         EXPECT_TRUE (response.GetContentType () == InternetMediaType{"text/plain"sv});
 
         Cache::Element element{response};
@@ -851,6 +853,34 @@ namespace {
         optional<Time::DateTime> validUntil = element.IsValidUntil (); // by its max-age
         ASSERT_TRUE (validUntil.has_value ());
         EXPECT_TRUE (*validUntil > Time::DateTime::Now ());
+    }
+
+    /*
+     *  A response's headers are whatever a server sent, so a malformed value - a Content-Type that is no media type - does not
+     *  make the Response, or a question about it, throw: that header reads as absent, and the rest - a weak ETag among them - are kept
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, ResponseWithMalformedHeader_)
+    {
+        Containers::Mapping<String, String> headers{
+            {HTTP::HeaderName::kContentType, "not a media type"sv}, {HTTP::HeaderName::kETag, "W/\"v1\""sv}, {"X-Other"sv, "kept"sv}};
+        optional<Response> response;
+        EXPECT_NO_THROW (response.emplace (Memory::BLOB{}, HTTP::StatusCodes::kOK, headers));
+        ASSERT_TRUE (response.has_value ());
+        optional<InternetMediaType> contentType;
+        EXPECT_NO_THROW (contentType = response->GetContentType ());
+        EXPECT_FALSE (contentType.has_value ());
+        EXPECT_EQ (response->GetHeaders ().LookupOne (String{HTTP::HeaderName::kETag}), "W/\"v1\""sv);
+        EXPECT_EQ (response->GetHeaders ().LookupOne ("x-other"sv), "kept"sv);
+    }
+
+    /*
+     *  A response's charset comes from its Content-Type's charset parameter
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, ResponseCharset_)
+    {
+        Response response{Memory::BLOB{}, HTTP::StatusCodes::kOK,
+                          Containers::Mapping<String, String>{{HTTP::HeaderName::kContentType, "text/plain; charset=utf-8"sv}}};
+        EXPECT_EQ (response.GetCharset (), Characters::Charset{"utf-8"sv});
     }
 }
 
@@ -865,7 +895,7 @@ namespace {
                 EXPECT_TRUE (r.GetSucceeded ());
                 EXPECT_TRUE (r.GetData ().size () > 1);
                 Response r2           = c.GET (u);
-                bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::Options::kCachedResultHeaderDefault);
+                bool     wasFromCache = r2.GetHeaders ().LookupOne (Cache::Options::kCachedResultHeaderDefault).has_value ();
                 EXPECT_TRUE (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
                 DbgTrace ("2nd lookup ({}) wasFromCache={}"_f, Characters::ToString (u),
                           Characters::ToString (wasFromCache)); // cannot assert cuz some servers cachable, others not
@@ -1125,6 +1155,8 @@ namespace {
 namespace {
     /*
      *  A server on loopback answering each request with its method, a newline, and its body - one request to a connection.
+     *  With fEchoHeaders, it answers instead with the request's header block (its request line, then each header line, each
+     *  ending in CRLF); fExtraResponseHeaders (lines, each ending in CRLF) go in each response's header.
      */
     struct EchoMethodAndBodyServer_ {
         ConnectionOrientedMasterSocket::Ptr fListener{[] () {
@@ -1134,10 +1166,12 @@ namespace {
             return l;
         }()};
         URI                                 fSite{"http://127.0.0.1:{}"_f(fListener.GetLocalAddress ()->GetPort ())};
+        bool                                fEchoHeaders{false};
+        string                              fExtraResponseHeaders;
         // accept only once a request is waiting: a thread blocked in Accept cannot be aborted on Windows
         Thread::CleanupPtr fServer{Thread::CleanupPtr::eAbortBeforeWaiting,
                                    Thread::New (
-                                       [listener = fListener] () {
+                                       [listener = fListener, echoHeaders = fEchoHeaders, extraResponseHeaders = fExtraResponseHeaders] () {
                                            while (true) {
                                                Thread::CheckForInterruption ();
                                                if (WaitForIOReady<ConnectionOrientedMasterSocket::Ptr>{listener}.WaitQuietly (100ms).empty ()) {
@@ -1165,10 +1199,12 @@ namespace {
                                                }
                                                while (request.size () < headersEnd + 4 + length and readMore ()) {
                                                }
-                                               const string answer =
-                                                   request.substr (0, request.find (' ')) + "\n" + request.substr (headersEnd + 4, length);
-                                               const string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
-                                                                       std::to_string (answer.size ()) + "\r\nConnection: close\r\n\r\n" + answer;
+                                               const string answer = echoHeaders ? request.substr (0, headersEnd + 2)
+                                                                                 : request.substr (0, request.find (' ')) + "\n" +
+                                                                                       request.substr (headersEnd + 4, length);
+                                               const string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n" + extraResponseHeaders +
+                                                                       "Content-Length: " + std::to_string (answer.size ()) +
+                                                                       "\r\nConnection: close\r\n\r\n" + answer;
                                                s.Write (as_bytes (span{response}));
                                                s.Close ();
                                            }
@@ -1194,8 +1230,8 @@ namespace {
             Request notify;
             notify.fMethod               = "NOTIFY"sv;
             notify.fAuthorityRelativeURL = URI{"/events"sv};
-            notify.fOverrideHeaders      = Containers::Mapping<String, String>{{"Content-Type"sv, "text/xml"sv}};
-            notify.fData                 = "<e:propertyset/>"_blob;
+            notify.fOverrideHeaders = HTTP::Headers{Containers::Mapping<String, String>{{HTTP::HeaderName::kContentType, "text/xml"sv}}};
+            notify.fData            = "<e:propertyset/>"_blob;
             EXPECT_EQ (c.Send (notify).GetData ().As<string> (), "NOTIFY\n<e:propertyset/>");
             EXPECT_EQ (c.GET (URI{"/after"sv}).GetData ().As<string> (), "GET\n"); // the same connection's next request: a GET
         };
@@ -1239,6 +1275,118 @@ namespace {
 #endif
 #if qStroika_HasComponent_WinHTTP
         check (WinHTTP::Connection::New (kDefaultTestOptions_));
+#endif
+    }
+
+    // the values of the header lines of this name - compared ignoring case - in a request's header block, as
+    // EchoMethodAndBodyServer_'s fEchoHeaders answers it
+    std::vector<string> HeaderValues_ (const string& headerBlock, std::string_view name)
+    {
+        auto equalsIgnoringCase = [] (std::string_view a, std::string_view b) {
+            return a.size () == b.size () and std::equal (a.begin (), a.end (), b.begin (), [] (char x, char y) {
+                       return std::tolower (static_cast<unsigned char> (x)) == std::tolower (static_cast<unsigned char> (y));
+                   });
+        };
+        std::vector<string> result;
+        // each header line follows a CRLF: the first line is the request line
+        for (size_t at = headerBlock.find ("\r\n"); at != string::npos and at + 2 < headerBlock.size ();) {
+            size_t           lineEnd = headerBlock.find ("\r\n", at + 2);
+            std::string_view line{headerBlock.data () + at + 2, (lineEnd == string::npos ? headerBlock.size () : lineEnd) - (at + 2)};
+            if (size_t colon = line.find (':'); colon != std::string_view::npos and equalsIgnoringCase (line.substr (0, colon), name)) {
+                std::string_view value = line.substr (colon + 1);
+                while (not value.empty () and value.front () == ' ') {
+                    value.remove_prefix (1);
+                }
+                result.emplace_back (value);
+            }
+            at = lineEnd;
+        }
+        return result;
+    }
+
+    /*
+     *  Header names compare ignoring case in a request too (RFC 9110, 5.1): a Content-Type set under another case of the name is
+     *  found, and replaced - however fOverrideHeaders got it
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, RequestHeaderNamesIgnoreCase_)
+    {
+        auto check = [] (Request request) {
+            EXPECT_TRUE (request.GetContentType () == InternetMediaType{"text/plain"sv});
+            request.SetContentType (InternetMediaType{"application/json"sv});
+            EXPECT_EQ (request.fOverrideHeaders.LookupAll (String{HTTP::HeaderName::kContentType}).size (), 1u);
+            size_t nHeaders = request.fOverrideHeaders.As<Containers::Collection<Common::KeyValuePair<String, String>>> ().size ();
+            EXPECT_EQ (nHeaders, 1u); // the one Content-Type, and nothing else
+            EXPECT_TRUE (request.GetContentType () == InternetMediaType{"application/json"sv});
+        };
+        {
+            Request request;
+            request.fOverrideHeaders.Add (String{"content-type"sv}, String{"text/plain"sv});
+            check (request);
+        }
+        {
+            Request request;
+            request.fOverrideHeaders = HTTP::Headers{Containers::Mapping<String, String>{{"content-type"sv, "text/plain"sv}}};
+            check (request);
+        }
+    }
+
+    /*
+     *  And so on the wire: a caller's "content-type" and the one its body's type sets go as one Content-Type (the body's), and a
+     *  caller's "user-agent" as the one User-Agent
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, RequestHeaderNamesIgnoreCaseOnTheWire_)
+    {
+        Debug::TraceContextBumper ctx{"RequestHeaderNamesIgnoreCaseOnTheWire_"};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP)";
+#endif
+        EchoMethodAndBodyServer_ server{.fEchoHeaders = true};
+        [[maybe_unused]] auto    check = [&] (Connection::Ptr c) {
+            using namespace Memory::Literals;
+            c.SetSchemeAndAuthority (server.fSite);
+            string sent = c.POST (URI{"/x"sv}, TypedBLOB{.fData = "{}"_blob, .fType = InternetMediaType{"application/json"sv}},
+                                  Containers::Mapping<String, String>{{"content-type"sv, "text/plain"sv}})
+                              .GetData ()
+                              .As<string> ();
+            EXPECT_EQ (HeaderValues_ (sent, HTTP::HeaderName::kContentType), (std::vector<string>{"application/json"})) << sent;
+            sent = c.GET (URI{"/y"sv}, Containers::Mapping<String, String>{{"user-agent"sv, "probe"sv}}).GetData ().As<string> ();
+            EXPECT_EQ (HeaderValues_ (sent, HTTP::HeaderName::kUserAgent), (std::vector<string>{"probe"})) << sent;
+        };
+#if qStroika_HasComponent_libcurl
+        check (LibCurl::Connection::New (kDefaultTestOptions_));
+#endif
+#if qStroika_HasComponent_WinHTTP
+        check (WinHTTP::Connection::New (kDefaultTestOptions_));
+#endif
+    }
+
+    /*
+     *  A connection with a cache asks for a stale response only if it changed: its second GET of a URL whose response had an
+     *  ETag (and no expiry - so stale at once) sends If-None-Match with it (RFC 9111, 4.3.1)
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, CacheRevalidates_)
+    {
+        Debug::TraceContextBumper ctx{"CacheRevalidates_"};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP)";
+#endif
+        EchoMethodAndBodyServer_ server{.fEchoHeaders = true, .fExtraResponseHeaders = "ETag: \"v1\"\r\n"};
+        [[maybe_unused]] auto    withCache = [] () {
+            Connection::Options o = kDefaultTestOptions_;
+            o.fCache              = Cache::New (); // each connection its own, so neither sees what the other cached
+            return o;
+        };
+        [[maybe_unused]] auto check = [&] (Connection::Ptr c) {
+            c.SetSchemeAndAuthority (server.fSite);
+            (void)c.GET (URI{"/cached"sv});
+            string sent = c.GET (URI{"/cached"sv}).GetData ().As<string> ();
+            EXPECT_EQ (HeaderValues_ (sent, HTTP::HeaderName::kIfNoneMatch), (std::vector<string>{"\"v1\""})) << sent;
+        };
+#if qStroika_HasComponent_libcurl
+        check (LibCurl::Connection::New (withCache ()));
+#endif
+#if qStroika_HasComponent_WinHTTP
+        check (WinHTTP::Connection::New (withCache ()));
 #endif
     }
 }

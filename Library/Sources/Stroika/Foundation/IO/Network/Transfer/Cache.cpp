@@ -28,12 +28,6 @@ using namespace Stroika::Foundation::Time;
 
 namespace {
 
-    // an entity-tag as HTTP writes it: "xyz", or W/"xyz" for a weak one (RFC 9110, 8.8.3)
-    String EntityTag_ (const String& etag, bool weak)
-    {
-        return (weak ? "W/\""sv : "\""sv) + etag + "\""sv;
-    }
-
     struct DefaultCacheRep_ : Transfer::Cache::IRep {
 
         using Element     = Transfer::Cache::Element;
@@ -84,7 +78,7 @@ namespace {
                         bool canCheckCacheETAG = o->fETag.has_value ();
                         if (canCheckCacheETAG) {
                             context->fCachedElement = *o;
-                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfNoneMatch, EntityTag_ (*o->fETag, o->fETagIsWeak));
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfNoneMatch, HTTP::ETag{*o->fETag, o->fETagIsWeak}.As<String> ());
                             // keep going as we can combine If-None-Match/If-Modified-Since
                         }
                         bool canCheckModifiedSince = o->fLastModified.has_value ();
@@ -135,7 +129,7 @@ namespace {
                             // the 304's header fields update the stored response's (RFC 9111, 4.3.4), so it is fresh again by
                             // them - or by the default TTL - and stored again
                             Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
-                            for (const auto& [name, value] : response->GetHeaders ()) {
+                            for (const auto& [name, value] : response->GetHeaders ().As<Mapping<String, String>> ()) {
                                 if (not HTTP::kHeaderNameEqualsComparer (name, HTTP::HeaderName::kContentLength)) {
                                     headers.Add (name, value);
                                 }
@@ -191,7 +185,7 @@ namespace {
 Transfer::Cache::Element::Element (const Response& response)
     : fBody{response.GetData ()}
 {
-    Mapping<String, String> headers = response.GetHeaders ();
+    Mapping<String, String> headers = response.GetHeaders ().As<Mapping<String, String>> ();
     for (auto hi = headers.begin (); hi != headers.end ();) {
         // HTTP Date formats:
         //
@@ -202,17 +196,12 @@ Transfer::Cache::Element::Element (const Response& response)
         //      a fixed - length and single - zone subset of the date and time specification used by the Internet Message Format[RFC5322].
         //
         if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kETag)) {
-            // "xyz", or W/"xyz" - a weak one (RFC 9110, 8.8.3)
-            String etag   = hi->fValue;
-            bool   isWeak = etag.StartsWith ("W/"sv);
-            if (isWeak) {
-                etag = etag.SubString (2);
-            }
-            if (etag.size () < 2 or not etag.StartsWith ("\""sv) or not etag.EndsWith ("\""sv)) {
+            optional<HTTP::ETag> etag = HTTP::ETag::Parse (hi->fValue); // "xyz", or W/"xyz" - a weak one
+            if (not etag) {
                 Execution::Throw (Execution::Exception{"malformed etag"sv});
             }
-            fETag       = etag.SubString (1, -1);
-            fETagIsWeak = isWeak;
+            fETag       = etag->fValue;
+            fETagIsWeak = etag->fWeak;
             hi          = headers.erase (hi);
         }
         else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kExpires)) {
@@ -259,7 +248,7 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
 {
     Mapping<String, String> result = fOtherHeaders;
     if (fETag) {
-        result.Add (HTTP::HeaderName::kETag, EntityTag_ (*fETag, fETagIsWeak));
+        result.Add (HTTP::HeaderName::kETag, HTTP::ETag{*fETag, fETagIsWeak}.As<String> ());
     }
     if (fExpires) {
         result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::kHTTPDateFormat));

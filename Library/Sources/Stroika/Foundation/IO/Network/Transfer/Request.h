@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -36,8 +37,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *      have very different needs about to what to specify/retrieve in one case or the other.
      *
      *      @todo maybe reconsider?
-     * 
-     *  @todo   https://github.com/SophistSolutions/Stroika/issues/858 (STK-724) - IO::Network::Transfer::Request/Response should use IO::Network::HTTP::Headers (not mapping)
      */
     struct Request {
         String fMethod;
@@ -45,8 +44,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /*
          * an HTTP request contains an authority-relative URL (basically path + query - maybe also fragment but that will be ignored)
          */
-        URI                     fAuthorityRelativeURL;
-        Mapping<String, String> fOverrideHeaders;
+        URI fAuthorityRelativeURL;
+
+        /**
+         *  The request's headers, beyond those the connection writes itself. An HTTP::Headers, so names compare ignoring case,
+         *  as HTTP's do (RFC 9110, 5.1): adding "content-type" replaces a "Content-Type".
+         */
+        HTTP::Headers fOverrideHeaders;
 
         /*
          *  usually empty, but provided for some methods like POST
@@ -54,12 +58,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         BLOB fData;
 
         /**
-         *  Scans fOverrideHeaders
+         *  fOverrideHeaders' Content-Type
          */
         nonvirtual optional<InternetMediaType> GetContentType () const;
 
         /**
-         * updates fOverrideHeaders
+         *  Sets (or, given nullopt, removes) fOverrideHeaders' Content-Type
          */
         nonvirtual void SetContentType (const optional<InternetMediaType>& ct);
 

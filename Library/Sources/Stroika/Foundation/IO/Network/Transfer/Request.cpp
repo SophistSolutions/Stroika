@@ -23,18 +23,12 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
  */
 optional<InternetMediaType> Request::GetContentType () const
 {
-    // static_assert (convertible_to<Stroika::Foundation::Characters::String, Stroika::Foundation::DataExchange::InternetMediaType>);
-    return OptionallyCopy<InternetMediaType> (fOverrideHeaders.Lookup (HTTP::HeaderName::kContentType));
+    return fOverrideHeaders.contentType ();
 }
 
 void Request::SetContentType (const optional<InternetMediaType>& ct)
 {
-    if (ct) {
-        fOverrideHeaders.Add (HTTP::HeaderName::kContentType, ct->As<String> ());
-    }
-    else {
-        fOverrideHeaders.Remove (HTTP::HeaderName::kContentType);
-    }
+    fOverrideHeaders.contentType = ct;
 }
 
 TypedBLOB Request::GetTypedBLOB () const

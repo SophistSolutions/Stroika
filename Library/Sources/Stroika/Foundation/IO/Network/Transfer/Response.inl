@@ -13,7 +13,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     {
         return fData_;
     }
-    inline Mapping<String, String> Response::GetHeaders () const
+    inline HTTP::Headers Response::GetHeaders () const
     {
         return fHeaders_;
     }

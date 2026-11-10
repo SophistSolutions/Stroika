@@ -140,12 +140,12 @@ public:
                 Transfer::Request r;
                 r.fMethod               = "NOTIFY"sv;
                 r.fAuthorityRelativeURL = u.GetAuthorityRelativeResource<URI> ();
-                r.fOverrideHeaders      = Mapping<String, String>{{"Content-Type"sv, "text/xml; charset=\"utf-8\""sv},
-                                                                  {"NT"sv, "upnp:event"sv},
-                                                                  {"NTS"sv, "upnp:propchange"sv},
-                                                                  {"SID"sv, sid},
-                                                                  {"SEQ"sv, "{}"_f(seq)}};
-                r.fData                 = Memory::BLOB{as_bytes (span{body})};
+                r.fOverrideHeaders = HTTP::Headers{Mapping<String, String>{{HTTP::HeaderName::kContentType, "text/xml; charset=\"utf-8\""sv},
+                                                                           {"NT"sv, "upnp:event"sv},
+                                                                           {"NTS"sv, "upnp:propchange"sv},
+                                                                           {"SID"sv, sid},
+                                                                           {"SEQ"sv, "{}"_f(seq)}}};
+                r.fData = Memory::BLOB{as_bytes (span{body})};
                 if (c.Send (r).GetSucceeded ()) {
                     return;
                 }
