@@ -402,7 +402,10 @@ endif
 #	$1 is the output file name (EXE)
 #	$2 [optional argument - defaults to stroika-frameworks] pkg-config dependencies for pkg-config --libs call (e.g. stroika-frameworks, stroika-foundation, or stroika-platform)
 #   $3 [optional argument - defaults to empty] EXTRA LDFLAGS BEFORE OBJS
-#	$4 [optional argument - defaults to empty] EXTRA LDFLAGS AFTER OBJS
+#	$4 [optional argument - defaults to empty] EXTRA LDFLAGS AFTER OBJS - and after $2's libraries: so not a library that uses
+#	   Stroika. GNU ld reads each archive once, in order, so the Stroika symbols only that library uses stay undefined (MSVC's
+#	   linker does not care about the order, which hides the mistake there). Such a library goes in $2, as a .pc with
+#	   'Requires: stroika-frameworks' - pkg-config then lists it before Stroika's libraries.
 #
 #	\note delayed evaluation
 #	\note does NOT use Platform_LDFLAGS or LDFLAGS (takes as argumements basically)
