@@ -58,8 +58,7 @@ void SemWaitableEvent::Wait ()
     Execution::ThrowPOSIXErrNoIfNegative (s);
 }
 
-// use Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD to workaround https://github.com/SophistSolutions/Stroika/issues/812 (STK-677)
-Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SemWaitableEvent::Set ()
+void SemWaitableEvent::Set ()
 {
 #if qCompilerAndStdLib_unnamed_semaphores_Buggy
     sem_t* pSem = fSem_;

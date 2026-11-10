@@ -548,8 +548,7 @@ void SignalHandlerRegistry::InstallAlternateSignalStack ()
 }
 #endif
 
-// use no_sanitize(thread) to workaround https://github.com/SophistSolutions/Stroika/issues/812 (STK-677)
-Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
+void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
     /*
      *  Important example / stack backtrace to bear in mind:
