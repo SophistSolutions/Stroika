@@ -36,8 +36,6 @@ using namespace Stroika::Frameworks::WebService;
 using namespace Stroika::Frameworks::WebService::SOAP;
 
 namespace {
-    constexpr string_view kEnvelopeNamespace_ = "http://schemas.xmlsoap.org/soap/envelope/"sv;
-
     optional<String> Lookup_ (const Arguments& arguments, const String& name)
     {
         for (const KeyValuePair<String, String>& a : arguments) {
@@ -51,8 +49,9 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
     namespace WriteElement = XML::DOM::Element;
 
-    constexpr string_view  kEnvelopePrefix_ = "s"sv;
-    constexpr string_view  kMethodPrefix_   = "m"sv;
+    constexpr string_view  kEnvelopeNamespace_ = "http://schemas.xmlsoap.org/soap/envelope/"sv;
+    constexpr string_view  kEnvelopePrefix_    = "s"sv;
+    constexpr string_view  kMethodPrefix_      = "m"sv;
     const IO::Network::URI kEnvelopeNamespaceURI_{String{kEnvelopeNamespace_}};
     const IO::Network::URI kEncodingNamespaceURI_{"http://schemas.xmlsoap.org/soap/encoding/"sv};
 
