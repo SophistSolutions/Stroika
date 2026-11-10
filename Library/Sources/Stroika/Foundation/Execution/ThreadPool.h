@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Push the given task into the queue (possibly blocking til space in the Q or throwing if no space in Q, but does NOT block waiting for Q to till).
+         *  Add the given task to the queue (possibly blocking til space in the Q or throwing if no space in Q, but does NOT block waiting for Q to till).
          *
          *  \par Example Usage
          *      \code
@@ -230,7 +230,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  See AbortTask () - it aborts all tasks - if any.
+         *  See AbortTask () - it aborts all tasks - if any: the pending ones are dropped, and each pool thread is aborted (so its
+         *  running task, if any, with it) and replaced by a new one. Returns once the aborted threads are done, or throws when they
+         *  are not, by timeout - one timeout for all of them.
          */
         nonvirtual void AbortTasks (Time::DurationSeconds timeout = Time::kInfinity);
 

@@ -157,29 +157,37 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
     Debug::TraceContextBumper ctx{"ThreadPool::SetPoolSize", "newPoolSize={}, *this={}"_f, poolSize, ToString ()};
     Require (not fAborted_);
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-    DbgTrace ("fThreads_.size ()={}"_f, fThreads_.size ());
-    while (poolSize > fThreads_.size ()) {
-        fThreads_.Add (mkThread_ ());
-    }
+    Collection<Thread::Ptr> removed; // aborted under the lock, but waited for after it, as AbortTasks does
+    {
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        DbgTrace ("fThreads_.size ()={}"_f, fThreads_.size ());
+        while (poolSize > fThreads_.size ()) {
+            fThreads_.Add (mkThread_ ());
+        }
 
-    // Still quite weak implementation of REMOVAL
-    while (poolSize < fThreads_.size ()) {
-        // iterate over threads if any not busy, remove that them first
-        bool anyFoundToKill = false;
-        for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            if (not i->fRunnable->IsRunning ()) {
-                // since we have fCriticalSection_ - we can safely remove this thread
-                fThreads_.Remove (i);
-                anyFoundToKill = true;
+        // Still quite weak implementation of REMOVAL
+        while (poolSize < fThreads_.size ()) {
+            // iterate over threads if any not busy, remove that them first
+            bool anyFoundToKill = false;
+            for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+                if (not i->fRunnable->IsRunning ()) {
+                    // idle, so aborting it costs no task: under fCriticalSection_ it cannot take one (WaitForNextTask_)
+                    i->fThread.Abort ();
+                    removed.Add (i->fThread);
+                    fThreads_.Remove (i);
+                    anyFoundToKill = true;
+                    break;
+                }
+            }
+            if (not anyFoundToKill) {
+                // @todo - fix this better/eventually - either throw or wait...
+                DbgTrace ("Failed to lower the loop size - cuz all threads busy - giving up"_f);
                 break;
             }
         }
-        if (not anyFoundToKill) {
-            // @todo - fix this better/eventually - either throw or wait...
-            DbgTrace ("Failed to lower the loop size - cuz all threads busy - giving up"_f);
-            return;
-        }
+    }
+    for (const Thread::Ptr& t : removed) {
+        t.AbortAndWaitForDone ();
     }
 }
 
@@ -275,25 +283,24 @@ void ThreadPool::AbortTask (TaskID task, Time::DurationSeconds timeout)
 void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
 {
     Debug::TraceContextBumper ctx{"ThreadPool::AbortTasks"};
-    auto                      tps = GetPoolSize ();
+    Time::TimePointSeconds    timeoutAt = Time::GetTickCount () + timeout;
+    Collection<Thread::Ptr>   aborted;
     {
+        // each thread is aborted, and replaced by a new one, under the lock - but waited for after it: an aborted thread's cleanup
+        // (MyRunnable_::Run) takes fCriticalSection_
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         fPendingTasks_.clear ();
+        Collection<TPInfo_> replacements;
         for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
+            aborted.Add (ti.fThread);
+            replacements.Add (mkThread_ ());
         }
+        fThreads_ = replacements;
     }
-    {
-        // @todo maybe fix unsafe - waiting here holding the critsec lock - seems deadlock waiting to happen - LGP 2023-11-05
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-        for (const TPInfo_& ti : fThreads_) {
-            // @todo fix wrong timeout value here
-            ti.fThread.AbortAndWaitForDone (timeout);
-        }
-        fThreads_.RemoveAll ();
+    for (const Thread::Ptr& t : aborted) {
+        t.AbortAndWaitForDoneUntil (timeoutAt);
     }
-    // hack - not a good design or impl!!! - waste to recreate if not needed!
-    SetPoolSize (tps);
 }
 
 bool ThreadPool::IsPresent (TaskID task) const
@@ -523,6 +530,8 @@ void ThreadPool::WaitForNextTask_ (PendingTaskInfo_* result)
 
         {
             [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+            // a thread the pool aborted (AbortTasks, SetPoolSize - each under this lock) takes no task
+            Thread::CheckForInterruption ();
             if (not fPendingTasks_.empty ()) {
                 *result = fPendingTasks_.front ();
                 fPendingTasks_.pop_front ();

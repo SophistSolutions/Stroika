@@ -1874,6 +1874,49 @@ namespace {
 }
 
 namespace {
+    /*
+     *  ThreadPool::AbortTasks with a task running: the aborted thread's cleanup takes the pool's lock, so AbortTasks must not wait
+     *  for it holding that lock - and the pool runs tasks again afterwards
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ThreadPool_AbortTasksWhileOneRuns_)
+    {
+        Debug::TraceContextBumper traceCtx{"ThreadPool_AbortTasksWhileOneRuns_"};
+        ThreadPool                p{ThreadPool::Options{.fThreadCount = 1}};
+        WaitableEvent             started;
+        WaitableEvent             neverSet;
+        p.AddTask ([&] () {
+            started.Set ();
+            neverSet.Wait (); // until aborted
+        });
+        started.Wait ();
+        EXPECT_NO_THROW (p.AbortTasks (5s));
+        EXPECT_EQ (p.GetPoolSize (), 1u);
+        atomic<bool>       ran{false};
+        ThreadPool::TaskID task = p.AddTask ([&] () { ran = true; });
+        EXPECT_NO_THROW (p.WaitForTask (task, 5s));
+        EXPECT_TRUE (ran);
+    }
+
+    /*
+     *  ThreadPool::SetPoolSize, shrinking, stops the thread it takes out - so once the pool is gone, no thread of it is left running
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ThreadPool_ShrinkStopsTheThread_)
+    {
+        Debug::TraceContextBumper traceCtx{"ThreadPool_ShrinkStopsTheThread_"};
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+        const Containers::Set<Thread::IDType> before{Thread::GetStatistics ().fRunningThreads};
+        {
+            ThreadPool p{ThreadPool::Options{.fThreadCount = 2}};
+            p.SetPoolSize (1);
+            EXPECT_EQ (p.GetPoolSize (), 1u);
+        }
+        size_t leftRunning = Thread::GetStatistics ().fRunningThreads.Where ([&] (Thread::IDType id) { return not before.Contains (id); }).size ();
+        EXPECT_EQ (leftRunning, 0u);
+#else
+        GTEST_SKIP () << "needs thread statistics (qStroika_Foundation_Execution_Thread_SupportThreadStatistics)";
+#endif
+    }
+
     GTEST_TEST (Foundation_Execution_Threads, all)
     {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
