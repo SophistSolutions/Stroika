@@ -18,14 +18,11 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *  This cache is a generic HTTP fetch cache API, allowing users of the IO::Transfer::Connection code to
- *  use different cache implementations (e.g. one storing to disk, and one to RAM).
+ *  An HTTP cache for IO::Network::Transfer::Connection: IRep is the interface any cache implements (in memory, on disk, ...),
+ *  and a Ptr to one goes in Connection::Options::fCache. Element is a cached response, parsed, with the freshness rules
+ *  (RFC 9111) an implementation can share.
  *
- *  It is hopefully done in such a way that you can do alot of code sharing among these implementations,
- *  but do not need to.
- *
- *  This Cache class also comes with an opaque, one-size-fits all (who they kidding) implementation, with a
- *  handful of configuration options.
+ *  New () makes Stroika's own: in memory, least recently used out first, configured by Options.
  */
 
 namespace Stroika::Foundation::IO::Network::Transfer::Cache {
@@ -39,41 +36,43 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
     struct EvalContext;
 
     /**
+     *  \brief Options for the cache New () makes: Stroika's in-memory cache, of whole responses, by URL
      */
-    struct DefaultOptions {
-        DefaultOptions () = default;
-
-        optional<size_t> fCacheSize;
+    struct Options {
+        /**
+         *  The most responses kept; past it, the least recently used one goes.
+         */
+        size_t fCacheSize{101};
 
         /**
-         *  if not specified via expires header, or max-age etc...
+         *  How long a response stays fresh when it does not say itself (no max-age, no Expires). Unset, such a response is stale
+         *  at once: each use asks the server again - conditionally, where the response has an ETag or Last-Modified.
          */
         optional<Time::Duration> fDefaultResourceTTL;
 
         /**
-        */
+         */
         static const inline String kCachedResultHeaderDefault{"X-Stroika-Cached-Result"sv};
 
         /**
-         *  This header will always appear in cached results (so the caller can tell a Response is 'from cache').
-         *  If nullopt, the header will not be generated. It defaults to kCachedResultHeaderDefault.
+         *  The header added to each response the cache answers (with an empty value), so the caller can tell a Response came
+         *  from the cache. Unset, none is added.
          */
         optional<String> fCachedResultHeader{kCachedResultHeaderDefault};
     };
 
     /**
-     *  Creates a default-styled HTTP cache object. Note - you still must associate this cache object with
-     *  any cache connections you create (typically by assigning it to the Connection creation factory)
+     *  \brief Make an HTTP cache - Stroika's in-memory one - to share among Connections, by assigning it to their
+     *         Connection::Options::fCache (see Ptr)
      *
-     *  NOTE - though the smart ptr Ptr is not fully re-entrant, the letter class created by CreateDefault is fully
-     *  internally synchronized. This means you can re-use it with multiple connections and run those connection requests from as
-     *  many threads as desired.
+     *  The cache is internally synchronized: connections on any number of threads may share it.
      *
-     *  @todo - redo with default argument, but messed up on gcc/clang/not sure why -- LGP 2019-06-27
-     *  @todo - maybe rename New ()
+     *  \note This is Stroika's default implementation of an HTTP cache: it keeps responses in memory, in an LRU cache of
+     *        Options::fCacheSize entries. It is not the only one possible: any subclass of IRep works with the rest of this
+     *        API - an external, disk-based cache, say - and you use yours instead by putting a Ptr to it in
+     *        Connection::Options::fCache.
      */
-    Ptr CreateDefault ();
-    Ptr CreateDefault (const DefaultOptions& options);
+    Ptr New (const Options& options = {});
 
     /**
      *  This is the basic element of data stored in the cache for any cached URL. Some implementations may store more or less,
@@ -94,7 +93,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
 
     public:
         /**
-         *  Check - based on incoming http headers - whether this resoure is cachable.
+         *  Check - based on incoming http headers - whether this resource is cachable.
          */
         virtual bool IsCachable () const;
 
@@ -104,6 +103,9 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
          *
          *  Invalid doesn't mean you must throw away. Just that you must validate (conditional get) to see if this can be re-used.
          *  This returns the amount of time you dont even need to bother revalidating with a conditional get.
+         *
+         *  From the response's headers, as RFC 9111 says: Cache-Control no-cache makes it already past (revalidate each use),
+         *  whatever else they say; else its max-age; else its Expires; else fExpiresDefault.
          */
         virtual optional<Time::DateTime> IsValidUntil () const;
 
@@ -114,7 +116,11 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
         nonvirtual String ToString () const;
 
     public:
-        optional<String>                          fETag;
+        optional<String> fETag; // without its quotes
+        /**
+         *  The ETag came as a weak one (W/"...") - sent back as such, in If-None-Match, which compares weakly (RFC 9110, 13.1.2).
+         */
+        bool                                      fETagIsWeak{false};
         optional<Time::DateTime>                  fExpires;
         optional<Time::DateTime>                  fExpiresDueToMaxAge;
         optional<Time::DateTime>                  fLastModified;
@@ -122,6 +128,11 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
         Memory::BLOB                              fBody;         // no point in a cache entry without this
         optional<DataExchange::InternetMediaType> fContentType;
         Mapping<String, String>                   fOtherHeaders; // headers not captured/extracted above
+        /**
+         *  When a cache's default TTL (Options::fDefaultResourceTTL) has this response go stale - used only where the response says
+         *  nothing itself (no max-age, no Expires). Set by the cache, not from the response.
+         */
+        optional<Time::DateTime> fExpiresDefault;
     };
 
     /**
@@ -163,6 +174,23 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
     };
 
     /**
+     *  \brief A reference to an HTTP cache (an IRep) - what Connection::Options::fCache holds, so every Connection made from those
+     *         options shares the one cache
+     *
+     *  A shared_ptr<IRep>, as a Ptr is: copies refer to the same cache; nullptr means no cache. Get one from New (), or
+     *  implement IRep - a disk cache, say - and make a Ptr of that:
+     *      \code
+     *          Connection::Options options;
+     *          options.fCache     = Cache::New ({.fDefaultResourceTTL = 300s});
+     *          Connection::Ptr c1 = Connection::New (options); // c1 and c2 share one cache
+     *          Connection::Ptr c2 = Connection::New (options);
+     *          ...
+     *          options.fCache->ClearCache ();
+     *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
+     *          The Ptr, as a shared_ptr; the cache, as its IRep says - New's is internally synchronized, so connections
+     *          on any number of threads may share it.
      */
     struct Ptr : shared_ptr<Cache::IRep> {};
 

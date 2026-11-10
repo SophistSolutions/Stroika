@@ -33,9 +33,6 @@ Generally will track stuff here between releases
      a Skel app's root VERSION file for <version>), and nothing gives IntelliSense that directory instead. Only a
      c_cpp_properties.json with no myDefaultIncludePath gets the new default. IntelliSense only: every 3.0d25 release run
      built the samples.
-   - **IO::Network::Transfer::Cache: a quick review, and docs for its Ptr** (LGP 2026-10-24) -
-     Library/Sources/Stroika/Foundation/IO/Network/Transfer/Cache.h: `struct Ptr : shared_ptr<Cache::IRep> {};` has an
-     empty doc comment.
    - **String: a UTF-8 (char8_t) rep** (LGP 2026-11-07; may postpone, once discussed) - so a constant u8 string that is not ASCII
      is shared, not decoded and copied: enum names are UTF-8 now (EnumNameText), shared already when ASCII, as nearly all are.
      String.inl's FromStringConstant has the @todo and the design question (a UTF-8 rep cannot index directly).

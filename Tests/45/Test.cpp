@@ -599,11 +599,11 @@ namespace {
             for (URI u : initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}) {
                 try {
                     Response r = c.GET (u);
-                    EXPECT_TRUE (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
+                    EXPECT_TRUE (not r.GetHeaders ().ContainsKey (Cache::Options::kCachedResultHeaderDefault));
                     EXPECT_TRUE (r.GetSucceeded ());
                     EXPECT_TRUE (r.GetData ().size () > 1);
                     Response r2           = c.GET (u);
-                    bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
+                    bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::Options::kCachedResultHeaderDefault);
                     EXPECT_TRUE (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
                     DbgTrace ("2nd lookup ({}) wasFromCache={}"_f, Characters::ToString (u),
                               Characters::ToString (wasFromCache)); // cannot assert cuz some servers cachable, others not
@@ -640,21 +640,15 @@ namespace {
         using namespace Test_6_TestWithCache_;
 #if qStroika_HasComponent_libcurl
         DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
-            Cache::DefaultOptions cacheOptions{};
-            cacheOptions.fDefaultResourceTTL = 300s;
-            Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
-            Connection::Options options      = kDefaultTestOptions_;
-            options.fCache                   = cache;
+            Connection::Options options = kDefaultTestOptions_;
+            options.fCache              = Cache::New ({.fDefaultResourceTTL = 300s});
             return LibCurl::Connection::New (options);
         });
 #endif
 #if qStroika_HasComponent_WinHTTP
         DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
-            Cache::DefaultOptions cacheOptions{};
-            cacheOptions.fDefaultResourceTTL = 300s;
-            Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
-            Connection::Options options      = kDefaultTestOptions_;
-            options.fCache                   = cache;
+            Connection::Options options = kDefaultTestOptions_;
+            options.fCache              = Cache::New ({.fDefaultResourceTTL = 300s});
             return WinHTTP::Connection::New (options);
         });
 #endif
@@ -667,7 +661,7 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, Cache_StaleIsAskedForConditionally_)
     {
         Debug::TraceContextBumper ctx{"Cache_StaleIsAskedForConditionally_"};
-        Cache::Ptr                cache = Cache::CreateDefault (Cache::DefaultOptions{});
+        Cache::Ptr                cache = Cache::New ();
         URI                       site{"http://www.example.com"sv};
         Request                   request;
         request.fMethod               = HTTP::Methods::kGet;
@@ -713,6 +707,133 @@ namespace {
         ASSERT_TRUE (noCache.has_value ());
         EXPECT_TRUE (*noCache <= Time::DateTime::Now ());
     }
+
+    /*
+     *  How long a response stays fresh: by its max-age, where it has one, not its Expires (RFC 9111, 5.3); and with no-cache, not
+     *  at all - each use is revalidated first (RFC 9111, 5.2.2.4) - whatever its max-age or Expires say.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_ElementFreshness_)
+    {
+        auto validUntil = [] (const Containers::Mapping<String, String>& headers) {
+            return Cache::Element{Response{Memory::BLOB{}, HTTP::StatusCodes::kOK, headers}}.IsValidUntil ();
+        };
+        const String expires{HTTP::HeaderName::kExpires};
+        const String cacheControl{HTTP::HeaderName::kCacheControl};
+        const String past{"Wed, 09 Jun 2021 10:18:14 GMT"sv};
+        const String future = (Time::DateTime::Now () + Time::Duration{3600}).Format (Time::DateTime::kHTTPDateFormat);
+
+        optional<Time::DateTime> maxAgeOverPastExpires = validUntil ({{expires, past}, {cacheControl, "max-age=60"sv}});
+        ASSERT_TRUE (maxAgeOverPastExpires.has_value ());
+        EXPECT_TRUE (*maxAgeOverPastExpires > Time::DateTime::Now ());
+
+        optional<Time::DateTime> maxAgeOverFutureExpires = validUntil ({{expires, future}, {cacheControl, "max-age=0"sv}});
+        ASSERT_TRUE (maxAgeOverFutureExpires.has_value ());
+        EXPECT_TRUE (*maxAgeOverFutureExpires <= Time::DateTime::Now ());
+
+        optional<Time::DateTime> noCacheOverMaxAge = validUntil ({{cacheControl, "no-cache, max-age=60"sv}});
+        ASSERT_TRUE (noCacheOverMaxAge.has_value ());
+        EXPECT_TRUE (*noCacheOverMaxAge <= Time::DateTime::Now ());
+
+        optional<Time::DateTime> noCacheOverExpires = validUntil ({{expires, future}, {cacheControl, "no-cache"sv}});
+        ASSERT_TRUE (noCacheOverExpires.has_value ());
+        EXPECT_TRUE (*noCacheOverExpires <= Time::DateTime::Now ());
+
+        optional<Time::DateTime> expiresAlone = validUntil ({{expires, future}});
+        ASSERT_TRUE (expiresAlone.has_value ());
+        EXPECT_TRUE (*expiresAlone > Time::DateTime::Now ());
+    }
+
+    /*
+     *  A weak ETag (W/"...") is a validator like a strong one: the response is cached, and asked for again with the ETag as it
+     *  came - If-None-Match compares weakly (RFC 9110, 13.1.2).
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_WeakETag_)
+    {
+        const String                        etag{HTTP::HeaderName::kETag};
+        Containers::Mapping<String, String> headers{{etag, "W/\"v1\""sv}};
+        Response                            weakResponse{Memory::BLOB{}, HTTP::StatusCodes::kOK, headers};
+        EXPECT_EQ (Cache::Element{weakResponse}.GetCombinedHeaders ().LookupValue (etag), "W/\"v1\""sv);
+
+        Cache::Ptr cache = Cache::New ();
+        URI        site{"http://www.example.com"sv};
+        Request    request;
+        request.fMethod               = HTTP::Methods::kGet;
+        request.fAuthorityRelativeURL = URI{"/a"sv};
+        {
+            Cache::EvalContext context;
+            EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request)); // nothing cached yet
+            Response response{Memory::BLOB{}, HTTP::StatusCodes::kOK, headers};
+            cache->OnAfterFetch (context, &response);
+        }
+        // no expiry given, so stale at once - and asked for only if changed
+        Cache::EvalContext context;
+        EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request));
+        EXPECT_EQ (request.fOverrideHeaders.LookupValue (String{HTTP::HeaderName::kIfNoneMatch}), "W/\"v1\""sv);
+    }
+
+    /*
+     *  A 304 (Not Modified) renews what the cache holds by what the 304 says - here a max-age - so the next use is answered from
+     *  the cache, not asked for again (RFC 9111, 4.3.4).
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_NotModifiedRenewsFreshness_)
+    {
+        const String       etag{HTTP::HeaderName::kETag};
+        const String       cacheControl{HTTP::HeaderName::kCacheControl};
+        const Memory::BLOB body{initializer_list<uint8_t>{1, 2, 3}};
+        Cache::Ptr         cache = Cache::New ();
+        URI                site{"http://www.example.com"sv};
+        auto               newRequest = [] () {
+            Request r;
+            r.fMethod               = HTTP::Methods::kGet;
+            r.fAuthorityRelativeURL = URI{"/a"sv};
+            return r;
+        };
+        {
+            Request            request = newRequest ();
+            Cache::EvalContext context;
+            EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request)); // nothing cached yet
+            Response response{body, HTTP::StatusCodes::kOK, Containers::Mapping<String, String>{{etag, "\"v1\""sv}, {cacheControl, "max-age=0"sv}}};
+            cache->OnAfterFetch (context, &response);
+        }
+        {
+            // stale (max-age=0), so asked for only if changed: not modified, says the server - and fresh for a minute now
+            Request            request = newRequest ();
+            Cache::EvalContext context;
+            EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request));
+            Response response{Memory::BLOB{}, HTTP::StatusCodes::kNotModified, Containers::Mapping<String, String>{{cacheControl, "max-age=60"sv}}};
+            cache->OnAfterFetch (context, &response);
+            EXPECT_EQ (response.GetStatus (), HTTP::StatusCodes::kOK);
+            EXPECT_TRUE (response.GetData () == body);
+        }
+        Request            request = newRequest ();
+        Cache::EvalContext context;
+        optional<Response> fromCache = cache->OnBeforeFetch (&context, site, &request);
+        ASSERT_TRUE (fromCache.has_value ());
+        EXPECT_TRUE (fromCache->GetData () == body);
+    }
+
+    /*
+     *  What Lookup returns keeps the freshness the cache gave a response that says nothing of its own - its default TTL
+     *  (Options::fDefaultResourceTTL).
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_LookupKeepsDefaultTTL_)
+    {
+        Cache::Ptr cache = Cache::New ({.fDefaultResourceTTL = 300s});
+        URI        site{"http://www.example.com"sv};
+        Request    request;
+        request.fMethod               = HTTP::Methods::kGet;
+        request.fAuthorityRelativeURL = URI{"/a"sv};
+        Cache::EvalContext context;
+        EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &request)); // nothing cached yet
+        Response response{Memory::BLOB{}, HTTP::StatusCodes::kOK, Containers::Mapping<String, String>{}};
+        cache->OnAfterFetch (context, &response);
+        ASSERT_TRUE (context.fFullURI.has_value ());
+        optional<Cache::Element> element = cache->Lookup (*context.fFullURI);
+        ASSERT_TRUE (element.has_value ());
+        optional<Time::DateTime> validUntil = element->IsValidUntil ();
+        ASSERT_TRUE (validUntil.has_value ());
+        EXPECT_TRUE (*validUntil > Time::DateTime::Now ());
+    }
 }
 
 namespace {
@@ -726,7 +847,7 @@ namespace {
                 EXPECT_TRUE (r.GetSucceeded ());
                 EXPECT_TRUE (r.GetData ().size () > 1);
                 Response r2           = c.GET (u);
-                bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
+                bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::Options::kCachedResultHeaderDefault);
                 EXPECT_TRUE (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
                 DbgTrace ("2nd lookup ({}) wasFromCache={}"_f, Characters::ToString (u),
                           Characters::ToString (wasFromCache)); // cannot assert cuz some servers cachable, others not
@@ -745,9 +866,7 @@ namespace {
         DeclareActivity           declareActivity{&kActivity_};
         using namespace Test_7_TestWithConnectionPool_;
 
-        Cache::DefaultOptions cacheOptions{};
-        cacheOptions.fDefaultResourceTTL = 300s;
-        Cache::Ptr cache                 = Cache::CreateDefault (cacheOptions);
+        Cache::Ptr cache = Cache::New ({.fDefaultResourceTTL = 300s});
 
         try {
             ConnectionPool connectionPoolWithCache{ConnectionPool::Options{3, [&] () -> Connection::Ptr {

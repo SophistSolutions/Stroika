@@ -28,44 +28,32 @@ using namespace Stroika::Foundation::Time;
 
 namespace {
 
+    // an entity-tag as HTTP writes it: "xyz", or W/"xyz" for a weak one (RFC 9110, 8.8.3)
+    String EntityTag_ (const String& etag, bool weak)
+    {
+        return (weak ? "W/\""sv : "\""sv) + etag + "\""sv;
+    }
+
     struct DefaultCacheRep_ : Transfer::Cache::IRep {
 
-        using Element        = Transfer::Cache::Element;
-        using EvalContext    = Transfer::Cache::EvalContext;
-        using DefaultOptions = Transfer::Cache::DefaultOptions;
+        using Element     = Transfer::Cache::Element;
+        using EvalContext = Transfer::Cache::EvalContext;
+        using Options     = Transfer::Cache::Options;
 
-        struct MyElement_ : Element {
-            MyElement_ () = default;
-            MyElement_ (const Response& response)
-                : Element{response}
-            {
-            }
-
-            virtual optional<DateTime> IsValidUntil () const override
-            {
-                if (auto tmp = Element::IsValidUntil ()) {
-                    return *tmp;
-                }
-                if (fExpiresDefault) {
-                    return *fExpiresDefault;
-                }
-                return nullopt;
-            }
-
-            nonvirtual String ToString () const
-            {
-                StringBuilder sb = Element::ToString ().SubString (0, -1);
-                sb << ", expiresDefault: "sv << fExpiresDefault;
-                sb << "}"sv;
-                return sb;
-            }
-            optional<Time::DateTime> fExpiresDefault;
-        };
-
-        DefaultCacheRep_ (const DefaultOptions& options)
+        DefaultCacheRep_ (const Options& options)
             : fOptions_{options}
-            , fCache_{options.fCacheSize.value_or (101), 11u}
+            , fCache_{options.fCacheSize, 11u}
         {
+        }
+
+        // what the cache stores for a response: it, with the default TTL where fOptions_ has one
+        Element NewElement_ (const Response& response) const
+        {
+            Element e{response};
+            if (fOptions_.fDefaultResourceTTL) {
+                e.fExpiresDefault = DateTime::Now () + *fOptions_.fDefaultResourceTTL;
+            }
+            return e;
         }
 
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
@@ -78,7 +66,7 @@ namespace {
                 try {
                     URI fullURI       = schemeAndAuthority.Combine (request->fAuthorityRelativeURL);
                     context->fFullURI = fullURI; // only try to cache GETs (for now)
-                    if (optional<MyElement_> o = fCache_.Lookup (fullURI)) {
+                    if (optional<Element> o = fCache_.Lookup (fullURI)) {
                         // check if cacheable - and either return directly or
                         DateTime now               = DateTime::Now ();
                         bool     canReturnDirectly = o->IsValidUntil ().value_or (now) > now;
@@ -90,13 +78,13 @@ namespace {
                             }
                             return Response{o->fBody, HTTP::StatusCodes::kOK, headers};
                         }
-                        // @todo - UNCLEAR if we should always include both etag/iflastmodiifeid if both available? Also may want to consider MAXAGE etc.
-                        // AND maybe fOptions control over how we do this?
-                        // -- LGP 2019-07-10
+                        // Revalidate with what the stored response has - its ETag (If-None-Match) and its Last-Modified
+                        // (If-Modified-Since), both where it has both, as RFC 9111 (4.3.1) says: a server that knows both uses
+                        // If-None-Match and ignores If-Modified-Since (RFC 9110, 13.1.3)
                         bool canCheckCacheETAG = o->fETag.has_value ();
                         if (canCheckCacheETAG) {
                             context->fCachedElement = *o;
-                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfNoneMatch, "\""sv + *o->fETag + "\""sv);
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfNoneMatch, EntityTag_ (*o->fETag, o->fETagIsWeak));
                             // keep going as we can combine If-None-Match/If-Modified-Since
                         }
                         bool canCheckModifiedSince = o->fLastModified.has_value ();
@@ -125,10 +113,7 @@ namespace {
                 case HTTP::StatusCodes::kOK: {
                     if (context.fFullURI) {
                         try {
-                            MyElement_ cacheElement{*response};
-                            if (fOptions_.fDefaultResourceTTL) {
-                                cacheElement.fExpiresDefault = DateTime::Now () + *fOptions_.fDefaultResourceTTL;
-                            }
+                            Element cacheElement = NewElement_ (*response);
                             if (cacheElement.IsCachable ()) {
                                 //DbgTrace ("Add2Cache: uri={}, cacheElement={}"_f, *context.fFullURI, cacheElement);
                                 fCache_.Add (*context.fFullURI, cacheElement);
@@ -147,11 +132,23 @@ namespace {
                          *      -- LGP 2019-06-27
                          */
                         if (context.fCachedElement) {
+                            // the 304's header fields update the stored response's (RFC 9111, 4.3.4), so it is fresh again by
+                            // them - or by the default TTL - and stored again
                             Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
-                            if (fOptions_.fCachedResultHeader) {
-                                headers.Add (*fOptions_.fCachedResultHeader, String{});
+                            for (const auto& [name, value] : response->GetHeaders ()) {
+                                if (name != HTTP::HeaderName::kContentLength) {
+                                    headers.Add (name, value);
+                                }
                             }
-                            *response = Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, headers, response->GetSSLResultInfo ()};
+                            Element renewed = NewElement_ (Response{context.fCachedElement->fBody, HTTP::StatusCodes::kOK, headers});
+                            if (context.fFullURI and renewed.IsCachable ()) {
+                                fCache_.Add (*context.fFullURI, renewed);
+                            }
+                            Mapping<String, String> answerHeaders = renewed.GetCombinedHeaders ();
+                            if (fOptions_.fCachedResultHeader) {
+                                answerHeaders.Add (*fOptions_.fCachedResultHeader, String{});
+                            }
+                            *response = Response{renewed.fBody, HTTP::StatusCodes::kOK, answerHeaders, response->GetSSLResultInfo ()};
                         }
                         else {
                             DbgTrace ("Cache::OnAfterFetch::oops: unexpected NOT-MODIFIED result when nothing was in the cache"_f); // ignore...
@@ -177,11 +174,11 @@ namespace {
             return fCache_.Lookup (url);
         }
 
-        DefaultOptions fOptions_;
+        Options fOptions_;
 
         using TRAITS_ =
-            LRUCacheSupport::InternallySynchronizedTraits<LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<URI, MyElement_>>>;
-        mutable LRUCache<URI, MyElement_, TRAITS_> fCache_; // lookups DO mutate the cache so mark mutable, but safe threadwise cuz of InternallySynchronizedTraits
+            LRUCacheSupport::InternallySynchronizedTraits<LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<URI, Element>>>;
+        mutable LRUCache<URI, Element, TRAITS_> fCache_; // lookups DO mutate the cache so mark mutable, but safe threadwise cuz of InternallySynchronizedTraits
     };
 
 }
@@ -205,11 +202,18 @@ Transfer::Cache::Element::Element (const Response& response)
         //      a fixed - length and single - zone subset of the date and time specification used by the Internet Message Format[RFC5322].
         //
         if (hi->fKey == HTTP::HeaderName::kETag) {
-            if (hi->fValue.size () < 2 or not hi->fValue.StartsWith ("\""sv) or not hi->fValue.EndsWith ("\""sv)) {
+            // "xyz", or W/"xyz" - a weak one (RFC 9110, 8.8.3)
+            String etag   = hi->fValue;
+            bool   isWeak = etag.StartsWith ("W/"sv);
+            if (isWeak) {
+                etag = etag.SubString (2);
+            }
+            if (etag.size () < 2 or not etag.StartsWith ("\""sv) or not etag.EndsWith ("\""sv)) {
                 Execution::Throw (Execution::Exception{"malformed etag"sv});
             }
-            fETag = hi->fValue.SubString (1, -1);
-            hi    = headers.erase (hi);
+            fETag       = etag.SubString (1, -1);
+            fETagIsWeak = isWeak;
+            hi          = headers.erase (hi);
         }
         else if (hi->fKey == HTTP::HeaderName::kExpires) {
             try {
@@ -255,7 +259,7 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
 {
     Mapping<String, String> result = fOtherHeaders;
     if (fETag) {
-        result.Add (HTTP::HeaderName::kETag, "\""sv + *fETag + "\""sv);
+        result.Add (HTTP::HeaderName::kETag, EntityTag_ (*fETag, fETagIsWeak));
     }
     if (fExpires) {
         result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::kHTTPDateFormat));
@@ -293,17 +297,19 @@ bool Transfer::Cache::Element::IsCachable () const
 
 optional<DateTime> Transfer::Cache::Element::IsValidUntil () const
 {
-    if (fExpires) {
-        return *fExpires;
-    }
-    if (fExpiresDueToMaxAge) {
-        return *fExpiresDueToMaxAge;
-    }
+    // no-cache: never fresh - each use is revalidated first (RFC 9111, 5.2.2.4), whatever max-age or Expires say
     static const String kNoCache_{"no-cache"sv};
     if (fCacheControl and fCacheControl->Contains (kNoCache_)) {
         return DateTime::Now ().AddSeconds (-1);
     }
-    return nullopt;
+    // max-age, where there is one, overrides Expires (RFC 9111, 5.3)
+    if (fExpiresDueToMaxAge) {
+        return *fExpiresDueToMaxAge;
+    }
+    if (fExpires) {
+        return *fExpires;
+    }
+    return fExpiresDefault;
 }
 
 String Transfer::Cache::Element::ToString () const
@@ -311,6 +317,9 @@ String Transfer::Cache::Element::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     sb << ", ETag: "sv << fETag;
+    if (fETagIsWeak) {
+        sb << " (weak)"sv;
+    }
     sb << ", expires: "sv << fExpires;
     sb << ", expiresDueToMaxAge: "sv << fExpiresDueToMaxAge;
     sb << ", lastModified: "sv << fLastModified;
@@ -318,6 +327,7 @@ String Transfer::Cache::Element::ToString () const
     sb << ", contentType: "sv << fContentType;
     sb << ", otherHeaders: "sv << fOtherHeaders;
     sb << ", body: "sv << fBody;
+    sb << ", expiresDefault: "sv << fExpiresDefault;
     sb << "}"sv;
     return sb;
 }
@@ -327,11 +337,7 @@ String Transfer::Cache::Element::ToString () const
  **************************** Transfer::Cache ***********************************
  ********************************************************************************
  */
-Transfer::Cache::Ptr Transfer::Cache::CreateDefault ()
-{
-    return CreateDefault (DefaultOptions{});
-}
-Transfer::Cache::Ptr Transfer::Cache::CreateDefault (const DefaultOptions& options)
+Transfer::Cache::Ptr Transfer::Cache::New (const Options& options)
 {
     return Ptr{Memory::MakeSharedPtr<DefaultCacheRep_> (options)};
 }
