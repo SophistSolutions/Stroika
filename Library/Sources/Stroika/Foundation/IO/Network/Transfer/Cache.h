@@ -27,14 +27,6 @@
 
 namespace Stroika::Foundation::IO::Network::Transfer::Cache {
 
-    struct IRep;
-
-    struct Ptr;
-
-    struct Element;
-
-    struct EvalContext;
-
     /**
      *  \brief Options for the cache New () makes: Stroika's in-memory cache, of whole responses, by URL
      */
@@ -62,19 +54,6 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
     };
 
     /**
-     *  \brief Make an HTTP cache - Stroika's in-memory one - to share among Connections, by assigning it to their
-     *         Connection::Options::fCache (see Ptr)
-     *
-     *  The cache is internally synchronized: connections on any number of threads may share it.
-     *
-     *  \note This is Stroika's default implementation of an HTTP cache: it keeps responses in memory, in an LRU cache of
-     *        Options::fCacheSize entries. It is not the only one possible: any subclass of IRep works with the rest of this
-     *        API - an external, disk-based cache, say - and you use yours instead by putting a Ptr to it in
-     *        Connection::Options::fCache.
-     */
-    Ptr New (const Options& options = {});
-
-    /**
      *  This is the basic element of data stored in the cache for any cached URL. Some implementations may store more or less,
      *  But this provides the rough outline of what is expected to cache, and utility apis to extract the cache control policy data.
      */
@@ -82,9 +61,6 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
     public:
         Element () = default;
         Element (const Response& response);
-
-    public:
-        virtual ~Element () = default;
 
     public:
         /**
@@ -95,7 +71,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
         /**
          *  Check - based on incoming http headers - whether this resource is cachable.
          */
-        virtual bool IsCachable () const;
+        nonvirtual bool IsCachable () const;
 
     public:
         /**
@@ -107,7 +83,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
          *  From the response's headers, as RFC 9111 says: Cache-Control no-cache makes it already past (revalidate each use),
          *  whatever else they say; else its max-age; else its Expires; else fExpiresDefault.
          */
-        virtual optional<Time::DateTime> IsValidUntil () const;
+        nonvirtual optional<Time::DateTime> IsValidUntil () const;
 
     public:
         /**
@@ -193,6 +169,19 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
      *          on any number of threads may share it.
      */
     struct Ptr : shared_ptr<Cache::IRep> {};
+
+    /**
+     *  \brief Make an HTTP cache - Stroika's in-memory one - to share among Connections, by assigning it to their
+     *         Connection::Options::fCache (see Ptr)
+     *
+     *  The cache is internally synchronized: connections on any number of threads may share it.
+     *
+     *  \note This is Stroika's default implementation of an HTTP cache: it keeps responses in memory, in an LRU cache of
+     *        Options::fCacheSize entries. It is not the only one possible: any subclass of IRep works with the rest of this
+     *        API - an external, disk-based cache, say - and you use yours instead by putting a Ptr to it in
+     *        Connection::Options::fCache.
+     */
+    Ptr New (const Options& options = {});
 
 }
 
