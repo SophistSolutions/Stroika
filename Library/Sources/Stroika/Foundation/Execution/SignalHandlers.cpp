@@ -518,20 +518,30 @@ void SignalHandlerRegistry::InstallAlternateSignalStack ()
 {
     /*
      *  One per thread, made on the thread's first call (thread_local), and removed then freed as the thread exits. Left alone
-     *  where the thread has one already. Room for DefaultCrashSignalHandler's DbgTrace, beyond the minimum (SIGSTKSZ).
+     *  where the thread has one already.
      */
     struct AlternateStack_ {
         unique_ptr<char[]> fStack_;
+        /*
+         *  SIGSTKSZ is sized for a minimal handler - a write () and _exit () - and on Linux can equal MINSIGSTKSZ. The handlers
+         *  that run here do more: DefaultCrashSignalHandler's DbgTrace formats and writes a line, more than SIGSTKSZ on Linux in a Debug
+         *  build, and an application's own crash handler runs here too. Hence 64KB more. Running off the end of an alternate stack goes
+         *  unnoticed: it writes over whatever memory lies below it.
+         *  A function, not a constant: since glibc 2.34, SIGSTKSZ is sysconf (_SC_SIGSTKSZ) - set by the CPU, the same on each call.
+         */
+        static size_t Size_ ()
+        {
+            return SIGSTKSZ + 64 * 1024;
+        }
         AlternateStack_ ()
         {
             stack_t current{};
             Verify (::sigaltstack (nullptr, &current) == 0);
             if ((current.ss_flags & SS_DISABLE) != 0) {
-                size_t size = SIGSTKSZ + 64 * 1024;
-                fStack_.reset (new char[size]);
+                fStack_.reset (new char[Size_ ()]);
                 stack_t ss{};
                 ss.ss_sp   = fStack_.get ();
-                ss.ss_size = size;
+                ss.ss_size = Size_ ();
                 Verify (::sigaltstack (&ss, nullptr) == 0);
             }
         }
@@ -539,6 +549,11 @@ void SignalHandlerRegistry::InstallAlternateSignalStack ()
         {
             if (fStack_ != nullptr) {
                 stack_t ss{};
+#if qStroika_Platform_MacOS
+                // POSIX says SS_DISABLE ignores ss_sp and ss_size, but macOS refuses it (ENOMEM) when ss_size is below MINSIGSTKSZ (as of macOS 26.5)
+                ss.ss_sp   = fStack_.get ();
+                ss.ss_size = Size_ ();
+#endif
                 ss.ss_flags = SS_DISABLE;
                 Verify (::sigaltstack (&ss, nullptr) == 0);
             }
