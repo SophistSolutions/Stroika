@@ -9,10 +9,13 @@
 
 #if qStroika_Platform_POSIX
 #include <cstddef>
+#include <fcntl.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <netinet/in.h>
+#include <sys/resource.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #if qStroika_Platform_Linux
 #include <net/if_arp.h>
 #include <netpacket/packet.h>
@@ -31,12 +34,15 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
@@ -44,6 +50,7 @@
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/LinkMonitor.h"
+#include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/IO/Network/Neighbors.h"
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
@@ -1409,6 +1416,71 @@ namespace {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     }
+
+#if qStroika_Platform_POSIX
+    // Out of file descriptors, Accept fails and leaves its connection queued: the Listener pauses between tries, rather than
+    // spinning at full CPU, and takes the connection once a descriptor frees
+    GTEST_TEST (Foundation_IO_Network, ListenerOutOfDescriptors_)
+    {
+        Debug::TraceContextBumper ctx{"ListenerOutOfDescriptors_"};
+#if not qStroika_Platform_MacOS // macOS's sanitizer runtime needs no descriptor for it (seen with Xcode 26)
+        if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+            GTEST_SKIP () << "the undefined behavior sanitizer's vptr check opens a pipe, and fails out of descriptors";
+        }
+#endif
+        if (Debug::IsRunningUnderValgrind ()) {
+            GTEST_SKIP () << "valgrind emulates RLIMIT_NOFILE: an accept over it takes the connection and closes it";
+        }
+        SocketAddress            addr = ListenerBind_::FreshAddress_ ();
+        Execution::WaitableEvent accepted;
+        Listener                 listener{addr, [&] (const ConnectionOrientedStreamSocket::Ptr&) { accepted.Set (); }};
+
+        // lower the process's descriptor limit to just above those open, and use up all but one
+        ::rlimit saved{};
+        ASSERT_EQ (::getrlimit (RLIMIT_NOFILE, &saved), 0);
+        int lowestFree = ::open ("/dev/null", O_RDONLY);
+        ASSERT_GE (lowestFree, 0);
+        ::close (lowestFree);
+        ::rlimit lowered = saved;
+        lowered.rlim_cur = lowestFree + 8;
+        vector<int> hogs;
+        auto        release = [&] () {
+            for (int fd : hogs) {
+                ::close (fd);
+            }
+            hogs.clear ();
+            ::setrlimit (RLIMIT_NOFILE, &saved);
+        };
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { release (); });
+        ASSERT_EQ (::setrlimit (RLIMIT_NOFILE, &lowered), 0);
+        for (int fd; (fd = ::open ("/dev/null", O_RDONLY)) >= 0;) {
+            hogs.push_back (fd);
+        }
+        ASSERT_EQ (errno, EMFILE);
+        ASSERT_FALSE (hogs.empty ());
+        ::close (hogs.back ());
+        hogs.pop_back ();
+
+        // the client takes the last descriptor, so the Listener's Accept fails (EMFILE)
+        ConnectionOrientedStreamSocket::Ptr client = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
+        client.Connect (addr);
+        auto cpuTime = [] () {
+            ::rusage u{};
+            ::getrusage (RUSAGE_SELF, &u);
+            return Time::DurationSeconds{u.ru_utime.tv_sec + u.ru_stime.tv_sec + (u.ru_utime.tv_usec + u.ru_stime.tv_usec) / 1e6};
+        };
+        Time::DurationSeconds  cpuBefore = cpuTime ();
+        Time::TimePointSeconds startedAt = Time::GetTickCount ();
+        Execution::Sleep (1s);
+        Time::DurationSeconds cpuUsed = cpuTime () - cpuBefore;
+        Time::DurationSeconds elapsed = Time::GetTickCount () - startedAt;
+        EXPECT_FALSE (accepted.PeekIsSet ());
+        EXPECT_LT (cpuUsed, elapsed / 4) << "spun: " << cpuUsed.count () << " s of CPU in " << elapsed.count () << " s";
+
+        release (); // a descriptor frees: the Listener takes the waiting connection
+        EXPECT_NO_THROW (accepted.Wait (5s));
+    }
+#endif
 }
 
 #endif

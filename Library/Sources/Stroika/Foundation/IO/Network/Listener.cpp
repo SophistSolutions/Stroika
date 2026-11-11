@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
@@ -36,6 +37,7 @@ struct Listener::Rep_ final {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("Listener::Rep_::CTOR (address={}, ...)"_f, addrs);
 #endif
+        // Bind each address to a master socket, and start a listener loop on all of them.
         Sequence<ConnectionOrientedMasterSocket::Ptr> masterSockets;
         for (const auto& addr : addrs) {
             ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket::New (addr.GetAddressFamily (), Socket::STREAM);
@@ -43,28 +45,9 @@ struct Listener::Rep_ final {
             ms.Listen (backlog);
             masterSockets += ms;
         }
-        fListenThread = Execution::Thread::New (
-            [masterSockets, newConnectionAcceptor] () {
-                WaitForIOReady<ConnectionOrientedMasterSocket::Ptr> sockSetPoller{masterSockets};
-                while (true) {
-                    try {
-                        for (const auto& readyMasterSocket : sockSetPoller.WaitQuietly ()) {
-                            ConnectionOrientedStreamSocket::Ptr s = readyMasterSocket.Accept ();
-                            newConnectionAcceptor (s);
-                        }
-                    }
-                    catch (const Execution::Thread::AbortException&) {
-                        Execution::ReThrow ();
-                    }
-                    catch (...) {
-                        // unclear what todo with exceptions here
-                        // probably ignore all but for thread abort.
-                        // may need virtual functions to handle? Or std::function passed in?
-                        DbgTrace ("Exception accepting new connection: {} - ignored"_f, current_exception ());
-                    }
-                }
-            },
-            Thread::eAutoStart, "Socket Listener: "sv + Characters::ToString (addrs));
+        fListenThread =
+            Execution::Thread::New ([masterSockets, newConnectionAcceptor] () { ListenLoop_ (masterSockets, newConnectionAcceptor); },
+                                    Thread::eAutoStart, "Socket Listener: "sv + Characters::ToString (addrs));
     }
 #if qStroika_Foundation_Debug_DefaultTracingOn
     ~Rep_ ()
@@ -72,6 +55,52 @@ struct Listener::Rep_ final {
         DbgTrace ("Starting destructor for Listener::Rep_ ({})"_f, static_cast<const void*> (this));
     }
 #endif
+
+    // The listening thread: accepts each connection on masterSockets and hands it to newConnectionAcceptor, until aborted.
+    static void ListenLoop_ (const Sequence<ConnectionOrientedMasterSocket::Ptr>&                             masterSockets,
+                             const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor)
+    {
+        constexpr Time::DurationSeconds                     kFirstRetryWait_{10ms};
+        constexpr Time::DurationSeconds                     kMaxRetryWait_{500ms};
+        Debug::TraceContextBumper                           ctx{"Listener::Rep_::ListenLoop_"};
+        Time::DurationSeconds                               retryWait{0s};
+        WaitForIOReady<ConnectionOrientedMasterSocket::Ptr> sockSetPoller{masterSockets};
+        while (true) {
+            try {
+                // wait on ALL the sockets from all the bound addresses, and accept on EACH that is ready
+                for (const auto& readyMasterSocket : sockSetPoller.WaitQuietly ()) {
+                    ConnectionOrientedStreamSocket::Ptr s = readyMasterSocket.Accept ();
+                    retryWait                             = 0s;
+                    try {
+                        newConnectionAcceptor (s);
+                    }
+                    catch (const Execution::Thread::AbortException&) {
+                        Execution::ReThrow ();
+                    }
+                    catch (...) {
+                        // its connection is off the queue, so nothing to wait for
+                        DbgTrace ("Exception from newConnectionAcceptor: {} - ignored"_f, current_exception ());
+                    }
+                }
+            }
+            catch (const Execution::Thread::AbortException&) {
+                Execution::ReThrow ();
+            }
+            catch (...) {
+                // WaitQuietly or Accept failed (an exception from newConnectionAcceptor is caught above). Two kinds of cause:
+                //   - one-off: the client reset its connection before the accept (ECONNABORTED) - the next try works;
+                //   - lasting: the process or system is out of file descriptors (EMFILE, ENFILE) or kernel memory (ENOBUFS) - the
+                //     connection stays queued, so the listening socket stays ready, and retrying at once would spin at full CPU
+                //     until the cause goes.
+                // Telling them apart takes a per-platform list of errors, and a lasting cause missing from it would still spin - so
+                // every retry waits: briefly after one failure (all a one-off costs), doubling while they continue, up to half a
+                // second (nginx's pause after EMFILE). A successful Accept resets it.
+                retryWait = retryWait == 0s ? kFirstRetryWait_ : min (retryWait * 2, kMaxRetryWait_);
+                DbgTrace ("Exception accepting new connection: {} - retrying in {}"_f, current_exception (), retryWait);
+                Execution::Sleep (retryWait);
+            }
+        }
+    }
 
     Execution::Thread::CleanupPtr fListenThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };

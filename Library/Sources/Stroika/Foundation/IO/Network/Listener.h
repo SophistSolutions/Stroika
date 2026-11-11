@@ -40,7 +40,7 @@
 
 namespace Stroika::Foundation::IO::Network {
 
-    /*
+    /**
      *  This maintains thread inside. VERY ROUGH DRAFT API. See Todo above
      *
      *  Listener does the Bind() in the calling thread, and so will fail to construct if the Bind()
@@ -48,10 +48,13 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  But it does the 'accepts' in a separate thread, so these can proceed as needed, and any failures
      *  there are handled internally, and largely ignored.
+     *
+     *  A failed accept is retried after a pause, which grows while the failures continue (to half a second), so a lasting
+     *  cause - the process out of file descriptors - costs no CPU, and the connections it held up are taken once it goes.
      */
     class Listener {
     public:
-        /*
+        /**
          *  Define params object for stuff like listen backlog (for now hardwire)
          *
          *  For 'backlog' - @see Socket::Listen
