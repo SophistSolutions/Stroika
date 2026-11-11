@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Memory {
      *         of the two values first and count
      *
      *  That constructor - P2447, removed by P4144R1 - makes span<const T>{p, n} a span of the two values p and n wherever both
-     *  convert to T (T = bool, say): with libstdc++ 16 and -std=c++26, Sequence<bool>'s == read freed memory (ASan, in Tests/55:
+     *  convert to T (T = bool, say): with libstdc++ 16 and -std=c++26, Sequence<bool>'s == read freed memory (ASan, in Tests/56:
      *  "stack-use-after-return"). The libraries with it: libstdc++ 15 and 16, and libc++ 18 to 22, in C++26 mode.
      *
      *  For generic code, where T can be bool, or a class type a pointer and a count both convert to. It goes - each use written

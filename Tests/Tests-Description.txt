@@ -51,8 +51,8 @@
 [51]	Foundation::Traversal
 [52]	Foundation::PERFORMANCE
 [53]	Frameworks::Led
-[54]	Frameworks::SystemPerformance
-[55]	Frameworks::UPnP
-[56]	Frameworks::WebServer
-[57]	Frameworks::WebService
-[58]	Frameworks::Modbus
+[54]	Frameworks::Modbus
+[55]	Frameworks::SystemPerformance
+[56]	Frameworks::UPnP
+[57]	Frameworks::WebServer
+[58]	Frameworks::WebService
