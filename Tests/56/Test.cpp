@@ -469,6 +469,7 @@ namespace {
             return c.Send (r).GetStatus ();
         };
         try {
+            (void)IO::Network::Transfer::Connection::New (); // here, not in a client task: so a build with no HTTP client says so at once
             ThreadPool              clients{ThreadPool::Options{.fThreadCount = 2}};
             [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { releaseHandlers.Set (); }); // before ~clients waits for them
             auto                    first   = clients.AddTaskWithResult (askStatus);
