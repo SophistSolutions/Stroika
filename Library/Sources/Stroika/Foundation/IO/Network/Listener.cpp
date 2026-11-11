@@ -89,9 +89,9 @@ struct Listener::Rep_ final {
             catch (...) {
                 // WaitQuietly or Accept failed (an exception from newConnectionAcceptor is caught above). Two kinds of cause:
                 //   - one-off: the client reset its connection before the accept (ECONNABORTED) - the next try works;
-                //   - lasting: the process or system is out of file descriptors (EMFILE, ENFILE) or kernel memory (ENOBUFS) - the
-                //     connection stays queued, so the listening socket stays ready, and retrying at once would spin at full CPU
-                //     until the cause goes.
+                //   - lasting: the process or system is out of file descriptors (EMFILE, ENFILE) or kernel memory (ENOBUFS) - on
+                //     Linux the connection stays queued (macOS's accept drops it), so the listening socket stays ready, and retrying
+                //     at once would spin at full CPU until the cause goes.
                 // Telling them apart takes a per-platform list of errors, and a lasting cause missing from it would still spin - so
                 // every retry waits: briefly after one failure (all a one-off costs), doubling while they continue, up to half a
                 // second (nginx's pause after EMFILE). A successful Accept resets it.

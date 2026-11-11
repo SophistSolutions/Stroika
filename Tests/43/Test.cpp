@@ -40,6 +40,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -1417,23 +1418,33 @@ namespace {
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     }
 
-#if qStroika_Platform_POSIX
+#if qStroika_Platform_Linux
     // Out of file descriptors, Accept fails and leaves its connection queued: the Listener pauses between tries, rather than
-    // spinning at full CPU, and takes the connection once a descriptor frees
+    // spinning at full CPU, and takes the connection once a descriptor frees.
+    // Linux only: macOS's accept drops the connection instead (seen with macOS 26), leaving nothing to spin on, or to take later.
     GTEST_TEST (Foundation_IO_Network, ListenerOutOfDescriptors_)
     {
         Debug::TraceContextBumper ctx{"ListenerOutOfDescriptors_"};
-#if not qStroika_Platform_MacOS // macOS's sanitizer runtime needs no descriptor for it (seen with Xcode 26)
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
             GTEST_SKIP () << "the undefined behavior sanitizer's vptr check opens a pipe, and fails out of descriptors";
         }
-#endif
         if (Debug::IsRunningUnderValgrind ()) {
             GTEST_SKIP () << "valgrind emulates RLIMIT_NOFILE: an accept over it takes the connection and closes it";
         }
-        SocketAddress            addr = ListenerBind_::FreshAddress_ ();
+        SocketAddress addr = ListenerBind_::FreshAddress_ ();
+        Execution::Synchronized<vector<ConnectionOrientedStreamSocket::Ptr>> acceptedConnections; // kept open: none closes behind the test's back
         Execution::WaitableEvent accepted;
-        Listener                 listener{addr, [&] (const ConnectionOrientedStreamSocket::Ptr&) { accepted.Set (); }};
+        Listener                 listener{addr, [&] (const ConnectionOrientedStreamSocket::Ptr& s) {
+                              acceptedConnections.rwget ()->push_back (s);
+                              accepted.Set ();
+                                          }};
+
+        // first, one connection accepted as usual, so the listening thread is waiting: its first wait opens a descriptor of its
+        // own, which must not take the one this test leaves for the client
+        ConnectionOrientedStreamSocket::Ptr first = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
+        first.Connect (addr);
+        ASSERT_NO_THROW (accepted.Wait (5s));
+        accepted.Reset ();
 
         // lower the process's descriptor limit to just above those open, and use up all but one
         ::rlimit saved{};

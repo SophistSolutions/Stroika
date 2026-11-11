@@ -50,7 +50,8 @@ namespace Stroika::Foundation::IO::Network {
      *  there are handled internally, and largely ignored.
      *
      *  A failed accept is retried after a pause, which grows while the failures continue (to half a second), so a lasting
-     *  cause - the process out of file descriptors - costs no CPU, and the connections it held up are taken once it goes.
+     *  cause - the process out of file descriptors - costs no CPU, and the connections it held up are taken once it goes
+     *  (where the OS keeps them queued, as Linux does; macOS's accept drops each one).
      */
     class Listener {
     public:
