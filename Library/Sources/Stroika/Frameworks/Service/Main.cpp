@@ -557,16 +557,16 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     }
 
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    RequireNotNull (appRep);
+    RequireNotNull (appRep); // must call Attach_ first
 
+    // The run thread before the signal handlers: SIGINT's and SIGTERM's (SignalHandler_) aborts it
+    fRunThread_.store (Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Thread::eAutoStart, kServiceRunThreadName_));
     [[maybe_unused]] auto&& cleanupSigHanders = Execution::Finally ([this] () noexcept {
         Thread::SuppressInterruptionInContext suppressThreadInterupts;
         SetupSignalHanlders_ (false);
     });
     SetupSignalHanlders_ (true);
 
-    RequireNotNull (appRep); // must call Attach_ first
-    fRunThread_.store (Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Thread::eAutoStart, kServiceRunThreadName_));
     [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
         Thread::SuppressInterruptionInContext suppressThreadInterupts;
         (void)::unlink (_GetPIDFileName ().c_str ());
