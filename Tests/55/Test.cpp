@@ -2192,7 +2192,8 @@ namespace {
             try {
                 bool                      v4 = group.GetAddressFamily () == SocketAddress::INET;
                 ConnectionlessSocket::Ptr s  = ConnectionlessSocket::New (group.GetAddressFamily (), Socket::DGRAM);
-                s.Bind (SocketAddress{v4 ? V4::kAddrAny : V6::kAddrAny, group.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+                s.Bind (SocketAddress{v4 ? V4::kAddrAny : V6::kAddrAny, group.GetPort ()},
+                        ConnectionlessSocket::BindFlags{.fShareWithCooperatingSockets = true});
                 toJoin += make_pair (s, group.GetInternetAddress ());
             }
             catch (...) {
@@ -2671,7 +2672,8 @@ namespace {
         };
         try {
             ConnectionlessSocket::Ptr device = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
-            device.Bind (SocketAddress{V4::kAddrAny, SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            device.Bind (SocketAddress{V4::kAddrAny, SSDP::V4::kSocketAddress.GetPort ()},
+                         ConnectionlessSocket::BindFlags{.fShareWithCooperatingSockets = true});
             device.SetMulticastLoopMode (true); // so this process hears its NOTIFYs
             if (SSDP::Private_::JoinOnEveryInterface (Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>>{make_pair (
                                                           device, SSDP::V4::kSocketAddress.GetInternetAddress ())},

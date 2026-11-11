@@ -51,6 +51,30 @@ namespace Stroika::Foundation::IO::Network {
         };
 
         /**
+         *  \brief How Ptr::Bind binds a connectionless (UDP) socket: what this socket consents to, when the address is not free
+         *
+         *  Like ConnectionOrientedMasterSocket::BindFlags::fShareWithCooperatingSockets - though UDP has no connections, so no
+         *  old ones to bind despite.
+         */
+        struct BindFlags {
+            /**
+             *  Share the address with other sockets that ALSO set this - as multicast listeners (SSDP, say) must, to share the
+             *  well-known port. Sharing takes BOTH sockets' consent: one that does not set this can neither join, nor be
+             *  joined. Multicast and broadcast datagrams reach all of them; a UNICAST datagram reaches just one, which the OS
+             *  picks (Linux 7.0: the last bound; macOS 26 and Windows 11: the first). So a socket that must hear unicast should
+             *  not share (and one that only sends need not bind at all); and one that wants only multicast should bind the
+             *  group's own address where the OS allows it (Linux and macOS do, Windows does not), so it is never sent unicast.
+             *
+             *  Linux and Windows: SO_REUSEADDR. macOS: SO_REUSEADDR and SO_REUSEPORT - BSD's SO_REUSEADDR alone shares a port
+             *  only with sockets bound to a DIFFERENT internet address. Not Linux's SO_REUSEPORT, which would require every
+             *  sharing socket to belong to the same user (and spreads unicast datagrams across them).
+             *
+             *  Not set: no other socket may bind the address while this one holds it (Windows: SO_EXCLUSIVEADDRUSE).
+             */
+            bool fShareWithCooperatingSockets{false};
+        };
+
+        /**
          *  \par Example Usage
          *      \code
          *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
@@ -80,6 +104,15 @@ namespace Stroika::Foundation::IO::Network {
              */
             nonvirtual Ptr& operator= (const Ptr& rhs) = default;
             nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
+
+        public:
+            /**
+             *  Associate this socket with the given local address - to receive what is sent there (a socket that only sends
+             *  need not bind).
+             *
+             *  @see POSIX bind()
+             */
+            nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags{});
 
         public:
             /**

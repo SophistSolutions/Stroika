@@ -209,30 +209,15 @@ Socket::Type Socket::Ptr::GetType () const
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
-void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
+void Socket::Ptr::_Bind (const SocketAddress& sockAddr)
 {
-    Debug::TraceContextBumper ctx{"IO::Network::Socket::Bind", "sockAddr={} bindFlags.fReUseAddr={}"_f, sockAddr, bindFlags.fSO_REUSEADDR};
+    Debug::TraceContextBumper                                ctx{"IO::Network::Socket::Bind", "sockAddr={}"_f, sockAddr};
     Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
     auto bindingActivity =
         Execution::LazyEvalActivity{[&] () -> Characters::String { return "binding to "sv + Characters::ToString (sockAddr); }};
     [[maybe_unused]] auto&& declareActivity = Execution::DeclareActivity{&bindingActivity};
-
-    // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
-    // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
-    // there is an active listening socket bound to the address. When the listening socket is bound
-    // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
-    setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fSO_REUSEADDR ? 1 : 0);
-#if qStroika_Platform_MacOS
-    // BSD's SO_REUSEADDR only lets a UDP socket share a PORT bound to a different internet address; sharing the same socket
-    // address - what fSO_REUSEADDR means, and what SO_REUSEADDR alone gives on Linux and Windows - takes SO_REUSEPORT too (as
-    // libuv does for UDP). Not for TCP: there SO_REUSEADDR already means the same thing everywhere (rebind while TIME_WAIT),
-    // and SO_REUSEPORT would go further, letting two live listeners share the address.
-    if (getsockopt<Type> (SOL_SOCKET, SO_TYPE) == Type::DGRAM) {
-        setsockopt<int> (SOL_SOCKET, SO_REUSEPORT, bindFlags.fSO_REUSEADDR ? 1 : 0);
-    }
-#endif
 
     sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
@@ -246,7 +231,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const Execution::SystemErrorException& e) {
         if (Execution::IsA (e, errc::permission_denied)) {
-            Throw (SystemErrorException{e.code (), e.GetBasicErrorMessage () + "(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
+            Throw (SystemErrorException{e.code (), e.GetBasicErrorMessage () + " (probably in use by a socket that does not share it)"sv});
         }
         else {
             ReThrow ();
@@ -254,7 +239,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const system_error& e) {
         if (Execution::IsA (e, errc::permission_denied)) {
-            Throw (SystemErrorException{e.code (), "(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
+            Throw (SystemErrorException{e.code (), "(probably in use by a socket that does not share it)"sv});
         }
         else {
             ReThrow ();

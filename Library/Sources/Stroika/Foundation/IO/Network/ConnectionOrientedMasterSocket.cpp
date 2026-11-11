@@ -73,3 +73,28 @@ ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::Attach (Plat
 {
     return Ptr{Memory::MakeSharedPtr<Rep_> (sd)};
 }
+
+/*
+ ********************************************************************************
+ ****************** ConnectionOrientedMasterSocket::Ptr ************************
+ ********************************************************************************
+ */
+void ConnectionOrientedMasterSocket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
+{
+    // @see BindFlags for what each flag means, and these mappings
+#if qStroika_Platform_Windows
+    if (not bindFlags.fBindDespiteOldConnections) {
+        ThrowError (errc::operation_not_supported, "Windows always binds despite old connections (BindFlags::fBindDespiteOldConnections)"sv);
+    }
+    setsockopt<int> (SOL_SOCKET, bindFlags.fShareWithCooperatingSockets ? SO_REUSEADDR : SO_EXCLUSIVEADDRUSE, 1);
+#else
+    if (bindFlags.fShareWithCooperatingSockets and not bindFlags.fBindDespiteOldConnections) {
+        ThrowError (errc::operation_not_supported, "sharing (SO_REUSEPORT) also binds despite old connections (BindFlags::fBindDespiteOldConnections)"sv);
+    }
+    setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fBindDespiteOldConnections ? 1 : 0);
+    if (bindFlags.fShareWithCooperatingSockets) {
+        setsockopt<int> (SOL_SOCKET, SO_REUSEPORT, 1);
+    }
+#endif
+    _Bind (sockAddr);
+}

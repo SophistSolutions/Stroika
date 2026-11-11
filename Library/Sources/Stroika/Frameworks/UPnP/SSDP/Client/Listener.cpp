@@ -85,13 +85,12 @@ public:
     // bound, and joined on every interface fOptions_.fInterfaces accepts - so notifications arriving on any of them are heard
     void MakeSockets_ ()
     {
-        Socket::BindFlags bindFlags = Socket::BindFlags{};
-        bindFlags.fSO_REUSEADDR     = true;
+        ConnectionlessSocket::BindFlags bindFlags{.fShareWithCooperatingSockets = true};
         if (InternetProtocol::IP::SupportIPV4 (fOptions_.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.SetReceivePacketInfo (true); // for Advertisement::fReceivedOn
             // the group's own address, so it is never sent a unicast datagram - an M-SEARCH meant for a device on this machine
-            // (@see Socket::BindFlags::fSO_REUSEADDR). Windows refuses to bind a multicast address
+            // (@see ConnectionlessSocket::BindFlags::fShareWithCooperatingSockets). Windows refuses to bind a multicast address
 #if qStroika_Platform_Linux or qStroika_Platform_MacOS
             s.Bind (UPnP::SSDP::V4::kSocketAddress, bindFlags);
 #else

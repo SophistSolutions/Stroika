@@ -23,6 +23,52 @@ namespace Stroika::Foundation::IO::Network {
         class _IRep;
 
         /**
+         *  \brief How Ptr::Bind binds a listening (TCP) socket: what this socket consents to, when the address is not free
+         *
+         *  An address can be busy two ways - connections from an earlier socket, now closed, are still closing (TCP's
+         *  TIME_WAIT, a minute or so); or a LIVE socket holds it (another server, or another copy of this one). Each flag is
+         *  this socket's side of one of those:
+         *
+         *      Already on the address      Bind succeeds when
+         *      ----------------------      ------------------
+         *      nothing                     always
+         *      old connections closing     fBindDespiteOldConnections
+         *      a live socket               BOTH sockets set fShareWithCooperatingSockets
+         *
+         *  Whether this socket (or process) bound the address before does not matter. A combination the OS cannot honor
+         *  makes Bind throw (errc::operation_not_supported) - see each flag.
+         */
+        struct BindFlags {
+            /**
+             *  Bind succeeds though connections from an earlier socket on this address - ours or another process's, since
+             *  closed - are still closing: so a server restarts at once, rather than failing for a minute or so.
+             *
+             *  POSIX: SO_REUSEADDR - which Linux honors only if the earlier socket set it too (every Stroika listener does),
+             *  while macOS needs only this one's. Windows: always so - false is not supported there.
+             *
+             *  \note POSIX binds despite old connections with fShareWithCooperatingSockets too (SO_REUSEPORT allows it) - so
+             *        false is not supported with it.
+             */
+            bool fBindDespiteOldConnections{true};
+
+            /**
+             *  Share the address with other live listening sockets that ALSO set this - to spread connections across
+             *  processes, or to start a new server before the old one stops, so there is never a moment when nothing
+             *  listens. Sharing takes BOTH sockets' consent: one that does not set this can neither join a shared address,
+             *  nor be joined.
+             *
+             *  Which of the sharing sockets gets each new connection depends on the OS (Linux 7.0, macOS 26, Windows 11):
+             *      o   Linux: spread across them; and they must belong to the same user (SO_REUSEPORT)
+             *      o   macOS: the one bound last - so a new server takes over at once (SO_REUSEPORT)
+             *      o   Windows: the one bound first - so a new server takes over once the old one closes (SO_REUSEADDR)
+             *
+             *  Not set: no other socket may bind the address while this one holds it - POSIX: always so, for a TCP listener;
+             *  Windows: SO_EXCLUSIVEADDRUSE (it does not stop a restart while old connections close).
+             */
+            bool fShareWithCooperatingSockets{false};
+        };
+
+        /**
          *  \par Example Usage
          *      \code
          *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
@@ -56,6 +102,18 @@ namespace Stroika::Foundation::IO::Network {
              */
             nonvirtual Ptr& operator= (const Ptr& rhs) = default;
             nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
+
+        public:
+            /**
+             *  Associate this socket with the given local address - before Listen ().
+             *
+             *  @todo   SB an overload taking just a port, and defaults to INADDRANY with that port.
+             *          Port is only thing really needed, but InternetAddress part provided as arg
+             *          too in case you want to bind to a particular interface.
+             *
+             *  @see POSIX bind()
+             */
+            nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags{});
 
         public:
             /**

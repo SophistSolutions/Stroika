@@ -45,7 +45,7 @@ namespace Stroika::Frameworks::Modbus {
         /**
          *  Often helpful to specify reUseAddr = true, to avoid trouble restarting service
          */
-        optional<IO::Network::Socket::BindFlags> fBindFlags;
+        optional<IO::Network::ConnectionOrientedMasterSocket::BindFlags> fBindFlags;
 
         /**
          *  To specify size, provide your own threadpool

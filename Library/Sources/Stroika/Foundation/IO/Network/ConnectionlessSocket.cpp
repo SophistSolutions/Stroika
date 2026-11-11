@@ -491,6 +491,20 @@ String ConnectionlessSocket::PacketInfo::ToString () const
  ************************** ConnectionlessSocket::Ptr ***************************
  ********************************************************************************
  */
+void ConnectionlessSocket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
+{
+    // @see BindFlags for what each flag means, and these mappings
+#if qStroika_Platform_Windows
+    setsockopt<int> (SOL_SOCKET, bindFlags.fShareWithCooperatingSockets ? SO_REUSEADDR : SO_EXCLUSIVEADDRUSE, 1);
+#else
+    setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fShareWithCooperatingSockets ? 1 : 0);
+#if qStroika_Platform_MacOS
+    setsockopt<int> (SOL_SOCKET, SO_REUSEPORT, bindFlags.fShareWithCooperatingSockets ? 1 : 0);
+#endif
+#endif
+    _Bind (sockAddr);
+}
+
 void ConnectionlessSocket::Ptr::JoinMulticastGroup (const InternetAddress& iaddr, const Interface& onInterface) const
 {
     JoinMulticastGroup (iaddr, CurrentIndexOf_ (onInterface));

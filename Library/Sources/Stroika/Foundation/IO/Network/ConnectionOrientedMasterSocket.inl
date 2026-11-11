@@ -48,4 +48,19 @@ namespace Stroika::Foundation::IO::Network {
         return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
     }
 
+    /// <summary>
+    //////////////////////////// DEPRECATED BELOW.../////////////////////////////
+    /// </summary>
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    constexpr Socket::BindFlags::operator ConnectionOrientedMasterSocket::BindFlags () const
+    {
+        return ConnectionOrientedMasterSocket::BindFlags{};
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
 }

@@ -123,7 +123,8 @@ namespace {
 
               }
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
-                              ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
+                              ConnectionManager::Options{.fBindFlags              = ConnectionOrientedMasterSocket::BindFlags{},
+                                                         .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
             cerr << "Listening on {}..."_f(fConnectionMgr_.bindings ()) << endl;
         }

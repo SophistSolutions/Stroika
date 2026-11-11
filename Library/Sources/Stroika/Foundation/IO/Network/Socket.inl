@@ -134,4 +134,30 @@ namespace Stroika::Foundation::IO::Network {
     }
 #endif
 
+    /// <summary>
+    //////////////////////////// DEPRECATED BELOW.../////////////////////////////
+    /// </summary>
+
+    namespace ConnectionOrientedMasterSocket {
+        struct BindFlags;
+    }
+    namespace ConnectionlessSocket {
+        struct BindFlags;
+    }
+    namespace Socket {
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        struct [[deprecated ("Since Stroika v3.0d26 use ConnectionOrientedMasterSocket::BindFlags or ConnectionlessSocket::BindFlags")]] BindFlags {
+            bool fSO_REUSEADDR{false};
+            // a listening socket now always binds despite old connections (the default), whatever fSO_REUSEADDR says
+            constexpr operator ConnectionOrientedMasterSocket::BindFlags () const;
+            // fSO_REUSEADDR is fShareWithCooperatingSockets
+            constexpr operator ConnectionlessSocket::BindFlags () const;
+        };
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    }
+
 }

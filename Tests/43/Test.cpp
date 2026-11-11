@@ -36,7 +36,9 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
@@ -1230,6 +1232,182 @@ namespace {
         EXPECT_TRUE (readRawSocket.IsOpen ());
         auto moreData = textReader.ReadAll (); // fine, but will be empty
         EXPECT_TRUE (moreData.empty ());
+    }
+}
+
+namespace {
+    // ConnectionOrientedMasterSocket::BindFlags: each test binds listeners on loopback, at a port the OS picked
+    namespace ListenerBind_ {
+        using ConnectionOrientedMasterSocket::BindFlags;
+        ConnectionOrientedMasterSocket::Ptr Listen_ (const SocketAddress& addr, BindFlags flags = {})
+        {
+            ConnectionOrientedMasterSocket::Ptr s = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
+            s.Bind (addr, flags);
+            s.Listen (32);
+            return s;
+        }
+        SocketAddress FreshAddress_ ()
+        {
+            return *Listen_ (SocketAddress{V4::kLocalhost, 0}).GetLocalAddress ();
+        }
+        // a listener on addr takes a connection and closes it first - so its end waits in TIME_WAIT - then itself closes
+        void LeaveOldConnections_ (const SocketAddress& addr)
+        {
+            ConnectionOrientedMasterSocket::Ptr l = Listen_ (addr);
+            ConnectionOrientedStreamSocket::Ptr c = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
+            c.Connect (addr);
+            l.Accept ().Close ();
+            Execution::Sleep (100ms); // the server's close arrives first
+            c.Close ();
+            l.Close ();
+        }
+        // the error a bind attempt threw - or nullopt if it bound
+        optional<error_code> BindError_ (const SocketAddress& addr, BindFlags flags)
+        {
+            try {
+                Listen_ (addr, flags);
+                return nullopt;
+            }
+            catch (const system_error& e) {
+                return e.code ();
+            }
+        }
+    }
+
+    // A listener binds at once though an earlier one's connections are still closing - so a server restarts at once. Before
+    // Stroika v3.0d26, POSIX refused (address in use) for a minute or so: Bind set no SO_REUSEADDR unless asked.
+    GTEST_TEST (Foundation_IO_Network, ListenerBind_DespiteOldConnections_)
+    {
+        Debug::TraceContextBumper ctx{"ListenerBind_DespiteOldConnections_"};
+        using namespace ListenerBind_;
+        SocketAddress addr = FreshAddress_ ();
+        LeaveOldConnections_ (addr);
+        EXPECT_NO_THROW (Listen_ (addr));
+    }
+
+    // fBindDespiteOldConnections = false: POSIX refuses while old connections close; Windows cannot - it always binds
+    GTEST_TEST (Foundation_IO_Network, ListenerBind_NotDespiteOldConnections_)
+    {
+        Debug::TraceContextBumper ctx{"ListenerBind_NotDespiteOldConnections_"};
+        using namespace ListenerBind_;
+        SocketAddress addr = FreshAddress_ ();
+        LeaveOldConnections_ (addr);
+        optional<error_code> e = BindError_ (addr, BindFlags{.fBindDespiteOldConnections = false});
+        ASSERT_TRUE (e.has_value ());
+#if qStroika_Platform_Windows
+        EXPECT_EQ (*e, errc::operation_not_supported) << e->message ();
+#else
+        EXPECT_EQ (*e, errc::address_in_use) << e->message ();
+#endif
+    }
+
+    // A live listener that did not consent to share keeps its address - from one that did not ask, and from one that did
+    GTEST_TEST (Foundation_IO_Network, ListenerBind_NotShared_)
+    {
+        Debug::TraceContextBumper ctx{"ListenerBind_NotShared_"};
+        using namespace ListenerBind_;
+        SocketAddress                       addr  = FreshAddress_ ();
+        ConnectionOrientedMasterSocket::Ptr first = Listen_ (addr);
+        EXPECT_TRUE (BindError_ (addr, BindFlags{}).has_value ());
+        EXPECT_TRUE (BindError_ (addr, BindFlags{.fShareWithCooperatingSockets = true}).has_value ());
+    }
+
+    // Listeners that ALL consent share the address, and between them take every connection (which one gets each: the OS's choice)
+    GTEST_TEST (Foundation_IO_Network, ListenerBind_Shared_)
+    {
+        Debug::TraceContextBumper ctx{"ListenerBind_Shared_"};
+        using namespace ListenerBind_;
+        SocketAddress                       addr   = FreshAddress_ ();
+        ConnectionOrientedMasterSocket::Ptr first  = Listen_ (addr, BindFlags{.fShareWithCooperatingSockets = true});
+        ConnectionOrientedMasterSocket::Ptr second = Listen_ (addr, BindFlags{.fShareWithCooperatingSockets = true});
+        EXPECT_TRUE (BindError_ (addr, BindFlags{}).has_value ()); // one that did not consent cannot join them
+        constexpr unsigned int                                    kConnections_ = 24;
+        unsigned int                                              byFirst{};
+        unsigned int                                              bySecond{};
+        Containers::Sequence<ConnectionOrientedStreamSocket::Ptr> clients;
+        Containers::Sequence<ConnectionOrientedStreamSocket::Ptr> accepted;
+        Execution::WaitForIOReady<ConnectionOrientedMasterSocket::Ptr> ready{Containers::Sequence<ConnectionOrientedMasterSocket::Ptr>{first, second}};
+        for (unsigned int i = 0; i < kConnections_; ++i) {
+            ConnectionOrientedStreamSocket::Ptr c = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
+            c.Connect (addr);
+            clients += c;
+            for (const ConnectionOrientedMasterSocket::Ptr& l : ready.Wait (10s)) {
+                accepted += l.Accept ();
+                ++(l.GetNativeSocket () == first.GetNativeSocket () ? byFirst : bySecond);
+                break;
+            }
+        }
+        DbgTrace ("{} connections: {} to the first listener, {} to the second"_f, kConnections_, byFirst, bySecond);
+        EXPECT_EQ (byFirst + bySecond, kConnections_);
+#if qStroika_Platform_Linux
+        EXPECT_TRUE (byFirst > 0 and bySecond > 0) << byFirst << " / " << bySecond; // Linux spreads them
+#endif
+    }
+
+    // A combination the OS cannot honor throws
+    GTEST_TEST (Foundation_IO_Network, ListenerBind_NotSupported_)
+    {
+        Debug::TraceContextBumper ctx{"ListenerBind_NotSupported_"};
+        using namespace ListenerBind_;
+#if qStroika_Platform_Windows
+        constexpr BindFlags kNotSupported_{.fBindDespiteOldConnections = false}; // Windows always binds despite them
+#else
+        constexpr BindFlags kNotSupported_{.fBindDespiteOldConnections = false, .fShareWithCooperatingSockets = true}; // SO_REUSEPORT does
+#endif
+        optional<error_code> e = BindError_ (FreshAddress_ (), kNotSupported_);
+        ASSERT_TRUE (e.has_value ());
+        EXPECT_EQ (*e, errc::operation_not_supported) << e->message ();
+    }
+
+    // ConnectionlessSocket::BindFlags: sharing an address takes BOTH sockets' consent
+    GTEST_TEST (Foundation_IO_Network, UDPBind_)
+    {
+        Debug::TraceContextBumper ctx{"UDPBind_"};
+        using ConnectionlessSocket::BindFlags;
+        auto bound = [] (const SocketAddress& addr, BindFlags flags = {}) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            s.Bind (addr, flags);
+            return s;
+        };
+        auto binds = [&] (const SocketAddress& addr, BindFlags flags) {
+            try {
+                bound (addr, flags);
+                return true;
+            }
+            catch (const system_error&) {
+                return false;
+            }
+        };
+        SocketAddress addr = *bound (SocketAddress{V4::kLocalhost, 0}).GetLocalAddress ();
+        {
+            ConnectionlessSocket::Ptr first = bound (addr);
+            EXPECT_FALSE (binds (addr, BindFlags{}));
+            EXPECT_FALSE (binds (addr, BindFlags{.fShareWithCooperatingSockets = true}));
+        }
+        {
+            ConnectionlessSocket::Ptr first  = bound (addr, BindFlags{.fShareWithCooperatingSockets = true});
+            ConnectionlessSocket::Ptr second = bound (addr, BindFlags{.fShareWithCooperatingSockets = true});
+            EXPECT_FALSE (binds (addr, BindFlags{}));
+        }
+    }
+
+    // Code written before Stroika v3.0d26 - Socket::BindFlags - still compiles, and converts to each kind's BindFlags
+    GTEST_TEST (Foundation_IO_Network, DeprecatedBindFlags_)
+    {
+        Debug::TraceContextBumper ctx{"DeprecatedBindFlags_"};
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        ConnectionOrientedMasterSocket::BindFlags listening = Socket::BindFlags{.fSO_REUSEADDR = false};
+        EXPECT_TRUE (listening.fBindDespiteOldConnections); // always now
+        EXPECT_FALSE (listening.fShareWithCooperatingSockets);
+        ConnectionlessSocket::BindFlags udp = Socket::BindFlags{.fSO_REUSEADDR = true};
+        EXPECT_TRUE (udp.fShareWithCooperatingSockets);
+        ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+        s.Bind (SocketAddress{V4::kLocalhost, 0}, Socket::BindFlags{.fSO_REUSEADDR = true});
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     }
 }
 

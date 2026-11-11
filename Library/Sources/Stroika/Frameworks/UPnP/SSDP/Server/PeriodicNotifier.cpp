@@ -59,7 +59,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
 
     // Construction of notifier will fail if we cannot make the sockets - instead of failing quietly inside the loop. They are NOT
     // bound: they only send, and bound to SSDP's port they could take unicast M-SEARCHes meant for a SearchResponder's sockets
-    // there - of sockets sharing an address, a unicast datagram reaches just one, which the OS picks (Socket::BindFlags::fSO_REUSEADDR)
+    // there - of sockets sharing an address, a unicast datagram reaches just one, which the OS picks (ConnectionlessSocket::BindFlags::fShareWithCooperatingSockets)
     Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
     {
         static constexpr Execution::Activity kActivity_{"creating SSDP sockets in PeriodicNotifier"sv};

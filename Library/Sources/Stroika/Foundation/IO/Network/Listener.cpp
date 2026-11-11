@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Traversal;
  ********************************************************************************
  */
 struct Listener::Rep_ final {
-    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog,
+    Rep_ (const Iterable<SocketAddress>& addrs, const ConnectionOrientedMasterSocket::BindFlags& bindFlags, unsigned int backlog,
           const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -83,11 +83,11 @@ struct Listener::Rep_ final {
 */
 Listener::Listener (const SocketAddress& addr,
                     const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener{Sequence<SocketAddress>{addr}, Socket::BindFlags{}, newConnectionAcceptor, backlog}
+    : Listener{Sequence<SocketAddress>{addr}, ConnectionOrientedMasterSocket::BindFlags{}, newConnectionAcceptor, backlog}
 {
 }
 
-Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags,
+Listener::Listener (const SocketAddress& addr, const ConnectionOrientedMasterSocket::BindFlags& bindFlags,
                     const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener{Sequence<SocketAddress>{addr}, bindFlags, newConnectionAcceptor, backlog}
 {
@@ -95,11 +95,11 @@ Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlag
 
 Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs,
                     const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener{addrs, Socket::BindFlags{}, newConnectionAcceptor, backlog}
+    : Listener{addrs, ConnectionOrientedMasterSocket::BindFlags{}, newConnectionAcceptor, backlog}
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags,
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const ConnectionOrientedMasterSocket::BindFlags& bindFlags,
                     const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : fRep_{Memory::MakeSharedPtr<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor)}
 {

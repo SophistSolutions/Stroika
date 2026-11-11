@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/IO/Network/ConnectionOrientedMasterSocket.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
@@ -61,11 +62,11 @@ namespace Stroika::Foundation::IO::Network {
          */
         Listener (const SocketAddress& addr, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor,
                   unsigned int backlog = 1);
-        Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags,
+        Listener (const SocketAddress& addr, const ConnectionOrientedMasterSocket::BindFlags& bindFlags,
                   const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
         Listener (const Traversal::Iterable<SocketAddress>& addrs,
                   const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
-        Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags,
+        Listener (const Traversal::Iterable<SocketAddress>& addrs, const ConnectionOrientedMasterSocket::BindFlags& bindFlags,
                   const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
         Listener (Listener&& rhs) noexcept;
         Listener (const Listener&) = delete;

@@ -488,6 +488,36 @@ namespace {
             DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
         }
     }
+
+    // a connection to the test server, on loopback
+    IO::Network::ConnectionOrientedStreamSocket::Ptr ConnectToTestServer_ ()
+    {
+        auto s = IO::Network::ConnectionOrientedStreamSocket::New (IO::Network::SocketAddress::INET);
+        s.Connect (IO::Network::SocketAddress{IO::Network::V4::kLocalhost, kRouterTestPort_});
+        return s;
+    }
+
+    /*
+     *  A server restarts at once on its port, though it was stopped with a client connected: it closed that connection first,
+     *  which leaves its end in TIME_WAIT for a minute or so - and meanwhile POSIX refuses to bind the port without SO_REUSEADDR.
+     *  Before Stroika v3.0d26 the restart failed there: address already in use.
+     */
+    GTEST_TEST (Frameworks_WebServer, ServerRestartsAtOnce_)
+    {
+        TraceContextBumper ctx{"ServerRestartsAtOnce_"};
+        auto               start = [] () {
+            return make_unique<ConnectionManager> (SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_});
+        };
+        auto server = start ();
+        auto client = ConnectToTestServer_ ();
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; server->statistics ().fConnections.fNumberOfOpenConnections < 1;) {
+            ASSERT_LT (Time::GetTickCount (), giveUpAt) << "the server never took the connection";
+            Execution::Sleep (10ms);
+        }
+        server.reset (); // closes the client's connection - first
+        client.Close ();
+        EXPECT_NO_THROW (start ());
+    }
 }
 #endif
 

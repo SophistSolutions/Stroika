@@ -254,14 +254,16 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
         if (InternetProtocol::IP::SupportIPV4 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.SetReceivePacketInfo (true); // where each search arrived (@see LocationFor_)
-            s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()},
+                    ConnectionlessSocket::BindFlags{.fShareWithCooperatingSockets = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
             socketsAndGroups += make_pair (s, UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
         }
         if (InternetProtocol::IP::SupportIPV6 (options.fIPVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             s.SetReceivePacketInfo (true); // where each search arrived (@see LocationFor_)
-            s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()},
+                    ConnectionlessSocket::BindFlags{.fShareWithCooperatingSockets = true});
             s.SetMulticastLoopMode (true); // probably should make this configurable
             socketsAndGroups += make_pair (s, UPnP::SSDP::V6::kSocketAddress.GetInternetAddress ());
         }

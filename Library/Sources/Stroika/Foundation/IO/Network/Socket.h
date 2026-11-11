@@ -98,55 +98,6 @@ namespace Stroika::Foundation::IO::Network {
 
         /**
          */
-        struct BindFlags {
-            /**
-             *  SO_REUSEADDR:
-             * 
-             *      From https://man7.org/linux/man-pages/man7/socket.7.html
-             * 
-             *      Indicates that the rules used in validating addresses
-             *      supplied in a bind(2) call should allow reuse of local
-             *      addresses.  For AF_INET sockets this means that a socket
-             *      may bind, except when there is an active listening socket
-             *      bound to the address.
-             *
-             *  \par What Stroika means by it - on every platform
-             *      The address being reused is the SOCKET address (internet address AND port):
-             *          o   UDP: other sockets that also set this may bind the same socket address - as multicast listeners
-             *              (SSDP, say) must, to share the well-known port. Multicast and broadcast datagrams reach all of them;
-             *              a UNICAST datagram reaches just one, and which one the OS decides (Linux 7.0: the last bound;
-             *              macOS 26 and Windows 11: the first - though Windows documents it as indeterminate). So a socket
-             *              that must hear unicast should be the only one bound there; one that only sends should not bind at
-             *              all; and one that wants only multicast should bind the group's own address where the OS allows it
-             *              (Linux and macOS do, Windows does not), so it is never sent unicast.
-             *          o   TCP: the socket may bind a socket address that an old connection still holds in TIME_WAIT - so a
-             *              server can restart at once. It does NOT let two live listeners share the address.
-             *
-             *      That is what SO_REUSEADDR alone does on Linux. On Windows too - which is also more permissive for TCP: there
-             *      it can let another socket take over an address in active use (SO_EXCLUSIVEADDRUSE is Windows' guard, not
-             *      exposed here).
-             *
-             *  \par macOS (BSD)
-             *      BSD reads the 'address' in SO_REUSEADDR as the INTERNET address: alone, it lets a UDP socket share a port
-             *      only with sockets bound to a DIFFERENT internet address (a wildcard and a specific one, say). Sharing the
-             *      same socket address takes SO_REUSEPORT as well - so for UDP sockets, Stroika sets both (as libuv does). Not
-             *      for TCP: there SO_REUSEADDR already gives the meaning above, and SO_REUSEPORT would go further, letting two
-             *      live listeners share the address.
-             *
-             *  \par Why there is no separate SO_REUSEPORT flag
-             *      Beyond the BSD use above (folded in here), SO_REUSEPORT is a different feature: several cooperating sockets
-             *      deliberately sharing one port, so the kernel can divide the work between them (Linux hands each new
-             *      connection or unicast datagram to just one) - for multi-process servers, and for restarting with no moment
-             *      when nothing is listening. Its meaning varies too much by OS to expose raw (Linux load-balances; plain BSD
-             *      does not - FreeBSD has a separate SO_REUSEPORT_LB; Windows has none). If ever wanted, add it under a name
-             *      that says what it does - fLoadBalanceAcrossSockets, say - mapped per OS (and unsupported where there is
-             *      no equivalent). This flag would not need to change.
-             */
-            bool fSO_REUSEADDR{false};
-        };
-
-        /**
-         */
         enum class ShutdownTarget {
             eReads,
             eWrites,
@@ -272,22 +223,17 @@ namespace Stroika::Foundation::IO::Network {
              */
             nonvirtual Type GetType () const;
 
-        public:
+        protected:
             /**
-             *  Associate this socket object with the given address.
-             *
-             *  @todo   SB an overload taking just a port, and defaults to INADDRANY with that port.
-             *          Port is only thing really needed, but InternetAddress part provided as arg
-             *          too in case you want to bind to a particular interface.
+             *  Associate this socket object with the given address - the bind () itself. Which socket options it needs set first
+             *  (SO_REUSEADDR, ...) differs by socket kind, so ConnectionOrientedMasterSocket::Ptr::Bind and
+             *  ConnectionlessSocket::Ptr::Bind - each with its own BindFlags - set those, then call this.
              *
              *  @todo   CLARIFY if a socket can be bound to more than one address (and what about unbind)?
              *
-             *  \note   This is usually just used on a ConnectionOrientedMasterSocket but may also be used
-             *          by a ConnectionlessSocket (e.g. with SSDP).
-             *
              *  @see POSIX bind()
              */
-            nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags{});
+            nonvirtual void _Bind (const SocketAddress& sockAddr);
 
         public:
             /**
