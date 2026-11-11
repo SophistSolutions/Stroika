@@ -219,28 +219,20 @@ namespace Stroika::Foundation::Execution {
          *
          *      readyToWake    -   predicate which returns false if the waiting should be continued.
          *
-         *  Returns:
-         *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
-         *      2) true of 'readyToWake' () is reason we woke
+         *  Returns true if readyToWake () is why it woke, false on timeout - never a spurious wake.
          *
          *  \note   ***Cancelation Point***
          *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
          *          for adding support for thread interruption (and a minor point - Time::TimePointSeconds)
-         * 
-         *  \note the cv_status returning overload CAN return/wakeup spuriously (not timeout, and not desired condition true)
-         *        The PREDICATE (readyToWake) overload, never returns a spurious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
-         *  \note An aborted thread throws (Thread::AbortException) from the PREDICATE overload even when readyToWake comes true with
-         *        the abort - as the abort coming first does. Unlike the standard's stop_token overload, which returns the predicate's
-         *        value; nothing is lost by throwing, since the caller has not yet acted on it.
+         *  \note An aborted thread throws (Thread::AbortException) even when readyToWake comes true with the abort - as the abort
+         *        coming first does. Unlike the standard's stop_token overload, which returns the predicate's value; nothing is
+         *        lost by throwing, since the caller has not yet acted on it.
          *
          *  \pre (lock.owns_lock ());
          *  \post (lock.owns_lock ());
-         *
-         * @todo maybe lose the (no predicate) overload --LGP 2023-10-09
          */
-        nonvirtual cv_status wait_until (LockType& lock, Time::TimePointSeconds timeoutAt);
         template <invocable PREDICATE>
         nonvirtual bool wait_until (LockType& lock, Time::TimePointSeconds timeoutAt, PREDICATE&& readyToWake);
 
@@ -251,22 +243,16 @@ namespace Stroika::Foundation::Execution {
          *
          *     readyToWake    -   predicate which returns false if the waiting should be continued.
          *
-         * Returns:
-         *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
-         *     2) true of 'readyToWake' () is reason we woke
+         *  Returns true if readyToWake () is why it woke, false on timeout - never a spurious wake.
          *
          *  \note   ***Cancelation Point***
          *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_for () - except
          *          for adding support for thread interruption (and a minor point - Time::TimePointSeconds)
-         * 
-         *  \note the cv_status returning overload CAN return/wakeup spuriously (not timeout, and not desired condition true)
-         *        The PREDICATE (readyToWake) overload, never returns a spurious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
          *  \pre (lock.owns_lock ());
          *  \post (lock.owns_lock ());
          */
-        nonvirtual cv_status wait_for (LockType& lock, Time::DurationSeconds timeout);
         template <invocable PREDICATE>
         nonvirtual bool wait_for (LockType& lock, Time::DurationSeconds timeout, PREDICATE&& readyToWake);
 
@@ -297,6 +283,21 @@ namespace Stroika::Foundation::Execution {
          */
         template <invocable FUNCTION>
         nonvirtual void MutateDataNotifyOne (FUNCTION&& mutatorFunction);
+
+    private:
+        // One wait, which can wake spuriously: the PREDICATE wait_until loops on it when this thread has no stop token
+        nonvirtual cv_status WaitUntil_ (LockType& lock, Time::TimePointSeconds timeoutAt);
+
+        //********************** DEPRECATED BELOW ****************************
+
+    public:
+        // DEPRECATED - kept only so code written for older Stroika versions keeps compiling
+        [[deprecated ("Since Stroika v3.0d26 - pass a predicate (readyToWake): in a Stroika thread this woke only for a timeout or "
+                      "an abort, never a notify")]] nonvirtual cv_status
+        wait_until (LockType& lock, Time::TimePointSeconds timeoutAt);
+        [[deprecated ("Since Stroika v3.0d26 - pass a predicate (readyToWake): in a Stroika thread this woke only for a timeout or "
+                      "an abort, never a notify")]] nonvirtual cv_status
+        wait_for (LockType& lock, Time::DurationSeconds timeout);
     };
 
 }

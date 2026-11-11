@@ -44,10 +44,13 @@ namespace Stroika::Foundation::Execution {
         fConditionVariable.notify_all ();
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::TimePointSeconds timeoutAt)
+    cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::WaitUntil_ (LockType& lock, Time::TimePointSeconds timeoutAt)
     {
         /*
-         *  NOTE: this overload CAN return spurrious wakeups, and just checks timeoutAt to see which cv_status to return.
+         *  NOTE: this CAN return spurrious wakeups, and just checks timeoutAt to see which cv_status to return.
+         *
+         *  Its stop-token branch serves only the deprecated no-predicate wait_until and wait_for (and wakes for no notify there):
+         *  the PREDICATE wait_until calls this only when this thread has no stop token.
          */
         Require (lock.owns_lock ());
 
@@ -136,7 +139,7 @@ namespace Stroika::Foundation::Execution {
         // if kSupportsStopToken not in use (or not in a Stroika thread so this thread not stoppable)
         while (not readyToWake ()) {
             Assert (lock.owns_lock ()); // lock owned during readyToWake call and before wait_until call
-            // NB: further checks for interruption happen inside wait_until() called here...
+            // NB: further checks for interruption happen inside WaitUntil_ () called here...
             //
             // Another SUBTLE point. we could get here with kSupportsStopToken==false, which might be because of
             // the kind of condition_variable used, etc (many reasons). Point is - we need to be interrupted
@@ -150,7 +153,7 @@ namespace Stroika::Foundation::Execution {
             //  if we are woken because of a toggle of lock, we'll get (apparently from point of view of called wait_until) spurious wakeup and can check
             //  again.
             //
-            if (wait_until (lock, timeoutAt) == cv_status::timeout) {
+            if (WaitUntil_ (lock, timeoutAt) == cv_status::timeout) {
                 /*
                  *  Somewhat ambiguous if this should check readyToWake or just return false. Probably best to check, since the condition is met, and that's
                  *  probably more important than the timeout.
@@ -167,13 +170,6 @@ namespace Stroika::Foundation::Execution {
         Ensure (lock.owns_lock ());
         Thread::CheckForInterruption (); // an aborted thread throws, even with readyToWake () true
         return true;
-    }
-    template <typename MUTEX, typename CONDITION_VARIABLE>
-    inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSeconds timeout)
-    {
-        Require (lock.owns_lock ());
-        Assert (isinf (timeout.count ()) == isinf ((timeout + Time::GetTickCount ()).time_since_epoch ().count ())); // make sure arithmetic works right with inf
-        return wait_until (lock, timeout + Time::GetTickCount ());
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
     template <invocable PREDICATE>
@@ -206,6 +202,21 @@ namespace Stroika::Foundation::Execution {
             mutatorFunction ();
         }
         fConditionVariable.notify_one ();
+    }
+
+    //////////////////////////// DEPRECATED BELOW.../////////////////////////////
+
+    template <typename MUTEX, typename CONDITION_VARIABLE>
+    inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::TimePointSeconds timeoutAt)
+    {
+        return WaitUntil_ (lock, timeoutAt);
+    }
+    template <typename MUTEX, typename CONDITION_VARIABLE>
+    inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSeconds timeout)
+    {
+        Require (lock.owns_lock ());
+        Assert (isinf (timeout.count ()) == isinf ((timeout + Time::GetTickCount ()).time_since_epoch ().count ())); // make sure arithmetic works right with inf
+        return WaitUntil_ (lock, timeout + Time::GetTickCount ());
     }
 
 }
