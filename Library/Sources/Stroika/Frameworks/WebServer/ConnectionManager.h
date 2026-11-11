@@ -6,6 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <atomic>
 #include <list>
 #include <memory>
 
@@ -85,6 +86,9 @@ namespace Stroika::Frameworks::WebServer {
             /**
              *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
              *  but can be specified explicitly.
+             *
+             *  As many requests again can wait for a free thread; a request beyond that is answered 503 (Service Unavailable) at once,
+             *  and counted in Statistics::ConnectionStatistics::fRequestsRejected.
              */
             optional<unsigned int> fMaxConcurrentlyHandledConnections;
 
@@ -371,6 +375,13 @@ namespace Stroika::Frameworks::WebServer {
                 size_t fConnectionsPiningForTheFjords{};
 
                 /**
+                 *  Requests answered 503 (Service Unavailable) since the ConnectionManager was made, because every handler thread was
+                 *  busy and as many requests again were waiting for one. Not zero says the server fell behind: more handler threads
+                 *  (Options::fMaxConcurrentlyHandledConnections) may help.
+                 */
+                size_t fRequestsRejected{};
+
+                /**
                  *  See Characters::ToString ()
                  */
                 nonvirtual Characters::String ToString () const;
@@ -477,6 +488,8 @@ namespace Stroika::Frameworks::WebServer {
         };
         // No need to lock fInactiveSockSetPoller_ since its internally synchronized;
         Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fInactiveSockSetPoller_{};
+
+        atomic<size_t> fRequestsRejected_{0}; // see Statistics::ConnectionStatistics::fRequestsRejected
 
         /*
          *  SUBTLE DATA MEMBER ORDERING NOTE!

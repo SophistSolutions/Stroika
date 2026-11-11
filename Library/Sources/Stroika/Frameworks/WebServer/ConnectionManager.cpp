@@ -22,6 +22,8 @@
 
 #include "ConnectionManager.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
@@ -73,6 +75,37 @@ namespace {
 namespace {
     using TypeOfMonitor = WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor;
     const Set<TypeOfMonitor> kInactiveSocketMonitorEvents2Watch4_{TypeOfMonitor::eRead};
+
+    /*
+     *  Answer a request 503 (Service Unavailable) and close, waiting for nothing - so a thread that serves every connection can
+     *  call it. Read what of the request has arrived first: closing a socket with unread data sends a TCP reset, which the client
+     *  may see instead of the 503.
+     */
+    void AnswerServiceUnavailableAndClose_ (const ConnectionOrientedStreamSocket::Ptr& s) noexcept
+    {
+        // the whole response (Retry-After in seconds)
+        static const string kResponse_ = [] () {
+            using namespace IO::Network::HTTP;
+            return "HTTP/1.1 "s + to_string (StatusCodes::kServiceUnavailable) + " Service Unavailable\r\n"s + string{HeaderName::kConnection} +
+                   ": close\r\n"s + string{HeaderName::kContentLength} + ": 0\r\n"s + string{HeaderName::kRetryAfter} + ": 1\r\n\r\n"s;
+        }();
+        try {
+            s.SetAutomaticTCPDisconnectOnClose (nullopt); // that graceful close waits for the client
+            Stroika_ATTRIBUTE_INDETERMINATE byte buf[4 * 1024];
+            for (size_t nRead = 0; nRead < 64 * 1024;) { // bounded: a client still sending cannot hold the caller
+                optional<span<byte>> r = s.ReadNonBlocking (span{buf});
+                if (not r or r->empty ()) {
+                    break;
+                }
+                nRead += r->size ();
+            }
+            s.Write (as_bytes (span{kResponse_}));
+            s.Close ();
+        }
+        catch (...) {
+            DbgTrace ("Could not answer {} 503 - the client is likely gone ({})"_f, s, current_exception ());
+        }
+    }
 }
 
 /*
@@ -103,6 +136,7 @@ String WebServer::ConnectionManager::Statistics::ConnectionStatistics::ToString 
     sb << ", durationActiveRequests: "sv << fDurationOfOpenConnectionsRequests;
     sb << ", durationOpenRequests: "sv << fDurationOfActiveConnectionsRequests;
     sb << ", nConnectionsPiningForTheFjords: "sv << fConnectionsPiningForTheFjords;
+    sb << ", nRequestsRejected: "sv << fRequestsRejected;
     sb << "}"sv;
     return sb;
 }
@@ -419,7 +453,27 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     AssertNotReached (); // these two lists need to be kept in sync, so really assume updating them cannot fail/break
                     ReThrow ();
                 }
-                fActiveConnectionThreads_.AddTask (handleActivatedConnection);
+                try {
+                    fActiveConnectionThreads_.AddTask (handleActivatedConnection);
+                }
+                catch (const Thread::AbortException&) {
+                    ReThrow ();
+                }
+                catch (...) {
+                    /*
+                     *  Every handler thread busy, and the queue full: the server has fallen behind, so answer 503 at once - not wait
+                     *  for room (ready connections would pile up in the poller without limit), nor retry (a ready connection comes
+                     *  straight back: a spin).
+                     */
+                    ++fRequestsRejected_;
+                    DbgTrace ("Answering {} 503 (Service Unavailable): every handler thread busy, and the queue full ({})"_f,
+                              readyConnection, current_exception ());
+                    {
+                        scoped_lock critSec{fActiveConnections_};
+                        fActiveConnections_.rwget ().rwref ().Remove (readyConnection);
+                    }
+                    AnswerServiceUnavailableAndClose_ (readyConnection->socket ());
+                }
             }
         }
         catch (const Thread::AbortException&) {
@@ -504,6 +558,7 @@ auto ConnectionManager::ComputeStatistics_ () const -> Statistics
     Statistics::ConnectionStatistics connectionStats;
     connectionStats.fNumberOfActiveConnections = conns.Count ([] (const Connection::Stats& s) { return s.fActive == true; });
     connectionStats.fNumberOfOpenConnections   = conns.size ();
+    connectionStats.fRequestsRejected          = fRequestsRejected_.load ();
 
     TimePointSeconds now                       = Time::GetTickCount ();
     connectionStats.fDurationOfOpenConnections = ComputeCommonStatistics (

@@ -19,9 +19,13 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/ThreadPool.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
@@ -429,6 +433,56 @@ namespace {
                 EXPECT_EQ (ask (kByNameNoCredentials_, method), make_pair (optional<String>{kOrigin_}, optional<String>{}))
                     << method.AsNarrowSDKString ();
             }
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
+    }
+
+    /*
+     *  A server that has fallen behind - every handler thread busy, and the queue full - answers a further request 503 (Service
+     *  Unavailable) at once, and still serves those it took. Before Stroika v3.0d26 that request was never answered, its
+     *  connection left open.
+     */
+    GTEST_TEST (Frameworks_WebServer, BusyServerAnswers503_)
+    {
+        TraceContextBumper ctx{"BusyServerAnswers503_"};
+        WaitableEvent      handlerEntered;
+        WaitableEvent      releaseHandlers;
+        // one handler thread, so a queue of one: the first request runs, the second waits, the third finds no room
+        ConnectionManager server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_),
+                                 Sequence<Route>{Route{"slow"_RegEx,
+                                                       [&] (Request&, Response& response) {
+                                                           handlerEntered.Set ();
+                                                           releaseHandlers.Wait ();
+                                                           response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                                           response.write ("done"sv);
+                                                       }}},
+                                 ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 1}};
+        auto              askStatus = [] () {
+            auto c = IO::Network::Transfer::Connection::New ();
+            c.SetTimeout (10s); // a request never answered fails the test, not hangs it
+            c.SetSchemeAndAuthority (URI{"http", URI::Authority{URI::Host{"localhost"}, kRouterTestPort_}});
+            IO::Network::Transfer::Request r;
+            r.fMethod               = IO::Network::HTTP::Methods::kGet;
+            r.fAuthorityRelativeURL = URI{"/slow"sv};
+            return c.Send (r).GetStatus ();
+        };
+        try {
+            ThreadPool              clients{ThreadPool::Options{.fThreadCount = 2}};
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { releaseHandlers.Set (); }); // before ~clients waits for them
+            auto                    first   = clients.AddTaskWithResult (askStatus);
+            handlerEntered.Wait (10s);
+            auto second = clients.AddTaskWithResult (askStatus);
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; server.statistics ().fConnections.fNumberOfActiveConnections < 2;) {
+                ASSERT_LT (Time::GetTickCount (), giveUpAt) << "the second request never reached the server's queue";
+                Execution::Sleep (10ms);
+            }
+            EXPECT_EQ (askStatus (), IO::Network::HTTP::StatusCodes::kServiceUnavailable);
+            EXPECT_EQ (server.statistics ().fConnections.fRequestsRejected, 1u);
+            releaseHandlers.Set ();
+            EXPECT_EQ (first.GetResult (10s), IO::Network::HTTP::StatusCodes::kOK);
+            EXPECT_EQ (second.GetResult (10s), IO::Network::HTTP::StatusCodes::kOK);
         }
         catch (const RequiredComponentMissingException&) {
             DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);

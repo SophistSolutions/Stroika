@@ -70,6 +70,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr string_view kLocation                      = "Location"sv;
         constexpr string_view kOrigin                        = "Origin"sv;
         constexpr string_view kReferrer                      = "Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
+        constexpr string_view kRetryAfter                    = "Retry-After"sv;
         constexpr string_view kServer                        = "Server"sv;
         constexpr string_view kSetCookie                     = "Set-Cookie"sv;
         constexpr string_view kSOAPAction                    = "SOAPAction"sv;
