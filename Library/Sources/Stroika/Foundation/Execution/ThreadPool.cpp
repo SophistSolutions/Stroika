@@ -59,7 +59,7 @@ public:
                 }
                 // Subtle point, but we must copy directly into fCurTask (WaitForNextTask_ call) so its filled in under lock
                 // while being moved so task moves from pending to in-use without ever temporarily disappearing from known tasks lists
-                fThreadPool.WaitForNextTask_ (&fCurTask); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+                fThreadPool.WaitForNextTask_ (*this); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
                 if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_.fMutex};
                     Assert (IsRunning ());
@@ -99,9 +99,10 @@ public:
 
 public:
     ThreadPool& fThreadPool;
-    // fThreadPool.fCriticalSection_ protect access to fCurTask/fCurTaskStartedAt - very short duration
+    // fThreadPool.fCriticalSection_ protect access to fCurTask/fCurTaskStartedAt/fRetire - very short duration
     PendingTaskInfo_       fCurTask;              // the task running, its ID and name; fTask null if none
     Time::TimePointSeconds fCurTaskStartedAt{0s}; // meaningless if not IsRunning ()
+    bool                   fRetire{false};        // chosen to go (SetPoolSize): takes no further task, and is not counted in GetPoolSize
 };
 
 /*
@@ -143,7 +144,7 @@ ThreadPool::~ThreadPool ()
 unsigned int ThreadPool::GetPoolSize () const
 {
     [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
-    return static_cast<unsigned int> (fThreads_.size ());
+    return static_cast<unsigned int> (fThreads_.Where ([] (const TPInfo_& ti) { return not ti.fRunnable->fRetire; }).size ());
 }
 
 void ThreadPool::SetPoolSize (unsigned int poolSize)
@@ -152,31 +153,35 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
     Require (not fAborted_);
     Collection<Thread::Ptr> removed; // aborted under the lock, but waited for after it, as AbortTasks does
     {
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
-        DbgTrace ("fThreads_.size ()={}"_f, fThreads_.size ());
-        while (poolSize > fThreads_.size ()) {
+        ConditionVariable<>::LockType lock{fCriticalSection_.fMutex};
+        size_t                        staying = fThreads_.Where ([] (const TPInfo_& ti) { return not ti.fRunnable->fRetire; }).size ();
+        DbgTrace ("threads staying={}"_f, staying);
+        for (; staying < poolSize; ++staying) {
             fThreads_.Add (mkThread_ ());
         }
-
-        // Still quite weak implementation of REMOVAL
-        while (poolSize < fThreads_.size ()) {
-            // iterate over threads if any not busy, remove that them first
-            bool anyFoundToKill = false;
-            for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-                if (not i->fRunnable->IsRunning ()) {
-                    // idle, so aborting it costs no task: under fCriticalSection_ it cannot take one (WaitForNextTask_)
-                    i->fThread.Abort ();
-                    removed.Add (i->fThread);
-                    fThreads_.Remove (i);
-                    anyFoundToKill = true;
-                    break;
+        // The threads to go: idle ones first, then busy ones - each marked fRetire, so it takes no further task (WaitForNextTask_).
+        // Any marked already, by a SetPoolSize aborted while it waited, go too
+        for (bool idle : {true, false}) {
+            for (const TPInfo_& ti : fThreads_) {
+                if (staying > poolSize and not ti.fRunnable->fRetire and ti.fRunnable->IsRunning () != idle) {
+                    ti.fRunnable->fRetire = true;
+                    --staying;
                 }
             }
-            if (not anyFoundToKill) {
-                // @todo - fix this better/eventually - either throw or wait...
-                DbgTrace ("Failed to lower the loop size - cuz all threads busy - giving up"_f);
-                break;
+        }
+        Collection<TPInfo_> retiring{fThreads_.Where ([] (const TPInfo_& ti) { return ti.fRunnable->fRetire; })};
+        if (not retiring.empty ()) {
+            ++fProgressWaiters_;
+            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { --fProgressWaiters_; }); // still under the lock, even if this throws
+            (void)fCriticalSection_.wait_until (lock, Time::GetTickCount () + Time::kInfinity, [&] () {
+                return retiring.All ([] (const TPInfo_& ti) { return not ti.fRunnable->IsRunning (); });
+            });
+            // each now idle, so aborting it costs no task
+            for (const TPInfo_& ti : retiring) {
+                ti.fThread.Abort ();
+                removed.Add (ti.fThread);
             }
+            fThreads_.RemoveAll ([] (const TPInfo_& ti) { return ti.fRunnable->fRetire; });
         }
     }
     for (const Thread::Ptr& t : removed) {
@@ -237,7 +242,12 @@ void ThreadPool::AbortTask (TaskID task, Time::DurationSeconds timeout)
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             if (i->fRunnable->IsRunning (task)) {
                 thread2Kill = i->fThread;
-                fThreads_.Update (i, mkThread_ ());
+                if (i->fRunnable->fRetire) {
+                    fThreads_.Remove (i); // going anyway (SetPoolSize), so not replaced
+                }
+                else {
+                    fThreads_.Update (i, mkThread_ ());
+                }
                 NotifyProgress_ ();
                 break;
             }
@@ -262,7 +272,9 @@ void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
         for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
             aborted.Add (ti.fThread);
-            replacements.Add (mkThread_ ());
+            if (not ti.fRunnable->fRetire) { // one going anyway (SetPoolSize) is not replaced
+                replacements.Add (mkThread_ ());
+            }
         }
         fThreads_ = replacements;
         NotifyProgress_ ();
@@ -508,19 +520,19 @@ String ThreadPool::ToString () const
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
-void ThreadPool::WaitForNextTask_ (PendingTaskInfo_* result)
+void ThreadPool::WaitForNextTask_ (MyRunnable_& runnable)
 {
-    RequireNotNull (result);
-    Require (result->fTask == nullptr);
+    Require (runnable.fCurTask.fTask == nullptr);
     ConditionVariable<>::LockType lock{fCriticalSection_.fMutex};
     // An aborted thread throws from wait_until, under the lock, even with a task pending - so a thread the pool aborted (Abort_,
-    // AbortTasks, SetPoolSize - each under this lock) takes no task
-    (void)fCriticalSection_.wait_until (lock, Time::GetTickCount () + Time::kInfinity, [this] () { return not fPendingTasks_.empty (); });
-    *result = fPendingTasks_.front ();
+    // AbortTasks, SetPoolSize - each under this lock) takes no task. Nor does one chosen to go: it waits for SetPoolSize to abort it
+    (void)fCriticalSection_.wait_until (lock, Time::GetTickCount () + Time::kInfinity,
+                                        [&] () { return not runnable.fRetire and not fPendingTasks_.empty (); });
+    runnable.fCurTask = fPendingTasks_.front ();
     fPendingTasks_.pop_front ();
     DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = {}"_f,
               fPendingTasks_.size ());
-    Ensure (result->fTask != nullptr);
+    Ensure (runnable.fCurTask.fTask != nullptr);
     NotifyProgress_ (); // room in the queue, for an AddTask with a QMax
 }
 

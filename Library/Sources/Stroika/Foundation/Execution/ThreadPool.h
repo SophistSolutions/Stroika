@@ -21,16 +21,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Consider adding the idea of TaskGroups - which are properties shared by all tasks (or some tasks)
- *              added to a threadpool. If multiple tasks are added to the threadpool with the same
- *              TaskGroup, then they respect that task-group's constraints. One example constraint would be
- *              mutual run exclusion. This would allow you to create lockless threaded procedures, because
- *              they would be guaranteed to not be run all at the same time, and yet could STILL leverage
- *              the benefits of thread pooling.
- *
- *              For example, if you had 3 threads in the pool, and 5 thread groups, then typically one or
- *              more thread groups would be idle. The thread groups give you lockless execution, and
- *              the threadpool lets the 5 groups run 'at the same time' on only 3 threads.
+ *      @todo   https://github.com/SophistSolutions/Stroika/issues/1293 - task groups (strands): tasks of one group never run at once
  */
 
 namespace Stroika::Foundation::Execution {
@@ -168,13 +159,13 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  SetPoolSize () is advisory. It attempts to add or remove entries as requested. Note - 0 is a legal size.
+         *  Adds threads, or removes them, so the pool has poolSize. Note - 0 is a legal size.
          *
-         *  But under some circumstances, it will fail. For example, if tasks are busy
-         *  running on all threads, the number of threads in the pool cannot be decreased.
+         *  Shrinking removes idle threads first. A busy thread chosen to go runs no further task, and goes once its running task
+         *  ends - SetPoolSize waits for that, so it can wait as long as that task runs. GetPoolSize () reports the new size at
+         *  once.
          *
-         *  @todo - WE CAN do better than this - at least marking the thread as to be removed when the
-         *      task finishes - but NYI
+         *  \note   ***Cancelation Point*** - aborted while it waits, the threads chosen still go, at the next SetPoolSize ().
          */
         nonvirtual void SetPoolSize (unsigned int poolSize);
 
@@ -405,9 +396,10 @@ namespace Stroika::Foundation::Execution {
         };
 
     private:
-        // Called internally from threadpool tasks - to wait until there is a new task to run.
-        // This will not return UNTIL it has a new task to proceed with (except via exception like Thread::AbortException)
-        nonvirtual void    WaitForNextTask_ (PendingTaskInfo_* result);
+        // Called internally from threadpool tasks - to wait until there is a new task for this thread (runnable) to run, put in
+        // its fCurTask. This will not return UNTIL it has one (except via exception like Thread::AbortException) - never, for a
+        // thread chosen to go (SetPoolSize), which it aborts
+        nonvirtual void    WaitForNextTask_ (MyRunnable_& runnable);
         nonvirtual TPInfo_ mkThread_ ();
 
     private:

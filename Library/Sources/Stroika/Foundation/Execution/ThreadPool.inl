@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline auto ThreadPool::GetOptions () const -> Options
     {
-        return Options{.fThreadCount       = static_cast<unsigned int> (fThreads_.size ()),
+        return Options{.fThreadCount       = GetPoolSize (),
                        .fThreadPoolName    = fThreadPoolName_,
                        .fQMax              = fDefaultQMax_,
                        .fCollectStatistics = this->fCollectStatistics_};

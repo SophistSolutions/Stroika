@@ -2004,6 +2004,40 @@ namespace {
     }
 
     /*
+     *  ThreadPool::SetPoolSize, shrinking with every thread busy: a busy thread goes once its running task ends - SetPoolSize
+     *  waits for that - and the pool runs tasks as before
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ThreadPool_ShrinkWhileBusy_)
+    {
+        Debug::TraceContextBumper traceCtx{"ThreadPool_ShrinkWhileBusy_"};
+        ThreadPool                p{ThreadPool::Options{.fThreadCount = 2}};
+        WaitableEvent             go;
+        atomic<int>               started{0};
+        for (int i = 0; i < 2; ++i) {
+            p.AddTask ([&] () {
+                ++started;
+                go.Wait ();
+            });
+        }
+        while (started < 2) {
+            this_thread::yield ();
+        }
+        Thread::Ptr releaser = Thread::New (
+            [&] () {
+                Execution::Sleep (200ms);
+                go.Set ();
+            },
+            Thread::eAutoStart);
+        p.SetPoolSize (1);
+        EXPECT_EQ (p.GetPoolSize (), 1u);
+        releaser.Join ();
+        atomic<bool>       ran{false};
+        ThreadPool::TaskID task = p.AddTask ([&] () { ran = true; });
+        EXPECT_NO_THROW (p.WaitForTask (task, 5s));
+        EXPECT_TRUE (ran);
+    }
+
+    /*
      *  ConditionVariable::wait_until, with a predicate, throws in an aborted thread even when the predicate comes true with the
      *  abort - as it does when the abort comes before the wait
      */
