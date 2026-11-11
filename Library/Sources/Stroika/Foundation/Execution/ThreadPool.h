@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Execution {
          *          p.AddTask ([&q, &counter] () {
          *              ..dostuff..
          *          });
-         *          p.WaitForTasksDone ();  // to let the tasks finish: destroying p aborts any still running, and drops any not started
+         *          p.WaitForTasksDone ();  // to let the tasks finish: destroying p aborts any incomplete tasks
          *      \endcode
          */
         ThreadPool ();
