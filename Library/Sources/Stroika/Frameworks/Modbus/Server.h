@@ -48,16 +48,10 @@ namespace Stroika::Frameworks::Modbus {
         optional<IO::Network::ConnectionOrientedMasterSocket::BindFlags> fBindFlags;
 
         /**
-         *  To specify size, provide your own threadpool
+         *  To specify size, provide your own threadpool. Without one, the server makes a one-thread pool, which goes with the
+         *  server's thread; one provided is left to its other owners.
          */
         shared_ptr<Execution::ThreadPool> fThreadPool;
-
-        /**
-         *  defaults to true iff argument fThreadPool null.
-         *
-         *  \note   Either let this class or caller must shutdown threadpool before exiting app.
-         */
-        optional<bool> fShutdownThreadPool;
     };
 
     /**
