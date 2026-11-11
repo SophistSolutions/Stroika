@@ -20,9 +20,8 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  \note Testing Note
- *        This code was tested and used by a client as of around Stroika v2.0a204, but may not have been used since, and
- *        probably has not undergone testing since. It could have small breaks, but I don't have stuff with which to test, so
- *        as-is - sorry
+ *        This code was tested and used by a client as of around Stroika v2.0a204. Since Stroika v3.0d26, the
+ *        Frameworks::Modbus regression test talks to the server over TCP, with each supported function code.
  *
  */
 namespace Stroika::Frameworks::Modbus {
@@ -43,7 +42,8 @@ namespace Stroika::Frameworks::Modbus {
         optional<Execution::Logger*> fLogger;
 
         /**
-         *  Often helpful to specify reUseAddr = true, to avoid trouble restarting service
+         *  Defaults to ConnectionOrientedMasterSocket::BindFlags{}, which binds despite old connections - so a restarted
+         *  service can listen again at once.
          */
         optional<IO::Network::ConnectionOrientedMasterSocket::BindFlags> fBindFlags;
 

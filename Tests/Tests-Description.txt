@@ -55,3 +55,4 @@
 [55]	Frameworks::UPnP
 [56]	Frameworks::WebServer
 [57]	Frameworks::WebService
+[58]	Frameworks::Modbus

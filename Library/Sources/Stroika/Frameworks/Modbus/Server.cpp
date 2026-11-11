@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Characters {
             case FunctionCodeType_::kWriteSingleCoil_:
                 return "WriteSingleCoil"_k;
         }
-        return Format ("{}"_f, f);
+        return Format ("{}"_f, static_cast<unsigned int> (f)); // its number: formatting f itself calls this again
     }
     template <>
     String ToString (const MBAPHeaderIsh_& mh)
@@ -237,7 +237,7 @@ namespace {
                              serviceHandler->ReadCoils (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
                                                             .Elements ()
                                                             .As<IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
-                            if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) < endInclusiveAddress and i.fValue) {
+                            if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) <= endInclusiveAddress and i.fValue) {
                                 results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |=
                                     Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
                             }
@@ -391,7 +391,7 @@ namespace {
                         serviceHandler->WriteCoils ({{zeroToOneBased (outputAddress), value == 0 ? false : true}});
                         {
                             // Response ready - format, toNetwork, and write
-                            out.Write (Memory::AsBytes (requestHeader));
+                            out.Write (Memory::AsBytes (ToNetwork_ (requestHeader)));
                             out.Write (Memory::AsBytes (ToNetwork_ (outputAddress)));
                             out.Write (Memory::AsBytes (ToNetwork_ (value)));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -406,6 +406,8 @@ namespace {
                                                            requestHeader.fFunctionCode);
                         }
                         MBAPHeaderIsh_ responseHeader = requestHeader;
+                        responseHeader.fLength = static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
+                                                                        sizeof (ExceptionCode)); // not the request's
                         responseHeader.fFunctionCode = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
                         out.Write (Memory::AsBytes (ToNetwork_ (responseHeader)));
                         out.Write (Memory::AsBytes (static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION)));
@@ -452,6 +454,8 @@ Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>&
             TraceContextBumper ctx{"Modbus-Listener"};
 #endif
             uint16_t usingPortNumber = options.fListenPort.value_or (502);
+            Listener l{SocketAddresses (InternetAddresses_Any (), usingPortNumber),
+                       options.fBindFlags.value_or (ConnectionOrientedMasterSocket::BindFlags{}), onModbusConnection};
             if (options.fLogger) {
                 options.fLogger.value ()->Log (Logger::eInfo, "Listening for ModbusTCP requests on port {}"_f, usingPortNumber);
             }
