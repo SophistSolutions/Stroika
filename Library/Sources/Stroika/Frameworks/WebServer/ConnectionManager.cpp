@@ -323,6 +323,7 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ifNoneMatch () == nullopt); // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
     }
+    Require (options.fIdleConnectionTimeout > 0s);
     DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
 
     DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
@@ -384,10 +385,19 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
     Debug::TraceContextBumper ctx{"ConnectionManager::WaitForReadyConnectionLoop_"};
 #endif
 
+    // sweep for idle connections this often, so one is closed within fIdleConnectionTimeout and half again (or 15 seconds)
+    const Time::DurationSeconds idleTimeout = fEffectiveOptions_.fIdleConnectionTimeout;
+    const Time::DurationSeconds sweepEvery = idleTimeout == Time::kInfinity ? Time::kInfinity : min<Time::DurationSeconds> (idleTimeout / 2, 15s);
+    Time::TimePointSeconds nextSweepAt = Time::GetTickCount () + sweepEvery;
+
     // run til thread aborted
     while (true) {
         try {
             Thread::CheckForInterruption ();
+            if (Time::GetTickCount () >= nextSweepAt) {
+                CloseIdleConnections_ ();
+                nextSweepAt = Time::GetTickCount () + sweepEvery;
+            }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
             {
@@ -398,7 +408,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                           fActiveConnections_.cget ().cref (), GetInactiveConnections_ ());
             }
 #endif
-            for (shared_ptr<Connection> readyConnection : fInactiveSockSetPoller_.WaitQuietly ()) {
+            for (shared_ptr<Connection> readyConnection : fInactiveSockSetPoller_.WaitQuietlyUntil (nextSweepAt)) {
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
                 /*
@@ -594,6 +604,32 @@ auto ConnectionManager::ComputeStatistics_ () const -> Statistics
             .Count ([&] (const Duration& d) { return d > fEffectiveOptions_.fConnectionPiningForTheFjordsDelay; });
 #endif
     return Statistics{.fThreadPool = threadPoolStats, .fConnections = connectionStats};
+}
+
+void ConnectionManager::CloseIdleConnections_ ()
+{
+    const Time::TimePointSeconds       idleSinceBefore = Time::GetTickCount () - fEffectiveOptions_.fIdleConnectionTimeout;
+    Collection<shared_ptr<Connection>> idle;
+    {
+        scoped_lock critSec{fActiveConnections_}; // as every move between the active and inactive lists, so both stay consistent
+        for (const shared_ptr<Connection>& c : GetInactiveConnections_ ()) {
+            // not one whose next request (or close) has come: the poller hands that to a handler
+            if (c->GetIdleSince () < idleSinceBefore and c->socket ().AvailableToRead () == nullopt) {
+                fInactiveSockSetPoller_.Remove (c);
+                idle += c;
+            }
+        }
+    }
+    for (const shared_ptr<Connection>& c : idle) {
+        DbgTrace ("Closing {}: idle longer than {}"_f, c, fEffectiveOptions_.fIdleConnectionTimeout);
+        try {
+            c->socket ().SetAutomaticTCPDisconnectOnClose (nullopt); // that graceful close waits for the client - a vanished one never answers
+            c->socket ().Close ();
+        }
+        catch (...) {
+            DbgTrace ("Closing {} failed - ignored ({})"_f, c, current_exception ());
+        }
+    }
 }
 
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)

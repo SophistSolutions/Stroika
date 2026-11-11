@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/DataExchange/Compression/ZStd.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
@@ -302,6 +303,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , fSupportedCompressionEncodings_{options.fSupportedCompressionEncodings}
     , fSocket_{s}
     , fConnectionStartedAt_{Time::GetTickCount ()}
+    , fIdleSince_{fConnectionStartedAt_}
 {
     Require (s != nullptr);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -352,9 +354,16 @@ Connection::~Connection ()
     }
 }
 
+TimePointSeconds Connection::GetIdleSince () const
+{
+    AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
+    return fIdleSince_;
+}
+
 Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 {
     AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
+    [[maybe_unused]] auto&& markIdle = Finally ([this] () noexcept { fIdleSince_ = Time::GetTickCount (); }); // however it returns
     try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Connection::ReadAndProcessMessage", "this->socket={}"_f, fSocket_};

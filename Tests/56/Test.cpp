@@ -36,6 +36,8 @@
 #include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Characters;
@@ -518,6 +520,48 @@ namespace {
         server.reset (); // closes the client's connection - first
         client.Close ();
         EXPECT_NO_THROW (start ());
+    }
+
+    /*
+     *  The server closes a connection idle past Options::fIdleConnectionTimeout - one that never sent a request, and one kept
+     *  alive after one. Before Stroika v3.0d26 a connection stayed open until its client closed it, or the ConnectionManager went.
+     */
+    GTEST_TEST (Frameworks_WebServer, IdleConnectionsClosed_)
+    {
+        TraceContextBumper ctx{"IdleConnectionsClosed_"};
+        namespace ConnectionOrientedStreamSocket = IO::Network::ConnectionOrientedStreamSocket;
+        ConnectionManager server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                 ConnectionManager::Options{.fIdleConnectionTimeout = 1s}};
+        // what the server sent on s before closing it - or nullopt if s is still open after 10 seconds
+        auto readUntilClosed = [] (const ConnectionOrientedStreamSocket::Ptr& s) -> optional<string> {
+            string received;
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; Time::GetTickCount () < giveUpAt;) {
+                byte buf[1024];
+                try {
+                    if (optional<span<byte>> r = s.ReadNonBlocking (span{buf})) {
+                        if (r->empty ()) {
+                            return received; // end of stream
+                        }
+                        received.append (reinterpret_cast<const char*> (r->data ()), r->size ());
+                        continue;
+                    }
+                }
+                catch (...) {
+                    return received; // reset: closed too
+                }
+                Execution::Sleep (50ms);
+            }
+            return nullopt;
+        };
+        ConnectionOrientedStreamSocket::Ptr silent    = ConnectToTestServer_ ();
+        ConnectionOrientedStreamSocket::Ptr keptAlive = ConnectToTestServer_ ();
+        keptAlive.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
+        EXPECT_EQ (readUntilClosed (silent), string{});
+        optional<string> response = readUntilClosed (keptAlive);
+        ASSERT_TRUE (response) << "the kept-alive connection is still open";
+        EXPECT_TRUE (String::FromLatin1 (*response).Contains ("keep-alive"sv, eCaseInsensitive)) << *response; // so closed idle, not after its response
+        EXPECT_TRUE (response->ends_with ("FRED")) << *response;
+        EXPECT_EQ (server.statistics ().fConnections.fNumberOfOpenConnections, 0u);
     }
 }
 #endif

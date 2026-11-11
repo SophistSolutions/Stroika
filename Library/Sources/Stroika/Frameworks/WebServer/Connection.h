@@ -284,6 +284,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  \brief When this connection last went idle: its most recent ReadAndProcessMessage () returned - or, before the first, it was made.
+         *
+         *  ConnectionManager closes a connection idle longer than its Options::fIdleConnectionTimeout.
+         */
+        nonvirtual TimePointSeconds GetIdleSince () const;
+
+    public:
+        /**
          */
         enum ReadAndProcessResult {
             eTryAgainLater, // Could mean success or some kinds of failure (like incomplete header/data), but try again later (so keep-alive results in this)
@@ -348,6 +356,7 @@ namespace Stroika::Frameworks::WebServer {
         const ConnectionOrientedStreamSocket::Ptr              fSocket_;
         Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
         const TimePointSeconds                                 fConnectionStartedAt_{};
+        TimePointSeconds                                       fIdleSince_{};
         unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>                              fRemaining_;
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats

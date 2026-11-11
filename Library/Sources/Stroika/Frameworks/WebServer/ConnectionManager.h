@@ -145,6 +145,19 @@ namespace Stroika::Frameworks::WebServer {
             optional<Duration> fAutomaticTCPDisconnectOnClose;
 
             /**
+             *  A connection with no request in progress - kept alive after one, or yet to send its first - is closed once idle this
+             *  long (within half again, or 15 seconds, whichever is less). Clients reopen a closed keep-alive connection when they
+             *  need one; a client that vanishes without closing its end (asleep, off the network) would otherwise hold its socket
+             *  until the ConnectionManager is destroyed. Time::kInfinity: never.
+             *
+             *  The default is nginx's (keepalive_timeout, 75 seconds): like nginx, this server holds an idle connection in a poller,
+             *  not a thread, so keeping one costs little - unlike Apache, whose 5 seconds suits a worker held per connection.
+             *
+             *  \pre fIdleConnectionTimeout > 0s
+             */
+            Time::DurationSeconds fIdleConnectionTimeout{75s};
+
+            /**
              * @see Socket::SetLinger () - SO_LINGER
              */
             optional<int> fLinger;
@@ -451,6 +464,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         nonvirtual void WaitForReadyConnectionLoop_ ();
+        nonvirtual void CloseIdleConnections_ ();
 
     private:
         // Inactive connections are those we are waiting (select/epoll) for incoming data; these are stored in fInactiveSockSetPoller_
