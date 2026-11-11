@@ -513,10 +513,9 @@ void ThreadPool::WaitForNextTask_ (PendingTaskInfo_* result)
     RequireNotNull (result);
     Require (result->fTask == nullptr);
     ConditionVariable<>::LockType lock{fCriticalSection_.fMutex};
+    // An aborted thread throws from wait_until, under the lock, even with a task pending - so a thread the pool aborted (Abort_,
+    // AbortTasks, SetPoolSize - each under this lock) takes no task
     (void)fCriticalSection_.wait_until (lock, Time::GetTickCount () + Time::kInfinity, [this] () { return not fPendingTasks_.empty (); });
-    // under the lock, so a thread the pool aborted (Abort_, AbortTasks, SetPoolSize - each under this lock) takes no task: wait_until
-    // returns with a task pending, without checking, when the abort and the task come together
-    Thread::CheckForInterruption ();
     *result = fPendingTasks_.front ();
     fPendingTasks_.pop_front ();
     DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = {}"_f,

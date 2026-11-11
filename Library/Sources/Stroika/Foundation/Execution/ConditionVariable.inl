@@ -127,6 +127,7 @@ namespace Stroika::Foundation::Execution {
                     ready = fConditionVariable.wait_until (
                         lock, Time::Pin2SafeSeconds (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)), readyToWake);
                 }
+                Thread::CheckForInterruption (); // the standard returns ready even with a stop requested; an aborted thread still throws
                 return ready;
             }
 #endif
@@ -158,11 +159,13 @@ namespace Stroika::Foundation::Execution {
                  */
                 auto result = readyToWake ();
                 Ensure (lock.owns_lock ());
+                Thread::CheckForInterruption ();
                 return result;
             }
             // Maybe a real wakeup, or a spurious one, so just check the readyToWake() predicate again, and keep looping!
         }
         Ensure (lock.owns_lock ());
+        Thread::CheckForInterruption (); // an aborted thread throws, even with readyToWake () true
         return true;
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>

@@ -2003,6 +2003,39 @@ namespace {
         p.WaitForTasksDone (30s);
     }
 
+    /*
+     *  ConditionVariable::wait_until, with a predicate, throws in an aborted thread even when the predicate comes true with the
+     *  abort - as it does when the abort comes before the wait
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ConditionVariable_AbortThrowsEvenWhenReady_)
+    {
+        Debug::TraceContextBumper traceCtx{"ConditionVariable_AbortThrowsEvenWhenReady_"};
+        ConditionVariable<>       cv;
+        bool                      ready{false}; // under cv.fMutex
+        atomic<bool>              waiting{false};
+        atomic<bool>              returned{false};
+        Thread::Ptr               t = Thread::New (
+            [&] () {
+                ConditionVariable<>::LockType lock{cv.fMutex};
+                waiting = true;
+                (void)cv.wait_until (lock, Time::GetTickCount () + 30s, [&] () { return ready; });
+                returned = true;
+            },
+            Thread::eAutoStart);
+        while (not waiting) {
+            this_thread::yield ();
+        }
+        {
+            // the lock is free only once t waits: the predicate comes true and t is aborted, before t can wake
+            ConditionVariable<>::QuickLockType lock{cv.fMutex};
+            ready = true;
+            t.Abort ();
+        }
+        cv.notify_all ();
+        t.WaitForDone ();
+        EXPECT_FALSE (returned);
+    }
+
     GTEST_TEST (Foundation_Execution_Threads, all)
     {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics

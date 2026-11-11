@@ -231,9 +231,13 @@ namespace Stroika::Foundation::Execution {
          *  \note the cv_status returning overload CAN return/wakeup spuriously (not timeout, and not desired condition true)
          *        The PREDICATE (readyToWake) overload, never returns a spurious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
+         *  \note An aborted thread throws (Thread::AbortException) from the PREDICATE overload even when readyToWake comes true with
+         *        the abort - as the abort coming first does. Unlike the standard's stop_token overload, which returns the predicate's
+         *        value; nothing is lost by throwing, since the caller has not yet acted on it.
+         *
          *  \pre (lock.owns_lock ());
          *  \post (lock.owns_lock ());
-         * 
+         *
          * @todo maybe lose the (no predicate) overload --LGP 2023-10-09
          */
         nonvirtual cv_status wait_until (LockType& lock, Time::TimePointSeconds timeoutAt);
