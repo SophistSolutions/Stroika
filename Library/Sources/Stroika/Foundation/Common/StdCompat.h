@@ -612,6 +612,9 @@ namespace Stroika::Foundation::Common::StdCompat {
      *      \code
      *         Stroika_ATTRIBUTE_INDETERMINATE byte r[1024]; // don't initialize explicitly cuz filled in below before used (performance)
      *      \endcode
+     * 
+     * \note In a future version of Stroika, that requires c++26 (when all compilers support it), this macro will be removed, 
+     *       and code can call [[indeterminate]] directly.
      */
 #if __has_cpp_attribute(indeterminate)
 #define Stroika_ATTRIBUTE_INDETERMINATE [[indeterminate]]
