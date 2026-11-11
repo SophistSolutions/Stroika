@@ -366,6 +366,11 @@ namespace Stroika::Foundation::Execution {
         virtual ~IAppenderRep () = default;
 
     public:
+        /**
+         *  \note An exception this throws (but a thread abort) is traced and dropped - as CallbackRegistry does with a callback's -
+         *        so it costs no other appender the message, nor the Logger's bookkeeping thread its life, and never reaches
+         *        Logger::Log ()'s caller.
+         */
         virtual void Log (Priority logLevel, const String& message) = 0;
     };
 

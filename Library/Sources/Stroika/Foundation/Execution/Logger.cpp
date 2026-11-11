@@ -53,12 +53,12 @@ using Time::Duration;
  */
 struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     using PriorityAndMessageType_ = pair<Logger::Priority, String>;
-    bool                                               fBufferingEnabled_{false};
+    atomic<bool>                                       fBufferingEnabled_{false};
     Synchronized<Collection<shared_ptr<IAppenderRep>>> fAppenders_;
     BlockingQueue<PriorityAndMessageType_>             fOutMsgQ_;
     // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
     // race at end of Flush_()
-    bool                             fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
+    atomic<bool>                     fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
     Synchronized<optional<Duration>> fSuppressDuplicatesThreshold_;
 
     struct LastMsgInfoType_ {
@@ -67,50 +67,71 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     };
     Synchronized<Mapping<PriorityAndMessageType_, LastMsgInfoType_>> fLastMessages_; // if suppressing duplicates, must save all messages in timerange of suppression to compare with, and track suppression counts
 
+    /*
+     *  One change of the configuration at a time (SetBufferingEnabled, SetSuppressDuplicates, Shutdown_) - each stopping the
+     *  bookkeeping thread and starting its successor (UpdateBookkeepingThread_) as one step, so none is left running unknown.
+     *  The bookkeeping thread never takes it, so waiting for that thread while holding it is safe.
+     */
+    mutex                                fConfiguring_;
     Synchronized<Execution::Thread::Ptr> fBookkeepingThread_;
     // atomic<Time::DurationSeconds>                                         fMaxWindow_{};
     // Cache::SynchronizedCallerStalenessCache<pair<Priority, String>, bool> fMsgSentMaybeSuppressed_;
 
     Rep_ () = default;
+    /*
+     *  Each appender in turn - an exception from one (but a thread abort) traced and dropped, as CallbackRegistry::Call does: so
+     *  it costs no other appender the message, nor the bookkeeping thread its life
+     */
+    void LogToAppenders_ (Priority logLevel, const String& msg)
+    {
+        // a copy, so no lock is held while the appenders run (appenders are internally synchronized)
+        for (const shared_ptr<IAppenderRep>& a : fAppenders_.load ()) {
+            try {
+                a->Log (logLevel, msg);
+            }
+            catch (const Thread::AbortException&) {
+                throw;
+            }
+            catch (...) {
+                DbgTrace ("Logger: ignoring an exception from an appender: {}"_f, current_exception ());
+            }
+        }
+    }
     void FlushSuppressedDuplicates_ (bool forceEvenIfNotOutOfDate = false)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Logger::Rep_::FlushSuppressedDuplicates_"};
 #endif
-        auto lastMsgsLocked = fLastMessages_.rwget ();
-        /**
-         *  @todo restructure so we dont hold the lock while we call the tmp->Log() - since that append could in principle do something calling us back/deadlock
-         *        Maybe queue up the messages/and push them at the end of the loop. Advantage of no deadlock, but disavantage of
-         *        there being a window where messages could get lost (error on tmp->Log - not sure we can handle that anyhow).
-         *          -- LGP 2022-08-24
-         */
-        if (not lastMsgsLocked->empty ()) {
-            Time::Duration suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
-            for (auto i = lastMsgsLocked->begin (); i != lastMsgsLocked->end ();) {
-                bool writeThisOne = forceEvenIfNotOutOfDate or i->fValue.fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ();
-                if (writeThisOne) {
-                    switch (i->fValue.fRepeatCount_) {
-                        case 0:
-                            break; // nothing to write
-                        case 1:
-                            // avoid races and critical sections (appender internally threadsafe)
-                            for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
-                                tmp->Log (i->fKey.first, i->fKey.second);
-                            }
-                            break;
-                        default:
-                            // avoid races and critical sections (appender internally threadsafe)
-                            for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
-                                tmp->Log (i->fKey.first, "[{} duplicates suppressed]: {}"_f(i->fValue.fRepeatCount_ - 1, i->fKey.second));
-                            }
-                            break;
+        // what is due is gathered under fLastMessages_'s lock, and logged after it is released - an appender may itself log
+        vector<PriorityAndMessageType_> due;
+        {
+            auto lastMsgsLocked = fLastMessages_.rwget ();
+            if (not lastMsgsLocked->empty ()) {
+                Time::Duration suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
+                for (auto i = lastMsgsLocked->begin (); i != lastMsgsLocked->end ();) {
+                    bool writeThisOne = forceEvenIfNotOutOfDate or i->fValue.fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ();
+                    if (writeThisOne) {
+                        switch (i->fValue.fRepeatCount_) {
+                            case 0:
+                                break; // nothing to write
+                            case 1:
+                                due.push_back (i->fKey);
+                                break;
+                            default:
+                                due.push_back (make_pair (i->fKey.first,
+                                                          "[{} duplicates suppressed]: {}"_f(i->fValue.fRepeatCount_ - 1, i->fKey.second)));
+                                break;
+                        }
+                        lastMsgsLocked->Remove (i, &i);
                     }
-                    lastMsgsLocked->Remove (i, &i);
-                }
-                else {
-                    ++i;
+                    else {
+                        ++i;
+                    }
                 }
             }
+        }
+        for (const PriorityAndMessageType_& m : due) {
+            LogToAppenders_ (m.first, m.second);
         }
     }
     void Flush_ ()
@@ -122,10 +143,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             while (true) {
                 optional<PriorityAndMessageType_> p = fOutMsgQ_.RemoveHeadIfPossible ();
                 if (p.has_value ()) {
-                    // avoid races and critical sections (between check and invoke)
-                    for (shared_ptr<IAppenderRep> tmp : fAppenders_.load ()) {
-                        tmp->Log (p->first, p->second);
-                    }
+                    LogToAppenders_ (p->first, p->second);
                 }
                 else {
                     return; // no more entries
@@ -134,15 +152,18 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         }
         fOutQMaybeNeedsFlush_ = false;
     }
+    // With fConfiguring_ held: stops the bookkeeping thread, then starts its successor for the current settings, if they need one
     void UpdateBookkeepingThread_ ()
     {
         Debug::TraceContextBumper ctx{"Logger::Rep_::UpdateBookkeepingThread_"};
+        Thread::Ptr               old;
         {
             auto bktLck = fBookkeepingThread_.rwget ();
-            if (bktLck.cref () != nullptr) {
-                bktLck->AbortAndWaitForDone ();
-                bktLck.store (Thread::Ptr{});
-            }
+            old         = bktLck.cref ();
+            bktLck.store (Thread::Ptr{});
+        }
+        if (old != nullptr) {
+            old.AbortAndWaitForDone (); // holding no lock it takes (fConfiguring_ only)
         }
 
         Time::Duration      suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
@@ -159,10 +180,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             Duration time2Wait = max<Duration> (2s, suppressDuplicatesThreshold); // never wait less than this
                             useRepInThread->FlushSuppressedDuplicates_ ();
                             if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
-                                // avoid races and critical sections (between check and invoke)
-                                for (shared_ptr<IAppenderRep> tmp : useRepInThread->fAppenders_.load ()) {
-                                    IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
-                                }
+                                useRepInThread->LogToAppenders_ (p->first, p->second);
                             }
                         }
                     },
@@ -175,10 +193,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         while (true) {
                             AssertNotNull (useRepInThread);
                             auto p = useRepInThread->fOutMsgQ_.RemoveHead ();
-                            // avoid races and critical sections (between check and invoke)
-                            for (shared_ptr<IAppenderRep> tmp : useRepInThread->fAppenders_.load ()) {
-                                tmp->Log (p.first, p.second);
-                            }
+                            useRepInThread->LogToAppenders_ (p.first, p.second);
                         }
                     },
                     kThreadName_);
@@ -204,29 +219,14 @@ Logger::~Logger ()
 void Logger::Shutdown_ ()
 {
     Debug::TraceContextBumper ctx{"Logger::Shutdown"};
-    // @todo FIX to assure all shutdown properly...
-    // But this is OK for now pragmatically
-#if 1
     // see https://github.com/SophistSolutions/Stroika/issues/1049 (STK-917)
-    bool changed = false;
     RequireNotNull (fRep_); // not yet destroyed
     {
-        [[maybe_unused]] lock_guard critSec{fRep_->fSuppressDuplicatesThreshold_};
-        if (fRep_->fSuppressDuplicatesThreshold_.load ()) {
-            fRep_->fSuppressDuplicatesThreshold_.store (nullopt);
-            changed = true;
-        }
-    }
-    if (fRep_->fBufferingEnabled_) {
+        lock_guard configuring{fRep_->fConfiguring_};
+        fRep_->fSuppressDuplicatesThreshold_.store (nullopt);
         fRep_->fBufferingEnabled_ = false;
-        changed                   = true;
+        fRep_->UpdateBookkeepingThread_ (); // stops it, and starts none
     }
-    if (changed) {
-        fRep_->UpdateBookkeepingThread_ ();
-    }
-#endif
-    SetSuppressDuplicates (nullopt);
-    SetBufferingEnabled (false);
     Flush ();
     Ensure (fRep_->fBookkeepingThread_.load () == nullptr);
 }
@@ -282,10 +282,7 @@ void Logger::Log_ (Priority logLevel, const String& msg)
             if (fRep_->fOutQMaybeNeedsFlush_) {
                 fRep_->Flush_ (); // in case recently disabled
             }
-            // avoid races/deadlocks and critical sections (between check and invoke)
-            for (shared_ptr<IAppenderRep> tmp : fRep_->fAppenders_.load ()) {
-                tmp->Log (p.first, p.second);
-            }
+            fRep_->LogToAppenders_ (p.first, p.second);
         }
     }
 }
@@ -294,6 +291,7 @@ void Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
     Debug::TraceContextBumper ctx{"Logger::SetBufferingEnabled", "logBufferingEnabled={}"_f, logBufferingEnabled};
     RequireNotNull (fRep_);
+    lock_guard configuring{fRep_->fConfiguring_};
     if (fRep_->fBufferingEnabled_ != logBufferingEnabled) {
         fRep_->fBufferingEnabled_ = logBufferingEnabled;
         fRep_->UpdateBookkeepingThread_ ();
@@ -325,9 +323,10 @@ void Logger::SetSuppressDuplicates (const optional<Duration>& suppressDuplicates
                                                                                  suppressDuplicatesThreshold)};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0s);
     RequireNotNull (fRep_); // not destroyed
-    [[maybe_unused]] lock_guard critSec{fRep_->fSuppressDuplicatesThreshold_};
-    if (fRep_->fSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
-        fRep_->fSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
+    // not under fSuppressDuplicatesThreshold_'s lock, which the bookkeeping thread takes: UpdateBookkeepingThread_ waits for it
+    lock_guard configuring{fRep_->fConfiguring_};
+    if (fRep_->fSuppressDuplicatesThreshold_.load () != suppressDuplicatesThreshold) {
+        fRep_->fSuppressDuplicatesThreshold_.store (suppressDuplicatesThreshold);
         fRep_->UpdateBookkeepingThread_ ();
     }
 }

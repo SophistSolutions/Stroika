@@ -1157,6 +1157,90 @@ namespace {
         }
     }
 }
+
+namespace {
+    struct CountingAppender_ : Logger::IAppenderRep {
+        atomic<unsigned int> fCount{0};
+        virtual void         Log ([[maybe_unused]] Logger::Priority logLevel, [[maybe_unused]] const String& message) override
+        {
+            ++fCount;
+        }
+    };
+    struct ThrowingAppender_ : Logger::IAppenderRep {
+        virtual void Log ([[maybe_unused]] Logger::Priority logLevel, [[maybe_unused]] const String& message) override
+        {
+            throw runtime_error{"thrown by the appender"};
+        }
+    };
+
+    /*
+     *  Logger: an appender that throws costs no other appender a message - nor, buffered, the bookkeeping thread its life
+     */
+    GTEST_TEST (Foundation_Execution, Logger_AppenderThrows_)
+    {
+        Logger::Activator logMgrActivator;
+        auto              counter = make_shared<CountingAppender_> ();
+        Logger::sThe.SetAppenders (Collection<shared_ptr<Logger::IAppenderRep>>{make_shared<ThrowingAppender_> (), counter});
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { Logger::sThe.SetAppenders (counter); }); // Shutdown flushes
+        EXPECT_NO_THROW (Logger::sThe.Log (Logger::eError, "unbuffered"_f));
+        EXPECT_EQ (counter->fCount, 1u);
+        Logger::sThe.SetBufferingEnabled (true);
+        Logger::sThe.Log (Logger::eError, "buffered 1"_f);
+        Logger::sThe.Log (Logger::eError, "buffered 2"_f);
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 5s; counter->fCount < 3 and Time::GetTickCount () < giveUpAt;) {
+            Execution::Sleep (10ms);
+        }
+        EXPECT_EQ (counter->fCount, 3u);
+        Logger::sThe.SetBufferingEnabled (false);
+    }
+
+    /*
+     *  Logger: configured from several threads at once, while one logs duplicates - it neither deadlocks, nor leaves a bookkeeping
+     *  thread running once it shuts down
+     */
+    GTEST_TEST (Foundation_Execution, Logger_ConfiguredFromThreads_)
+    {
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+        const Containers::Set<Thread::IDType> before{Thread::GetStatistics ().fRunningThreads};
+        {
+            Logger::Activator logMgrActivator;
+            Logger::sThe.SetAppenders (make_shared<CountingAppender_> ());
+            // for a time, not a count: a restart of the bookkeeping thread costs up to sConditionVariableWaitChunkTime where
+            // there is no stop_token (libc++ 15)
+            Time::TimePointSeconds stopAt    = Time::GetTickCount () + 2s;
+            Thread::Ptr            buffering = Thread::New (
+                [stopAt] () {
+                    for (int i = 0; Time::GetTickCount () < stopAt; ++i) {
+                        Logger::sThe.SetBufferingEnabled (i % 2 == 0);
+                    }
+                },
+                Thread::eAutoStart);
+            Thread::Ptr suppressing = Thread::New (
+                [stopAt] () {
+                    for (int i = 0; Time::GetTickCount () < stopAt; ++i) {
+                        Logger::sThe.SetSuppressDuplicates (Time::Duration{i % 2 == 0 ? 1s : 2s});
+                    }
+                },
+                Thread::eAutoStart);
+            Thread::Ptr logging = Thread::New (
+                [] () {
+                    while (true) {
+                        Logger::sThe.Log (Logger::eError, "the same, again and again"_f);
+                        Thread::CheckForInterruption ();
+                    }
+                },
+                Thread::eAutoStart);
+            EXPECT_NO_THROW (buffering.WaitForDone (60s)) << "deadlocked?";
+            EXPECT_NO_THROW (suppressing.WaitForDone (60s)) << "deadlocked?";
+            logging.AbortAndWaitForDone ();
+        }
+        size_t leftRunning = Thread::GetStatistics ().fRunningThreads.Where ([&] (Thread::IDType id) { return not before.Contains (id); }).size ();
+        EXPECT_EQ (leftRunning, 0u);
+#else
+        GTEST_SKIP () << "needs thread statistics (qStroika_Foundation_Execution_Thread_SupportThreadStatistics)";
+#endif
+    }
+}
 #endif
 
 namespace {
