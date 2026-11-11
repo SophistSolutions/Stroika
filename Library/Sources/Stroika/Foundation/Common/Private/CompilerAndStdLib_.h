@@ -1813,6 +1813,30 @@ int main ()
 #endif
 
 /**
+ *  clang 20 and later never destroy a lambda's closure temporary - so nor what its init-captures copied - when the lambda is
+ *  in a default member initializer used by aggregate initialization (designated initializers, say):
+ *
+ *      struct S { bool fB{false}; Counted fA; Holder fH{std::function<void ()>{[a = fA] () {}}}; };
+ *      S s{.fB = true};    // the closure's copy of fA is never destroyed; S s; is fine
+ *
+ *  ==105830==ERROR: LeakSanitizer: detected memory leaks
+ *  Direct leak of 72 byte(s) in 1 object(s) allocated from:
+ *      ... Stroika::Foundation::IO::Network::Socket::Ptr::Ptr(Stroika::Foundation::IO::Network::Socket::Ptr const&)
+ *
+ *  https://github.com/llvm/llvm-project/issues/196469 - clang 19 was fine. Fixed for init-captures by llvm commit 369b87ec540d
+ *  (2026-10-22), on main - so clang 24 - and not in release/23.x as of 2026-11-10. Seen with clang 20 and 22, with libc++
+ *  (Tests/45's test server, ubuntu-26.04-clang++-22-debug); a probe with libstdc++ 16 did not leak.
+ */
+#ifndef qCompilerAndStdLib_lambda_initcapture_in_dmi_aggregate_init_leaks_Buggy
+#if defined(__clang__) and not defined(__APPLE__)
+#define qCompilerAndStdLib_lambda_initcapture_in_dmi_aggregate_init_leaks_Buggy                                                            \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((20 <= __clang_major__ and __clang_major__ <= 23))
+#else
+#define qCompilerAndStdLib_lambda_initcapture_in_dmi_aggregate_init_leaks_Buggy 0
+#endif
+#endif
+
+/**
  *  g++ with -fsanitize=undefined (or -fno-delete-null-pointer-checks) cannot check, at compile time, a format string held in a
  *  static array rather than a string literal - as "..."_f's widened copy is (Characters::FormatLiteral): libstdc++'s
  *  string_view::find tests the address it found ('if (__p)'), and g++ then takes nothing about a static object's address - a

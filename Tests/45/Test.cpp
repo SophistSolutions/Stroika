@@ -1168,48 +1168,54 @@ namespace {
         URI                                 fSite{"http://127.0.0.1:{}"_f(fListener.GetLocalAddress ()->GetPort ())};
         bool                                fEchoHeaders{false};
         string                              fExtraResponseHeaders;
-        // accept only once a request is waiting: a thread blocked in Accept cannot be aborted on Windows
+        static void Serve_ (const ConnectionOrientedMasterSocket::Ptr& listener, bool echoHeaders, const string& extraResponseHeaders)
+        {
+            while (true) {
+                Thread::CheckForInterruption ();
+                // accept only once a request is waiting: a thread blocked in Accept cannot be aborted on Windows
+                if (WaitForIOReady<ConnectionOrientedMasterSocket::Ptr>{listener}.WaitQuietly (100ms).empty ()) {
+                    continue;
+                }
+                ConnectionOrientedStreamSocket::Ptr s = listener.Accept ();
+                string                              request;
+                byte                                buf[4096];
+                auto                                readMore = [&] () {
+                    span<byte> got = s.Read (span{buf});
+                    request.append (reinterpret_cast<const char*> (got.data ()), got.size ());
+                    return not got.empty ();
+                };
+                while (request.find ("\r\n\r\n") == string::npos and readMore ()) {
+                }
+                const size_t headersEnd = request.find ("\r\n\r\n");
+                if (headersEnd == string::npos) {
+                    continue;
+                }
+                size_t length = 0;
+                for (const string& h : {"\r\nContent-Length:"s, "\r\ncontent-length:"s}) {
+                    if (size_t at = request.find (h); at != string::npos and at < headersEnd) {
+                        length = static_cast<size_t> (std::stoul (request.substr (at + h.size ())));
+                    }
+                }
+                while (request.size () < headersEnd + 4 + length and readMore ()) {
+                }
+                const string answer = echoHeaders ? request.substr (0, headersEnd + 2)
+                                                  : request.substr (0, request.find (' ')) + "\n" + request.substr (headersEnd + 4, length);
+                const string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n" + extraResponseHeaders +
+                                        "Content-Length: " + std::to_string (answer.size ()) + "\r\nConnection: close\r\n\r\n" + answer;
+                s.Write (as_bytes (span{response}));
+                s.Close ();
+            }
+        }
+#if qCompilerAndStdLib_lambda_initcapture_in_dmi_aggregate_init_leaks_Buggy
         Thread::CleanupPtr fServer{Thread::CleanupPtr::eAbortBeforeWaiting,
-                                   Thread::New (
-                                       [listener = fListener, echoHeaders = fEchoHeaders, extraResponseHeaders = fExtraResponseHeaders] () {
-                                           while (true) {
-                                               Thread::CheckForInterruption ();
-                                               if (WaitForIOReady<ConnectionOrientedMasterSocket::Ptr>{listener}.WaitQuietly (100ms).empty ()) {
-                                                   continue;
-                                               }
-                                               ConnectionOrientedStreamSocket::Ptr s = listener.Accept ();
-                                               string                              request;
-                                               byte                                buf[4096];
-                                               auto                                readMore = [&] () {
-                                                   span<byte> got = s.Read (span{buf});
-                                                   request.append (reinterpret_cast<const char*> (got.data ()), got.size ());
-                                                   return not got.empty ();
-                                               };
-                                               while (request.find ("\r\n\r\n") == string::npos and readMore ()) {
-                                               }
-                                               const size_t headersEnd = request.find ("\r\n\r\n");
-                                               if (headersEnd == string::npos) {
-                                                   continue;
-                                               }
-                                               size_t length = 0;
-                                               for (const string& h : {"\r\nContent-Length:"s, "\r\ncontent-length:"s}) {
-                                                   if (size_t at = request.find (h); at != string::npos and at < headersEnd) {
-                                                       length = static_cast<size_t> (std::stoul (request.substr (at + h.size ())));
-                                                   }
-                                               }
-                                               while (request.size () < headersEnd + 4 + length and readMore ()) {
-                                               }
-                                               const string answer = echoHeaders ? request.substr (0, headersEnd + 2)
-                                                                                 : request.substr (0, request.find (' ')) + "\n" +
-                                                                                       request.substr (headersEnd + 4, length);
-                                               const string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n" + extraResponseHeaders +
-                                                                       "Content-Length: " + std::to_string (answer.size ()) +
-                                                                       "\r\nConnection: close\r\n\r\n" + answer;
-                                               s.Write (as_bytes (span{response}));
-                                               s.Close ();
-                                           }
-                                       },
-                                       Thread::eAutoStart)};
+                                   Thread::New ([this] () { Serve_ (fListener, fEchoHeaders, fExtraResponseHeaders); }, Thread::eAutoStart)};
+#else
+        Thread::CleanupPtr fServer{
+            Thread::CleanupPtr::eAbortBeforeWaiting,
+            Thread::New ([listener = fListener, echoHeaders = fEchoHeaders,
+                          extraResponseHeaders = fExtraResponseHeaders] () { Serve_ (listener, echoHeaders, extraResponseHeaders); },
+                         Thread::eAutoStart)};
+#endif
     };
 
     /*
