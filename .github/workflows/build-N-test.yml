@@ -479,22 +479,39 @@ jobs:
         run: |
           docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
           docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      #   Each step's timeout-minutes ends a hung step (no output, make never returns) well before the job's: 2x the longest
+      #   legitimate step (59 min, Build Library and Tools - Oct/Nov 2026, ~800 jobs).
       - name: Build Library and Tools
         shell: "bash"
+        timeout-minutes: 120
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make libraries tools
       - name: Build Samples
         shell: "bash"
+        timeout-minutes: 120
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make samples
       - name: Build Tests
         shell: "bash"
+        timeout-minutes: 120
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make tests
       - name: Run-Tests
         shell: "bash"
+        timeout-minutes: 120
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+      #   What a hang leaves behind: a timed-out (or cancelled) step kills only the docker exec client, so the processes it
+      #   started are still in the container to be listed - which program each one is, its parent, and its CPU time (a wait
+      #   or a spin). Hangs are rare and cannot be reproduced afterwards, so this stays: the first one must already be
+      #   caught. Costs seconds, and only in a job that failed.
+      #   MSYS_NO_PATHCONV: Git Bash would otherwise turn an argument starting with / into a path.
+      - name: List the build container's processes (failed or cancelled job)
+        if: failure() || cancelled()
+        shell: "bash"
+        run: |
+          docker exec buildContainer ps -ef || :
+          MSYS_NO_PATHCONV=1 docker exec buildContainer powershell -NoProfile -Command 'Get-CimInstance Win32_Process | Sort-Object ParentProcessId | Format-List ProcessId,ParentProcessId,UserModeTime,KernelModeTime,CommandLine' || :
       - name: Build System Info
         shell: "bash"
         run: |
