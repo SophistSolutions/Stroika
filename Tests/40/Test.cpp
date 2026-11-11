@@ -1949,6 +1949,60 @@ namespace {
         EXPECT_FALSE (p.GetTaskInfo (pending).has_value ());
     }
 
+    /*
+     *  ThreadPool runs tasks at once when it has idle threads for them: two tasks, each waiting for the other to start, on two
+     *  idle threads - neither may have to wait for the other to end
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ThreadPool_IdleThreadsTakePendingTasks_)
+    {
+        Debug::TraceContextBumper traceCtx{"ThreadPool_IdleThreadsTakePendingTasks_"};
+        ThreadPool                p{ThreadPool::Options{.fThreadCount = 2}};
+        for (int i = 0; i < 200; ++i) {
+            atomic<int> started{0};
+            atomic<int> together{0}; // tasks that saw the other start
+            atomic<int> done{0};
+            auto        task = [&] () {
+                ++started;
+                for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 5s; started < 2 and Time::GetTickCount () < giveUpAt;) {
+                    this_thread::yield ();
+                }
+                if (started == 2) {
+                    ++together;
+                }
+                ++done;
+            };
+            p.AddTask (task);
+            p.AddTask (task);
+            while (done < 2) {
+                this_thread::yield ();
+            }
+            ASSERT_EQ (together, 2) << "iteration " << i;
+        }
+    }
+
+    /*
+     *  ThreadPool's waits end once what they wait for happens: WaitForTask once its task is done, AddTask with a QMax once the
+     *  queue has room
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ThreadPool_WaitsEndPromptly_)
+    {
+        Debug::TraceContextBumper traceCtx{"ThreadPool_WaitsEndPromptly_"};
+        ThreadPool                p{ThreadPool::Options{.fThreadCount = 1}};
+        Time::TimePointSeconds    start = Time::GetTickCount ();
+        for (int i = 0; i < 5; ++i) {
+            p.WaitForTask (p.AddTask ([] () { Execution::Sleep (10ms); }));
+        }
+        // each WaitForTask returns about 10ms after its task is added; checking once a second, the five took 5s
+        EXPECT_LT ((Time::GetTickCount () - start).count (), 2.5);
+        start = Time::GetTickCount ();
+        for (int i = 0; i < 20; ++i) {
+            p.AddTask ([] () { Execution::Sleep (5ms); }, ThreadPool::QMax{.fLength = 1, .fAddBlockTimeout = 30s});
+        }
+        // each AddTask waits at most about 5ms for room; checking twice a second, the twenty took about 5s
+        EXPECT_LT ((Time::GetTickCount () - start).count (), 2.5);
+        p.WaitForTasksDone (30s);
+    }
+
     GTEST_TEST (Foundation_Execution_Threads, all)
     {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics

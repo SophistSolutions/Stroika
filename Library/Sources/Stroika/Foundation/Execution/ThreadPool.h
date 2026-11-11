@@ -12,8 +12,8 @@
 
 #include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Execution/ConditionVariable.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 /**
  *  \file
@@ -21,20 +21,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   AddTask () implementation is HORRIBLE (for case where fAddBlockTimeout != 0) and needs to be rewritten with condition variables.
- * 
- *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation (but probably rarely called).
- *
- *      @todo   CONSIDER USE OF blocking q - I think it will help. Or figure out
- *              how these tie together. Or rewrite using condition_variable.
- *
- *      @todo   Current approach to aborting a running task is to abort the thread. But the current
- *              thread code doesn't support restarting a thread once its been aborted. We PROBABLY
- *              should correct that at some point - and allow a thread to undo its abort-in-progress.
- *              However - no need immediately. Instead - the current ThreadPool implementation simply
- *              drops that thread and builds a new one. Performance overhead yes - but only for the
- *              likely rare case of aborting a running task.
- *
  *      @todo   Consider adding the idea of TaskGroups - which are properties shared by all tasks (or some tasks)
  *              added to a threadpool. If multiple tasks are added to the threadpool with the same
  *              TaskGroup, then they respect that task-group's constraints. One example constraint would be
@@ -214,16 +200,19 @@ namespace Stroika::Foundation::Execution {
         nonvirtual TaskID AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name = nullopt); ///< \brief ... waiting for (or throwing if no) room in the queue, per qmax
 
     private:
-        nonvirtual TaskID AddTask_ (const TaskType& task, const optional<Characters::String>& name);
+        nonvirtual TaskID AddTask_ (const TaskType& task, const optional<QMax>& qmax, const optional<Characters::String>& name);
 
     public:
         /**
          *  It is NOT an error to call this with a task that is not in the Queue
-         *  (since it would be a race to try to find out if it was already executed.
+         *  (since it would be a race to try to find out if it was already executed).
          *
          *  It can cancel a task if it has not yet been started, or EVEN if its already in
          *  progress (see Thread::Abort - it sends abort signal)
-         * 
+         *
+         *  A running task is aborted by aborting its thread, which the pool replaces with a new one: a thread's abort is one-way
+         *  (as a std::stop_token's stop request is), so that thread cannot go on to run another task.
+         *
          *  The function doesn't return until the task has been successfully cancelled, or it throws if timeout.
          */
         nonvirtual void AbortTask (TaskID task, Time::DurationSeconds timeout = Time::kInfinity);
@@ -422,13 +411,27 @@ namespace Stroika::Foundation::Execution {
         nonvirtual TPInfo_ mkThread_ ();
 
     private:
-        mutable mutex fCriticalSection_; // fCriticalSection_ protects fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
-        // Each should be a very short critical section, except for SetPoolSize()
+        // With fCriticalSection_.fMutex held: is the task pending or running; how many tasks are
+        nonvirtual bool   IsPresent_ (TaskID task) const;
+        nonvirtual size_t GetTasksCount_ () const;
+
+    private:
+        // With fCriticalSection_.fMutex held, after a task is taken, finished or removed: wakes the waits for that - AddTask with a
+        // QMax, WaitForTask, WaitForTasksDoneUntil - if any
+        nonvirtual void NotifyProgress_ () const;
+
+    private:
+        /*
+         *  fCriticalSection_.fMutex protects fThreads_, fPendingTasks_, fProgressWaiters_ and the fields of each thread's
+         *  MyRunnable_ - each a very short critical section, except for SetPoolSize (). Its condition variable is notified when a
+         *  task is added (a pool thread waits for one), and - only while fProgressWaiters_ - when one is taken, finished or removed.
+         */
+        mutable ConditionVariable<>     fCriticalSection_;
+        mutable unsigned int            fProgressWaiters_{0}; // the waits for a task to be taken, finished or removed, under way
         atomic<bool>                    fAborted_{false};
         optional<QMax>                  fDefaultQMax_;
         Containers::Collection<TPInfo_> fThreads_; // all threads, and a data member for thread object, and one for running task, if any
-        list<PendingTaskInfo_>          fPendingTasks_;      // tasks not yet running - somewhat like a queue, but allow remove from middle
-        WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks);
+        list<PendingTaskInfo_>          fPendingTasks_; // tasks not yet running - somewhat like a queue, but allow remove from middle
         atomic<unsigned int>            fNextThreadEntryNumber_{1};
         optional<Characters::String>    fThreadPoolName_;
 

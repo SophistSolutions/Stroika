@@ -23,12 +23,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline auto ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name) -> TaskID
     {
-        if (fDefaultQMax_) {
-            return AddTask (task, *fDefaultQMax_, name);
-        }
-        else {
-            return AddTask_ (task, name);
-        }
+        return AddTask_ (task, fDefaultQMax_, name);
     }
     inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskID>& tasks, Time::DurationSeconds timeout) const
     {

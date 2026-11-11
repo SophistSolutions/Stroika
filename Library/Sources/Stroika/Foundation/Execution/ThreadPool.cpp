@@ -10,7 +10,6 @@
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Finally.h"
-#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Timeout.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -51,42 +50,36 @@ public:
 public:
     nonvirtual void Run ()
     {
-        // For NOW - allow ThreadAbort to just kill this thread. In the future - we may want to implement some sort of restartability
-
-        // Keep grabbing new tasks, and running them
+        // Keep grabbing new tasks, and running them - until a Thread::AbortException ends this thread (see AbortTask)
         while (true) {
             {
                 if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
-                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_.fMutex};
                     Assert (not IsRunning ());
                 }
                 // Subtle point, but we must copy directly into fCurTask (WaitForNextTask_ call) so its filled in under lock
                 // while being moved so task moves from pending to in-use without ever temporarily disappearing from known tasks lists
                 fThreadPool.WaitForNextTask_ (&fCurTask); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
                 if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
-                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_.fMutex};
                     Assert (IsRunning ());
                 }
             }
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
-                Time::TimePointSeconds taskStartedAt;
-                {
-                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
-                    fCurTask      = PendingTaskInfo_{};
-                    taskStartedAt = fCurTaskStartedAt;
-                }
+                [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_.fMutex};
+                fCurTask = PendingTaskInfo_{};
                 if (fThreadPool.fCollectStatistics_) {
-                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
                     ++fThreadPool.fCollectedTaskStats_.fNumberOfTasksCompleted;
                     ++fThreadPool.fCollectedTaskStats_.fNumberOfTasksReporting;
-                    fThreadPool.fCollectedTaskStats_.fTotalTimeConsumed += Time::GetTickCount () - taskStartedAt;
+                    fThreadPool.fCollectedTaskStats_.fTotalTimeConsumed += Time::GetTickCount () - fCurTaskStartedAt;
                 }
+                fThreadPool.NotifyProgress_ (); // so the statistics are current when a WaitForTask for this task returns
             });
             try {
                 // Use lock to access fCurTask, but don't hold the lock during run, so others can call getcurrenttask
                 ThreadPool::TaskType task2Run;
                 {
-                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_.fMutex};
                     task2Run          = fCurTask.fTask;
                     fCurTaskStartedAt = Time::GetTickCount ();
                 }
@@ -149,7 +142,7 @@ ThreadPool::~ThreadPool ()
 
 unsigned int ThreadPool::GetPoolSize () const
 {
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     return static_cast<unsigned int> (fThreads_.size ());
 }
 
@@ -159,7 +152,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
     Require (not fAborted_);
     Collection<Thread::Ptr> removed; // aborted under the lock, but waited for after it, as AbortTasks does
     {
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
         DbgTrace ("fThreads_.size ()={}"_f, fThreads_.size ());
         while (poolSize > fThreads_.size ()) {
             fThreads_.Add (mkThread_ ());
@@ -193,49 +186,32 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
 
 auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name) -> TaskID
 {
-    // also INTENTIONALLY dont hold lock long enuf to make this work 100% reliably cuz these magic numbers dont need to be precise, just approximate
-    // @todo rewrite this with condition variables, so more efficient and wakes up/times out appropriately...
-    Time::TimePointSeconds timeoutAt = Time::GetTickCount () + qmax.fAddBlockTimeout;
-#if qStroika_Foundation_Debug_AssertionsChecked
-    bool blockedAtLeastOnce = false;
-#endif
-    while (true) {
-        if (GetPendingTasksCount () >= qmax.fLength) [[unlikely]] {
-#if qStroika_Foundation_Debug_AssertionsChecked
-            if (not blockedAtLeastOnce) {
-                DbgTrace ("Blocking inside ThreadPool::AddTask due to excessive pending task count"_f);
-                blockedAtLeastOnce = true;
-            }
-#endif
-            ThrowTimeoutExceptionAfter (timeoutAt);
-            Execution::Sleep (500ms); // @todo fix and use condition variable - but good news is can only happen if fAddBlockTimeout != 0s
-        }
-        else {
-            return AddTask_ (task, name);
-        }
-    }
+    return AddTask_ (task, qmax, name);
 }
 
-auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::String>& name) -> TaskID
+auto ThreadPool::AddTask_ (const TaskType& task, const optional<QMax>& qmax, const optional<Characters::String>& name) -> TaskID
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"ThreadPool::AddTask_"};
 #endif
     Require (not fAborted_);
-    const TaskID id = TaskID::New ();
-    {
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-        fPendingTasks_.push_back (PendingTaskInfo_{.fID = id, .fTask = task, .fName = name});
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("fPendingTasks.size () now = {}"_f, (int)fPendingTasks_.size ());
-#endif
-        ++fCollectedTaskStats_.fNumberOfTasksAdded;
+    const TaskID                  id = TaskID::New ();
+    ConditionVariable<>::LockType lock{fCriticalSection_.fMutex};
+    if (qmax and fPendingTasks_.size () >= qmax->fLength) [[unlikely]] {
+        DbgTrace ("Blocking inside ThreadPool::AddTask due to excessive pending task count"_f);
+        ++fProgressWaiters_;
+        [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { --fProgressWaiters_; }); // still under the lock, even if this throws
+        if (not fCriticalSection_.wait_until (lock, Time::GetTickCount () + qmax->fAddBlockTimeout,
+                                              [&] () { return fPendingTasks_.size () < qmax->fLength; })) {
+            ThrowError (errc::timed_out);
+        }
     }
-
-    // Notify any waiting threads to wakeup and claim the next task
-    fTasksMaybeAdded_.Set ();
-    // this would be a race - if aborting and adding tasks at the same time
-    Require (not fAborted_);
+    fPendingTasks_.push_back (PendingTaskInfo_{.fID = id, .fTask = task, .fName = name});
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("fPendingTasks.size () now = {}"_f, (int)fPendingTasks_.size ());
+#endif
+    ++fCollectedTaskStats_.fNumberOfTasksAdded;
+    fCriticalSection_.release_and_notify_all (lock); // so an idle pool thread takes it
     return id;
 }
 
@@ -244,33 +220,25 @@ void ThreadPool::AbortTask (TaskID task, Time::DurationSeconds timeout)
     Debug::TraceContextBumper ctx{"ThreadPool::AbortTask"};
     {
         // First see if its in the Q
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (i->fID == task) {
                 fPendingTasks_.erase (i);
+                NotifyProgress_ ();
                 return;
             }
         }
     }
 
-    // If we got here - its NOT in the task Q, so maybe its already running.
-    //
-    //
-
-    // TODO:
-    //      We walk the list of existing threads and ask each one if its (indirected - running task) is the given one and abort that task.
-    //      But that requires we can RESTART an ABORTED thread (or that we remove it from the list - maybe thats better). THat COULD be OK
-    //      actually since it involves on API changes and makes sense. The only slight issue is a peformace one but probably for something
-    //      quite rare.
-    //
-    //      Anyhow SB OK for now to just not allow aborting a task which has already started....
+    // Not pending, so perhaps running: abort its thread, at once replaced by a new one (see AbortTask's docs)
     Thread::Ptr thread2Kill;
     {
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             if (i->fRunnable->IsRunning (task)) {
                 thread2Kill = i->fThread;
                 fThreads_.Update (i, mkThread_ ());
+                NotifyProgress_ ();
                 break;
             }
         }
@@ -288,7 +256,7 @@ void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
     {
         // each thread is aborted, and replaced by a new one, under the lock - but waited for after it: an aborted thread's cleanup
         // (MyRunnable_::Run) takes fCriticalSection_
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
         fPendingTasks_.clear ();
         Collection<TPInfo_> replacements;
         for (const TPInfo_& ti : fThreads_) {
@@ -297,6 +265,7 @@ void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
             replacements.Add (mkThread_ ());
         }
         fThreads_ = replacements;
+        NotifyProgress_ ();
     }
     for (const Thread::Ptr& t : aborted) {
         t.AbortAndWaitForDoneUntil (timeoutAt);
@@ -305,19 +274,22 @@ void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
 
 bool ThreadPool::IsPresent (TaskID task) const
 {
-    {
-        // First see if its in the Q
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-        for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
-            if (i->fID == task) {
-                return true;
-            }
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
+    return IsPresent_ (task);
+}
+
+bool ThreadPool::IsPresent_ (TaskID task) const
+{
+    // First see if its in the Q
+    for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
+        if (i->fID == task) {
+            return true;
         }
-        // then check if running
-        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            if (i->fRunnable->IsRunning (task)) {
-                return true;
-            }
+    }
+    // then check if running
+    for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        if (i->fRunnable->IsRunning (task)) {
+            return true;
         }
     }
     return false;
@@ -325,7 +297,7 @@ bool ThreadPool::IsPresent (TaskID task) const
 
 bool ThreadPool::IsRunning (TaskID task) const
 {
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         if (i->fRunnable->IsRunning (task)) {
             return true;
@@ -336,24 +308,20 @@ bool ThreadPool::IsRunning (TaskID task) const
 
 void ThreadPool::WaitForTask (TaskID task, Time::DurationSeconds timeout) const
 {
-    Debug::TraceContextBumper ctx{"ThreadPool::WaitForTask"};
-    // Inefficient / VERY SLOPPY impl - @todo fix use WaitableEvent or condition variables...
-    using Time::TimePointSeconds;
-    TimePointSeconds timeoutAt = timeout + Time::GetTickCount ();
-    while (true) {
-        if (not IsPresent (task)) {
-            return;
-        }
-        Time::DurationSeconds remaining = timeoutAt - Time::GetTickCount ();
-        ThrowTimeoutExceptionAfter (timeoutAt);
-        Execution::Sleep (min<Time::DurationSeconds> (remaining, 1.0s));
+    Debug::TraceContextBumper     ctx{"ThreadPool::WaitForTask"};
+    Time::TimePointSeconds        timeoutAt = Time::GetTickCount () + timeout;
+    ConditionVariable<>::LockType lock{fCriticalSection_.fMutex};
+    ++fProgressWaiters_;
+    [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { --fProgressWaiters_; }); // still under the lock, even if this throws
+    if (not fCriticalSection_.wait_until (lock, timeoutAt, [&] () { return not IsPresent_ (task); })) {
+        ThrowError (errc::timed_out);
     }
 }
 
 auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
 {
     Collection<TaskInfo>        result;
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     for (const auto& ti : fPendingTasks_) {
         result.Add (TaskInfo{.fID = ti.fID, .fTask = ti.fTask, .fName = ti.fName});
     }
@@ -368,7 +336,7 @@ auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
 
 auto ThreadPool::GetTaskInfo (TaskID task) const -> optional<TaskInfo>
 {
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     for (const auto& ti : fPendingTasks_) {
         if (ti.fID == task) {
             return TaskInfo{.fID = ti.fID, .fTask = ti.fTask, .fName = ti.fName};
@@ -386,7 +354,7 @@ auto ThreadPool::GetTaskInfo (TaskID task) const -> optional<TaskInfo>
 auto ThreadPool::GetRunningTasks () const -> Collection<TaskID>
 {
     Collection<TaskID>          result;
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         if (i->fRunnable->IsRunning ()) {
             result.Add (i->fRunnable->fCurTask.fID);
@@ -397,9 +365,13 @@ auto ThreadPool::GetRunningTasks () const -> Collection<TaskID>
 
 size_t ThreadPool::GetTasksCount () const
 {
-    // First see if its in the Q
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-    size_t                      count = fPendingTasks_.size ();
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
+    return GetTasksCount_ ();
+}
+
+size_t ThreadPool::GetTasksCount_ () const
+{
+    size_t count = fPendingTasks_.size ();
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         AssertNotNull (i->fRunnable);
         if (i->fRunnable->IsRunning ()) {
@@ -412,7 +384,7 @@ size_t ThreadPool::GetTasksCount () const
 auto ThreadPool::GetPendingTasks () const -> Collection<TaskID>
 {
     Collection<TaskID>          result;
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     for (const auto& i : fPendingTasks_) {
         result.Add (i.fID);
     }
@@ -421,7 +393,7 @@ auto ThreadPool::GetPendingTasks () const -> Collection<TaskID>
 
 size_t ThreadPool::GetPendingTasksCount () const
 {
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     return fPendingTasks_.size ();
 }
 
@@ -445,24 +417,24 @@ void ThreadPool::WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ThreadPool::WaitForTasksDoneUntil",
                                                                                  "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
 #endif
-    Thread::CheckForInterruption ();
-    // @todo - use WaitablEvent - this is a horrible implementation
-    while (GetTasksCount () != 0) {
-        ThrowTimeoutExceptionAfter (timeoutAt);
-        Execution::Sleep (100ms);
+    ConditionVariable<>::LockType lock{fCriticalSection_.fMutex};
+    ++fProgressWaiters_;
+    [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { --fProgressWaiters_; }); // still under the lock, even if this throws
+    if (not fCriticalSection_.wait_until (lock, timeoutAt, [this] () { return GetTasksCount_ () == 0; })) {
+        ThrowError (errc::timed_out);
     }
 }
 
 void ThreadPool::ResetStatistics ()
 {
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     Require (fCollectStatistics_);
     fCollectedTaskStats_ = {};
 }
 
 auto ThreadPool::GetCurrentStatistics () const -> Statistics
 {
-    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
     Require (fCollectStatistics_);
     return fCollectedTaskStats_;
 }
@@ -473,14 +445,14 @@ void ThreadPool::Abort_ () noexcept
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ThreadPool::Abort_", "*this={}"_f, ToString ())};
     Debug::TimingTrace        tt{1.0s};
     fAborted_ = true; // No race, because fAborted never 'unset'
-                      // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
-        // Clear the task Q and then abort each thread
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        // Clear the task Q and then abort each thread - which wakes it, if waiting for a task
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
         fPendingTasks_.clear ();
         for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
         }
+        NotifyProgress_ ();
     }
 }
 
@@ -495,12 +467,12 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
         Abort_ (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
         Collection<Thread::Ptr> threadsToShutdown;
         {
-            [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+            [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
             fThreads_.Apply ([&] (const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
         }
         Thread::AbortAndWaitForDone (threadsToShutdown);
         {
-            [[maybe_unused]] lock_guard critSec{fCriticalSection_}; // they should all be shutdown now
+            [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex}; // they should all be shutdown now
             fThreads_.Apply ([&] (const TPInfo_& i) { Assert (i.fThread.IsDone ()); });
             fThreads_.RemoveAll ();
         }
@@ -517,7 +489,7 @@ String ThreadPool::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     {
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
         if (fThreadPoolName_) {
             sb << "pool-name: '{}'"_f(*fThreadPoolName_);
         }
@@ -528,7 +500,7 @@ String ThreadPool::ToString () const
     sb << "pending-task-count: {}"_f(GetPendingTasksCount ());
     sb << ", running-task-count: {}"_f(GetRunningTasks ().size ());
     {
-        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_.fMutex};
         sb << ", pool-thread-count: {}"_f(fThreads_.size ());
     }
     sb << "}"sv;
@@ -540,29 +512,23 @@ void ThreadPool::WaitForNextTask_ (PendingTaskInfo_* result)
 {
     RequireNotNull (result);
     Require (result->fTask == nullptr);
-    while (true) {
-        if (fAborted_) [[unlikely]] {
-            Throw (Thread::AbortException::kThe);
-        }
+    ConditionVariable<>::LockType lock{fCriticalSection_.fMutex};
+    (void)fCriticalSection_.wait_until (lock, Time::GetTickCount () + Time::kInfinity, [this] () { return not fPendingTasks_.empty (); });
+    // under the lock, so a thread the pool aborted (Abort_, AbortTasks, SetPoolSize - each under this lock) takes no task: wait_until
+    // returns with a task pending, without checking, when the abort and the task come together
+    Thread::CheckForInterruption ();
+    *result = fPendingTasks_.front ();
+    fPendingTasks_.pop_front ();
+    DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = {}"_f,
+              fPendingTasks_.size ());
+    Ensure (result->fTask != nullptr);
+    NotifyProgress_ (); // room in the queue, for an AddTask with a QMax
+}
 
-        {
-            [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-            // a thread the pool aborted (AbortTasks, SetPoolSize - each under this lock) takes no task
-            Thread::CheckForInterruption ();
-            if (not fPendingTasks_.empty ()) {
-                *result = fPendingTasks_.front ();
-                fPendingTasks_.pop_front ();
-                DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = {}"_f,
-                          fPendingTasks_.size ());
-                Ensure (result->fTask != nullptr);
-                return;
-            }
-        }
-
-        // Prevent spinwaiting... This event is SET when any new item arrives
-        //DbgTrace ("ThreadPool::WaitForNextTask_ () - about to wait for added tasks");
-        fTasksMaybeAdded_.WaitAndReset ();
-        //DbgTrace ("ThreadPool::WaitForNextTask_ () - completed wait for added tasks");
+void ThreadPool::NotifyProgress_ () const
+{
+    if (fProgressWaiters_ > 0) {
+        fCriticalSection_.notify_all ();
     }
 }
 
