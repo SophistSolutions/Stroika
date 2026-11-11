@@ -11,68 +11,55 @@
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
-/*
- * TODO:
- *      @todo   Add CTOR taking a LIST of sockaddr/callbacks (one for each).
- *
- *      @todo   Document carefully any threading issues (most likely requirement that callback goes
- *              quickly - does little more than spin off another thread. Perhaps add internal feature
- *              for this class to protect itself by running those callbacks on a new or dedicated thread?
- *
- *      @todo   Need CTOR params for listen backlog
- *
- *      @todo   Possibly need CTOR variant where user passes in Socket, instead of SockAddr?
- *
- *      @todo   Document clearly idea that lifetime of this object CONTROLS thread (doing listen). Destroy
- *              object auto-destroys listening thread (and any running accepts callbacks).
- *
- *              May want a shutdown method - so user can control timeout?
- *
- *      @todo   Need to handle SSL? Could be having a special SSL-socket? that does the opessl ssl_accpet()?
- *              Or ??? not sure where best.
- *
- *      @todo   One trivial impl is to do one listener thread for each, but thats bad. Instead should
- *              use select (need to add Socket::Select(set<Socket> s) to Socket class - static method.
- *
- *              Note - maybe use pselect, or poll() or epoll() etc... Read carefully what is best.
- *
- */
-
 namespace Stroika::Foundation::IO::Network {
 
     /**
-     *  This maintains thread inside. VERY ROUGH DRAFT API. See Todo above
+     *  \brief Listens on one or more addresses, and hands each connection that arrives to a callback, on a thread of its own
      *
-     *  Listener does the Bind() in the calling thread, and so will fail to construct if the Bind()
-     *  fails.
+     *  Listener binds each address in the calling thread, so it fails to construct if a Bind () fails.
      *
-     *  But it does the 'accepts' in a separate thread, so these can proceed as needed, and any failures
-     *  there are handled internally, and largely ignored.
+     *  It accepts connections on a thread of its own, and calls newConnectionAcceptor ON THAT THREAD: no other connection is
+     *  accepted until it returns, so it should do little more than hand the connection to another thread (as
+     *  WebServer::ConnectionManager does, to its thread pool). An exception from it is traced and ignored.
      *
      *  A failed accept is retried after a pause, which grows while the failures continue (to half a second), so a lasting
      *  cause - the process out of file descriptors - costs no CPU, and the connections it held up are taken once it goes
      *  (where the OS keeps them queued, as Linux does; macOS's accept drops each one).
+     *
+     *  Destroying the Listener aborts its thread and waits for it to finish - so a newConnectionAcceptor still running then
+     *  gets Thread::AbortException at its next interruption point.
      */
     class Listener {
     public:
         /**
-         *  Define params object for stuff like listen backlog (for now hardwire)
+         *  \brief How many connections the OS queues, waiting to be accepted, unless told otherwise: the OS's own maximum
          *
-         *  For 'backlog' - @see Socket::Listen
+         *  SOMAXCONN, which each OS caps at its own configured limit (Linux: net.core.somaxconn).
+         *
+         *  @see ConnectionOrientedMasterSocket::Ptr::Listen
+         */
+        static const unsigned int kDefaultBacklog;
+
+    public:
+        /**
+         *  backlog: how many connections the OS queues, waiting to be accepted (@see kDefaultBacklog)
          *
          *  \note   DesignNote
          *          The reason the accept callback doesn't tell you which sockaddr returned is because you can find that with
          *          sock.GetLocalAddress ()
          */
         Listener (const SocketAddress& addr, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor,
-                  unsigned int backlog = 1);
+                  unsigned int backlog = kDefaultBacklog);
         Listener (const SocketAddress& addr, const ConnectionOrientedMasterSocket::BindFlags& bindFlags,
-                  const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
-        Listener (const Traversal::Iterable<SocketAddress>& addrs,
-                  const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
+                  const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor,
+                  unsigned int backlog = kDefaultBacklog); ///< \brief one address, with BindFlags
+        Listener (const Traversal::Iterable<SocketAddress>&                                        addrs,
+                  const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor,
+                  unsigned int backlog = kDefaultBacklog); ///< \brief several addresses, one thread for all
         Listener (const Traversal::Iterable<SocketAddress>& addrs, const ConnectionOrientedMasterSocket::BindFlags& bindFlags,
-                  const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
-        Listener (Listener&& rhs) noexcept;
+                  const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor,
+                  unsigned int backlog = kDefaultBacklog); ///< \brief several addresses, with BindFlags
+        Listener (Listener&& rhs) noexcept;                ///< \brief takes over rhs's thread
         Listener (const Listener&) = delete;
 
     public:

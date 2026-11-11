@@ -3,6 +3,12 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if qStroika_Platform_POSIX
+#include <sys/socket.h>
+#elif qStroika_Platform_Windows
+#include <winsock2.h>
+#endif
+
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -110,6 +116,8 @@ struct Listener::Rep_ final {
 **************************** IO::Network::Listener *****************************
 ********************************************************************************
 */
+const unsigned int Listener::kDefaultBacklog = SOMAXCONN;
+
 Listener::Listener (const SocketAddress& addr,
                     const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener{Sequence<SocketAddress>{addr}, ConnectionOrientedMasterSocket::BindFlags{}, newConnectionAcceptor, backlog}
