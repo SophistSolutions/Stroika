@@ -144,6 +144,84 @@ namespace {
     }
 }
 
+namespace {
+    void Test6_ConcurrentAddsAllKept_ ()
+    {
+        // AddSignalHandler from several threads at once keeps every handler added
+        SignalHandlerRegistry::SafeSignalsManager safeSignals; // first, so last to go
+        Set<SignalHandler>                        saved = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
+        SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT);
+        static constexpr unsigned int kThreads_       = 4;
+        static constexpr unsigned int kAddsPerThread_ = 50;
+        Thread::Ptr                   threads[kThreads_];
+        for (Thread::Ptr& t : threads) {
+            t = Thread::New (
+                [] () {
+                    for (unsigned int i = 0; i < kAddsPerThread_; ++i) {
+                        SignalHandlerRegistry::sThe.AddSignalHandler (SIGINT, SignalHandler{function<void (SignalID)>{[] (SignalID) {}}});
+                    }
+                },
+                Thread::eAutoStart);
+        }
+        for (const Thread::Ptr& t : threads) {
+            t.Join ();
+        }
+        EXPECT_EQ (SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT).size (), kThreads_ * kAddsPerThread_);
+    }
+}
+
+namespace {
+    void Test7_RemovedSafeHandlerNotRunningNorCalled_ ()
+    {
+        // Once RemoveSignalHandler returns, the safe handler removed is not running, and is not called again - even for a signal
+        // that arrived before - so what it uses may then go
+        SignalHandlerRegistry::SafeSignalsManager safeSignals; // first, so last to go
+        Set<SignalHandler>                        saved = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
+        // Two handlers, called in an order not promised: the first called takes a while, so the other waits its turn
+        static atomic<int>  sCalls[2];
+        static atomic<int>  sFirst;
+        static atomic<bool> sFirstRunning;
+        static atomic<bool> sMarkerCalled;
+        sCalls[0] = sCalls[1] = 0;
+        sFirst                = -1;
+        sFirstRunning = sMarkerCalled = false;
+        auto handler                  = [] (int me) {
+            return SignalHandler{function<void (SignalID)>{[me] (SignalID) {
+                ++sCalls[me];
+                if (int none = -1; sFirst.compare_exchange_strong (none, me)) {
+                    sFirstRunning = true;
+                    Execution::Sleep (1s);
+                    sFirstRunning = false;
+                }
+            }}};
+        };
+        SignalHandler handlers[2] = {handler (0), handler (1)};
+        SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, Set<SignalHandler>{handlers[0], handlers[1]});
+        ::raise (SIGINT);
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not sFirstRunning and Time::GetTickCount () < giveUpAt;) {
+            Execution::Sleep (10ms);
+        }
+        ASSERT_TRUE (sFirstRunning);
+        int first = sFirst;
+        int other = 1 - first;
+        SignalHandlerRegistry::sThe.RemoveSignalHandler (SIGINT, handlers[other]); // its call is still to come, for that SIGINT
+        // a marker, so the next SIGINT is handled, and when it is called that first SIGINT is done with
+        SignalHandler marker{function<void (SignalID)>{[] (SignalID) { sMarkerCalled = true; }}};
+        SignalHandlerRegistry::sThe.AddSignalHandler (SIGINT, marker);
+        SignalHandlerRegistry::sThe.RemoveSignalHandler (SIGINT, handlers[first]); // it is running now
+        EXPECT_FALSE (sFirstRunning);
+        ::raise (SIGINT);
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not sMarkerCalled and Time::GetTickCount () < giveUpAt;) {
+            Execution::Sleep (10ms);
+        }
+        ASSERT_TRUE (sMarkerCalled);
+        EXPECT_EQ (sCalls[other], 0);
+        EXPECT_EQ (sCalls[first], 1);
+    }
+}
+
 #if qStroika_Platform_POSIX
 namespace {
     // Overflows any stack: each call's volatile frame stays on it, and the limit - never reached - stops the compiler from
@@ -155,7 +233,7 @@ namespace {
         frame[0] = static_cast<char> (depth);
         return depth < sRecursionLimit_ ? Recurse_ (depth + 1) + frame[0] : frame[0];
     }
-    void Test6_CrashHandlerRunsAfterStackOverflow_ ()
+    void Test8_CrashHandlerRunsAfterStackOverflow_ ()
     {
         // A thread opts in to an alternate signal stack (InstallAlternateSignalStack) - none is made for it otherwise - and its
         // signal handlers then run there, so a crash handler runs after a stack overflow too
@@ -224,8 +302,10 @@ namespace {
         Test3_StandardCrashHandlersByDefault_ ();
         Test4_SafeHandlersGoWithTheirManager_ ();
         Test5_HandlerStaysInstalled_ ();
+        Test6_ConcurrentAddsAllKept_ ();
+        Test7_RemovedSafeHandlerNotRunningNorCalled_ ();
 #if qStroika_Platform_POSIX
-        Test6_CrashHandlerRunsAfterStackOverflow_ ();
+        Test8_CrashHandlerRunsAfterStackOverflow_ ();
 #endif
     }
 }

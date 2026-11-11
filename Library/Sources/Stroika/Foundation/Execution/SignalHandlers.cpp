@@ -15,7 +15,9 @@
 #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/ConditionVariable.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #if qStroika_Platform_POSIX
 #include "Stroika/Foundation/Execution/Platform/POSIX/SemWaitableEvent.h"
@@ -141,6 +143,17 @@ public:
                                 Set<SignalHandler> handlers = fHandlers_.cget ()->LookupValue (i);
                                 for (const SignalHandler& sh : handlers) {
                                     Assert (sh.GetType () == SignalHandler::Type::eSafe);
+                                    {
+                                        // one removed since the copy is not called (see SetSignalHandlers); checked, and marked
+                                        // running, under fRunningChanged_.fMutex - which WaitWhileRunning takes after the removal
+                                        ConditionVariable<>::QuickLockType critSec{fRunningChanged_.fMutex};
+                                        if (not fHandlers_.cget ()->LookupValue (i).Contains (sh)) {
+                                            continue;
+                                        }
+                                        fRunning_ = sh;
+                                    }
+                                    [[maybe_unused]] auto&& cleanup = Finally (
+                                        [this] () noexcept { fRunningChanged_.MutateDataNotifyAll ([this] () { fRunning_ = nullopt; }); });
                                     IgnoreExceptionsExceptThreadAbortForCall (sh (i));
                                 }
                             }
@@ -172,13 +185,39 @@ public:
     {
         Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_",
                                          Stroika_Foundation_Debug_OptionalizeTraceArgs ("this={}"_f, static_cast<const void*> (this))};
+        Assert (fBlockingQueuePusherThread_.IsDone ()); // ~SafeSignalsManager stops it (Stop)
+#if qStroika_Platform_Windows
+        Verify (::CloseHandle (fRecievedSig_));
+#endif
+    }
+
+public:
+    /*
+     *  Stops the safe thread - called by ~SafeSignalsManager, so on its thread: not left to ~Rep_, which runs wherever the last
+     *  reference goes - perhaps on the safe thread itself, a safe handler holding one (SetSignalHandlers), and it cannot wait for
+     *  itself.
+     */
+    void Stop ()
+    {
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
         tell2WakeAfterDataUpdate_ ();
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
-#if qStroika_Platform_Windows
-        Verify (::CloseHandle (fRecievedSig_));
-#endif
+    }
+
+public:
+    /*
+     *  Returns once none of the (removed) handlers is running - at once on the safe thread, where the one running is the
+     *  caller's (as std::stop_callback's destructor does)
+     */
+    void WaitWhileRunning (const Set<SignalHandler>& removed) const
+    {
+        if (Thread::GetCurrentThreadID () == fBlockingQueuePusherThread_.GetID ()) {
+            return;
+        }
+        ConditionVariable<>::LockType lock{fRunningChanged_.fMutex};
+        (void)fRunningChanged_.wait_until (lock, Time::GetTickCount () + Time::kInfinity,
+                                           [&] () { return not fRunning_.has_value () or not removed.Contains (*fRunning_); });
     }
 
 public:
@@ -234,6 +273,9 @@ private:
     Synchronized<Mapping<SignalID, Set<SignalHandler>>> fHandlers_;
     atomic<bool> fHanlderAvailable_[NSIG]{}; // if true post to blocking q; the signal handler reads it
 private:
+    mutable ConditionVariable<> fRunningChanged_; // its fMutex guards fRunning_
+    optional<SignalHandler>     fRunning_;        // the safe handler the safe thread is calling, if any
+private:
     /*
      *  Instead of maintaining an acutal Q, just maintain a count of number of signals recieved for each signal number.
      *  This means signals not necessarily delivered in order, but this appraoch has the advantage of using a small amount of memory to
@@ -273,29 +315,39 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR"};
-    // The safe handlers it runs go with it - each signal keeps its direct handlers, or with none reverts to its default: else a
-    // signal arriving later would find safe handlers with no thread to run them, and be lost
+    shared_ptr<Rep_>          rep;
+    {
+        // under fUpdating_, so no change of the handlers comes between removing the safe ones and letting go of the Rep_
+        lock_guard updating{sThe.fUpdating_};
 #if defined(__cpp_lib_atomic_shared_ptr)
-    if (shared_ptr<Rep_> rep = sTheRep_.load ()) {
+        rep = sTheRep_.load ();
 #else
-    if (shared_ptr<Rep_> rep = atomic_load (&sTheRep_)) {
+        rep = atomic_load (&sTheRep_);
 #endif
-        for (SignalID s : rep->GetHandledSignals ()) {
-            // a copy, so the read lock is gone before SetSignalHandlers takes the write lock
-            Set<SignalHandler> directHandlers = sThe.fDirectHandlers_.cget ()->LookupValue (s);
-            sThe.SetSignalHandlers (s, directHandlers);
+        if (rep != nullptr) {
+            // The safe handlers it runs go with it - each signal keeps its direct handlers, or with none reverts to its default:
+            // else a signal arriving later would find safe handlers with no thread to run them, and be lost
+            for (SignalID s : rep->GetHandledSignals ()) {
+                // a copy, so the read lock is gone before SetSignalHandlers_ takes the write lock
+                Set<SignalHandler> directHandlers = sThe.fDirectHandlers_.cget ()->LookupValue (s);
+                sThe.SetSignalHandlers_ (s, directHandlers);
+            }
         }
-    }
-    // No signal handler gets the Rep_ once this is null; those already using it finish before it is let go
-    sTheRepForSignalHandler_.store (nullptr);
-    while (sSignalHandlersUsingRep_.load () != 0) {
-        this_thread::yield ();
-    }
+        // No signal handler gets the Rep_ once this is null; those already using it finish before it is let go
+        sTheRepForSignalHandler_.store (nullptr);
+        while (sSignalHandlersUsingRep_.load () != 0) {
+            this_thread::yield ();
+        }
 #if defined(__cpp_lib_atomic_shared_ptr)
-    SignalHandlerRegistry::SafeSignalsManager::sTheRep_.store (shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
+        sTheRep_.store (shared_ptr<Rep_>{});
 #else
-    atomic_store (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_, shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
+        atomic_store (&sTheRep_, shared_ptr<Rep_>{});
 #endif
+    }
+    // after fUpdating_ is released: a safe handler running may itself change handlers, and Stop waits for it
+    if (rep != nullptr) {
+        rep->Stop ();
+    }
 }
 
 /*
@@ -364,8 +416,35 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHand
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
+    Update_ (signal, [&] (const Set<SignalHandler>&) { return handlers; });
+}
+
+void SignalHandlerRegistry::Update_ (SignalID signal, const function<Set<SignalHandler> (const Set<SignalHandler>&)>& change)
+{
+    shared_ptr<SafeSignalsManager::Rep_> rep;
+    Set<SignalHandler>                   removedSafe;
+    {
+        lock_guard         updating{fUpdating_};
+        Set<SignalHandler> was      = GetSignalHandlers (signal);
+        Set<SignalHandler> handlers = change (was);
+        SetSignalHandlers_ (signal, handlers);
+        removedSafe = Set<SignalHandler>{
+            was.Where ([&] (const SignalHandler& h) { return h.GetType () == SignalHandler::eSafe and not handlers.Contains (h); })};
+#if defined(__cpp_lib_atomic_shared_ptr)
+        rep = SafeSignalsManager::sTheRep_.load ();
+#else
+        rep = atomic_load (&SafeSignalsManager::sTheRep_);
+#endif
+    }
+    if (rep != nullptr and not removedSafe.empty ()) {
+        rep->WaitWhileRunning (removedSafe);
+    }
+}
+
+void SignalHandlerRegistry::SetSignalHandlers_ (SignalID signal, const Set<SignalHandler>& handlers)
+{
     Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", "signal: {}, handlers: {}"_f, SignalToName (signal), handlers)};
+        "Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers_", "signal: {}, handlers: {}"_f, SignalToName (signal), handlers)};
 
     Set<SignalHandler> directHandlers;
     Set<SignalHandler> safeHandlers;
@@ -381,18 +460,16 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     });
     Assert (directHandlers.size () + safeHandlers.size () == handlers.size ());
 
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
-
-    if (not safeHandlers.empty ()) {
-        // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
-        // defined first. It is recommended that you define an instance of
-        // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
 #if defined(__cpp_lib_atomic_shared_ptr)
-        Require (SafeSignalsManager::sTheRep_.load () != nullptr);
+    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_.load ();
 #else
-        Require (atomic_load (&SafeSignalsManager::sTheRep_) != nullptr);
+    shared_ptr<SafeSignalsManager::Rep_> tmp = atomic_load (&SafeSignalsManager::sTheRep_);
 #endif
-    }
+
+    // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
+    // defined first. It is recommended that you define an instance of
+    // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
+    Require (safeHandlers.empty () or tmp != nullptr);
 
     auto sigSetHandler = [] (SignalID signal, void (*fun) (int)) {
 #if qStroika_Platform_POSIX
@@ -409,8 +486,8 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
 #endif
     };
 
-    // Held to the end - the OS's handler set too - so calls for one signal from several threads at once leave the OS's handler
-    // matching the handlers set last
+    // Held to the end - the OS's handler set too - for GetSignalHandlers' readers; fUpdating_ (held by the caller) keeps changes one
+    // at a time, so the OS's handler matches the handlers set last
     auto l = fDirectHandlers_.rwget ();
     if (directHandlers.empty ()) {
         l->RemoveIf (signal);
@@ -471,17 +548,21 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
 
 void SignalHandlerRegistry::AddSignalHandler (SignalID signal, const SignalHandler& handler)
 {
-    Set<SignalHandler> s = GetSignalHandlers (signal);
-    s.Add (handler);
-    SetSignalHandlers (signal, s);
+    Update_ (signal, [&] (const Set<SignalHandler>& was) {
+        Set<SignalHandler> s = was;
+        s.Add (handler);
+        return s;
+    });
 }
 
 void SignalHandlerRegistry::RemoveSignalHandler (SignalID signal, const SignalHandler& handler)
 {
-    Set<SignalHandler> s = GetSignalHandlers (signal);
-    Require (s.Contains (handler));
-    s.Remove (handler);
-    SetSignalHandlers (signal, s);
+    Update_ (signal, [&] (const Set<SignalHandler>& was) {
+        Require (was.Contains (handler));
+        Set<SignalHandler> s = was;
+        s.Remove (handler);
+        return s;
+    });
 }
 
 void SignalHandlerRegistry::DefaultCrashSignalHandler ([[maybe_unused]] SignalID signal) noexcept

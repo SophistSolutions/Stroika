@@ -9,6 +9,7 @@
 #include <compare>
 #include <csignal>
 #include <functional>
+#include <mutex>
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/UniqueID.h"
@@ -232,6 +233,15 @@ namespace Stroika::Foundation::Execution {
          * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
          *
          *  \note Setting any 'Safe' signal handlers requires that SafeSignalsManager has been created.
+         *
+         *  \note Once this returns, a safe handler it removed is not running, and is not called again - not even for a signal that
+         *        arrived before - so what the handler uses may then go: it waits for a call of it running on SafeSignalsManager's
+         *        thread to end. Except on that thread (from a safe handler), where the handler running is the caller's - as
+         *        std::stop_callback's destructor does. A direct handler, a function, may still be finishing a call on a thread the
+         *        signal interrupted.
+         *
+         *  \note SetSignalHandlers, AddSignalHandler and RemoveSignalHandler change a signal's handlers one at a time, so calls
+         *        on several threads at once lose none of each other's changes.
          */
         nonvirtual void SetSignalHandlers (SignalID signal);
         nonvirtual void SetSignalHandlers (SignalID signal, const SignalHandler& handler);
@@ -251,6 +261,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          * @see GetSignalHandlers()
+         *
+         *  \note Once this returns, a safe handler removed is not running, and is not called again: @see SetSignalHandlers ()
          */
         nonvirtual void RemoveSignalHandler (SignalID signal, const SignalHandler& handler);
 
@@ -315,6 +327,20 @@ namespace Stroika::Foundation::Execution {
          */
         static void InstallAlternateSignalStack ();
 #endif
+
+    private:
+        // Sets a signal's handlers to what change makes of its current ones, then waits until no safe handler that removed is
+        // running - after releasing fUpdating_, as a running safe handler may itself change handlers
+        nonvirtual void Update_ (SignalID signal, const function<Containers::Set<SignalHandler> (const Containers::Set<SignalHandler>&)>& change);
+
+    private:
+        // Sets a signal's handlers - with fUpdating_ held
+        nonvirtual void SetSignalHandlers_ (SignalID signal, const Containers::Set<SignalHandler>& handlers);
+
+    private:
+        // One change of the handlers at a time, so a change computed from the handlers it read (AddSignalHandler,
+        // RemoveSignalHandler) loses no change made meanwhile
+        mutex fUpdating_;
 
     private:
         RWSynchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;
