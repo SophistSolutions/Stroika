@@ -102,8 +102,7 @@ namespace Stroika::Foundation::Execution {
          *          p.AddTask ([&q, &counter] () {
          *              ..dostuff..
          *          });
-         *          // when goes out of scope automatically blocks waiting for threads to complete...
-         *          // or call p.WaitForTasksDoneUntil ()
+         *          p.WaitForTasksDone ();  // to let the tasks finish: destroying p aborts any still running, and drops any not started
          *      \endcode
          */
         ThreadPool ();
@@ -117,7 +116,11 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Destroying a threadpool implicitly calls AbortAndWaitForDone () and eats any errors (cannot rethrow).
+         *  Destroying a threadpool aborts the tasks running, drops those not yet started, and waits for its threads to finish;
+         *  it does not wait for tasks to complete - call WaitForTasksDone () first for that. Errors are eaten (cannot rethrow).
+         *
+         *  Abort, not wait, so destroying the pool (and whatever owns it) does not wait on work that may never finish - a
+         *  task waiting for an event that never comes.
          *
          *  \note - ThreadPool used to have explicit abort methods, but there was no point. When aborting, you must wait for them all to
          *          shut down to destroy the object. And since you cannot restart the object, there is no point in ever aborting without destroying.
