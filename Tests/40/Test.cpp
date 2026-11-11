@@ -2038,6 +2038,47 @@ namespace {
     }
 
     /*
+     *  ThreadPool::AddTaskWithResult: GetResult () gives the task's value or exception - operation_canceled for a task aborted
+     *  while it ran, or removed before it ran - and waiting in it is a cancelation point, with a timeout
+     */
+    GTEST_TEST (Foundation_Execution_Threads, ThreadPool_AddTaskWithResult_)
+    {
+        Debug::TraceContextBumper traceCtx{"ThreadPool_AddTaskWithResult_"};
+        ThreadPool                p{ThreadPool::Options{.fThreadCount = 1}};
+        EXPECT_EQ (p.AddTaskWithResult ([] () { return 6 * 7; }, "answer"sv).GetResult (), 42);
+        EXPECT_NO_THROW (p.AddTaskWithResult ([] () {}).GetResult ());
+        auto thrower = p.AddTaskWithResult ([] () -> int { throw range_error{"thrown by the task"}; });
+        EXPECT_THROW (thrower.GetResult (), range_error);
+        EXPECT_THROW (thrower.GetResult (), range_error); // every call, and every copy, shares the one result
+        auto throwsA = [] (const function<void ()>& getResult, errc e) {
+            try {
+                getResult ();
+            }
+            catch (const system_error& se) {
+                return IsA (se, e);
+            }
+            return false;
+        };
+        WaitableEvent started;
+        WaitableEvent neverSet;
+        auto          running = p.AddTaskWithResult ([&] () {
+            started.Set ();
+            neverSet.Wait (); // until aborted
+        });
+        auto          pending = p.AddTaskWithResult ([] () { return 1; });
+        started.Wait ();
+        EXPECT_FALSE (running.IsDone ());
+        EXPECT_TRUE (throwsA ([&] () { running.GetResult (10ms); }, errc::timed_out));
+        // a thread waiting in GetResult is aborted at once, though the task still runs
+        Thread::Ptr waiter = Thread::New ([&] () { running.GetResult (); }, Thread::eAutoStart);
+        Execution::Sleep (50ms);
+        EXPECT_NO_THROW (waiter.AbortAndWaitForDone (5s));
+        p.AbortTasks (5s);
+        EXPECT_TRUE (throwsA ([&] () { running.GetResult (); }, errc::operation_canceled));
+        EXPECT_TRUE (throwsA ([&] () { pending.GetResult (); }, errc::operation_canceled));
+    }
+
+    /*
      *  ConditionVariable::wait_until, with a predicate, throws in an aborted thread even when the predicate comes true with the
      *  abort - as it does when the abort comes before the wait
      */

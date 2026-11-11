@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <exception>
 #include <functional>
 #include <list>
 #include <mutex>
@@ -13,6 +14,7 @@
 #include "Stroika/Foundation/Common/UniqueID.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/ConditionVariable.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 
 /**
@@ -192,6 +194,90 @@ namespace Stroika::Foundation::Execution {
 
     private:
         nonvirtual TaskID AddTask_ (const TaskType& task, const optional<QMax>& qmax, const optional<Characters::String>& name);
+
+    public:
+        /**
+         *  \brief What AddTaskWithResult returns: the task's ID, and - once the task is done - its result. Copies share the result.
+         *
+         *  Like a std::shared_future, except that waiting for the result is a cancelation point.
+         */
+        template <typename R>
+        class TaskWithResult {
+        public:
+            /**
+             *  What GetResult () returns: the task's result, or void
+             */
+            using ResultType = conditional_t<is_void_v<R>, void, add_lvalue_reference_t<const R>>;
+
+        public:
+            /**
+             */
+            nonvirtual TaskID GetID () const;
+
+        public:
+            /**
+             *  \brief true once the task is done - so GetResult () returns, or throws, at once
+             */
+            nonvirtual bool IsDone () const;
+
+        public:
+            /**
+             *  \brief Waits until the task is done, then returns what it returned - or rethrows what it threw
+             *
+             *  A task aborted (AbortTask, AbortTasks, the pool's destruction) while it ran, or removed before it ran, throws an
+             *  errc::operation_canceled SystemErrorException here - not Thread::AbortException, which would read as an abort of
+             *  the thread calling this. For a removed one that comes once nothing holds the task any more - including a TaskInfo
+             *  copy of it (GetTasks, GetTaskInfo).
+             *
+             *  Throws errc::timed_out (@see ThrowError) if the task is not done in time.
+             *
+             *  \note   ***Cancelation Point*** - unlike std::future's get ()
+             */
+            nonvirtual ResultType GetResult (Time::DurationSeconds timeout = Time::kInfinity) const;
+
+        public:
+            /**
+             *  \brief GetResult (), waiting until timeoutAt
+             *
+             *  \note   ***Cancelation Point***
+             */
+            nonvirtual ResultType GetResultUntil (Time::TimePointSeconds timeoutAt) const;
+
+        private:
+            struct Rep_;
+            TaskWithResult (TaskID id, const shared_ptr<Rep_>& rep);
+
+        private:
+            TaskID           fID_;
+            shared_ptr<Rep_> fRep_;
+
+        private:
+            friend class ThreadPool;
+        };
+
+    public:
+        /**
+         *  \brief AddTask, for a task whose result the caller wants - the value it returns, or the exception it throws: from
+         *         GetResult () on what this returns
+         *
+         *  Unlike AddTask's, an exception the task throws is not dropped: GetResult () rethrows it.
+         *
+         *  \par Example Usage
+         *      \code
+         *          ThreadPool p;
+         *          auto       r = p.AddTaskWithResult ([] () { return 6 * 7; });
+         *          EXPECT_EQ (r.GetResult (), 42);
+         *      \endcode
+         */
+        template <invocable F>
+        nonvirtual TaskWithResult<invoke_result_t<F>> AddTaskWithResult (F&& task, const optional<Characters::String>& name = nullopt);
+        template <invocable F>
+        nonvirtual TaskWithResult<invoke_result_t<F>> AddTaskWithResult (F&& task, QMax qmax, const optional<Characters::String>& name = nullopt); ///< \brief ... waiting for (or throwing if no) room in the queue, per qmax
+
+    private:
+        template <invocable F>
+        nonvirtual TaskWithResult<invoke_result_t<F>> AddTaskWithResult_ (F&& task, const optional<QMax>& qmax,
+                                                                          const optional<Characters::String>& name);
 
     public:
         /**
