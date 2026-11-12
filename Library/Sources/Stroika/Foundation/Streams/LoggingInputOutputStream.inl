@@ -9,7 +9,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
     namespace Private_ {
 
         template <typename ELEMENT_TYPE>
-        class Rep_ final : public InputOutputStream::IRep<ELEMENT_TYPE> {
+        class Rep_ : public InputOutputStream::IRep<ELEMENT_TYPE> { // not final: InternallySynchronizedInputOutputStream derives from it
         public:
             Rep_ (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream, const typename OutputStream::Ptr<ELEMENT_TYPE>& logInput,
                   const typename OutputStream::Ptr<ELEMENT_TYPE>& logOutput)
@@ -72,8 +72,8 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 if (IsOpenWrite ()) {
                     fRealStream_.CloseWrite ();
+                    fLogOutput_.Close ();
                 }
-                Assert (fRealStream_ == nullptr);
                 Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
     inline Ptr<ELEMENT_TYPE> New (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
                                   const typename OutputStream::Ptr<ELEMENT_TYPE>& logInput, const typename OutputStream::Ptr<ELEMENT_TYPE>& logOutput)
     {
-        return _mkPtr (Memory::MakeSharedPtr<Private_::Rep_> (realStream, logInput, logOutput));
+        return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::Rep_<ELEMENT_TYPE>> (realStream, logInput, logOutput)};
     }
     template <typename ELEMENT_TYPE>
     inline Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternallySynchronizedInputOutputStream::New<Private_::Rep_> ({}, realStream, logInput, logOutput);
+                return InternallySynchronizedInputOutputStream::New<Private_::Rep_<ELEMENT_TYPE>> ({}, realStream, logInput, logOutput);
             case Execution::eNotKnownInternallySynchronized:
                 return New<ELEMENT_TYPE> (realStream, logInput, logOutput);
             default:

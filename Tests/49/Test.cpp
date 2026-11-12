@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/BufferedInputStream.h"
 #include "Stroika/Foundation/Streams/Copy.h"
+#include "Stroika/Foundation/Streams/LoggingInputOutputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
@@ -577,6 +578,28 @@ namespace {
             EXPECT_EQ (r.ReadAll (2), kText_.SubString (0, 2));
             r.Seek (0);
             EXPECT_EQ (r.ReadAll (), kText_);
+        }
+    }
+}
+
+namespace {
+    /*
+     *  A logging stream passes reads and writes to the stream it wraps, and copies what was written to one log and what was
+     *  read to the other - internally synchronized or not. Before Stroika v3.0d26 neither LoggingInputOutputStream::New
+     *  compiled.
+     */
+    GTEST_TEST (Foundation_Streams, LoggingInputOutputStream_)
+    {
+        for (Execution::InternallySynchronized is : {Execution::eNotKnownInternallySynchronized, Execution::eInternallySynchronized}) {
+            InputOutputStream::Ptr<byte> real     = SharedMemoryStream::New<byte> ();
+            MemoryStream::Ptr<byte>      readLog  = MemoryStream::New<byte> ();
+            MemoryStream::Ptr<byte>      writeLog = MemoryStream::New<byte> ();
+            InputOutputStream::Ptr<byte> logged   = LoggingInputOutputStream::New<byte> (is, real, readLog, writeLog);
+            logged.Write (as_bytes (span{"hello", 5}));
+            byte buf[5];
+            EXPECT_EQ (logged.ReadBlocking (span{buf}).size (), 5u);
+            EXPECT_EQ (writeLog.As<string> (), "hello");
+            EXPECT_EQ (readLog.As<string> (), "hello");
         }
     }
 }
