@@ -11,6 +11,12 @@
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 
+/**
+ *  \file
+ *
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+ */
+
 namespace Stroika::Foundation::IO::Network {
 
     /**
@@ -28,6 +34,10 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  Destroying the Listener aborts its thread and waits for it to finish - so a newConnectionAcceptor still running then
      *  gets Thread::AbortException at its next interruption point.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *          newConnectionAcceptor runs on the Listener's thread, concurrently with the rest of the program, so what it
+     *          touches must be safe for that.
      */
     class Listener {
     public:

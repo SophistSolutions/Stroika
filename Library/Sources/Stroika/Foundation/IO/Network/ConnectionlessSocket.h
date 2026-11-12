@@ -10,6 +10,12 @@
 
 #include "Stroika/Foundation/IO/Network/Socket.h"
 
+/**
+ *  \file
+ *
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+ */
+
 namespace Stroika::Foundation::IO::Network {
 
     struct Interface;

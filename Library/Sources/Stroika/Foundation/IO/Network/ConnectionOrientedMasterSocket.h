@@ -8,6 +8,12 @@
 
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 
+/**
+ *  \file
+ *
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ */
+
 namespace Stroika::Foundation::IO::Network {
 
     /**
