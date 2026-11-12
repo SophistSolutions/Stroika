@@ -99,7 +99,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 #endif
             return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
         }
-        Sequence<String> tokens{line.Tokenize ({' '})};
+        Sequence<String> tokens{line.RTrim ().Tokenize ({' '})}; // ReadLine keeps the line's CRLF
         if (tokens.size () < 3) {
             DbgTrace ("tokens={}, line='{}', fMsgHeaderInTextStream={}"_f, tokens, line, fMsgHeaderInTextStream.ToString ());
             Throw (ClientErrorException{"Bad METHOD Request HTTP line ({})"_f(line)});

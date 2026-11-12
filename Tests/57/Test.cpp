@@ -500,6 +500,29 @@ namespace {
         return s;
     }
 
+    // what the server sent on s before closing it - or nullopt if s is still open after 10 seconds
+    optional<string> ReadUntilClosed_ (const IO::Network::ConnectionOrientedStreamSocket::Ptr& s)
+    {
+        string received;
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; Time::GetTickCount () < giveUpAt;) {
+            byte buf[1024];
+            try {
+                if (optional<span<byte>> r = s.ReadNonBlocking (span{buf})) {
+                    if (r->empty ()) {
+                        return received; // end of stream
+                    }
+                    received.append (reinterpret_cast<const char*> (r->data ()), r->size ());
+                    continue;
+                }
+            }
+            catch (...) {
+                return received; // reset: closed too
+            }
+            Execution::Sleep (50ms);
+        }
+        return nullopt;
+    }
+
     /*
      *  A server restarts at once on its port, though it was stopped with a client connected: it closed that connection first,
      *  which leaves its end in TIME_WAIT for a minute or so - and meanwhile POSIX refuses to bind the port without SO_REUSEADDR.
@@ -530,38 +553,36 @@ namespace {
     {
         TraceContextBumper ctx{"IdleConnectionsClosed_"};
         namespace ConnectionOrientedStreamSocket = IO::Network::ConnectionOrientedStreamSocket;
-        ConnectionManager server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
-                                 ConnectionManager::Options{.fIdleConnectionTimeout = 1s}};
-        // what the server sent on s before closing it - or nullopt if s is still open after 10 seconds
-        auto readUntilClosed = [] (const ConnectionOrientedStreamSocket::Ptr& s) -> optional<string> {
-            string received;
-            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; Time::GetTickCount () < giveUpAt;) {
-                byte buf[1024];
-                try {
-                    if (optional<span<byte>> r = s.ReadNonBlocking (span{buf})) {
-                        if (r->empty ()) {
-                            return received; // end of stream
-                        }
-                        received.append (reinterpret_cast<const char*> (r->data ()), r->size ());
-                        continue;
-                    }
-                }
-                catch (...) {
-                    return received; // reset: closed too
-                }
-                Execution::Sleep (50ms);
-            }
-            return nullopt;
-        };
+        ConnectionManager                   server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                                   ConnectionManager::Options{.fIdleConnectionTimeout = 1s}};
         ConnectionOrientedStreamSocket::Ptr silent    = ConnectToTestServer_ ();
         ConnectionOrientedStreamSocket::Ptr keptAlive = ConnectToTestServer_ ();
         keptAlive.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
-        EXPECT_EQ (readUntilClosed (silent), string{});
-        optional<string> response = readUntilClosed (keptAlive);
+        EXPECT_EQ (ReadUntilClosed_ (silent), string{});
+        optional<string> response = ReadUntilClosed_ (keptAlive);
         ASSERT_TRUE (response) << "the kept-alive connection is still open";
         EXPECT_TRUE (String::FromLatin1 (*response).Contains ("keep-alive"sv, eCaseInsensitive)) << *response; // so closed idle, not after its response
         EXPECT_TRUE (response->ends_with ("FRED")) << *response;
         EXPECT_EQ (server.statistics ().fConnections.fNumberOfOpenConnections, 0u);
+    }
+
+    /*
+     *  A request that does not ask to keep its connection - "Connection: close", or HTTP/1.0 without "Connection: keep-alive" -
+     *  is answered, and its connection closed at once, not left for the idle timeout. Before Stroika v3.0d26 both were kept
+     *  alive: the request line's CRLF stayed on its HTTP version ("1.1\r\n"), which then matched neither 1.0 nor 1.1.
+     */
+    GTEST_TEST (Frameworks_WebServer, ConnectionCloseHonored_)
+    {
+        TraceContextBumper ctx{"ConnectionCloseHonored_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
+        for (string_view request : {"GET /FRED HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"sv, "GET /FRED HTTP/1.0\r\n\r\n"sv}) {
+            IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+            client.Write (as_bytes (span{request}));
+            optional<string> response = ReadUntilClosed_ (client);
+            ASSERT_TRUE (response) << "the server left the connection open, after: " << request;
+            EXPECT_TRUE (String::FromLatin1 (*response).Contains ("Connection: close"sv, eCaseInsensitive)) << *response;
+            EXPECT_TRUE (response->ends_with ("FRED")) << *response;
+        }
     }
 }
 #endif
