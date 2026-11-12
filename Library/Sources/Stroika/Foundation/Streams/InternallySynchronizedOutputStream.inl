@@ -58,7 +58,8 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
             }
 
         private:
-            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE OPTIONS fOptions_;
+            // _VCBUGGY: with [[msvc::no_unique_address]], MSVC 14.44 laid fCriticalSection_ out over the base rep
+            Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY OPTIONS fOptions_;
             mutable typename OPTIONS::MutexType                 fCriticalSection_;
         };
         template <typename ELEMENT_TYPE, typename OPTIONS>
