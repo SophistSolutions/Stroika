@@ -357,22 +357,22 @@ namespace {
                 // if argument buffer not big enough, read into a temporary buffer
                 constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
                 Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
-                auto             result =
+                auto             readIntoBuf =
                     inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))}, blockFlag);
-                if (result == nullopt) {
+                if (readIntoBuf == nullopt) {
                     Throw (EWouldBlock::kThe);
                 }
-                if (result->size () != 0) {
-                    if (origOffset + result->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
+                size_t n = min (intoBuffer.size (), readIntoBuf->size ());
+                if (n != 0) {
+                    if (origOffset + readIntoBuf->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cache all in RAM
                         Throw (range_error{"seek past max size for size_t"});
                     }
-                    pushIntoCacheBuf (std::begin (buf), std::begin (buf) + result->size ());
-                    result = result->subspan (0, min (intoBuffer.size (), result->size ()));
-                    (void)::memcpy (intoBuffer.data (), std::begin (buf), result->size () * sizeof (Character));
-                    _fOffset = origOffset + result->size ();
+                    pushIntoCacheBuf (std::begin (buf), std::begin (buf) + readIntoBuf->size ());
+                    (void)::memcpy (intoBuffer.data (), std::begin (buf), n * sizeof (Character));
+                    _fOffset = origOffset + n;
                 }
-                return result;
+                return intoBuffer.subspan (0, n); // the caller's buffer: buf is local
             }
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override

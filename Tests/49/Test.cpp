@@ -192,6 +192,20 @@ namespace {
     }
 
     /*
+     *  A seekable text reader's read into a small buffer returns a span of that buffer. Before Stroika v3.0d26 it returned a
+     *  span of its own temporary buffer, gone once Read returned - though it had copied the text into the caller's.
+     */
+    GTEST_TEST (Foundation_Streams, TextReaderSeekable_SmallReadReturnsCallersBuffer_)
+    {
+        using Characters::Character;
+        BinaryToText::Reader::Ptr tr = BinaryToText::Reader::New (MemoryStream::New<byte> (as_bytes (span{"hello", 5})), SeekableFlag::eSeekable);
+        Character       buf[3];
+        span<Character> r = tr.ReadBlocking (span{buf});
+        ASSERT_EQ (r.data (), buf); // first: the old span's text was a dead stack buffer's
+        EXPECT_EQ (Characters::String{r}, "hel");
+    }
+
+    /*
      *  Text read from bytes that carry no byte order mark, with no encoding named, is UTF-8 - whatever the program's global
      *  locale; a byte order mark, where there is one, says what it is instead (@see Characters::ByteOrderMark).
      */
