@@ -690,6 +690,70 @@ namespace {
     }
 
     /*
+     *  A request whose header has not all come Options::fRequestHeaderTimeout after it began has its connection closed, with
+     *  no response.
+     */
+    GTEST_TEST (Frameworks_WebServer, RequestHeaderTimeout_)
+    {
+        TraceContextBumper ctx{"RequestHeaderTimeout_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                  ConnectionManager::Options{.fRequestHeaderTimeout = 1s}};
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        Time::TimePointSeconds                           start  = Time::GetTickCount ();
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: local"sv})); // and never the rest
+        EXPECT_EQ (ReadUntilClosed_ (client), string{}) << "the connection was left open, its request's header incomplete";
+        EXPECT_GE ((Time::GetTickCount () - start).count (), 0.9) << "closed before its header's timeout";
+    }
+
+    /*
+     *  A request whose body stops coming has its connection closed Options::fClientStallTimeout after the last of it came, and
+     *  the thread handling it freed.
+     */
+    GTEST_TEST (Frameworks_WebServer, ClientStall_RequestBody_)
+    {
+        TraceContextBumper ctx{"ClientStall_RequestBody_"};
+        atomic<bool>       handlerDone{false};
+        Route              readBody{IO::Network::HTTP::MethodsRegEx::kPost, "BODY"_RegEx, [&] (Request& request, Response&) {
+                           [[maybe_unused]] auto&& done = Finally ([&] () noexcept { handlerDone = true; });
+                           (void)request.GetBody ();
+                                    }};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{readBody},
+                                  ConnectionManager::Options{.fClientStallTimeout = 1s}};
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        client.Write (as_bytes (span{"POST /BODY HTTP/1.1\r\nHost: localhost\r\nContent-Length: 10\r\n\r\nabc"sv})); // and never the rest
+        EXPECT_TRUE (ReadUntilClosed_ (client).has_value ()) << "the connection was left open, its request's body stalled";
+        EXPECT_TRUE (handlerDone) << "the handler is still reading the body";
+    }
+
+    /*
+     *  A response its client stops taking has its connection closed Options::fClientStallTimeout after the client last took
+     *  some, and the thread handling it freed.
+     */
+    GTEST_TEST (Frameworks_WebServer, ClientStall_Response_)
+    {
+        TraceContextBumper ctx{"ClientStall_Response_"};
+        atomic<bool>       handlerDone{false};
+        atomic<bool>       wroteAll{false};
+        Route              big{"BIG"_RegEx, [&] (Request&, Response& response) {
+                      [[maybe_unused]] auto&&   done = Finally ([&] () noexcept { handlerDone = true; });
+                      static const vector<byte> kMegabyte_ (1024 * 1024);
+                      for (int i = 0; i < 256; ++i) { // far more than the sockets' buffers hold
+                          response.write (span{kMegabyte_});
+                      }
+                      wroteAll = true;
+                               }};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{big},
+                                  ConnectionManager::Options{.fClientStallTimeout = 1s}};
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        client.Write (as_bytes (span{"GET /BIG HTTP/1.1\r\nHost: localhost\r\n\r\n"sv})); // and never read the response
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not handlerDone;) {
+            ASSERT_LT (Time::GetTickCount (), giveUpAt) << "the handler is still writing a response its client stopped taking";
+            Execution::Sleep (10ms);
+        }
+        EXPECT_FALSE (wroteAll);
+    }
+
+    /*
      *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
      *  limit was not enforced.
      */

@@ -351,6 +351,12 @@ TimePointSeconds Connection::GetIdleSince () const
     return fIdleSince_;
 }
 
+optional<TimePointSeconds> Connection::GetIncompleteHeaderSince () const
+{
+    AssertExternallySynchronizedChecker::ReadContext declareContext{*this};
+    return fIncompleteHeaderSince_;
+}
+
 void Connection::SetState_ ([[maybe_unused]] State_Flag_ s)
 {
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
@@ -408,6 +414,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
             fMessage_->SetAssertExternallySynchronizedCheckerContext (GetSharedContext ());
 #endif
+            fIncompleteHeaderSince_ = Time::GetTickCount (); // its first bytes are here: the poller hands a connection over when some come
         }
         switch (ReadHeaders_ ()) {
             case MyMessage_::eIncompleteButMoreMayBeAvailable:
@@ -415,6 +422,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             case MyMessage_::eIncompleteDeadEnd:
                 return eClose; // the rest will never come
             case MyMessage_::eCompleteGood:
+                fIncompleteHeaderSince_ = nullopt;
                 break;
         }
 

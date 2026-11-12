@@ -160,6 +160,36 @@ namespace Stroika::Frameworks::WebServer {
             Time::DurationSeconds fIdleConnectionTimeout{75s};
 
             /**
+             *  All of a request's header must be received within this long of its first byte - its arrival, not its processing,
+             *  which starts only once all of it is here. A connection whose header has not all come by then is closed, with no
+             *  response. A client sending its header a byte now and then is never idle, so fIdleConnectionTimeout alone would
+             *  leave it open. Checked as fIdleConnectionTimeout is: within half again, or 15 seconds, whichever is less.
+             *  Time::kInfinity: no limit.
+             *
+             *  The default is nginx's (client_header_timeout, 60 seconds).
+             *
+             *  \pre fRequestHeaderTimeout > 0s
+             */
+            Time::DurationSeconds fRequestHeaderTimeout{60s};
+
+            /**
+             *  While a request is handled - its body read, its response sent - how long the client may go without moving any
+             *  bytes: sending none of the body being waited for, or taking none of the response waiting to go. Not a limit on
+             *  the whole transfer: an upload or download of gigabytes, taking hours, is fine while bytes keep moving. One stalled
+             *  longer has its connection closed, freeing the thread handling it. Time::kInfinity: no limit.
+             *
+             *  Each blocking read and write of the connection's socket is bounded so (SO_RCVTIMEO, SO_SNDTIMEO). A write on Windows
+             *  copies a whole chunk of the response (@see fAutomaticTransferChunkSize) before returning, so there the client must
+             *  take less than a chunk in this time to count as stalled.
+             *
+             *  The default is Apache's (Timeout) and nginx's (client_body_timeout, send_timeout): 60 seconds. Shorter frees a
+             *  thread sooner; longer forgives a link that stalls a while, as mobile and radio links can, recovering.
+             *
+             *  \pre fClientStallTimeout > 0s
+             */
+            Time::DurationSeconds fClientStallTimeout{60s};
+
+            /**
              * @see Socket::SetLinger () - SO_LINGER
              */
             optional<int> fLinger;
@@ -465,6 +495,8 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         nonvirtual void WaitForReadyConnectionLoop_ ();
+        // closes the connections idle past Options::fIdleConnectionTimeout, and those whose request's header is past its
+        // Options::fRequestHeaderTimeout - both waiting in the poller, held by no thread
         nonvirtual void CloseIdleConnections_ ();
 
     private:

@@ -337,6 +337,8 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
     }
     Require (options.fIdleConnectionTimeout > 0s);
+    Require (options.fRequestHeaderTimeout > 0s);
+    Require (options.fClientStallTimeout > 0s);
     DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
 
     DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
@@ -381,6 +383,13 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetTCPNoDelay (*fEffectiveOptions_.fTCPNoDelay);
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
+
+    // bound each blocking read and write - a request's body, its response (@see Options::fClientStallTimeout); a request's
+    // header is read only once it has come (@see CloseIdleConnections_ for its deadline)
+    if (Time::DurationSeconds stall = fEffectiveOptions_.fClientStallTimeout; stall != Time::kInfinity) {
+        s.SetReceiveTimeout (stall);
+        s.SetSendTimeout (stall);
+    }
 
     /*
      *  At fMaxConnections, make room by closing the connection idle longest - or, every one handling a request, answer this one
@@ -432,9 +441,13 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
     Debug::TraceContextBumper ctx{"ConnectionManager::WaitForReadyConnectionLoop_"};
 #endif
 
-    // sweep for idle connections this often, so one is closed within fIdleConnectionTimeout and half again (or 15 seconds)
-    const Time::DurationSeconds idleTimeout = fEffectiveOptions_.fIdleConnectionTimeout;
-    const Time::DurationSeconds sweepEvery = idleTimeout == Time::kInfinity ? Time::kInfinity : min<Time::DurationSeconds> (idleTimeout / 2, 15s);
+    // sweep for idle connections, and late request headers, this often - so each is closed within its timeout and half again
+    // (or 15 seconds)
+    auto sweepFor = [] (Time::DurationSeconds timeout) {
+        return timeout == Time::kInfinity ? Time::kInfinity : min<Time::DurationSeconds> (timeout / 2, 15s);
+    };
+    const Time::DurationSeconds sweepEvery =
+        min (sweepFor (fEffectiveOptions_.fIdleConnectionTimeout), sweepFor (fEffectiveOptions_.fRequestHeaderTimeout));
     Time::TimePointSeconds nextSweepAt = Time::GetTickCount () + sweepEvery;
 
     // run til thread aborted
@@ -662,17 +675,28 @@ auto ConnectionManager::ComputeStatistics_ () const -> Statistics
 
 void ConnectionManager::CloseIdleConnections_ ()
 {
-    const Time::TimePointSeconds       idleSinceBefore = Time::GetTickCount () - fEffectiveOptions_.fIdleConnectionTimeout;
+    const Time::TimePointSeconds       now               = Time::GetTickCount ();
+    const Time::TimePointSeconds       idleSinceBefore   = now - fEffectiveOptions_.fIdleConnectionTimeout;
+    const Time::TimePointSeconds       headerSinceBefore = now - fEffectiveOptions_.fRequestHeaderTimeout;
     Collection<shared_ptr<Connection>> idle;
+    Collection<shared_ptr<Connection>> headerLate;
     {
         scoped_lock critSec{fActiveConnections_}; // as every move between the active and inactive lists, so both stay consistent
         for (const shared_ptr<Connection>& c : GetInactiveConnections_ ()) {
+            if (optional<TimePointSeconds> headerSince = c->GetIncompleteHeaderSince (); headerSince and *headerSince < headerSinceBefore) {
+                fInactiveSockSetPoller_.Remove (c);
+                headerLate += c;
+            }
             // not one whose next request (or close) has come: the poller hands that to a handler
-            if (c->GetIdleSince () < idleSinceBefore and c->socket ().AvailableToRead () == nullopt) {
+            else if (c->GetIdleSince () < idleSinceBefore and c->socket ().AvailableToRead () == nullopt) {
                 fInactiveSockSetPoller_.Remove (c);
                 idle += c;
             }
         }
+    }
+    for (const shared_ptr<Connection>& c : headerLate) {
+        DbgTrace ("Closing {}: its request's header not all here {} after it began"_f, c, fEffectiveOptions_.fRequestHeaderTimeout);
+        CloseIdleConnection_ (c);
     }
     for (const shared_ptr<Connection>& c : idle) {
         DbgTrace ("Closing {}: idle longer than {}"_f, c, fEffectiveOptions_.fIdleConnectionTimeout);

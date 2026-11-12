@@ -292,6 +292,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  \brief When the request now being read began to come - while its header has come only in part; nullopt otherwise.
+         *
+         *  ConnectionManager closes a connection whose request's header is not all here Options::fRequestHeaderTimeout after it began.
+         */
+        nonvirtual optional<TimePointSeconds> GetIncompleteHeaderSince () const;
+
+    public:
+        /**
          */
         enum ReadAndProcessResult {
             eTryAgainLater, // Could mean success or some kinds of failure (like incomplete header/data), but try again later (so keep-alive results in this)
@@ -386,6 +394,7 @@ namespace Stroika::Frameworks::WebServer {
         Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
         const TimePointSeconds                                 fConnectionStartedAt_{};
         TimePointSeconds                                       fIdleSince_{};
+        optional<TimePointSeconds>                             fIncompleteHeaderSince_; // @see GetIncompleteHeaderSince
         // replaced for each request - but kept, between ReadAndProcessMessage calls, while its header has come only in part (so
         // its response is not completed): it holds what was read of it
         unique_ptr<MyMessage_>    fMessage_;
