@@ -20,7 +20,7 @@
 namespace Stroika::Foundation::IO::Network {
 
     /**
-     *  \brief Listens on one or more addresses, and hands each connection that arrives to a callback, on a thread of its own
+     *  \brief Listens on one or more addresses, and hands each connection that arrives to a callback, on an unspecified thread (so callback must be thread-safe).
      *
      *  Listener binds each address in the calling thread, so it fails to construct if a Bind () fails.
      *
