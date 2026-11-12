@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Cache {
      * 
      *  This expiration time is handled PRINCIPALLY, in one of two ways:
      *      kTrackExpiration:
-     *          In this case, at the time the data is ADDED, a time of expiration is captured and associated with the datum.
+     *          In this case, at the time the data is ADDED, a time of expiration is recorded and associated with the datum.
      * 
      *      kTrackFreshness:
      *          In this case, the time the data is Added (last-refreshed) is associated with the datum, and expiration computed later.
