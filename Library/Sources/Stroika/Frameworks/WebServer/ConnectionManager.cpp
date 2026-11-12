@@ -366,6 +366,7 @@ void ConnectionManager::DeriveConnectionDefaultOptionsFromEffectiveOptions_ ()
         .fAutoComputeETagResponse       = *fEffectiveOptions_.fAutoComputeETagResponse,
         .fAutomaticTransferChunkSize    = fEffectiveOptions_.fAutomaticTransferChunkSize,
         .fSupportedCompressionEncodings = fEffectiveOptions_.fSupportedCompressionEncodings,
+        .fIdleConnectionTimeout         = fEffectiveOptions_.fIdleConnectionTimeout,
     };
     // @todo could add trace messages on other values changing...
 #if qStroika_Foundation_Debug_DefaultTracingOn

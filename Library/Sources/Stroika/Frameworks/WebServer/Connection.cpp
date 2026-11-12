@@ -306,6 +306,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , fDefaultGETResponseHeaders_{options.fDefaultGETResponseHeaders}
     , fAutoComputeETagResponse_{options.fAutoComputeETagResponse}
     , fSupportedCompressionEncodings_{options.fSupportedCompressionEncodings}
+    , fIdleConnectionTimeout_{options.fIdleConnectionTimeout}
     , fSocket_{s}
     , fConnectionStartedAt_{Time::GetTickCount ()}
     , fIdleSince_{fConnectionStartedAt_}
@@ -580,6 +581,21 @@ bool Connection::ApplyKeepAlive_ ()
     // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
     //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
     this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
+    if (thisMessageKeepAlive) {
+        // say what is left of the connection's limits - how long it may stay idle (in whole seconds, rounded down), how many
+        // requests it may yet serve - so a client can stop using it before it is closed
+        Time::DurationSeconds idleLimit = fIdleConnectionTimeout_;
+        if (fRemaining_ and fRemaining_->fTimeout) {
+            idleLimit = min (idleLimit, *fRemaining_->fTimeout);
+        }
+        KeepAlive advertised{.fMessages = fRemaining_ ? fRemaining_->fMessages : nullopt};
+        if (idleLimit != Time::kInfinity) {
+            advertised.fTimeout = Time::DurationSeconds{floor (idleLimit.count ())};
+        }
+        if (advertised.fMessages or advertised.fTimeout) {
+            this->rwResponse ().rwHeaders ().keepAlive = advertised;
+        }
+    }
     return thisMessageKeepAlive;
 }
 

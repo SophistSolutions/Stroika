@@ -127,6 +127,13 @@ namespace Stroika::Frameworks::WebServer {
              *  (if nullopt, auto-computed based on what is supported in Stroika)
              */
             optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings;
+
+            /**
+             *  How long the connection may stay idle between requests before it is closed (ConnectionManager's
+             *  Options::fIdleConnectionTimeout). A kept-alive response says so, in its Keep-Alive header (timeout=), so a client
+             *  can stop using the connection before it is closed. Time::kInfinity: nothing said.
+             */
+            Time::DurationSeconds fIdleConnectionTimeout{Time::kInfinity};
         };
 
     public:
@@ -400,6 +407,7 @@ namespace Stroika::Frameworks::WebServer {
         const optional<Headers>                                fDefaultGETResponseHeaders_;
         const optional<bool>                                   fAutoComputeETagResponse_;
         const optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
+        const Time::DurationSeconds                            fIdleConnectionTimeout_;
         const ConnectionOrientedStreamSocket::Ptr              fSocket_;
         Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
         const TimePointSeconds                                 fConnectionStartedAt_{};

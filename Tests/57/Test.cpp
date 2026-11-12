@@ -815,6 +815,31 @@ namespace {
     }
 
     /*
+     *  A kept-alive response says when its connection will be closed idle (Keep-Alive: timeout=, from
+     *  Options::fIdleConnectionTimeout), and - a request's Keep-Alive having set max= - how many requests it may yet serve. A
+     *  response closing its connection says neither.
+     */
+    GTEST_TEST (Frameworks_WebServer, KeepAliveAdvertised_)
+    {
+        TraceContextBumper ctx{"KeepAliveAdvertised_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                  ConnectionManager::Options{.fIdleConnectionTimeout = 30s}};
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
+        optional<string> first = ReadUntilEndsWith_ (client, "FRED"sv);
+        ASSERT_TRUE (first);
+        EXPECT_TRUE (String::FromLatin1 (*first).Contains ("Keep-Alive: timeout=30\r\n"sv, eCaseInsensitive)) << *first;
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\nKeep-Alive: max=3\r\n\r\n"sv}));
+        optional<string> second = ReadUntilEndsWith_ (client, "FRED"sv);
+        ASSERT_TRUE (second);
+        EXPECT_TRUE (String::FromLatin1 (*second).Contains ("Keep-Alive: timeout=30, max=2\r\n"sv, eCaseInsensitive)) << *second;
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"sv}));
+        optional<string> last = ReadUntilClosed_ (client);
+        ASSERT_TRUE (last);
+        EXPECT_FALSE (String::FromLatin1 (*last).Contains ("Keep-Alive:"sv, eCaseInsensitive)) << *last;
+    }
+
+    /*
      *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
      *  limit was not enforced.
      */
