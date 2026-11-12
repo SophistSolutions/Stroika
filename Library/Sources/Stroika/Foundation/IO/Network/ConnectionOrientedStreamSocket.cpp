@@ -33,6 +33,19 @@ using namespace ConnectionOrientedStreamSocket;
 using Debug::AssertExternallySynchronizedChecker;
 
 namespace {
+#if qStroika_Platform_POSIX
+    // a blocking socket's read or write fails with EAGAIN only once its SO_RCVTIMEO or SO_SNDTIMEO has passed (man 7 socket):
+    // report that as timed out, as Windows does (WSAETIMEDOUT)
+    template <typename INT>
+    INT ThrowIfTimedOut_ (INT n)
+    {
+        if (n < 0 and (errno == EAGAIN or errno == EWOULDBLOCK)) {
+            Execution::ThrowError (errc::timed_out);
+        }
+        return n;
+    }
+#endif
+
     struct Rep_ : BackSocketImpl_<ConnectionOrientedStreamSocket::_IRep> {
         using inherited = BackSocketImpl_<ConnectionOrientedStreamSocket::_IRep>;
         Rep_ (Socket::PlatformNativeHandle sd)
@@ -211,8 +224,9 @@ namespace {
             }
 
 #if qStroika_Platform_POSIX
-            auto result = into.subspan (
-                0, Handle_ErrNoResultInterruption ([this, &into] () -> int { return ::read (fSD_, into.data (), into.size ()); }));
+            auto result = into.subspan (0, Handle_ErrNoResultInterruption ([this, &into] () -> int {
+                                            return ThrowIfTimedOut_ (::read (fSD_, into.data (), into.size ()));
+                                        }));
 #elif qStroika_Platform_Windows
             int  flags        = 0;
             int  nBytesToRead = Common::StdCompat::saturate_cast<int> (into.size ());
@@ -288,8 +302,8 @@ namespace {
              */
             BreakWriteIntoParts_<byte> (data, numeric_limits<int>::max (), [this] (span<const byte> data) -> size_t {
                 Assert (data.size () < numeric_limits<int>::max ());
-                ssize_t n =
-                    Handle_ErrNoResultInterruption ([this, &data] () -> ssize_t { return ::write (fSD_, data.data (), data.size ()); });
+                ssize_t n = Handle_ErrNoResultInterruption (
+                    [this, &data] () -> ssize_t { return ThrowIfTimedOut_ (::write (fSD_, data.data (), data.size ())); });
                 ThrowPOSIXErrNoIfNegative (n);
                 Assert (0 <= n and n <= data.size ());
                 return static_cast<size_t> (n);
@@ -481,4 +495,70 @@ void ConnectionOrientedStreamSocket::Ptr::SetLinger (const optional<int>& linger
         so_linger.l_linger = static_cast<u_short> (*linger);
     }
     setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
+}
+
+namespace {
+    // SO_RCVTIMEO and SO_SNDTIMEO: zero is no timeout
+    optional<Time::Duration> GetIOTimeout_ (const ConnectionOrientedStreamSocket::Ptr& s, int optName)
+    {
+#if qStroika_Platform_POSIX
+        timeval tv = s.getsockopt<timeval> (SOL_SOCKET, optName);
+        if (tv.tv_sec == 0 and tv.tv_usec == 0) {
+            return nullopt;
+        }
+        return Time::Duration{static_cast<double> (tv.tv_sec) + static_cast<double> (tv.tv_usec) / 1e6};
+#elif qStroika_Platform_Windows
+        DWORD ms = s.getsockopt<DWORD> (SOL_SOCKET, optName);
+        if (ms == 0) {
+            return nullopt;
+        }
+        return Time::Duration{chrono::milliseconds{ms}};
+#else
+        AssertNotImplemented ();
+        return nullopt;
+#endif
+    }
+    void SetIOTimeout_ (const ConnectionOrientedStreamSocket::Ptr& s, int optName, const optional<Time::Duration>& timeout)
+    {
+        Require (timeout == nullopt or *timeout > 0s);
+#if qStroika_Platform_POSIX
+        timeval tv{};
+        if (timeout) {
+            tv = timeout->AsSaturated<timeval> ();
+            if (tv.tv_sec == 0 and tv.tv_usec == 0) {
+                tv.tv_usec = 1; // under a microsecond: the shortest timeout there is, not none
+            }
+        }
+        s.setsockopt (SOL_SOCKET, optName, tv);
+#elif qStroika_Platform_Windows
+        DWORD ms = 0;
+        if (timeout) {
+            // at least a millisecond: under one is the shortest timeout there is, not none
+            ms = max<DWORD> (Common::StdCompat::saturate_cast<DWORD> (timeout->AsSaturated<chrono::milliseconds> ().count ()), 1);
+        }
+        s.setsockopt (SOL_SOCKET, optName, ms);
+#else
+        AssertNotImplemented ();
+#endif
+    }
+}
+
+optional<Time::Duration> ConnectionOrientedStreamSocket::Ptr::GetReceiveTimeout () const
+{
+    return GetIOTimeout_ (*this, SO_RCVTIMEO);
+}
+
+void ConnectionOrientedStreamSocket::Ptr::SetReceiveTimeout (const optional<Time::Duration>& timeout) const
+{
+    SetIOTimeout_ (*this, SO_RCVTIMEO, timeout);
+}
+
+optional<Time::Duration> ConnectionOrientedStreamSocket::Ptr::GetSendTimeout () const
+{
+    return GetIOTimeout_ (*this, SO_SNDTIMEO);
+}
+
+void ConnectionOrientedStreamSocket::Ptr::SetSendTimeout (const optional<Time::Duration>& timeout) const
+{
+    SetIOTimeout_ (*this, SO_SNDTIMEO, timeout);
 }

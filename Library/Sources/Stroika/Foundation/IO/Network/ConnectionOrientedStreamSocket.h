@@ -122,7 +122,7 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
-             *  @todo   Need timeout on this API? Or global (for instance) timeout?
+             *  Waits for data as long as it takes, or as SetReceiveTimeout () allows.
              *
              *  \note Though Read () is a const method, can be done concurrently with most other const ConnectionOrientedStreamSocket methods,
              *        It is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
@@ -152,7 +152,7 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
-             *  @todo   Need timeout on this API? Or global (for instance) timeout?
+             *  Waits for room as long as it takes, or as SetSendTimeout () allows.
              */
             nonvirtual void Write (span<const byte> data) const;
 
@@ -201,6 +201,53 @@ namespace Stroika::Foundation::IO::Network {
              *  @see GetLinger ()
              */
             nonvirtual void SetLinger (const optional<int>& linger) const;
+
+        public:
+            /**
+             *  \brief How long a blocking Read waits for data before failing - nullopt (the default): as long as it takes
+             *
+             *  A Read that waits longer throws (errc::timed_out). It bounds each wait for data, not a whole exchange: a Read that
+             *  gets any returns it. ReadNonBlocking and AvailableToRead never wait, so it does not touch them.
+             *
+             *  \note On Windows, a socket whose Read or Write timed out is left in an undefined state - close it (@see
+             *        https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt, SO_RCVTIMEO).
+             *
+             *  @see SetReceiveTimeout ()
+             *  @see http://man7.org/linux/man-pages/man7/socket.7.html - option SO_RCVTIMEO
+             */
+            nonvirtual optional<Time::Duration> GetReceiveTimeout () const;
+
+        public:
+            /**
+             *  \pre timeout == nullopt or *timeout > 0s
+             *
+             *  @see GetReceiveTimeout ()
+             */
+            nonvirtual void SetReceiveTimeout (const optional<Time::Duration>& timeout) const;
+
+        public:
+            /**
+             *  \brief How long a blocking Write waits for room - the peer taking none of what was sent - before failing - nullopt
+             *         (the default): as long as it takes
+             *
+             *  A Write that waits longer throws (errc::timed_out). It bounds each wait for room, not a whole Write, which may take
+             *  longer while the peer keeps taking data. On Windows a Write's data must all be buffered within it, so there it
+             *  fails when the peer takes too little in that time.
+             *
+             *  \note On Windows, a socket whose Read or Write timed out is left in an undefined state - close it.
+             *
+             *  @see SetSendTimeout ()
+             *  @see http://man7.org/linux/man-pages/man7/socket.7.html - option SO_SNDTIMEO
+             */
+            nonvirtual optional<Time::Duration> GetSendTimeout () const;
+
+        public:
+            /**
+             *  \pre timeout == nullopt or *timeout > 0s
+             *
+             *  @see GetSendTimeout ()
+             */
+            nonvirtual void SetSendTimeout (const optional<Time::Duration>& timeout) const;
 
         public:
             /**
