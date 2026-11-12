@@ -840,6 +840,50 @@ namespace {
     }
 
     /*
+     *  Interceptors added from two threads at once are all in the chain a new connection gets.
+     */
+    GTEST_TEST (Frameworks_WebServer, AddInterceptorConcurrently_)
+    {
+        TraceContextBumper     ctx{"AddInterceptorConcurrently_"};
+        ConnectionManager      server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
+        atomic<unsigned int>   called{0};
+        constexpr unsigned int kPerThread_ = 100;
+        WaitableEvent          go;
+        auto                   addMany = [&] (ConnectionManager::InterceptorAddRelativeTo where) {
+            go.Wait (); // so the two threads add at once
+            for (unsigned int i = 0; i < kPerThread_; ++i) {
+                server.AddInterceptor (Interceptor{[&] (Message&) { ++called; }}, where);
+            }
+        };
+        Thread::Ptr appender  = Thread::New ([&] () { addMany (ConnectionManager::eAppend); }, Thread::eAutoStart);
+        Thread::Ptr prepender = Thread::New ([&] () { addMany (ConnectionManager::ePrepend); }, Thread::eAutoStart);
+        go.Set ();
+        appender.Join ();
+        prepender.Join ();
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
+        EXPECT_TRUE (ReadUntilEndsWith_ (client, "FRED"sv).has_value ());
+        EXPECT_EQ (called.load (), 2 * kPerThread_) << "interceptors added at once were lost from the chain";
+    }
+
+    /*
+     *  An interceptor added among the early ones (ePrependsToEarly) can be removed - and is then not called.
+     */
+    GTEST_TEST (Frameworks_WebServer, RemoveEarlyInterceptor_)
+    {
+        TraceContextBumper   ctx{"RemoveEarlyInterceptor_"};
+        ConnectionManager    server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
+        atomic<unsigned int> called{0};
+        Interceptor          counter{[&] (Message&) { ++called; }};
+        server.AddInterceptor (counter, ConnectionManager::ePrependsToEarly);
+        server.RemoveInterceptor (counter);
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
+        EXPECT_TRUE (ReadUntilEndsWith_ (client, "FRED"sv).has_value ());
+        EXPECT_EQ (called.load (), 0u);
+    }
+
+    /*
      *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
      *  limit was not enforced.
      */

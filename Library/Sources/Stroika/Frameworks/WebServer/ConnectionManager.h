@@ -21,9 +21,6 @@
 #include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/Math/Statistics.h"
-#if qCompilerAndStdLib_function_dependency_too_complex_Buggy
-#include "Stroika/Foundation/Memory/BlockAllocated.h"
-#endif
 
 #include "Stroika/Frameworks/WebServer/CORS.h"
 #include "Stroika/Frameworks/WebServer/Connection.h"
@@ -483,11 +480,22 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  \brief Add i to the interceptor chain, where relativeTo says.
+         *
+         *  Only connections accepted after this returns call it: each connection keeps the chain it was made with, for its life
+         *  (a kept-alive one too).
          */
         nonvirtual void AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo);
 
     public:
         /**
+         *  \brief Remove i from the interceptor chain - wherever it was added (by AddInterceptor, or earlyInterceptors,
+         *         beforeInterceptors or afterInterceptors).
+         *
+         *  As with AddInterceptor, only connections accepted after this returns are affected: an existing connection keeps
+         *  calling i, for its life, and a call to i already under way is not waited for.
+         *
+         *  \pre i is in the chain
          */
         nonvirtual void RemoveInterceptor (const Interceptor& i);
 
@@ -497,7 +505,20 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void AbortConnection (const shared_ptr<Connection>& conn);
 
     private:
-        nonvirtual void DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+        // the interceptor chain's parts, and the Connection::Options new connections get, derived from them: one Synchronized
+        // value (fInterceptors_), so each change - and the options it implies - is one critical section
+        struct Interceptors_ {
+            optional<Interceptor> fDefaultErrorHandler; // also in fEarly
+            Sequence<Interceptor> fEarly;
+            Sequence<Interceptor> fBefore;
+            Sequence<Interceptor> fAfter;
+            // @see DeriveConnectionOptions_; shared, so onConnect_ copies it cheaply
+            shared_ptr<const Connection::Options> fConnectionOptions;
+        };
+
+    private:
+        // sets interceptors.fConnectionOptions, from its lists, fRouter_ and fEffectiveOptions_
+        nonvirtual void DeriveConnectionOptions_ (Interceptors_& interceptors) const;
 
     private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);
@@ -513,24 +534,15 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual Collection<shared_ptr<Connection>> GetInactiveConnections_ () const;
 
     private:
-        nonvirtual void ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue);
+        nonvirtual void ReplaceInEarlyInterceptor_ (Interceptors_& interceptors, const optional<Interceptor>& oldValue,
+                                                    const optional<Interceptor>& newValue) const;
 
     private:
-        Options                            fEffectiveOptions_;
-        Traversal::Iterable<SocketAddress> fBindings_; // just to return bindings API
-#if qCompilerAndStdLib_function_dependency_too_complex_Buggy
-        // BWA not too bad cuz ConnectionManager(const ConnectionManager&)=delete and op= as well.
-        shared_ptr<Connection::Options> fUseDefaultConnectionOptions_BWA_{Memory::MakeSharedPtr<Connection::Options> ()};
-        Connection::Options&            fUseDefaultConnectionOptions_{*fUseDefaultConnectionOptions_BWA_};
-#else
-        Connection::Options fUseDefaultConnectionOptions_;
-#endif
-        Execution::Synchronized<optional<Interceptor>> fDefaultErrorHandler_;
-        Execution::Synchronized<Sequence<Interceptor>> fEarlyInterceptors_;
-        Execution::Synchronized<Sequence<Interceptor>> fBeforeInterceptors_;
-        Execution::Synchronized<Sequence<Interceptor>> fAfterInterceptors_;
-        Execution::Synchronized<optional<Duration>>    fAutomaticTCPDisconnectOnClose_;
-        Router                                         fRouter_;
+        Options                                     fEffectiveOptions_;
+        Traversal::Iterable<SocketAddress>          fBindings_; // just to return bindings API
+        Execution::Synchronized<Interceptors_>      fInterceptors_;
+        Execution::Synchronized<optional<Duration>> fAutomaticTCPDisconnectOnClose_;
+        Router                                      fRouter_;
 
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;

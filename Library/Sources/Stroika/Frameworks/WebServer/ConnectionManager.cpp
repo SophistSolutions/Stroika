@@ -234,22 +234,26 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     : afterInterceptors{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
               const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
-              return thisObj->fAfterInterceptors_;
+              return thisObj->fInterceptors_.cget ()->fAfter;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& afterInterceptors_) {
               ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
-              thisObj->fAfterInterceptors_ = afterInterceptors_;
-              thisObj->DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+              auto           lock         = thisObj->fInterceptors_.rwget ();
+              Interceptors_& interceptors = lock.rwref ();
+              interceptors.fAfter         = afterInterceptors_;
+              thisObj->DeriveConnectionOptions_ (interceptors);
           }}
     , beforeInterceptors{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
               const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
-              return thisObj->fBeforeInterceptors_;
+              return thisObj->fInterceptors_.cget ()->fBefore;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& beforeInterceptors) {
               ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
-              thisObj->fBeforeInterceptors_ = beforeInterceptors;
-              thisObj->DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+              auto           lock         = thisObj->fInterceptors_.rwget ();
+              Interceptors_& interceptors = lock.rwref ();
+              interceptors.fBefore        = beforeInterceptors;
+              thisObj->DeriveConnectionOptions_ (interceptors);
           }}
     , bindings{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Iterable<SocketAddress> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::bindings);
@@ -275,24 +279,28 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     , defaultErrorHandler{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Interceptor> {
               const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::defaultErrorHandler);
-              return thisObj->fDefaultErrorHandler_;
+              return thisObj->fInterceptors_.cget ()->fDefaultErrorHandler;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& defaultErrorHandler) {
               ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::defaultErrorHandler);
-              if (thisObj->fDefaultErrorHandler_ != defaultErrorHandler) {
-                  thisObj->ReplaceInEarlyInterceptor_ (thisObj->fDefaultErrorHandler_.load (), defaultErrorHandler);
-                  thisObj->fDefaultErrorHandler_ = defaultErrorHandler;
+              auto           lock         = thisObj->fInterceptors_.rwget ();
+              Interceptors_& interceptors = lock.rwref ();
+              if (interceptors.fDefaultErrorHandler != defaultErrorHandler) {
+                  thisObj->ReplaceInEarlyInterceptor_ (interceptors, interceptors.fDefaultErrorHandler, defaultErrorHandler);
+                  interceptors.fDefaultErrorHandler = defaultErrorHandler;
               }
           }}
     , earlyInterceptors{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
               const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
-              return thisObj->fEarlyInterceptors_;
+              return thisObj->fInterceptors_.cget ()->fEarly;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& earlyInterceptors) {
               ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
-              thisObj->fEarlyInterceptors_ = earlyInterceptors;
-              thisObj->DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+              auto           lock         = thisObj->fInterceptors_.rwget ();
+              Interceptors_& interceptors = lock.rwref ();
+              interceptors.fEarly         = earlyInterceptors;
+              thisObj->DeriveConnectionOptions_ (interceptors);
           }}
     , options{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Options& {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::options);
@@ -306,10 +314,10 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fBindings_{bindAddresses}
-    , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
-    , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_)}
-    , fBeforeInterceptors_{}
-    , fAfterInterceptors_{}
+    , fInterceptors_{[] () {
+        Interceptor defaultErrorHandler = DefaultFaultInterceptor{};
+        return Interceptors_{.fDefaultErrorHandler = defaultErrorHandler, .fEarly = mkEarlyInterceptors_ (defaultErrorHandler)};
+    }()}
     , fRouter_{routes, fEffectiveOptions_.fCORS}
     // note since Stroika v3.0d5, we set fQMax = so we don't get lots of useless requests that fill the Q. Probably shouldn't happen
     // anyhow, since we have set 'backlog' - but in case, better failure mode ; arguably could be zero length, but for latency of threads waking up to pickup work;
@@ -339,7 +347,7 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     Require (options.fIdleConnectionTimeout > 0s);
     Require (options.fRequestHeaderTimeout > 0s);
     Require (options.fClientStallTimeout > 0s);
-    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+    DeriveConnectionOptions_ (fInterceptors_.rwget ().rwref ()); // here, once fRouter_ is made
 
     DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
               static_cast<const void*> (this), fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options),
@@ -354,26 +362,23 @@ ConnectionManager::~ConnectionManager ()
 }
 #endif
 
-void ConnectionManager::DeriveConnectionDefaultOptionsFromEffectiveOptions_ ()
+void ConnectionManager::DeriveConnectionOptions_ (Interceptors_& interceptors) const
 {
+    InterceptorChain chain = mkInterceptorChain_ (fRouter_, interceptors.fEarly, interceptors.fBefore, interceptors.fAfter);
 #if qStroika_Foundation_Debug_DefaultTracingOn
-    auto prev = fUseDefaultConnectionOptions_.fInterceptorChain;
+    if (interceptors.fConnectionOptions == nullptr or interceptors.fConnectionOptions->fInterceptorChain != chain) {
+        DbgTrace ("Updated InterceptorChain: {}"_f, chain);
+    }
 #endif
-    fUseDefaultConnectionOptions_ = Connection::Options{
-        .fInterceptorChain              = mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_),
+    interceptors.fConnectionOptions = MakeSharedPtr<Connection::Options> (Connection::Options{
+        .fInterceptorChain              = chain,
         .fDefaultResponseHeaders        = *fEffectiveOptions_.fDefaultResponseHeaders,
         .fDefaultGETResponseHeaders     = fEffectiveOptions_.fDefaultGETResponseHeaders,
         .fAutoComputeETagResponse       = *fEffectiveOptions_.fAutoComputeETagResponse,
         .fAutomaticTransferChunkSize    = fEffectiveOptions_.fAutomaticTransferChunkSize,
         .fSupportedCompressionEncodings = fEffectiveOptions_.fSupportedCompressionEncodings,
         .fIdleConnectionTimeout         = fEffectiveOptions_.fIdleConnectionTimeout,
-    };
-    // @todo could add trace messages on other values changing...
-#if qStroika_Foundation_Debug_DefaultTracingOn
-    if (prev != fUseDefaultConnectionOptions_.fInterceptorChain) {
-        DbgTrace ("Updated InterceptorChain: {}"_f, fUseDefaultConnectionOptions_.fInterceptorChain);
-    }
-#endif
+    });
 }
 
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
@@ -425,7 +430,8 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
         return;
     }
 
-    shared_ptr<Connection> conn = MakeSharedPtr<Connection> (s, fUseDefaultConnectionOptions_);
+    shared_ptr<const Connection::Options> connectionOptions = fInterceptors_.cget ()->fConnectionOptions;
+    shared_ptr<Connection>                conn              = MakeSharedPtr<Connection> (s, *connectionOptions);
     fInactiveSockSetPoller_.Add (conn, kInactiveSocketMonitorEvents2Watch4_);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
     {
@@ -568,13 +574,13 @@ Collection<shared_ptr<Connection>> ConnectionManager::GetInactiveConnections_ ()
     return fInactiveSockSetPoller_.GetDescriptors ().Map<Collection<shared_ptr<Connection>>> ([] (const auto& i) { return i.first; });
 }
 
-void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue)
+void ConnectionManager::ReplaceInEarlyInterceptor_ (Interceptors_& interceptors, const optional<Interceptor>& oldValue,
+                                                    const optional<Interceptor>& newValue) const
 {
     // replace old error handler in the interceptor chain, in the same spot if possible, and otherwise append
-    auto                  rwLock = this->fEarlyInterceptors_.rwget ();
     Sequence<Interceptor> newInterceptors;
     bool                  addedDefault = false;
-    for (const Interceptor& i : rwLock.load ()) {
+    for (const Interceptor& i : interceptors.fEarly) {
         if (oldValue == i) {
             if (newValue) {
                 newInterceptors += *newValue;
@@ -588,8 +594,8 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
     if (newValue and not addedDefault) {
         newInterceptors += *newValue;
     }
-    rwLock.store (newInterceptors);
-    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+    interceptors.fEarly = newInterceptors;
+    DeriveConnectionOptions_ (interceptors);
 }
 
 void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
@@ -713,40 +719,40 @@ void ConnectionManager::CloseIdleConnections_ ()
 
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
 {
+    auto           lock         = fInterceptors_.rwget ();
+    Interceptors_& interceptors = lock.rwref ();
     switch (relativeTo) {
         case ePrependsToEarly:
-            fEarlyInterceptors_.rwget ()->Prepend (i);
+            interceptors.fEarly.Prepend (i);
             break;
         case ePrepend:
-            fBeforeInterceptors_.rwget ()->Prepend (i);
+            interceptors.fBefore.Prepend (i);
             break;
         case eAppend:
-            fAfterInterceptors_.rwget ()->Append (i);
+            interceptors.fAfter.Append (i);
             break;
         case eAfterBeforeInterceptors:
-            fBeforeInterceptors_.rwget ()->Append (i);
+            interceptors.fBefore.Append (i);
             break;
     }
-    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+    DeriveConnectionOptions_ (interceptors);
 }
 
 void ConnectionManager::RemoveInterceptor (const Interceptor& i)
 {
-    bool found = false;
-    {
-        auto b4 = fBeforeInterceptors_.rwget ();
-        if (optional<size_t> idx = b4->IndexOf (i)) {
-            b4->Remove (*idx);
-            found = true;
+    auto           lock         = fInterceptors_.rwget ();
+    Interceptors_& interceptors = lock.rwref ();
+    auto           removeFrom   = [&i] (Sequence<Interceptor>& from) {
+        if (optional<size_t> idx = from.IndexOf (i)) {
+            from.Remove (*idx);
+            return true;
         }
-    }
-    if (not found) {
-        auto after = fAfterInterceptors_.rwget ();
-        if (optional<size_t> idx = after->IndexOf (i)) {
-            after->Remove (*idx);
-            found = true;
-        }
-    }
+        return false;
+    };
+    bool found = removeFrom (interceptors.fBefore) or removeFrom (interceptors.fAfter) or removeFrom (interceptors.fEarly);
     Require (found);
-    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
+    if (interceptors.fDefaultErrorHandler == i) {
+        interceptors.fDefaultErrorHandler = nullopt; // it was the early one removed
+    }
+    DeriveConnectionOptions_ (interceptors);
 }
