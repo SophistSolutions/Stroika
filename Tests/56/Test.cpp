@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/IntervalTimer.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
@@ -2080,6 +2081,91 @@ namespace {
         catch (...) {
             Stroika::Frameworks::Test::WarnTestIssue (
                 "SSDP_Loopback_CallbackThrows_ skipped - could not run an SSDP server, listener and search here: {}"_f(current_exception ())
+                    .AsNarrowSDKString ()
+                    .c_str ());
+        }
+    }
+
+    /*
+     *  A callOnFinds may destroy its own Listener, or Search ("found it - stop"): the destruction returns at once, and no other
+     *  callback of it gets that advertisement. Before Stroika v3.0d26 the destruction waited for its own thread - forever. As in
+     *  SSDP_Loopback_Notify_, anything that keeps the exchange from happening is a test issue.
+     */
+    GTEST_TEST (Frameworks_UPnP, SSDP_Loopback_DestroyedFromCallback_)
+    {
+        Debug::TraceContextBumper                    ctx{"SSDP_Loopback_DestroyedFromCallback_"};
+        Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by BasicServer
+        using IO::Network::InternetProtocol::IP::IPVersionSupport;
+        const URI    location{URI::SchemeType{"http"sv}, URI::Authority{nullopt, uint16_t{49152}}, "/device.xml"sv}; // only advertised
+        const String deviceID   = Common::GUID::GenerateNew ().As<String> ();
+        const String deviceType = "urn:stroika-regression-test:device:SSDPLoopbackDestroyedFromCallback-{}:1"_f(deviceID);
+        Device       d;
+        d.fDeviceID = deviceID;
+        d.fServer   = SSDP::MakeServerHeaderValue ("StroikaRegressionTest/1.0"sv);
+        DeviceDescription dd;
+        dd.fDeviceType   = deviceType;
+        dd.fFriendlyName = "Stroika regression test device"sv;
+        dd.fUDN          = "uuid:" + deviceID;
+        // an ssdp:alive (the Listener's) or a search answer (the Search's) for our device
+        auto ours = [&] (const SSDP::Advertisement& a) { return a.fTarget == deviceType and a.fAlive != false; };
+
+        // the first callback destroys its owner on finding our device; the second notes if it is called after that
+        struct Destroying {
+            Execution::WaitableEvent fFound;
+            Execution::WaitableEvent fDestroyed; // once the destruction returned
+            atomic<bool>             fCalledAfter{false};
+        };
+        auto destroyOnFind = [&] (auto& owner, Destroying& got) {
+            owner.load ()->AddOnFoundCallback ([&] (const SSDP::Advertisement& a) {
+                if (ours (a)) {
+                    if (auto o = owner.exchange (nullptr)) {
+                        got.fFound.Set ();
+                        delete o;
+                        got.fDestroyed.Set ();
+                    }
+                }
+            });
+            owner.load ()->AddOnFoundCallback ([&] (const SSDP::Advertisement&) {
+                if (got.fDestroyed.PeekIsSet ()) {
+                    got.fCalledAfter = true;
+                }
+            });
+        };
+        Destroying                      byListener;
+        Destroying                      bySearch;
+        atomic<SSDP::Client::Listener*> listener{nullptr};
+        atomic<SSDP::Client::Search*>   search{nullptr};
+        [[maybe_unused]] auto&&         cleanup = Execution::Finally ([&] () noexcept {
+            delete listener.exchange (nullptr); // those no callback destroyed
+            delete search.exchange (nullptr);
+        });
+        try {
+            listener = new SSDP::Client::Listener{SSDP::Client::Listener::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            destroyOnFind (listener, byListener);
+            listener.load ()->Start (); // before the server, so it hears its very first NOTIFYs
+            SSDP::Server::BasicServer server{d, dd, SSDP::Server::LocationFillingInHost (location),
+                                             SSDP::Server::BasicServer::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            search = new SSDP::Client::Search{SSDP::Client::Search::Options{.fIPVersion = IPVersionSupport::eIPV4Only}};
+            destroyOnFind (search, bySearch);
+            search.load ()->Start (deviceType);
+            const Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s;
+            if (byListener.fFound.WaitUntilQuietly (giveUpAt) != Execution::WaitableEvent::WaitStatus::eTriggered or
+                bySearch.fFound.WaitUntilQuietly (giveUpAt) != Execution::WaitableEvent::WaitStatus::eTriggered) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_Loopback_DestroyedFromCallback_ skipped - our own device was not heard and "
+                    "found within 10 seconds (this environment probably blocks multicast, or UDP 1900)");
+                return;
+            }
+            EXPECT_TRUE (byListener.fDestroyed.WaitQuietly (5s) == Execution::WaitableEvent::WaitStatus::eTriggered)
+                << "the Listener's destruction, from its own callback, did not return";
+            EXPECT_TRUE (bySearch.fDestroyed.WaitQuietly (5s) == Execution::WaitableEvent::WaitStatus::eTriggered)
+                << "the Search's destruction, from its own callback, did not return";
+            EXPECT_FALSE (byListener.fCalledAfter) << "the destroyed Listener's other callback got the NOTIFY";
+            EXPECT_FALSE (bySearch.fCalledAfter) << "the destroyed Search's other callback got the answer";
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue (
+                "SSDP_Loopback_DestroyedFromCallback_ skipped - could not run an SSDP server, listener and search here: {}"_f(current_exception ())
                     .AsNarrowSDKString ()
                     .c_str ());
         }

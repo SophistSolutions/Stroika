@@ -806,6 +806,9 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
     Require (*this != nullptr);
     AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
     CheckForInterruption (); // always a cancelation point
+    // a thread waiting for itself (an object destroyed from its own thread's callback, say) can never see itself finish: it
+    // would just wait out the timeout (forever, by default)
+    Require (GetID () != GetCurrentThreadID ());
     if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::WaitStatus::eTriggered) {
         /*
          *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.

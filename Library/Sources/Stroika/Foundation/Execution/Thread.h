@@ -554,6 +554,7 @@ namespace Stroika::Foundation::Execution {
              *  \note ***Cancelation Point***
              *
              *  \pre *this != nullptr
+             *  \pre not called on this thread itself - which cannot finish while it waits, so it would only wait out the timeout
              */
             nonvirtual void WaitForDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
@@ -572,6 +573,7 @@ namespace Stroika::Foundation::Execution {
              *  \note ***Cancelation Point***
              *
              *  \pre *this != nullptr
+             *  \pre not called on this thread itself - which cannot finish while it waits, so it would only wait out the timeout
              */
             nonvirtual void WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
@@ -591,6 +593,7 @@ namespace Stroika::Foundation::Execution {
              *  \note ***Cancelation Point***
              *
              *  \pre *this != nullptr
+             *  \pre not called on this thread itself - which cannot finish while it waits, so it would only wait out the timeout
              */
             nonvirtual bool WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) const;
 
@@ -608,6 +611,8 @@ namespace Stroika::Foundation::Execution {
              *  \note ***Cancelation Point***
              *
              *  \pre *this != nullptr
+             *  \pre not called on this thread itself with interruption suppressed - which cannot finish while it waits, so it would only
+             *       wait out the timeout (unsuppressed, Abort () throws first)
              */
             nonvirtual void AbortAndWaitForDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
@@ -647,6 +652,8 @@ namespace Stroika::Foundation::Execution {
              *  @see AbortAndWaitForDone ()
              *
              *  \pre *this != nullptr
+             *  \pre not called on this thread itself with interruption suppressed - which cannot finish while it waits, so it would only
+             *       wait out the timeout (unsuppressed, Abort () throws first)
              */
             nonvirtual void AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) const;
 

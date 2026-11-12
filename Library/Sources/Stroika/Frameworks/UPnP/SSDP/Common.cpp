@@ -240,3 +240,23 @@ Time::DurationSeconds UPnP::SSDP::Private_::RandomDuration (Time::DurationSecond
     static thread_local mt19937 sGenerator_{random_device{}()};
     return Time::DurationSeconds{uniform_real_distribution<double>{0, atMost.count ()}(sGenerator_)};
 }
+
+/*
+ ********************************************************************************
+ ************************** SSDP::Private_::StopThread **************************
+ ********************************************************************************
+ */
+void UPnP::SSDP::Private_::StopThread (Execution::Thread::CleanupPtr* thread)
+{
+    RequireNotNull (thread);
+    if (*thread != nullptr) {
+        if (thread->GetID () == Execution::Thread::GetCurrentThreadID ()) {
+            Execution::Thread::SuppressInterruptionInContext suppress; // else Abort () would throw here, into the callback
+            thread->Abort ();
+        }
+        else {
+            thread->AbortAndWaitForDone ();
+        }
+        *thread = nullptr; // does not wait
+    }
+}

@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
 #include "Stroika/Foundation/IO/Network/LinkMonitor.h"

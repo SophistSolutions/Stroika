@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -40,7 +41,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Client;
 // Comment this in to turn on tracing in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-class Search::Rep_ final {
+class Search::Rep_ final : public enable_shared_from_this<Search::Rep_> {
 public:
     Rep_ (const Options& options)
         : fInterfaceFilter_{options.fInterfaces}
@@ -85,19 +86,37 @@ public:
     void Stop ()
     {
         [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
-        if (fThread_ != nullptr) {
-            fThread_.AbortAndWaitForDone ();
+        SSDP::Private_::StopThread (&fThread_);
+        fSearching_ = nullopt;
+    }
+    // for ~Search: as Stop, and from within a callback, the rest of the Call under way calls no more (from another thread, the
+    // abort ends that Call)
+    void StopForGood ()
+    {
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        if (fThread_ != nullptr and fThread_.GetID () == Thread::GetCurrentThreadID ()) {
+            fFoundCallbacks_.RemoveAll ();
         }
+        SSDP::Private_::StopThread (&fThread_);
         fSearching_ = nullopt;
     }
     void StartThread_ (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
     {
-        if (fThread_ != nullptr) {
-            fThread_.AbortAndWaitForDone ();
-        }
+        SSDP::Private_::StopThread (&fThread_); // the search under way, if any - even from its own callback
         fSearching_   = make_pair (serviceType, autoRetryInterval);
         fSearchAgain_ = false;
-        fThread_ = Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Thread::eAutoStart, "SSDP Searcher"sv);
+        // the thread holds this Rep_ while it runs - so a callback can destroy its Search (@see SSDP::Private_::StopThread)
+        fThread_ = Thread::New (
+            [weakThis = weak_from_this (), serviceType, autoRetryInterval] () {
+                if (shared_ptr<Rep_> self = weakThis.lock ()) {
+                    [[maybe_unused]] auto&& release = Finally ([&self] () noexcept {
+                        Thread::SuppressInterruptionInContext suppress; // the Rep_ may go here, as this aborted thread unwinds
+                        self.reset ();
+                    });
+                    self->DoRun_ (serviceType, autoRetryInterval);
+                }
+            },
+            Thread::eAutoStart, "SSDP Searcher"sv);
     }
     // a network appeared: search there right away, rather than at the next retry - by starting the search over (it sends out
     // of every interface as it starts). Without restarting the search thread, which may be in a slow callOnFinds: it starts
@@ -112,6 +131,7 @@ public:
                                     // a little bit apart even if addition to longer retry interval
                                     // http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
     Retry:
+        Thread::CheckForInterruption (); // stopped by a callback (or started over from one), send no more
         optional<Time::TimePointSeconds> retrySendAt;
         if (not didFirstRetry) {
             retrySendAt   = Time::GetTickCount () + 2s;
@@ -191,6 +211,7 @@ public:
                 wakeAt = *retrySendAt;
             }
             for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (wakeAt)) {
+                Thread::CheckForInterruption (); // stopped by a callback, read no more
                 try {
                     byte                                       buf[8 * 1024]; // not sure of max packet size
                     SocketAddress                              from;
@@ -282,7 +303,7 @@ InterfacesByID Search::GetNetworkInterfaces () const
 Search::~Search ()
 {
     if (fRep_ != nullptr) { // (moved from, it has none)
-        IgnoreExceptionsForCall (fRep_->Stop ());
+        IgnoreExceptionsForCall (fRep_->StopForGood ());
     }
 }
 

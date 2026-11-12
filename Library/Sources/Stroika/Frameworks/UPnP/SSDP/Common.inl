@@ -43,6 +43,11 @@ namespace Stroika::Frameworks::UPnP::SSDP {
 
         // a random time from 0 to atMost - the waits the UPnP Device Architecture asks for, so devices do not all speak at once
         Foundation::Time::DurationSeconds RandomDuration (Foundation::Time::DurationSeconds atMost);
+
+        // Stop a Listener's or Search's thread, and drop it: abort it, and wait for it to finish - unless called on that very
+        // thread (from one of its callbacks), which cannot wait for itself: then it is aborted only, to end at its next
+        // interruption point, once the callback returns. So its owner must hold what that thread uses until then.
+        void StopThread (Foundation::Execution::Thread::CleanupPtr* thread);
     }
 
 }

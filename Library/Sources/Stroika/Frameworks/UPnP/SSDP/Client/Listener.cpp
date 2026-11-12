@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -47,7 +48,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Client;
  ****************************** Listener::Rep_ **********************************
  ********************************************************************************
  */
-class Listener::Rep_ {
+class Listener::Rep_ : public enable_shared_from_this<Listener::Rep_> {
 public:
     Rep_ (const Options& options)
         : fOptions_{options}
@@ -76,6 +77,16 @@ public:
     void Stop ()
     {
         [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        StopThread_ ();
+    }
+    // for ~Listener: as Stop, and from within a callback, the rest of the Call under way calls no more (from another thread,
+    // the abort ends that Call)
+    void StopForGood ()
+    {
+        [[maybe_unused]] lock_guard lifecycle{fLifecycleMutex_};
+        if (fThread_ != nullptr and fThread_.GetID () == Thread::GetCurrentThreadID ()) {
+            fFoundCallbacks_.RemoveAll ();
+        }
         StopThread_ ();
     }
     InterfacesByID GetNetworkInterfaces () const
@@ -121,15 +132,23 @@ public:
     void StartThread_ ()
     {
         static const String kThreadName_ = "SSDP Listener"sv;
-
-        fThread_ = Thread::New ([this] () { DoRun_ (); }, Thread::eAutoStart, kThreadName_);
+        Require (fThread_ == nullptr); // else that thread runs on, never stopped (@see Start's \pre)
+        // the thread holds this Rep_ while it runs - so a callback can destroy its Listener (@see SSDP::Private_::StopThread)
+        fThread_ = Thread::New (
+            [weakThis = weak_from_this ()] () {
+                if (shared_ptr<Rep_> self = weakThis.lock ()) {
+                    [[maybe_unused]] auto&& release = Finally ([&self] () noexcept {
+                        Thread::SuppressInterruptionInContext suppress; // the Rep_ may go here, as this aborted thread unwinds
+                        self.reset ();
+                    });
+                    self->DoRun_ ();
+                }
+            },
+            Thread::eAutoStart, kThreadName_);
     }
     void StopThread_ ()
     {
-        if (fThread_ != nullptr) {
-            fThread_.AbortAndWaitForDone ();
-            fThread_ = nullptr;
-        }
+        SSDP::Private_::StopThread (&fThread_);
     }
     // a network appeared: listen there too - joined on the sockets already listening, so nothing waiting in them is lost or read
     // twice. By the listening thread - woken from its wait for packets (each socket used by one thread at a time), though not
@@ -155,6 +174,7 @@ public:
                 Join_ ();
             }
             for (const ConnectionlessSocket::Ptr& s : readyChecker.WaitQuietly ()) {
+                Thread::CheckForInterruption (); // stopped by a callback, read no more
                 try {
                     byte                                       buf[8 * 1024]; // not sure of max packet size
                     SocketAddress                              from;
@@ -240,7 +260,7 @@ InterfacesByID Listener::GetNetworkInterfaces () const
 Listener::~Listener ()
 {
     if (fRep_ != nullptr) { // (moved from, it has none)
-        IgnoreExceptionsForCall (fRep_->Stop ());
+        IgnoreExceptionsForCall (fRep_->StopForGood ());
     }
 }
 

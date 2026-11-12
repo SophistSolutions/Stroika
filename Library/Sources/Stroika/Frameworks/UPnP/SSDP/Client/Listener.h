@@ -92,6 +92,10 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *        whatever it shares with other threads needs synchronizing (e.g. Execution::Synchronized). An exception from it
          *        is logged (DbgTrace) and ignored: the other callbacks still get the NOTIFY.
          *
+         *  \note callOnFinds may Stop () or destroy its own Listener ("found it - stop"): that returns at once, and the listener's
+         *        thread ends once callOnFinds returns (a wait in what is left of callOnFinds throws Thread::AbortException).
+         *        Destroyed, no other callback gets that NOTIFY.
+         *
          *  \note Keep callOnFinds quick: Stop () and destruction wait for one running. (A network that appears does not - given
          *        Options::fFollowNetworkChanges, it is listened on at once, and what arrives there meanwhile is read once it returns.)
          *        Hand slow work - fetching the device description, say - to another thread, or give it a timeout: an HTTP fetch
