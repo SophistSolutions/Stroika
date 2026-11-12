@@ -76,16 +76,18 @@ namespace Stroika::Frameworks::WebServer {
         struct Options {
 
             /**
-             *  This is the max number of TCP connections the webserver will allow to keep around, before starting
-             *  to reject new connections.
-             * 
-             *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
+             *  The most TCP connections open at once - each accepted one, handling a request or idle between them. One more makes
+             *  room by closing the connection idle longest (only waiting for a request that may never come - a client reconnects as
+             *  it needs), or - with every one handling a request - is answered 503 (Service Unavailable) and closed, counted in
+             *  Statistics::ConnectionStatistics::fRequestsRejected.
+             *
+             *  Also the basis of fMaxConcurrentlyHandledConnections's and fTCPBacklog's defaults.
              */
             unsigned int fMaxConnections{kDefault_MaxConnections};
 
             /**
-             *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
-             *  but can be specified explicitly.
+             *  This is basically the number of threads to use. Defaults to fMaxConnections / 12 - most connections are idle between
+             *  requests - but at least 3: with as many waiting, one browser's burst of parallel requests (up to six) without a 503.
              *
              *  As many requests again can wait for a free thread; a request beyond that is answered 503 (Service Unavailable) at once,
              *  and counted in Statistics::ConnectionStatistics::fRequestsRejected.
@@ -191,11 +193,9 @@ namespace Stroika::Frameworks::WebServer {
             /**
              *  The number of new TCP connections the kernel will buffer before the application has a chance to accept.
              *
-             *  This can typically be left unset, and defaults to be based on fMaxConnections.
-             *
-             *  The default for tcp backlog is a little less than max # of connections. What makes
-             *  sense depends on ratio of incoming connections to the lifetime of those calls. If high, make this more than
-             *  number of connections. If low, then can be less than max# of connections.
+             *  This can typically be left unset: it defaults to fMaxConnections / 4 (at least 3) - a burst of new connections a
+             *  quarter of the limit. What makes sense depends on how fast connections arrive, against how long each lasts: often,
+             *  make this larger; seldom, smaller.
              *
              *  @see http://man7.org/linux/man-pages/man2/listen.2.html
              */
@@ -216,7 +216,7 @@ namespace Stroika::Frameworks::WebServer {
              */
             optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings;
 
-            static constexpr unsigned int                              kDefault_MaxConnections{25};
+            static constexpr unsigned int                              kDefault_MaxConnections{64};
             static constexpr ConnectionOrientedMasterSocket::BindFlags kDefault_BindFlags{};
             static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
             static inline const CORSOptions kDefault_CORS{[] () { return kDefault_CORSOptions; }()};
@@ -389,8 +389,9 @@ namespace Stroika::Frameworks::WebServer {
 
                 /**
                  *  Requests answered 503 (Service Unavailable) since the ConnectionManager was made, because every handler thread was
-                 *  busy and as many requests again were waiting for one. Not zero says the server fell behind: more handler threads
-                 *  (Options::fMaxConcurrentlyHandledConnections) may help.
+                 *  busy and as many requests again were waiting for one, or because Options::fMaxConnections were open and none was
+                 *  idle. Not zero says the server fell behind: more handler threads (Options::fMaxConcurrentlyHandledConnections), or
+                 *  a higher Options::fMaxConnections, may help.
                  */
                 size_t fRequestsRejected{};
 
@@ -502,6 +503,10 @@ namespace Stroika::Frameworks::WebServer {
         };
         // No need to lock fInactiveSockSetPoller_ since its internally synchronized;
         Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fInactiveSockSetPoller_{};
+
+        // taken from the poller by onConnect_, to make room: closed by fWaitForReadyConnectionThread_ - the thread that polls,
+        // so no wait is left with a closed (or reused) descriptor
+        Execution::Synchronized<Collection<shared_ptr<Connection>>> fToClose_;
 
         atomic<size_t> fRequestsRejected_{0}; // see Statistics::ConnectionStatistics::fRequestsRejected
 

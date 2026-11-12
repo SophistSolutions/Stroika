@@ -523,6 +523,32 @@ namespace {
         return nullopt;
     }
 
+    // what the server sent on s, once it ends with suffix - or nullopt if s closes first, or 10 seconds pass
+    optional<string> ReadUntilEndsWith_ (const IO::Network::ConnectionOrientedStreamSocket::Ptr& s, string_view suffix)
+    {
+        string received;
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; Time::GetTickCount () < giveUpAt;) {
+            byte buf[1024];
+            try {
+                if (optional<span<byte>> r = s.ReadNonBlocking (span{buf})) {
+                    if (r->empty ()) {
+                        return nullopt; // closed
+                    }
+                    received.append (reinterpret_cast<const char*> (r->data ()), r->size ());
+                    if (received.ends_with (suffix)) {
+                        return received;
+                    }
+                    continue;
+                }
+            }
+            catch (...) {
+                return nullopt; // reset: closed too
+            }
+            Execution::Sleep (10ms);
+        }
+        return nullopt;
+    }
+
     /*
      *  A server restarts at once on its port, though it was stopped with a client connected: it closed that connection first,
      *  which leaves its end in TIME_WAIT for a minute or so - and meanwhile POSIX refuses to bind the port without SO_REUSEADDR.
@@ -583,6 +609,72 @@ namespace {
             EXPECT_TRUE (String::FromLatin1 (*response).Contains ("Connection: close"sv, eCaseInsensitive)) << *response;
             EXPECT_TRUE (response->ends_with ("FRED")) << *response;
         }
+    }
+
+    /*
+     *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
+     *  limit was not enforced.
+     */
+    GTEST_TEST (Frameworks_WebServer, MaxConnections_ClosesLongestIdle_)
+    {
+        TraceContextBumper ctx{"MaxConnections_ClosesLongestIdle_"};
+        namespace ConnectionOrientedStreamSocket = IO::Network::ConnectionOrientedStreamSocket;
+        ConnectionManager server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                 ConnectionManager::Options{.fMaxConnections = 2}};
+        auto              served = [] (const ConnectionOrientedStreamSocket::Ptr& s) {
+            s.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
+            return ReadUntilEndsWith_ (s, "FRED"sv).has_value ();
+        };
+        ConnectionOrientedStreamSocket::Ptr older = ConnectToTestServer_ ();
+        ASSERT_TRUE (served (older));
+        Execution::Sleep (100ms); // so older has been idle longer
+        ConnectionOrientedStreamSocket::Ptr newer = ConnectToTestServer_ ();
+        ASSERT_TRUE (served (newer));
+        ConnectionOrientedStreamSocket::Ptr third = ConnectToTestServer_ ();
+        EXPECT_TRUE (served (third)) << "the connection beyond the limit was not served";
+        EXPECT_EQ (ReadUntilClosed_ (older), string{}) << "the connection idle longest was not closed";
+        EXPECT_TRUE (served (newer)) << "the other idle connection was closed too";
+    }
+
+    /*
+     *  At Options::fMaxConnections with every connection handling a request, a new one is answered 503 (Service Unavailable)
+     *  and closed. Before Stroika v3.0d26 the limit was not enforced.
+     */
+    GTEST_TEST (Frameworks_WebServer, MaxConnections_AllBusyAnswers503_)
+    {
+        TraceContextBumper ctx{"MaxConnections_AllBusyAnswers503_"};
+        namespace ConnectionOrientedStreamSocket = IO::Network::ConnectionOrientedStreamSocket;
+        atomic<unsigned int> handlersEntered{0};
+        WaitableEvent        releaseHandlers;
+        // more handler threads than fMaxConnections: so the limit, not the handler queue, is what refuses the third
+        ConnectionManager       server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_),
+                                       Sequence<Route>{Route{"slow"_RegEx,
+                                                             [&] (Request&, Response& response) {
+                                                           ++handlersEntered;
+                                                           releaseHandlers.Wait ();
+                                                           response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                                           response.write ("done"sv);
+                                                             }}},
+                                       ConnectionManager::Options{.fMaxConnections = 2, .fMaxConcurrentlyHandledConnections = 4}};
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { releaseHandlers.Set (); }); // before ~server waits for them
+        auto                    slow    = [] () {
+            ConnectionOrientedStreamSocket::Ptr s = ConnectToTestServer_ ();
+            s.Write (as_bytes (span{"GET /slow HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
+            return s;
+        };
+        ConnectionOrientedStreamSocket::Ptr a = slow ();
+        ConnectionOrientedStreamSocket::Ptr b = slow ();
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; handlersEntered < 2;) {
+            ASSERT_LT (Time::GetTickCount (), giveUpAt) << "the two requests never reached their handlers";
+            Execution::Sleep (10ms);
+        }
+        optional<string> answer = ReadUntilClosed_ (ConnectToTestServer_ ());
+        ASSERT_TRUE (answer) << "the connection beyond the limit was left open";
+        EXPECT_TRUE (answer->starts_with ("HTTP/1.1 503")) << *answer;
+        EXPECT_EQ (server.statistics ().fConnections.fRequestsRejected, 1u);
+        releaseHandlers.Set ();
+        EXPECT_TRUE (ReadUntilEndsWith_ (a, "done"sv).has_value ());
+        EXPECT_TRUE (ReadUntilEndsWith_ (b, "done"sv).has_value ());
     }
 }
 #endif

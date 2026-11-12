@@ -106,6 +106,18 @@ namespace {
             DbgTrace ("Could not answer {} 503 - the client is likely gone ({})"_f, s, current_exception ());
         }
     }
+
+    // Close an idle connection (one no handler has) at once - the graceful close waits for the client, and an idle one may never answer
+    void CloseIdleConnection_ (const shared_ptr<WebServer::Connection>& c) noexcept
+    {
+        try {
+            c->socket ().SetAutomaticTCPDisconnectOnClose (nullopt);
+            c->socket ().Close ();
+        }
+        catch (...) {
+            DbgTrace ("Closing {} failed - ignored ({})"_f, c, current_exception ());
+        }
+    }
 }
 
 /*
@@ -169,13 +181,14 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Se
 namespace {
     inline unsigned int ComputeThreadPoolSize_ (const ConnectionManager::Options& options)
     {
-        constexpr unsigned int kMinThreadCnt_{1u}; // one enough now that we support separate thread doing epoll/select and one read when data avail
-        return Math::AtLeast (kMinThreadCnt_, options.fMaxConcurrentlyHandledConnections.value_or (options.fMaxConnections / 5));
+        constexpr unsigned int kMinDefaultThreadCnt_{3u}; // @see Options::fMaxConcurrentlyHandledConnections
+        return Math::AtLeast (1u, options.fMaxConcurrentlyHandledConnections.value_or (
+                                      Math::AtLeast (kMinDefaultThreadCnt_, options.fMaxConnections / 12))); // one, even asked for none
     }
     inline unsigned int ComputeConnectionBacklog_ (const ConnectionManager::Options& options)
     {
         constexpr unsigned int kMinDefaultTCPBacklog_{3u};
-        return options.fTCPBacklog.value_or (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections * 3 / 4));
+        return options.fTCPBacklog.value_or (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections / 4));
     }
     ConnectionManager::Options FillInDefaults_ (const ConnectionManager::Options& o)
     {
@@ -368,6 +381,40 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetTCPNoDelay (*fEffectiveOptions_.fTCPNoDelay);
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
+
+    /*
+     *  At fMaxConnections, make room by closing the connection idle longest - or, every one handling a request, answer this one
+     *  503. (Only this thread - the listener's - adds connections, so the count cannot grow between this check and the Add.)
+     */
+    shared_ptr<Connection> longestIdle;
+    bool                   atLimit = false;
+    {
+        scoped_lock                        critSec{fActiveConnections_}; // as every move between the active and inactive lists
+        Collection<shared_ptr<Connection>> inactive = GetInactiveConnections_ ();
+        if (fActiveConnections_.cget ()->size () + inactive.size () >= fEffectiveOptions_.fMaxConnections) {
+            atLimit = true;
+            for (const shared_ptr<Connection>& c : inactive) {
+                // not one whose next request (or close) has come: the poller hands that to a handler
+                if (c->socket ().AvailableToRead () == nullopt and (longestIdle == nullptr or c->GetIdleSince () < longestIdle->GetIdleSince ())) {
+                    longestIdle = c;
+                }
+            }
+            if (longestIdle != nullptr) {
+                // traced here: once in fToClose_, the wait thread may be closing it
+                DbgTrace ("Closing {}, the one idle longest, to make room for a new connection (fMaxConnections={})"_f, longestIdle,
+                          fEffectiveOptions_.fMaxConnections);
+                fToClose_.rwget ()->Add (longestIdle);
+                fInactiveSockSetPoller_.Remove (longestIdle); // waking the wait thread, which closes it
+            }
+        }
+    }
+    if (atLimit and longestIdle == nullptr) {
+        ++fRequestsRejected_;
+        DbgTrace ("Answering {} 503 (Service Unavailable): fMaxConnections ({}) open, none idle"_f, s, fEffectiveOptions_.fMaxConnections);
+        AnswerServiceUnavailableAndClose_ (s);
+        return;
+    }
+
     shared_ptr<Connection> conn = MakeSharedPtr<Connection> (s, fUseDefaultConnectionOptions_);
     fInactiveSockSetPoller_.Add (conn, kInactiveSocketMonitorEvents2Watch4_);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
@@ -397,6 +444,9 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
             if (Time::GetTickCount () >= nextSweepAt) {
                 CloseIdleConnections_ ();
                 nextSweepAt = Time::GetTickCount () + sweepEvery;
+            }
+            for (const shared_ptr<Connection>& c : exchange (fToClose_.rwget ().rwref (), Collection<shared_ptr<Connection>>{})) {
+                CloseIdleConnection_ (c); // here, on the thread that polls (@see fToClose_)
             }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
@@ -456,6 +506,10 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
                 try {
                     scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+                    // not one another thread took from the poller since the wait returned - onConnect_ closing it, to make room
+                    if (not fInactiveSockSetPoller_.GetDescriptors ().Any ([&] (const auto& d) { return d.first == readyConnection; })) {
+                        continue;
+                    }
                     fInactiveSockSetPoller_.Remove (readyConnection);
                     fActiveConnections_.rwget ().rwref ().Add (readyConnection);
                 }
@@ -622,13 +676,7 @@ void ConnectionManager::CloseIdleConnections_ ()
     }
     for (const shared_ptr<Connection>& c : idle) {
         DbgTrace ("Closing {}: idle longer than {}"_f, c, fEffectiveOptions_.fIdleConnectionTimeout);
-        try {
-            c->socket ().SetAutomaticTCPDisconnectOnClose (nullopt); // that graceful close waits for the client - a vanished one never answers
-            c->socket ().Close ();
-        }
-        catch (...) {
-            DbgTrace ("Closing {} failed - ignored ({})"_f, c, current_exception ());
-        }
+        CloseIdleConnection_ (c);
     }
 }
 
