@@ -416,10 +416,15 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 return eClose; // the rest will never come
             case MyMessage_::eCompleteGood:
                 break;
-        }
+        } 
+        
+            // clang-format off
+        /*
+         * from here, the message is always answered - or its response aborted, by the catch below
+         */
+            // clang-format on
 
 #if qStroika_Foundation_Debug_AssertionsChecked
-        // from here, the message is always answered - or its response aborted, by the catch below
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
 #endif
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
