@@ -22,6 +22,7 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
@@ -660,6 +661,35 @@ namespace {
     }
 
     /*
+     *  A client that resets its connection with its request's body unread - the server reading the rest of it, so the
+     *  connection's next request starts after it - has the connection closed, and the server goes on serving.
+     */
+    GTEST_TEST (Frameworks_WebServer, ClientResetMidBody_)
+    {
+        TraceContextBumper ctx{"ClientResetMidBody_"};
+        WaitableEvent      handlerEntered;
+        WaitableEvent      clientGone;
+        Route              ignoreBody{IO::Network::HTTP::MethodsRegEx::kPost, "IGNORE"_RegEx, [&] (Request&, Response& response) {
+                             handlerEntered.Set ();
+                             clientGone.Wait (10s);
+                             Execution::Sleep (100ms); // so its reset has come
+                             response.write ("IGNORED");
+                                      }};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_, ignoreBody}};
+        {
+            IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+            client.SetLinger (0); // so closing it resets the connection (RST)
+            client.Write (as_bytes (span{"POST /IGNORE HTTP/1.1\r\nHost: localhost\r\nContent-Length: 10\r\n\r\nabc"sv})); // and never the rest
+            handlerEntered.Wait (10s);
+            client.Close ();
+            clientGone.Set ();
+        }
+        IO::Network::ConnectionOrientedStreamSocket::Ptr next = ConnectToTestServer_ ();
+        next.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\n\r\n"sv}));
+        EXPECT_TRUE (ReadUntilEndsWith_ (next, "FRED"sv).has_value ()) << "the server stopped serving";
+    }
+
+    /*
      *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
      *  limit was not enforced.
      */
@@ -730,6 +760,10 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
+#if qStroika_Platform_POSIX
+    // a write to a connection its peer closed fails the test - rather than killing it with SIGPIPE
+    Execution::SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else

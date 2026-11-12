@@ -416,17 +416,14 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 return eClose; // the rest will never come
             case MyMessage_::eCompleteGood:
                 break;
-        } 
-        
+        }
+
             // clang-format off
         /*
          * from here, the message is always answered - or its response aborted, by the catch below
          */
             // clang-format on
 
-#if qStroika_Foundation_Debug_AssertionsChecked
-        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
-#endif
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         [[maybe_unused]] auto&& cleanup2 =
             Finally ([&] () noexcept { fExtraStats_.rwget ().rwref ().fMessageCompleted = Time::GetTickCount (); });
@@ -443,11 +440,12 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             DiscardUnreadRequestBody_ (); // the next request on this connection starts right after this one's body
         }
         keepAlive = EndResponse_ (keepAlive);
+        Ensure (fMessage_->response ().responseCompleted ());
         return keepAlive ? eTryAgainLater : eClose;
     }
     catch (...) {
         DbgTrace ("ReadAndProcessMessage Exception caught ({}), so returning ReadAndProcessResult::eClose"_f, current_exception ());
-        this->rwResponse ().Abort ();
+        this->rwResponse ().Abort (); // completes the response
         SetState_ (State_Flag_::eAborting);
         return Connection::ReadAndProcessResult::eClose;
     }
