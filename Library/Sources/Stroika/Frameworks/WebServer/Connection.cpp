@@ -368,10 +368,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Connection::ReadAndProcessMessage", "this->socket={}"_f, fSocket_};
 #endif
-        fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
+        // a message whose header came only in part last time (its response not completed) goes on, with what was read of it
+        if (fMessage_ == nullptr or fMessage_->response ().responseCompleted ()) {
+            fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
-        fMessage_->SetAssertExternallySynchronizedCheckerContext (GetSharedContext ());
+            fMessage_->SetAssertExternallySynchronizedCheckerContext (GetSharedContext ());
 #endif
+        }
 
         // readHeaders returns nullopt if it completed successfully (usually the case)
         auto readHeaders = [&] () -> optional<ReadAndProcessResult> {
@@ -395,7 +398,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                     return eClose; // don't keep-alive - so this closes connection
                 } break;
                 case MyMessage_::eIncompleteButMoreMayBeAvailable: {
-                    DbgTrace ("ReadHeaders failed - incomplete header (most likely a DOS attack)."_f);
+                    DbgTrace ("ReadHeaders: the header has come only in part, so far - read the rest when it comes"_f);
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
                     fState_ = State_Flag_::eFinishedReadingHeaders_Incomplete;
 #endif

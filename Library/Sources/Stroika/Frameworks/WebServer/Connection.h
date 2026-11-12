@@ -357,8 +357,10 @@ namespace Stroika::Frameworks::WebServer {
         Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
         const TimePointSeconds                                 fConnectionStartedAt_{};
         TimePointSeconds                                       fIdleSince_{};
-        unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
-        optional<HTTP::KeepAlive>                              fRemaining_;
+        // replaced for each request - but kept, between ReadAndProcessMessage calls, while its header has come only in part (so
+        // its response is not completed): it holds what was read of it
+        unique_ptr<MyMessage_>    fMessage_;
+        optional<HTTP::KeepAlive> fRemaining_;
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         enum class State_Flag_ : uint8_t {
             eNew,

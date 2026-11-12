@@ -616,6 +616,29 @@ namespace {
     }
 
     /*
+     *  A request whose header arrives in pieces - over a slow link, or from a client that writes its request line and its
+     *  header lines separately - is answered. Before Stroika v3.0d26 the pieces before the last were lost: the server read
+     *  them, found the header incomplete, and on the next piece began a new request with it.
+     */
+    GTEST_TEST (Frameworks_WebServer, RequestHeaderInPieces_)
+    {
+        TraceContextBumper ctx{"RequestHeaderInPieces_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        for (string_view piece : {"GET /FRED HT"sv, "TP/1.1\r\nHost: local"sv, "host\r\n"sv, "\r\n"sv}) {
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+            client.Write (as_bytes (span<const char>{piece}));
+#else
+            client.Write (as_bytes (span{piece}));
+#endif
+            Execution::Sleep (100ms); // so the server reads each piece on its own
+        }
+        optional<string> response = ReadUntilEndsWith_ (client, "FRED"sv);
+        ASSERT_TRUE (response) << "no answer to a request whose header came in pieces";
+        EXPECT_TRUE (response->starts_with ("HTTP/1.1 200")) << *response;
+    }
+
+    /*
      *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
      *  limit was not enforced.
      */

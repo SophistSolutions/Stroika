@@ -93,11 +93,10 @@ namespace {
                     result = fSD_.Read (intoBuffer);
                     break;
                 case NoDataAvailableHandling::eDontBlock: {
-                    auto o = fSD_.ReadNonBlocking (intoBuffer);
-                    if (o == nullopt) {
-                        Execution::Throw (EWouldBlock::kThe);
+                    result = fSD_.ReadNonBlocking (intoBuffer);
+                    if (result == nullopt) {
+                        return nullopt; // nothing available without blocking (@see InputStream::IRep::Read)
                     }
-                    result = *o;
                 } break;
                 default:
                     RequireNotReached ();

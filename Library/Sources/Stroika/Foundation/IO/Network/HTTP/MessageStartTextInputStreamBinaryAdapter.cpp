@@ -199,8 +199,12 @@ namespace {
                     }
                 }
 
-                byte*  startReadAt = fAllDataReadBuf_.begin () + fBufferFilledUpValidBytes_;
-                size_t n           = fSource_.ReadOrThrow (span{startReadAt, roomLeftInBuf}, blockFlag).size ();
+                byte*                startReadAt = fAllDataReadBuf_.begin () + fBufferFilledUpValidBytes_;
+                optional<span<byte>> r           = fSource_.Read (span{startReadAt, roomLeftInBuf}, blockFlag);
+                if (not r) {
+                    return nullopt; // nothing available without blocking (@see InputStream::IRep::Read)
+                }
+                size_t n = r->size ();
                 Assert (n <= roomLeftInBuf);
                 // if n == 0, OK, just means EOF
                 fBufferFilledUpValidBytes_ += n;

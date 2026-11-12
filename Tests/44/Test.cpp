@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -204,6 +205,24 @@ namespace {
         EXPECT_TRUE (adapter.AssureHeaderSectionAvailable ());
         String asBytes = adapter.ToString (MessageStartTextInputStreamBinaryAdapter::eAsBytes); // hex - it threw format_error
         EXPECT_TRUE (asBytes.Contains ("x47, x45, x54, xab, "sv)) << asBytes.AsNarrowSDKString ();
+    }
+
+    /*
+     *  A header that has arrived only in part is not available yet - AssureHeaderSectionAvailable returns false, keeping what
+     *  it read - and is, once the rest arrives. Before Stroika v3.0d26 it threw EWouldBlock instead.
+     */
+    GTEST_TEST (Foundation_IO_Network_HTTP, MessageStartTextInputStreamBinaryAdapter_HeaderInPieces_)
+    {
+        Debug::TraceContextBumper                     ctx{"MessageStartTextInputStreamBinaryAdapter_HeaderInPieces_"};
+        Streams::InputOutputStream::Ptr<std::byte>    source  = Streams::SharedMemoryStream::New<std::byte> ();
+        MessageStartTextInputStreamBinaryAdapter::Ptr adapter = MessageStartTextInputStreamBinaryAdapter::New (source);
+        auto arrives = [&] (string_view s) { source.Write (as_bytes (span{s.data (), s.size ()})); };
+        arrives ("GET /x HTTP/1.1\r\nHo"sv);
+        EXPECT_FALSE (adapter.AssureHeaderSectionAvailable ());
+        arrives ("st: h\r\n\r\n"sv);
+        ASSERT_TRUE (adapter.AssureHeaderSectionAvailable ());
+        EXPECT_EQ (adapter.ReadLine (), "GET /x HTTP/1.1\r\n"sv);
+        EXPECT_EQ (adapter.ReadLine (), "Host: h\r\n"sv);
     }
 
     /*
