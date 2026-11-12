@@ -342,7 +342,7 @@ namespace {
             if (intoBuffer.size () >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
                 auto result = inherited::Read (intoBuffer, blockFlag);
                 if (result == nullopt) {
-                    Throw (EWouldBlock::kThe);
+                    return nullopt; // nothing available without blocking (@see InputStream::IRep::Read)
                 }
                 if (result->size () != 0) {
                     if (origOffset + result->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
@@ -360,7 +360,7 @@ namespace {
                 auto             readIntoBuf =
                     inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))}, blockFlag);
                 if (readIntoBuf == nullopt) {
-                    Throw (EWouldBlock::kThe);
+                    return nullopt; // nothing available without blocking (@see InputStream::IRep::Read)
                 }
                 size_t n = min (intoBuffer.size (), readIntoBuf->size ());
                 if (n != 0) {

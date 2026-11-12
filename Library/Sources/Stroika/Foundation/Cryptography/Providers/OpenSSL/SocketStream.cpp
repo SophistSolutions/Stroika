@@ -179,7 +179,7 @@ namespace {
                 case NoDataAvailableHandling::eDontBlock: {
                     int pending = ::SSL_pending (fSSLConnection_.get ());
                     if (pending == 0) {
-                        Execution::Throw (EWouldBlock::kThe);
+                        return nullopt; // nothing available without blocking (@see InputStream::IRep::Read)
                     }
                     auto r = ::SSL_read (fSSLConnection_.get (), intoBuffer.data (), static_cast<int> (intoBuffer.size ()));
                     if (r > 0) {

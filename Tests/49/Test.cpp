@@ -192,6 +192,25 @@ namespace {
     }
 
     /*
+     *  A seekable text reader whose source has nothing yet answers a non-blocking read with nullopt - and reads the text once it
+     *  comes. Before Stroika v3.0d26 it threw EWouldBlock, where InputStream's IRep::Read promises nullopt.
+     */
+    GTEST_TEST (Foundation_Streams, TextReaderSeekable_NothingYet_ReadNonBlocking_)
+    {
+        using Characters::Character;
+        InputOutputStream::Ptr<byte> source = SharedMemoryStream::New<byte> ();
+        // an explicit CodeCvt: the default looks for a byte order mark, so would wait for the first bytes
+        BinaryToText::Reader::Ptr tr =
+            BinaryToText::Reader::New (source, Characters::CodeCvt<>{Characters::UnicodeExternalEncodings::eUTF8}, SeekableFlag::eSeekable);
+        Character buf[3];
+        EXPECT_FALSE (tr.ReadNonBlocking (span{buf}).has_value ());
+        source.Write (as_bytes (span{"hi", 2}));
+        optional<span<Character>> r = tr.ReadNonBlocking (span{buf});
+        ASSERT_TRUE (r.has_value ());
+        EXPECT_EQ (Characters::String{*r}, "hi");
+    }
+
+    /*
      *  A seekable text reader's read into a small buffer returns a span of that buffer. Before Stroika v3.0d26 it returned a
      *  span of its own temporary buffer, gone once Read returned - though it had copied the text into the caller's.
      */
