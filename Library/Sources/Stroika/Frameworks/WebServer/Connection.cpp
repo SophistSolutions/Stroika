@@ -95,6 +95,9 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders ()
         if (not(version.length () == 8 and version.StartsWith ("HTTP/"sv) and version[5].IsDigit () and version[6] == '.' and version[7].IsDigit ())) {
             Throw (ClientErrorException{"Bad HTTP version ({})"_f(version)});
         }
+        if (version[5] != '1') {
+            Throw (IO::Network::HTTP::Exception{IO::Network::HTTP::StatusCodes::kHTTPVersionNotSupported, "HTTP version {} not supported"_f(version)});
+        }
         // the request-target: origin-form ("/path?query"), asterisk-form ("*", for OPTIONS) or absolute-form
         // ("http://host/path") (RFC 9112, section 3.2)
         const String& target = tokens[1];
@@ -431,8 +434,10 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         try {
             headerRead = ReadHeaders_ ();
         }
-        catch (const ClientErrorException& e) {
-            AnswerClientError_ (e); // a malformed request (RFC 9112, section 3: an invalid request-line SHOULD be answered 400)
+        catch (const IO::Network::HTTP::Exception& e) {
+            // a malformed request (RFC 9112, section 3: an invalid request-line SHOULD be answered 400), or one of an HTTP version
+            // not supported (505)
+            AnswerRejectedRequest_ (e);
             return eClose;
         }
         switch (headerRead) {
@@ -513,7 +518,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::ReadHeaders_ ()
     return result;
 }
 
-void Connection::AnswerClientError_ (const ClientErrorException& e) noexcept
+void Connection::AnswerRejectedRequest_ (const IO::Network::HTTP::Exception& e) noexcept
 {
     Response& answer = fMessage_->rwResponse ();
     try {

@@ -57,19 +57,23 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         constexpr Status kTooManyRequests = 429;
 
-        /*
+        /**
          * This is principally for internal server exceptions.
          */
         constexpr Status kInternalError = 500;
-        /*
+        /**
          * Indicates that the server is temporarily unavailable, usually due to high load or maintenance.
          */
         constexpr Status kServiceUnavailable = 503;
-        /*
+        /**
          *  The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server specified by the URI (e.g. HTTP, FTP, LDAP)
          *  or some other auxiliary server (e.g. DNS) it needed to access in attempting to complete the request.
          */
         constexpr Status kGatewayTimeout = 504;
+        /**
+         *  The server does not support the major version of HTTP the request was made with (RFC 9110, section 15.6.6).
+         */
+        constexpr Status kHTTPVersionNotSupported = 505;
     }
 
     /**

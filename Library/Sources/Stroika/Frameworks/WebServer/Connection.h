@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
-#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/KeepAlive.h"
 #include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
@@ -362,8 +362,8 @@ namespace Stroika::Frameworks::WebServer {
     private:
         // ReadAndProcessMessage's steps, in order - each called within its WriteContext
         nonvirtual MyMessage_::ReadHeadersResult ReadHeaders_ (); // MyMessage_::ReadHeaders, its result logged
-        // when the request is malformed: answers it with e's status, and "Connection: close"
-        nonvirtual void AnswerClientError_ (const IO::Network::HTTP::ClientErrorException& e) noexcept;
+        // when reading its header rejects the request (malformed, say): answers it with e's status, and "Connection: close"
+        nonvirtual void AnswerRejectedRequest_ (const IO::Network::HTTP::Exception& e) noexcept;
         nonvirtual void ApplyDefaultResponseHeaders_ ();
         nonvirtual bool ApplyKeepAlive_ (); // whether the connection stays open after this message
         // the extension point: routes and other interceptors build the response here
