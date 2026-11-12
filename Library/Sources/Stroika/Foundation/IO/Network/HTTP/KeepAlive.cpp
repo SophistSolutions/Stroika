@@ -1,9 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 
@@ -21,27 +22,24 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
  */
 KeepAlive KeepAlive::Parse (const String& headerValue)
 {
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive: timeout and max, in any order; a parameter whose
+    // value is not a number is skipped
     KeepAlive r;
     for (const String& token : headerValue.Tokenize ({' ', ','})) {
         Containers::Sequence<String> kvp = token.Tokenize ({'='});
-        if (kvp.length () == 2) {
-            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
-            if (kvp[0] == "timeout"sv) {
-                r.fTimeout = Time::DurationSeconds{Characters::Number::Parse<double> (kvp[1]).value_or (NAN)};
-                return r;
-            }
-            else if (kvp[0] == "max"sv) {
-                unsigned int maxMsg = Characters::Number::Parse<unsigned int> (kvp[1]).value_or (0);
-                r.fMessages         = maxMsg;
-                return r;
-            }
-            else {
-                DbgTrace ("Keep-Alive header bad: {}"_f, token);
+        if (kvp.length () == 2 and kvp[0] == "timeout"sv) {
+            if (auto t = Characters::Number::Parse<double> (kvp[1]); t and *t >= 0) {
+                r.fTimeout = Time::DurationSeconds{*t};
+                continue;
             }
         }
-        else {
-            DbgTrace ("Keep-Alive header bad: {}"_f, token);
+        else if (kvp.length () == 2 and kvp[0] == "max"sv) {
+            if (auto m = Characters::Number::Parse<unsigned int> (kvp[1])) {
+                r.fMessages = *m;
+                continue;
+            }
         }
+        DbgTrace ("Keep-Alive header bad: {}"_f, token);
     }
     return r;
 }
@@ -59,7 +57,16 @@ optional<KeepAlive> KeepAlive::Merge (const optional<KeepAlive>& lhs, const opti
 
 String KeepAlive::AsValue () const
 {
-    StringBuilder sb; // ? is this a BUG or needs some explanation - LGP 2023-09-24
+    StringBuilder sb;
+    if (fTimeout) {
+        sb << "timeout="sv << "{}"_f(fTimeout->count ());
+    }
+    if (fMessages) {
+        if (not sb.empty ()) {
+            sb << ", "sv;
+        }
+        sb << "max="sv << "{}"_f(*fMessages);
+    }
     return sb;
 }
 
@@ -71,7 +78,10 @@ String KeepAlive::ToString () const
         sb << "messages: "sv << *fMessages;
     }
     if (fTimeout) {
-        sb << ", timeout: "sv << *fTimeout;
+        if (fMessages) {
+            sb << ", "sv;
+        }
+        sb << "timeout: "sv << *fTimeout;
     }
     sb << "}"sv;
     return sb;

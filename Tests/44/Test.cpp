@@ -247,6 +247,28 @@ namespace {
         h.Add (String{HeaderName::kIfNoneMatch}, "W/\"v1\", \"v2\""sv);
         EXPECT_EQ (h.LookupOne (String{HeaderName::kIfNoneMatch}), "W/\"v1\", \"v2\""sv);
     }
+
+    /*
+     *  A Keep-Alive header's parameters (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive) are all read,
+     *  in either order, one that is not a number skipped - and written as read.
+     */
+    GTEST_TEST (Foundation_IO_Network_HTTP, KeepAlive_)
+    {
+        for (const String& value : {"timeout=5, max=100"_k, "max=100, timeout=5"_k}) {
+            KeepAlive k = KeepAlive::Parse (value);
+            EXPECT_TRUE (k.fTimeout == 5s);
+            EXPECT_TRUE (k.fMessages == 100u);
+        }
+        KeepAlive bad = KeepAlive::Parse ("timeout=soon, max=many"sv);
+        EXPECT_FALSE (bad.fTimeout.has_value ());
+        EXPECT_FALSE (bad.fMessages.has_value ());
+
+        KeepAlive written{.fMessages = 100, .fTimeout = 5s};
+        EXPECT_EQ (written.AsValue (), "timeout=5, max=100"sv);
+        Headers h;
+        h.keepAlive = written;
+        EXPECT_EQ (h.LookupOne (String{HeaderName::kKeepAlive}), "timeout=5, max=100"sv);
+    }
 }
 
 namespace {
