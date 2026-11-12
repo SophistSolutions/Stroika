@@ -314,7 +314,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  \note set Remaining::fMessages := 0 to prevent keep-alives.
+         *  \brief What is left of this connection's keep-alive limits (@see HTTP::KeepAlive) - nullopt (or an unset field): none
+         *
+         *      o   fMessages: the requests it may yet serve, counting the one being handled - at 1 (or 0), that one is its last,
+         *          answered "Connection: close". Each request counts it down.
+         *      o   fTimeout: how long it may stay idle between requests - ConnectionManager closes it then, if its
+         *          Options::fIdleConnectionTimeout would not first.
+         *
+         *  A request's Keep-Alive header (max, timeout) fills in what is not already set (@see HTTP::KeepAlive::Merge).
          *
          *  \par Example Usage
          *      \code

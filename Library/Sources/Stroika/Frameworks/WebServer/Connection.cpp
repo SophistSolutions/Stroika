@@ -522,25 +522,17 @@ bool Connection::ApplyKeepAlive_ ()
 {
     bool thisMessageKeepAlive = fMessage_->request ().keepAliveRequested;
     if (thisMessageKeepAlive) {
-        // Check for keepalive headers, and handle/merge them appropriately
-        // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
+        // a request's Keep-Alive header (HTTP 1.1 and earlier) fills in limits not already set (@see remainingConnectionLimits)
         if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
-            this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
+            fRemaining_ = KeepAlive::Merge (fRemaining_, *keepAliveValue);
         }
-        // if missing, no limits
-        if (auto oRemaining = remainingConnectionLimits ()) {
-            if (oRemaining->fMessages) {
-                if (oRemaining->fMessages == 0u) {
-                    thisMessageKeepAlive = false;
-                }
-                else {
-                    oRemaining->fMessages = *oRemaining->fMessages - 1u;
-                }
+        // fMessages counts this request; fTimeout, an idle limit, is ConnectionManager's to apply
+        if (fRemaining_ and fRemaining_->fMessages) {
+            if (*fRemaining_->fMessages <= 1) {
+                thisMessageKeepAlive = false;
             }
-            if (oRemaining->fTimeout) {
-                if (fConnectionStartedAt_ + *oRemaining->fTimeout < Time::GetTickCount ()) {
-                    thisMessageKeepAlive = false;
-                }
+            else {
+                fRemaining_->fMessages = *fRemaining_->fMessages - 1;
             }
         }
     }

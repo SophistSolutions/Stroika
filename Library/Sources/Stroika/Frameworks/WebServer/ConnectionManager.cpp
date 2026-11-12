@@ -675,9 +675,15 @@ auto ConnectionManager::ComputeStatistics_ () const -> Statistics
 
 void ConnectionManager::CloseIdleConnections_ ()
 {
-    const Time::TimePointSeconds       now               = Time::GetTickCount ();
-    const Time::TimePointSeconds       idleSinceBefore   = now - fEffectiveOptions_.fIdleConnectionTimeout;
-    const Time::TimePointSeconds       headerSinceBefore = now - fEffectiveOptions_.fRequestHeaderTimeout;
+    const Time::TimePointSeconds now               = Time::GetTickCount ();
+    const Time::TimePointSeconds headerSinceBefore = now - fEffectiveOptions_.fRequestHeaderTimeout;
+    // how long c may stay idle: Options::fIdleConnectionTimeout, or less if its keep-alive limits say so
+    auto idleLimit = [this] (const shared_ptr<Connection>& c) {
+        if (optional<HTTP::KeepAlive> remaining = c->remainingConnectionLimits (); remaining and remaining->fTimeout) {
+            return min (fEffectiveOptions_.fIdleConnectionTimeout, *remaining->fTimeout);
+        }
+        return fEffectiveOptions_.fIdleConnectionTimeout;
+    };
     Collection<shared_ptr<Connection>> idle;
     Collection<shared_ptr<Connection>> headerLate;
     {
@@ -688,7 +694,7 @@ void ConnectionManager::CloseIdleConnections_ ()
                 headerLate += c;
             }
             // not one whose next request (or close) has come: the poller hands that to a handler
-            else if (c->GetIdleSince () < idleSinceBefore and c->socket ().AvailableToRead () == nullopt) {
+            else if (c->GetIdleSince () + idleLimit (c) < now and c->socket ().AvailableToRead () == nullopt) {
                 fInactiveSockSetPoller_.Remove (c);
                 idle += c;
             }
@@ -699,7 +705,7 @@ void ConnectionManager::CloseIdleConnections_ ()
         CloseIdleConnection_ (c);
     }
     for (const shared_ptr<Connection>& c : idle) {
-        DbgTrace ("Closing {}: idle longer than {}"_f, c, fEffectiveOptions_.fIdleConnectionTimeout);
+        DbgTrace ("Closing {}: idle longer than {}"_f, c, idleLimit (c));
         CloseIdleConnection_ (c);
     }
 }

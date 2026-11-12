@@ -754,6 +754,43 @@ namespace {
     }
 
     /*
+     *  A request's Keep-Alive: max=N limits its connection to N requests: the Nth is answered "Connection: close", and the
+     *  connection closed.
+     */
+    GTEST_TEST (Frameworks_WebServer, KeepAliveMax_)
+    {
+        TraceContextBumper ctx{"KeepAliveMax_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\nKeep-Alive: max=2\r\n\r\n"sv}));
+        optional<string> first = ReadUntilEndsWith_ (client, "FRED"sv);
+        ASSERT_TRUE (first);
+        EXPECT_TRUE (String::FromLatin1 (*first).Contains ("Connection: keep-alive"sv, eCaseInsensitive)) << *first;
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\nKeep-Alive: max=2\r\n\r\n"sv}));
+        optional<string> second = ReadUntilClosed_ (client);
+        ASSERT_TRUE (second) << "the connection was left open after its last request";
+        EXPECT_TRUE (String::FromLatin1 (*second).Contains ("Connection: close"sv, eCaseInsensitive)) << *second;
+        EXPECT_TRUE (second->ends_with ("FRED")) << *second;
+    }
+
+    /*
+     *  A request's Keep-Alive: timeout=T limits how long its connection may stay idle after it: closed sooner than
+     *  Options::fIdleConnectionTimeout would.
+     */
+    GTEST_TEST (Frameworks_WebServer, KeepAliveTimeout_)
+    {
+        TraceContextBumper ctx{"KeepAliveTimeout_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_},
+                                  ConnectionManager::Options{.fIdleConnectionTimeout = 6s}}; // swept every 3 seconds
+        IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+        client.Write (as_bytes (span{"GET /FRED HTTP/1.1\r\nHost: localhost\r\nKeep-Alive: timeout=1\r\n\r\n"sv}));
+        ASSERT_TRUE (ReadUntilEndsWith_ (client, "FRED"sv).has_value ());
+        Time::TimePointSeconds answered = Time::GetTickCount ();
+        EXPECT_EQ (ReadUntilClosed_ (client), string{}) << "the connection was left open";
+        EXPECT_LT ((Time::GetTickCount () - answered).count (), 5.0) << "closed only by the server's own idle timeout";
+    }
+
+    /*
      *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
      *  limit was not enforced.
      */

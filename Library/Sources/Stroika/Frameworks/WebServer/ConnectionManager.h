@@ -150,7 +150,8 @@ namespace Stroika::Frameworks::WebServer {
              *  A connection with no request in progress - kept alive after one, or yet to send its first - is closed once idle this
              *  long (within half again, or 15 seconds, whichever is less). Clients reopen a closed keep-alive connection when they
              *  need one; a client that vanishes without closing its end (asleep, off the network) would otherwise hold its socket
-             *  until the ConnectionManager is destroyed. Time::kInfinity: never.
+             *  until the ConnectionManager is destroyed. Time::kInfinity: never. A request's Keep-Alive header (timeout) can make
+             *  it shorter for its connection (@see Connection::remainingConnectionLimits).
              *
              *  The default is nginx's (keepalive_timeout, 75 seconds): like nginx, this server holds an idle connection in a poller,
              *  not a thread, so keeping one costs little - unlike Apache, whose 5 seconds suits a worker held per connection.
