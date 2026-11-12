@@ -340,12 +340,41 @@ namespace Stroika::Frameworks::WebServer {
                 eIncompleteDeadEnd,
                 eCompleteGood
             };
-            nonvirtual ReadHeadersResult ReadHeaders (
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-                const function<void (const String&)>& logMsg
-#endif
-            );
+            nonvirtual ReadHeadersResult ReadHeaders ();
         };
+
+    private:
+        // ReadAndProcessMessage's steps, in order - each called within its WriteContext
+        nonvirtual MyMessage_::ReadHeadersResult ReadHeaders_ (); // MyMessage_::ReadHeaders, its result logged
+        nonvirtual void                          ApplyDefaultResponseHeaders_ ();
+        nonvirtual bool                          ApplyKeepAlive_ (); // whether the connection stays open after this message
+        // the extension point: routes and other interceptors build the response here
+        nonvirtual void InvokeInterceptorChain_ ();
+        // reads, and drops, whatever of the request's body the handler did not read
+        nonvirtual void DiscardUnreadRequestBody_ ();
+        // answers 304 (Not Modified) where the request's If-None-Match names the response's ETag, and ends the response: returns
+        // keepAlive, unless the response could not be ended
+        nonvirtual bool EndResponse_ (bool keepAlive);
+
+    private:
+        enum class State_Flag_ : uint8_t {
+            eNew,
+            eReadingHeaders_Started,
+            eFinishedReadingHeaders_Success,
+            eFinishedReadingHeaders_Incomplete,
+            eFinishedReadingHeaders_Failed,
+            eInterceptorChain_Start,
+            eInterceptorChain_Complete,
+            eFlushing_Start,
+            eFlushing_Done,
+            eAborting,
+        };
+        // the state, for Stats - kept only with qStroika_Frameworks_WebServer_Connection_TrackExtraStats
+        nonvirtual void SetState_ (State_Flag_ s);
+        // writes makeMsg () - a String - to the qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog log; calls it only
+        // when that log is compiled in
+        template <typename MAKE_MSG>
+        nonvirtual void LogMsg_ (const MAKE_MSG& makeMsg) const;
 
     private:
         const InterceptorChain                                 fInterceptorChain_;
@@ -362,18 +391,6 @@ namespace Stroika::Frameworks::WebServer {
         unique_ptr<MyMessage_>    fMessage_;
         optional<HTTP::KeepAlive> fRemaining_;
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-        enum class State_Flag_ : uint8_t {
-            eNew,
-            eReadingHeaders_Started,
-            eFinishedReadingHeaders_Success,
-            eFinishedReadingHeaders_Incomplete,
-            eFinishedReadingHeaders_Failed,
-            eInterceptorChain_Start,
-            eInterceptorChain_Complete,
-            eFlushing_Start,
-            eFlushing_Done,
-            eAborting,
-        };
         atomic<State_Flag_> fState_{State_Flag_::eNew}; // always increases during a single ReadHeaders invocation (but it reversts between).
         atomic<unsigned int> fReadAndProcessMessageNumber_{0};
         atomic<bool>         fKeepAlive_{true};

@@ -639,6 +639,27 @@ namespace {
     }
 
     /*
+     *  A request line whose URL has no path - only a query or fragment mark - is answered with a client error (4xx).
+     */
+    GTEST_TEST (Frameworks_WebServer, RequestURLWithoutPath_)
+    {
+        TraceContextBumper ctx{"RequestURLWithoutPath_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
+        for (string_view request : {"GET ? HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"sv,
+                                    "GET # HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"sv}) {
+            IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+            client.Write (as_bytes (span<const char>{request}));
+#else
+            client.Write (as_bytes (span{request}));
+#endif
+            optional<string> response = ReadUntilClosed_ (client);
+            ASSERT_TRUE (response) << "the server left the connection open, after: " << request;
+            EXPECT_TRUE (response->starts_with ("HTTP/1.1 4")) << *response;
+        }
+    }
+
+    /*
      *  At Options::fMaxConnections, a new connection makes room by closing the one idle longest. Before Stroika v3.0d26 the
      *  limit was not enforced.
      */

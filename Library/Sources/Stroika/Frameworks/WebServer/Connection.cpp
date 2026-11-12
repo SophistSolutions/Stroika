@@ -63,23 +63,12 @@ Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& s
     }
 }
 
-Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-    const function<void (const String&)>& logMsg
-#endif
-)
+Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders ()
 {
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-    logMsg ("Starting ReadHeaders_"sv);
-#endif
-
     /*
      *  Preflight the request and make sure all the bytes of the header are available. Don't read more than needed.
      */
     if (not fMsgHeaderInTextStream.AssureHeaderSectionAvailable ()) {
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-        logMsg ("got fMsgHeaderInTextStream.AssureHeaderSectionAvailable INCOMPLETE"sv);
-#endif
         if (fMsgHeaderInTextStream.IsAtEOF (Streams::eDontBlock) == true) {
             return ReadHeadersResult::eIncompleteDeadEnd;
         }
@@ -90,14 +79,11 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
      * At this stage, blocking calls are fully safe - because we've assured above we've seeked to the start of a CRLFCRLF terminated region (or premature EOF)
      */
     Request& updatableRequest = this->rwRequest ();
-    {
-        // Read METHOD URL line
+    // the request line - method, URL and HTTP version ("GET /index.html HTTP/1.1"): false if the stream ended first
+    auto readRequestLine = [&] () -> bool {
         String line = fMsgHeaderInTextStream.ReadLine ();
         if (line.length () == 0) {
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-            logMsg ("got EOF from src stream reading headers(incomplete)"sv);
-#endif
-            return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
+            return false;
         }
         Sequence<String> tokens{line.RTrim ().Tokenize ({' '})}; // ReadLine keeps the line's CRLF
         if (tokens.size () < 3) {
@@ -111,14 +97,22 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
             DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
             Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
         }
-        updatableRequest.url = URI::ParseRelative (tokens[1]);
+        updatableRequest.url = URI::ParseRelative (tokens[1]); // throws if ill-formed
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
             static const auto kException_ = ClientErrorException{"Bad METHOD in Request HTTP line"sv};
             Throw (kException_);
         }
+        return true;
+    };
+    // read once per message: a message whose header came in pieces gets here only once all of it has come
+    Assert (updatableRequest.httpMethod ().empty () and updatableRequest.httpVersion ().empty () and updatableRequest.url () == URI{});
+    if (not readRequestLine ()) {
+        return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
     }
+    Assert (not updatableRequest.httpMethod ().empty ()); // not the URL or version: a client's "?" or "HTTP/" reads as empty
+    // now synchronously (since we know all the bytes are here) read the rest of the headers
     while (true) {
         static const String kCRLF_{"\r\n"sv};
         String              line = fMsgHeaderInTextStream.ReadLine ();
@@ -129,7 +123,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         // add subsequent items to the header map
         size_t i = line.find (':');
         if (i == string::npos) {
-            DbgTrace ("line={}"_f, line);
+            DbgTrace ("line={}"_f, line); // should almost never happen, but in case this ever does happen, may want to know the form/situation
             Throw (ClientErrorException{"Bad HTTP Request missing colon in headers"sv});
         }
         else {
@@ -138,9 +132,6 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
             updatableRequest.rwHeaders ().Add (hdr, value);
         }
     }
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-    logMsg ("ReadHeaders completed normally"sv);
-#endif
     return ReadHeadersResult::eCompleteGood;
 }
 
@@ -360,6 +351,49 @@ TimePointSeconds Connection::GetIdleSince () const
     return fIdleSince_;
 }
 
+void Connection::SetState_ ([[maybe_unused]] State_Flag_ s)
+{
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
+    fState_ = s;
+#endif
+}
+
+template <typename MAKE_MSG>
+void Connection::LogMsg_ ([[maybe_unused]] const MAKE_MSG& makeMsg) const
+{
+#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
+    WriteLogConnectionMsg_ (makeMsg ());
+#endif
+}
+
+namespace {
+    // the encoding to send a response's body in: the first of deflate, gzip and zstd that the request accepts, and supported
+    // (when given) allows - deflate before gzip for its smaller header, the same otherwise
+    optional<HTTP::ContentEncoding> PreferredContentEncoding_ (const HTTP::ContentEncodings&                           acceptable,
+                                                               const optional<Containers::Set<HTTP::ContentEncoding>>& supported)
+    {
+        auto usable = [&] (HTTP::ContentEncoding ce) {
+            return acceptable.Contains (ce) and (supported == nullopt or supported->Contains (ce));
+        };
+        if constexpr (DataExchange::Compression::Deflate::kSupported) {
+            if (usable (HTTP::ContentEncoding::kDeflate)) {
+                return HTTP::ContentEncoding::kDeflate;
+            }
+        }
+        if constexpr (DataExchange::Compression::GZip::kSupported) {
+            if (usable (HTTP::ContentEncoding::kGZip)) {
+                return HTTP::ContentEncoding::kGZip;
+            }
+        }
+        if constexpr (DataExchange::Compression::ZStd::kSupported) {
+            if (usable (HTTP::ContentEncoding::kZStd)) {
+                return HTTP::ContentEncoding::kZStd;
+            }
+        }
+        return nullopt;
+    }
+}
+
 Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 {
     AssertExternallySynchronizedChecker::WriteContext declareContext{*this};
@@ -375,57 +409,19 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             fMessage_->SetAssertExternallySynchronizedCheckerContext (GetSharedContext ());
 #endif
         }
-
-        // readHeaders returns nullopt if it completed successfully (usually the case)
-        auto readHeaders = [&] () -> optional<ReadAndProcessResult> {
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-            ++fReadAndProcessMessageNumber_;
-            fState_ = State_Flag_::eReadingHeaders_Started;
-            fExtraStats_.store (Stats2Capture_{
-                .fMessageStart = Time::GetTickCount (), .fPeer = fSocket_.GetPeerAddress (), .fHandlingThread = std::this_thread::get_id ()});
-#endif
-            switch (fMessage_->ReadHeaders (
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-                [this] (const String& i) -> void { WriteLogConnectionMsg_ (i); }
-#endif
-                )) {
-                case MyMessage_::eIncompleteDeadEnd: {
-                    DbgTrace ("ReadHeaders failed (socket {}) - incomplete data read from client."_f,
-                              fSocket_); // sometimes because the client closed the connection before we could handle: e.g. user in web browser hitting refresh button fast
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-                    fState_ = State_Flag_::eFinishedReadingHeaders_Failed;
-#endif
-                    return eClose; // don't keep-alive - so this closes connection
-                } break;
-                case MyMessage_::eIncompleteButMoreMayBeAvailable: {
-                    DbgTrace ("ReadHeaders: the header has come only in part, so far - read the rest when it comes"_f);
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-                    fState_ = State_Flag_::eFinishedReadingHeaders_Incomplete;
-#endif
-                    return ReadAndProcessResult::eTryAgainLater;
-                } break;
-                case MyMessage_::eCompleteGood: {
-                    // fall through and actually process the request
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-                    fState_ = State_Flag_::eFinishedReadingHeaders_Success;
-#endif
-                    return nullopt;
-                } break;
-                default:
-                    AssertNotReached ();
-                    return nullopt;
-            }
-        };
-        // First read the HTTP request line, and the headers (and abort this ReadAndProcessMessage attempt if not ready)
-        if (auto r = readHeaders ()) {
-            return *r;
+        switch (ReadHeaders_ ()) {
+            case MyMessage_::eIncompleteButMoreMayBeAvailable:
+                return eTryAgainLater; // read the rest when it comes
+            case MyMessage_::eIncompleteDeadEnd:
+                return eClose; // the rest will never come
+            case MyMessage_::eCompleteGood:
+                break;
         }
 
-        // if we get this far, we always complete processing the message
 #if qStroika_Foundation_Debug_AssertionsChecked
+        // from here, the message is always answered - or its response aborted, by the catch below
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
 #endif
-
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         [[maybe_unused]] auto&& cleanup2 =
             Finally ([&] () noexcept { fExtraStats_.rwget ().rwref ().fMessageCompleted = Time::GetTickCount (); });
@@ -435,201 +431,180 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                                            .fRequestURI     = fMessage_->request ().url (),
                                            .fHandlingThread = std::this_thread::get_id ()});
 #endif
-
-        auto applyDefaultsToResponseHeaders = [&] () -> void {
-            if (fDefaultGETResponseHeaders_ and fMessage_->request ().httpMethod () == HTTP::Methods::kGet) {
-                fMessage_->rwResponse ().rwHeaders () += *fDefaultGETResponseHeaders_;
-            }
-            // https://tools.ietf.org/html/rfc7231#section-7.1.1.2  : ...An origin server MUST send a Date header field in all other cases
-            fMessage_->rwResponse ().rwHeaders ().date = DateTime::Now ();
-
-            // @todo can short-circuit the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
-            // so may need to revisit the bodyHasEntity logic) - just look at METHOD of request and http-status - oh - that cannot check
-            // yet/until done... so maybe need other check like bodyCannotHaveEntity - stuff can check before filled out response?
-            if (optional<HTTP::ContentEncodings> acceptEncoding = fMessage_->request ().headers ().acceptEncoding) {
-                optional<HTTP::ContentEncodings> oBodyEncoding = fMessage_->rwResponse ().bodyEncoding ();
-                auto                             addCT         = [this, &oBodyEncoding] (HTTP::ContentEncoding contentEncoding2Add) {
-                    fMessage_->rwResponse ().bodyEncoding = [&] () {
-                        if (oBodyEncoding) {
-                            auto bc = *oBodyEncoding;
-                            bc += contentEncoding2Add;
-                            return bc;
-                        }
-                        else {
-                            return HTTP::ContentEncodings{contentEncoding2Add};
-                        }
-                    }();
-                };
-                bool needBodyEncoding = not oBodyEncoding.has_value ();
-                // prefer deflate over gzip cuz smaller header and otherwise same
-                auto maybeAddIt = [&] (HTTP::ContentEncoding ce) {
-                    if (needBodyEncoding and acceptEncoding->Contains (ce) and
-                        (fSupportedCompressionEncodings_ == nullopt or fSupportedCompressionEncodings_->Contains (ce))) {
-                        addCT (ce);
-                        needBodyEncoding = false;
-                    }
-                };
-                if constexpr (DataExchange::Compression::Deflate::kSupported) {
-                    maybeAddIt (HTTP::ContentEncoding::kDeflate);
-                }
-                if constexpr (DataExchange::Compression::GZip::kSupported) {
-                    maybeAddIt (HTTP::ContentEncoding::kGZip);
-                }
-                if constexpr (DataExchange::Compression::ZStd::kSupported) {
-                    maybeAddIt (HTTP::ContentEncoding::kZStd);
-                }
-                // @todo add zstd, and others? zstd best probably...
-            }
-
-            if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
-                if (this->response ().autoComputeETag ()) {
-                    this->rwResponse ().automaticTransferChunkSize =
-                        Response::kNoChunkedTransfer; // cannot start response xfer til we've computed etag (meaning seen all the body bytes)
-                }
-            }
-        };
-        applyDefaultsToResponseHeaders ();
-
-        /*
-         *  Now bookkeeping and handling of keepalive headers
-         */
-        auto applyKeepAliveLogic = [&] () -> bool {
-            bool thisMessageKeepAlive = fMessage_->request ().keepAliveRequested;
-            if (thisMessageKeepAlive) {
-
-                // Check for keepalive headers, and handle/merge them appropriately
-                // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
-                if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
-                    this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
-                }
-                // if missing, no limits
-                if (auto oRemaining = remainingConnectionLimits ()) {
-                    if (oRemaining->fMessages) {
-                        if (oRemaining->fMessages == 0u) {
-                            thisMessageKeepAlive = false;
-                        }
-                        else {
-                            oRemaining->fMessages = *oRemaining->fMessages - 1u;
-                        }
-                    }
-                    if (oRemaining->fTimeout) {
-                        if (fConnectionStartedAt_ + *oRemaining->fTimeout < Time::GetTickCount ()) {
-                            thisMessageKeepAlive = false;
-                        }
-                    }
-                }
-            }
-            // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-            //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-            this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
-            return thisMessageKeepAlive;
-        };
-        bool thisMessageKeepAlive = applyKeepAliveLogic ();
-
-        /**
-         *  Delegate to interceptor chain. This is the principle EXTENSION point for the Stroika Framework webserver. This is where you modify
-         *  the response somehow or other (typically through routes).
-         */
-        auto invokeInterceptorChain = [&] () {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("Handing request {} to interceptor chain"_f, request ().ToString ());
-#endif
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-            [[maybe_unused]] auto&& cleanupFlags = Finally ([&] () noexcept {
-                Assert (fState_ < State_Flag_::eInterceptorChain_Complete);
-                fState_ = State_Flag_::eInterceptorChain_Complete;
-            });
-            fState_                              = State_Flag_::eInterceptorChain_Start;
-#endif
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ ("Handing request {} to interceptor chain"_f(request ()));
-#endif
-            try {
-                fInterceptorChain_.HandleMessage (*fMessage_);
-            }
-            catch (...) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ());
-#endif
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-                WriteLogConnectionMsg_ ("Interceptor-Chain caught exception handling message: {}"_f(current_exception ()));
-#endif
-            }
-        };
-        invokeInterceptorChain ();
-
-        auto assureRequestFullyRead = [&] () {
-            if (thisMessageKeepAlive) {
-                // be sure we advance the read pointer over the message body,
-                // lest we start reading part of the previous message as the next message
-
-                // @todo must fix this for support of Transfer-Encoding, but from:
-                //
-                /*
-                 *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
-                 *      The rules for when a message-body is allowed in a message differ for requests and responses.
-                 *
-                 *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
-                 *      or Transfer-Encoding header field in the request's message-headers/
-                 */
-                if (request ().headers ().contentLength ()) {
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-                    WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
-#endif
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("Assuring all data read; REQ={}"_f, request ().ToString ());
-#endif
-                    // @todo - this can be more efficient in the rare case we ignore the body - but that's rare enough to not matter much
-                    (void)fMessage_->rwRequest ().GetBody ();
-                }
-            }
-        };
-        assureRequestFullyRead ();
-
-        /*
-         *  By this point, the response has been fully built, and so we can potentially redo the response as a 304-not-modified, by
-         *  comparing the ETag with the ifNoneMatch header.
-         */
-        [&] () {
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-            fState_ = State_Flag_::eFlushing_Start;
-#endif
-            if (not this->response ().responseStatusSent () and HTTP::IsOK (this->response ().status)) {
-                if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
-                    if (auto actualETag = this->response ().headers ().ETag ()) {
-                        bool ctm = this->response ().chunkedTransferMode ();
-                        if (ctm) {
-                            DbgTrace ("Warning - disregarding ifNoneMatch request (though it matched) - cuz in chunked transfer mode"_f);
-                        }
-                        if (requestedINoneMatch->fETags.Contains (*actualETag) and not ctm) {
-                            DbgTrace ("Updating OK response to NotModified (due to ETag match)"_f);
-                            this->rwResponse ().status = HTTP::StatusCodes::kNotModified; // this assignment automatically prevents sending data
-                        }
-                    }
-                }
-            }
-            if (not this->rwResponse ().End ()) {
-                thisMessageKeepAlive = false;
-            }
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-            fKeepAlive_ = thisMessageKeepAlive;
-            fState_     = State_Flag_::eFlushing_Done;
-#endif
-#if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
-#endif
-        }();
-
-        return thisMessageKeepAlive ? eTryAgainLater : eClose;
+        ApplyDefaultResponseHeaders_ ();
+        bool keepAlive = ApplyKeepAlive_ ();
+        InvokeInterceptorChain_ (); // builds the response: the Router (CORS, then the matching route's handler - the application's code), within the fault handler and any other interceptors
+        if (keepAlive) {
+            DiscardUnreadRequestBody_ (); // the next request on this connection starts right after this one's body
+        }
+        keepAlive = EndResponse_ (keepAlive);
+        return keepAlive ? eTryAgainLater : eClose;
     }
     catch (...) {
         DbgTrace ("ReadAndProcessMessage Exception caught ({}), so returning ReadAndProcessResult::eClose"_f, current_exception ());
         this->rwResponse ().Abort ();
-#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
-        fState_ = State_Flag_::eAborting;
-#endif
+        SetState_ (State_Flag_::eAborting);
         return Connection::ReadAndProcessResult::eClose;
     }
+}
+
+Connection::MyMessage_::ReadHeadersResult Connection::ReadHeaders_ ()
+{
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
+    ++fReadAndProcessMessageNumber_;
+    fExtraStats_.store (Stats2Capture_{
+        .fMessageStart = Time::GetTickCount (), .fPeer = fSocket_.GetPeerAddress (), .fHandlingThread = std::this_thread::get_id ()});
+#endif
+    SetState_ (State_Flag_::eReadingHeaders_Started);
+    LogMsg_ ([] () -> String { return "Starting ReadHeaders"sv; });
+    MyMessage_::ReadHeadersResult result = fMessage_->ReadHeaders ();
+    switch (result) {
+        case MyMessage_::eIncompleteDeadEnd: {
+            DbgTrace ("ReadHeaders failed (socket {}) - incomplete data read from client."_f,
+                      fSocket_); // sometimes because the client closed the connection before we could handle: e.g. user in web browser hitting refresh button fast
+            SetState_ (State_Flag_::eFinishedReadingHeaders_Failed);
+            LogMsg_ ([] () -> String { return "ReadHeaders: incomplete, and no more will come"sv; });
+            break;
+        }
+        case MyMessage_::eIncompleteButMoreMayBeAvailable: {
+            DbgTrace ("ReadHeaders: the header has come only in part, so far - read the rest when it comes"_f);
+            SetState_ (State_Flag_::eFinishedReadingHeaders_Incomplete);
+            LogMsg_ ([] () -> String { return "ReadHeaders: incomplete, so far"sv; });
+            break;
+        }
+        case MyMessage_::eCompleteGood: {
+            SetState_ (State_Flag_::eFinishedReadingHeaders_Success);
+            LogMsg_ ([] () -> String { return "ReadHeaders completed normally"sv; });
+            break;
+        }
+        default:
+            AssertNotReached ();
+    }
+    return result;
+}
+
+void Connection::ApplyDefaultResponseHeaders_ ()
+{
+    if (fDefaultGETResponseHeaders_ and fMessage_->request ().httpMethod () == HTTP::Methods::kGet) {
+        fMessage_->rwResponse ().rwHeaders () += *fDefaultGETResponseHeaders_;
+    }
+    // https://tools.ietf.org/html/rfc7231#section-7.1.1.2  : ...An origin server MUST send a Date header field in all other cases
+    fMessage_->rwResponse ().rwHeaders ().date = DateTime::Now ();
+
+    // @todo can short-circuit the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
+    // so may need to revisit the bodyHasEntity logic) - just look at METHOD of request and http-status - oh - that cannot check
+    // yet/until done... so maybe need other check like bodyCannotHaveEntity - stuff can check before filled out response?
+    if (optional<HTTP::ContentEncodings> acceptEncoding = fMessage_->request ().headers ().acceptEncoding) {
+        if (not fMessage_->rwResponse ().bodyEncoding ().has_value ()) {
+            if (optional<HTTP::ContentEncoding> ce = PreferredContentEncoding_ (*acceptEncoding, fSupportedCompressionEncodings_)) {
+                fMessage_->rwResponse ().bodyEncoding = HTTP::ContentEncodings{*ce};
+            }
+        }
+    }
+
+    if (this->request ().headers ().ifNoneMatch () and this->response ().autoComputeETag ()) {
+        this->rwResponse ().automaticTransferChunkSize = Response::kNoChunkedTransfer; // cannot start response xfer til we've computed etag (meaning seen all the body bytes)
+    }
+}
+
+bool Connection::ApplyKeepAlive_ ()
+{
+    bool thisMessageKeepAlive = fMessage_->request ().keepAliveRequested;
+    if (thisMessageKeepAlive) {
+        // Check for keepalive headers, and handle/merge them appropriately
+        // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
+        if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
+            this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
+        }
+        // if missing, no limits
+        if (auto oRemaining = remainingConnectionLimits ()) {
+            if (oRemaining->fMessages) {
+                if (oRemaining->fMessages == 0u) {
+                    thisMessageKeepAlive = false;
+                }
+                else {
+                    oRemaining->fMessages = *oRemaining->fMessages - 1u;
+                }
+            }
+            if (oRemaining->fTimeout) {
+                if (fConnectionStartedAt_ + *oRemaining->fTimeout < Time::GetTickCount ()) {
+                    thisMessageKeepAlive = false;
+                }
+            }
+        }
+    }
+    // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+    //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+    this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
+    return thisMessageKeepAlive;
+}
+
+void Connection::InvokeInterceptorChain_ ()
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("Handing request {} to interceptor chain"_f, request ().ToString ());
+#endif
+    SetState_ (State_Flag_::eInterceptorChain_Start);
+    [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { SetState_ (State_Flag_::eInterceptorChain_Complete); });
+    LogMsg_ ([this] () -> String { return "Handing request {} to interceptor chain"_f(request ()); });
+    try {
+        fInterceptorChain_.HandleMessage (*fMessage_);
+    }
+    catch (...) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ());
+#endif
+        LogMsg_ ([] () -> String { return "Interceptor-Chain caught exception handling message: {}"_f(current_exception ()); });
+    }
+}
+
+void Connection::DiscardUnreadRequestBody_ ()
+{
+    // @todo must fix this for support of Transfer-Encoding, but from:
+    //
+    /*
+     *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
+     *      The rules for when a message-body is allowed in a message differ for requests and responses.
+     *
+     *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length
+     *      or Transfer-Encoding header field in the request's message-headers/
+     */
+    if (request ().headers ().contentLength ()) {
+        LogMsg_ ([] () -> String { return "msg is keepalive, and have content length, so making sure we read all of request body"sv; });
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("Assuring all data read; REQ={}"_f, request ().ToString ());
+#endif
+        // @todo - this can be more efficient in the rare case we ignore the body - but that's rare enough to not matter much
+        (void)fMessage_->rwRequest ().GetBody ();
+    }
+}
+
+bool Connection::EndResponse_ (bool keepAlive)
+{
+    SetState_ (State_Flag_::eFlushing_Start);
+    if (not this->response ().responseStatusSent () and HTTP::IsOK (this->response ().status)) {
+        if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
+            if (auto actualETag = this->response ().headers ().ETag ()) {
+                bool ctm = this->response ().chunkedTransferMode ();
+                if (ctm) {
+                    DbgTrace ("Warning - disregarding ifNoneMatch request (though it matched) - cuz in chunked transfer mode"_f);
+                }
+                if (requestedINoneMatch->fETags.Contains (*actualETag) and not ctm) {
+                    DbgTrace ("Updating OK response to NotModified (due to ETag match)"_f);
+                    this->rwResponse ().status = HTTP::StatusCodes::kNotModified; // this assignment automatically prevents sending data
+                }
+            }
+        }
+    }
+    if (not this->rwResponse ().End ()) {
+        keepAlive = false;
+    }
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
+    fKeepAlive_ = keepAlive;
+#endif
+    SetState_ (State_Flag_::eFlushing_Done);
+    LogMsg_ ([] () -> String { return "Did GetResponse ().End ()"sv; });
+    return keepAlive;
 }
 
 #if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
