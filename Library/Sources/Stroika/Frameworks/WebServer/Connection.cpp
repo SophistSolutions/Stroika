@@ -304,13 +304,13 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
 #if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
     {
         String socketName = "{}-{}"_f((long)DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
-        fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
-            fSocketStream_,
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}-input-trace.txt"_f(socketName)),
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}output-trace.txt"_f(socketName)));
-        fLogConnectionState_ = Streams::TextToBinary::Writer::New (
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}-highlevel-trace.txt"_f(socketName)),
-            Streams::TextToBinary::Writer::Format::eUTF8WithoutBOM);
+        auto   logFile    = [&] (const String& what) {
+            return IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () /
+                                                          "socket-{}-{}-trace.txt"_f(socketName, what).As<filesystem::path> ());
+        };
+        fSocketStream_       = Streams::LoggingInputOutputStream::New<byte> (fSocketStream_, logFile ("input"sv), logFile ("output"sv));
+        fLogConnectionState_ = Streams::TextToBinary::Writer::New (logFile ("highlevel"sv), Characters::UnicodeExternalEncodings::eUTF8,
+                                                                   Characters::ByteOrderMark::eDontInclude);
     }
 #endif
 }

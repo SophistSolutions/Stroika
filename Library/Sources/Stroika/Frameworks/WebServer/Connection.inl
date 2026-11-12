@@ -11,6 +11,8 @@ namespace Stroika::Frameworks::WebServer {
      */
 
 }
+#if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
 namespace Stroika::Frameworks::WebServer {
     Foundation::Common::StroikaNaming EnumNamingRule (Connection::Stats::State);
 }
+#endif

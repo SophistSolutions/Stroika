@@ -406,7 +406,7 @@ namespace Stroika::Frameworks::WebServer {
         Execution::Synchronized<Stats2Capture_> fExtraStats_;
 #endif
 #if qStroika_Frameworks_WebServer_Connection_DetailedMessagingLog
-        Streams::OutputStream::Ptr<Character> fLogConnectionState_;
+        Streams::OutputStream::Ptr<Characters::Character> fLogConnectionState_;
 #endif
 
     public:
