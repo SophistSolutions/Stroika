@@ -308,44 +308,36 @@ make[2]: *** Waiting for unfinished jobs....
 
 #endif
 
-/**
-  [==========] 24 tests from 1 test suite ran. (25 ms total)         [  PASSED  ] 24 tests.
-    [33] Foundation::DataExchange::ObjectVariantMapper - ../Builds/g++-14-release++23/Tests/Test33 --gtest_brief
-Segmentation fault (core dumped)
- */
 /*
- *  \note This flag covers THREE symptoms, all g++ <= 14 optimizer bugs, and almost certainly the same
- *        underlying defect - so one flag, one place to bump when g++-14 support is dropped:
+ *  g++ 13.3 and 14.2 - ubuntu 24.04's g++-13 and g++-14 - miscompile [[assume (A or B)]]: the code after it acts as if A were
+ *  false. A Release build makes each Assert, Require and Ensure an [[assume]] (Debug/Assertions.h) - so with these compilers,
+ *  none is.
  *
- *          1.  Memory::Insert () miscompiled. DataStructures/Array.inl takes the Insert_BWA_ ()
- *              per-element loop instead. (The original reason for this flag.)
- *
- *          2.  (2026-08-21) Collection<T>::_IRep::Add (span<const value_type>, Iterator<value_type>*)
- *              has its `if (oAddedI != nullptr)` guard DISCARDED at -O2 + LTO: the body executes with
- *              the pointer null and writes through it. Proven by an fprintf INSIDE the branch printing
- *              oAddedI=(nil) - gdb variable values are meaningless in optimized builds, so the earlier
- *              debugger evidence for this did not count. SIGSEGV'd 6 regression tests (36/40/44/45/53/
- *              54) on ubuntu-24.04; ubuntu-26.04 with the same g++-14 was clean, as were g++-14 Debug,
- *              MSVC x4 and XCode. Worked around by [[gnu::noinline, gnu::optimize ("O0")]] on the Add ()
- *              override in all six Collection reps. noinline is REQUIRED for the attribute to apply at
- *              all - an inlined function takes its caller's flags, and these are all inline templates.
- *              Measured: noinline alone does NOT fix it, noipa alone does NOT fix it, and passing the
- *              span by value does NOT fix it. Only noinline+O0 does.
- *
- *          3.  (2026-11-11) Streams::BufferedInputStream's unseekable rep, Read (): its first read from upstream
- *              got 12 bytes, yet it handed its caller 0 - which reads as EOF - so the Modbus server closed each
- *              connection unanswered (Tests/54, ubuntu-24.04 g++-14.2 Release; g++-14.3 on ubuntu-26.04 clean).
- *              fprintf probes in Read () moved the fault rather than showed it. noinline+O0 on Read () fixes it.
+ *  Seen - each only in Release (-O2 + LTO), and each gone with its condition not assumed, or with A and B swapped:
+ *      o   Memory::Insert (Memory/Common.inl): Require (intoLiveSpan.data () == intoReservedSpan.data () or
+ *          (intoLiveSpan.size () == 0)) - so it moved none of the elements already there
+ *      o   Add (span, Iterator*) of Containers::Concrete's Collection_Array, Collection_LinkedList, Collection_stdforward_list,
+ *          SortedCollection_LinkedList, SortedCollection_SkipList and SortedCollection_stdmultiset: Require (oAddedI == nullptr
+ *          or items.size () == 1) - so its `if (oAddedI != nullptr)` was dropped, and it wrote through the null pointer
+ *      o   Streams::BufferedInputStream's unseekable rep, Read (): Assert (n != 0 or not fRealIn_.IsSeekable () or
+ *          fRealIn_.IsAtEOF ()) - so it handed its caller none of the bytes it read (the Modbus server saw end-of-file)
+ *      o   DataExchange::Variant::JSON::Reader, Reader_Number_ (): Require (initialChar == '-' or IsJSONDigit_ (initialChar)) -
+ *          so a negative integer read as an unsigned 0 (seen without boost.json)
+ *      o   more, not found: with just those not assumed, 7 regression test programs still crashed (in ProcessRunner::Run,
+ *          listing network interfaces, ...); with no [[assume]] at all, every one passed - on both compilers (2026-11-11)
+ *  A small program with the same [[assume]] compiled correctly: the optimizer's context decides. To keep [[assume]] for these
+ *  compilers instead, each such assertion would take its Expression form (RequireExpression, AssertExpression: checked in
+ *  Debug, never assumed). Before Stroika v3.0d26 this was qCompilerAndStdLib_MemoryInsertAt_Buggy, worked around with
+ *  [[gnu::optimize ("O0")]] on the functions above, and an element-by-element Array::Insert.
  */
-#ifndef qCompilerAndStdLib_MemoryInsertAt_Buggy
+#ifndef qCompilerAndStdLib_assume_or_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-// seen broken in GCC 13
-// seen broken in GCC 14 (on ubuntu 24.10, but fixed in gcc14 on ubuntu 25.04)
-// FIXED in GCC 15
-#define qCompilerAndStdLib_MemoryInsertAt_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 14))
+// seen broken in GCC 13.3 and 14.2 (ubuntu 24.04) - earlier 13 and 14 releases untested, so assumed broken too
+// FIXED in GCC 13.4, 14.3 (ubuntu 26.04), 15 and 16
+#define qCompilerAndStdLib_assume_or_Buggy ((__GNUC__ == 13 and __GNUC_MINOR__ < 4) or (__GNUC__ == 14 and __GNUC_MINOR__ < 3))
 #else
-#define qCompilerAndStdLib_MemoryInsertAt_Buggy 0
+#define qCompilerAndStdLib_assume_or_Buggy 0
 #endif
 
 #endif

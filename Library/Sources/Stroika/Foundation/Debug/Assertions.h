@@ -251,11 +251,12 @@ namespace Stroika::Foundation::Debug {
      *  \note When qStroika_Foundation_Debug_AssertionsChecked is false, this expands to Stroika_ATTRIBUTE_ASSUME - [[assume(X)]]
      *        wherever the compiler supports it (g++ 13+, clang 19+, even in C++20 mode), or __assume on MSVC. So though the arguments
      *        are not evaluated in a release build, they must be syntactic (new requirement in Stroika v3.0), and a false one is
-     *        undefined behavior - @see Documentation/Design-Overview.md "Release Builds and [[assume]]".
+     *        undefined behavior - @see Documentation/Design-Overview.md "Release Builds and [[assume]]". Except where
+     *        qCompilerAndStdLib_assume_or_Buggy: there it expands to nothing.
      * 
      *  @see GetAssertionHandler
      */
-#if qStroika_Foundation_Debug_AssertionsChecked
+#if qStroika_Foundation_Debug_AssertionsChecked or qCompilerAndStdLib_assume_or_Buggy
 #define Assert(c) AssertExpression (c)
 #else
 #define Assert(c) Stroika_ATTRIBUTE_ASSUME (c)
@@ -279,7 +280,7 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \def Require(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion about the incoming contract - arguments to a function.
      */
-#if qStroika_Foundation_Debug_AssertionsChecked
+#if qStroika_Foundation_Debug_AssertionsChecked or qCompilerAndStdLib_assume_or_Buggy
 #define Require(c) RequireExpression (c)
 #else
 #define Require(c) Stroika_ATTRIBUTE_ASSUME (c)
@@ -301,7 +302,7 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
      */
-#if qStroika_Foundation_Debug_AssertionsChecked
+#if qStroika_Foundation_Debug_AssertionsChecked or qCompilerAndStdLib_assume_or_Buggy
 #define Ensure(c) EnsureExpression (c)
 #else
 #define Ensure(c) Stroika_ATTRIBUTE_ASSUME (c)
