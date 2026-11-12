@@ -251,8 +251,13 @@ namespace Stroika::Frameworks::WebServer {
             static constexpr unsigned int                              kDefault_MaxConnections{64};
             static constexpr ConnectionOrientedMasterSocket::BindFlags kDefault_BindFlags{};
             static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
-            DISABLE_COMPILER_MSC_WARNING_START (4996); // its own (dynamic) initialization uses it: MSVC warns there, not just at uses
+            // its own (dynamic) initialization uses it: compilers warn there, not just at uses
+            DISABLE_COMPILER_MSC_WARNING_START (4996);
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
             [[deprecated ("Since Stroika v3.0d26 use CORSOptions{}")]] static inline const CORSOptions kDefault_CORS{};
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             DISABLE_COMPILER_MSC_WARNING_END (4996);
             static constexpr bool          kDefault_AutoComputeETagResponse{true};
             static constexpr Duration      kDefault_AutomaticTCPDisconnectOnClose{2.0s};
