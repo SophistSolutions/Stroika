@@ -69,11 +69,6 @@ namespace Stroika::Frameworks::WebServer {
         Characters::String ToString () const;
     };
 
-    /**
-     *  \brief CORSOptions{} - each field its default
-     */
-    inline const CORSOptions kDefault_CORSOptions{};
-
 }
 
 /*

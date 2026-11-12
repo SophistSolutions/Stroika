@@ -251,10 +251,12 @@ namespace Stroika::Frameworks::WebServer {
             static constexpr unsigned int                              kDefault_MaxConnections{64};
             static constexpr ConnectionOrientedMasterSocket::BindFlags kDefault_BindFlags{};
             static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
-            static inline const CORSOptions kDefault_CORS{[] () { return kDefault_CORSOptions; }()};
-            static constexpr bool           kDefault_AutoComputeETagResponse{true};
-            static constexpr Duration       kDefault_AutomaticTCPDisconnectOnClose{2.0s};
-            static constexpr optional<int>  kDefault_Linger{nullopt}; // intentionally optional-valued
+            DISABLE_COMPILER_MSC_WARNING_START (4996); // its own (dynamic) initialization uses it: MSVC warns there, not just at uses
+            [[deprecated ("Since Stroika v3.0d26 use CORSOptions{}")]] static inline const CORSOptions kDefault_CORS{};
+            DISABLE_COMPILER_MSC_WARNING_END (4996);
+            static constexpr bool          kDefault_AutoComputeETagResponse{true};
+            static constexpr Duration      kDefault_AutomaticTCPDisconnectOnClose{2.0s};
+            static constexpr optional<int> kDefault_Linger{nullopt}; // intentionally optional-valued
             static constexpr bool kDefault_TCPNoDelay{true}; // https://brooker.co.za/blog/2024/05/09/nagle.html (defaults to NO DELAY - disable Nagle - because we are carefully to only write once when the response is fully read)
         };
         static const Options kDefaultOptions;
