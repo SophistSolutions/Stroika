@@ -94,14 +94,17 @@ namespace Stroika::Foundation::IO::Network {
             }
         }
 
+        // The part of every socket rep that owns its native socket (fSD_), implementing the _IRep calls that do not depend on
+        // the kind of socket. Each socket's Rep_ (ConnectionOrientedStreamSocket, ConnectionOrientedMasterSocket,
+        // ConnectionlessSocket) derives from it, BASE_REP being that socket's _IRep.
         template <typename BASE_REP>
-        struct BackSocketImpl_ : public BASE_REP {
+        struct NativeSocketRep_ : public BASE_REP {
             Socket::PlatformNativeHandle fSD_;
-            BackSocketImpl_ (Socket::PlatformNativeHandle sd)
+            NativeSocketRep_ (Socket::PlatformNativeHandle sd)
                 : fSD_{sd}
             {
             }
-            ~BackSocketImpl_ ()
+            ~NativeSocketRep_ ()
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
                     Close ();
@@ -151,10 +154,22 @@ namespace Stroika::Foundation::IO::Network {
             {
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized};
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
+                    // A failure that means a bug is asserted; any other is ignored - never retried, since the number may already
+                    // be another socket's
 #if qStroika_Platform_POSIX
-                    ::close (fSD_);
+                    if (::close (fSD_) != 0) {
+                        // EBADF: not ours to close (closed twice?) - a bug. EINTR: a signal (a thread abort, say) came during a
+                        // lingering close (SO_LINGER) - Linux and macOS release it anyway, as POSIX 2024 requires
+                        Assert (errno != EBADF);
+                    }
 #elif qStroika_Platform_Windows
-                    ::closesocket (fSD_);
+                    if (::closesocket (fSD_) == SOCKET_ERROR) {
+                        // WSAENOTSOCK: not ours to close (closed twice?) - a bug. WSAEWOULDBLOCK: a non-blocking socket lingering,
+                        // left open - these sockets block, so also a bug. Others (WSAENETDOWN: the network subsystem failed)
+                        // leave nothing to do
+                        [[maybe_unused]] int e = ::WSAGetLastError ();
+                        Assert (e != WSAENOTSOCK and e != WSAEWOULDBLOCK);
+                    }
 #else
                     AssertNotImplemented ();
 #endif

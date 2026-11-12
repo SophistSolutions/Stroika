@@ -46,13 +46,13 @@ namespace {
     }
 #endif
 
-    struct Rep_ : BackSocketImpl_<ConnectionOrientedStreamSocket::_IRep> {
-        using inherited = BackSocketImpl_<ConnectionOrientedStreamSocket::_IRep>;
+    struct Rep_ final : NativeSocketRep_<ConnectionOrientedStreamSocket::_IRep> {
+        using inherited = NativeSocketRep_<ConnectionOrientedStreamSocket::_IRep>;
         Rep_ (Socket::PlatformNativeHandle sd)
             : inherited{sd}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("Constructed BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_ with sd={:x}"_f, (int)sd);
+            DbgTrace ("Constructed NativeSocketRep_<ConnectionOrientedStreamSocket>::Rep_ with sd={:x}"_f, (int)sd);
 #endif
         }
         Rep_ ()            = delete;

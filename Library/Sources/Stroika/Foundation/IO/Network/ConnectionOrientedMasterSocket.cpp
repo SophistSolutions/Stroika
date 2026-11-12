@@ -23,8 +23,8 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 namespace {
-    struct Rep_ final : BackSocketImpl_<ConnectionOrientedMasterSocket::_IRep> {
-        using inherited = BackSocketImpl_<ConnectionOrientedMasterSocket::_IRep>;
+    struct Rep_ final : NativeSocketRep_<ConnectionOrientedMasterSocket::_IRep> {
+        using inherited = NativeSocketRep_<ConnectionOrientedMasterSocket::_IRep>;
         Rep_ (Socket::PlatformNativeHandle sd)
             : inherited{sd}
         {

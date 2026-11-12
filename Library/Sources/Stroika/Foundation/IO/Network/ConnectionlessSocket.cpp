@@ -112,8 +112,8 @@ namespace {
 }
 
 namespace {
-    struct Rep_ : BackSocketImpl_<ConnectionlessSocket::_IRep> {
-        using inherited = BackSocketImpl_<ConnectionlessSocket::_IRep>;
+    struct Rep_ final : NativeSocketRep_<ConnectionlessSocket::_IRep> {
+        using inherited = NativeSocketRep_<ConnectionlessSocket::_IRep>;
         Rep_ (Socket::PlatformNativeHandle sd)
             : inherited{sd}
         {
