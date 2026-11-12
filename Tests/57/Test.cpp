@@ -640,7 +640,8 @@ namespace {
     }
 
     /*
-     *  A request line whose URL has no path - only a query or fragment mark - is answered with a client error (4xx).
+     *  A request line whose URL has no path - only a query or fragment mark - is answered 400 (Bad Request): a request-target
+     *  is "/...", "*" or an absolute URI.
      */
     GTEST_TEST (Frameworks_WebServer, RequestURLWithoutPath_)
     {
@@ -656,7 +657,30 @@ namespace {
 #endif
             optional<string> response = ReadUntilClosed_ (client);
             ASSERT_TRUE (response) << "the server left the connection open, after: " << request;
-            EXPECT_TRUE (response->starts_with ("HTTP/1.1 4")) << *response;
+            EXPECT_TRUE (response->starts_with ("HTTP/1.1 400")) << *response;
+        }
+    }
+
+    /*
+     *  A malformed request - its request line, a header line, or its HTTP version - is answered 400 (Bad Request), and its
+     *  connection closed.
+     */
+    GTEST_TEST (Frameworks_WebServer, MalformedRequest_)
+    {
+        TraceContextBumper ctx{"MalformedRequest_"};
+        ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
+        for (string_view request : {"GARBAGE\r\nHost: localhost\r\n\r\n"sv, "GET /FRED HTTP/1.1\r\nHost localhost\r\n\r\n"sv,
+                                    "GET /FRED HTTP/\r\nHost: localhost\r\n\r\n"sv, "GET /FRED HTTP/one\r\nHost: localhost\r\n\r\n"sv}) {
+            IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+            client.Write (as_bytes (span<const char>{request}));
+#else
+            client.Write (as_bytes (span{request}));
+#endif
+            optional<string> response = ReadUntilClosed_ (client);
+            ASSERT_TRUE (response) << "the server left the connection open, after: " << request;
+            EXPECT_TRUE (response->starts_with ("HTTP/1.1 400")) << request << " -> " << *response;
+            EXPECT_TRUE (String::FromLatin1 (*response).Contains ("Connection: close"sv, eCaseInsensitive)) << *response;
         }
     }
 

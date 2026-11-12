@@ -90,14 +90,25 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders ()
             DbgTrace ("tokens={}, line='{}', fMsgHeaderInTextStream={}"_f, tokens, line, fMsgHeaderInTextStream.ToString ());
             Throw (ClientErrorException{"Bad METHOD Request HTTP line ({})"_f(line)});
         }
-        updatableRequest.httpMethod  = tokens[0];
-        updatableRequest.httpVersion = tokens[2];
-        if (tokens[1].empty ()) {
-            // should check if GET/PUT/DELETE etc...
-            DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
-            Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
+        // HTTP-version is "HTTP/" DIGIT "." DIGIT (RFC 9112, section 2.3)
+        const String& version = tokens[2];
+        if (not(version.length () == 8 and version.StartsWith ("HTTP/"sv) and version[5].IsDigit () and version[6] == '.' and version[7].IsDigit ())) {
+            Throw (ClientErrorException{"Bad HTTP version ({})"_f(version)});
         }
-        updatableRequest.url = URI::ParseRelative (tokens[1]); // throws if ill-formed
+        // the request-target: origin-form ("/path?query"), asterisk-form ("*", for OPTIONS) or absolute-form
+        // ("http://host/path") (RFC 9112, section 3.2)
+        const String& target = tokens[1];
+        if (not(target.StartsWith ("/"sv) or target == "*"sv or target.Contains ("://"sv))) {
+            Throw (ClientErrorException{"Bad request-target ({})"_f(target)});
+        }
+        updatableRequest.httpMethod  = tokens[0];
+        updatableRequest.httpVersion = version;
+        try {
+            updatableRequest.url = URI::ParseRelative (target);
+        }
+        catch (const exception&) {
+            Throw (ClientErrorException{"Bad request-target ({})"_f(target)});
+        }
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
@@ -111,7 +122,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders ()
     if (not readRequestLine ()) {
         return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
     }
-    Assert (not updatableRequest.httpMethod ().empty ()); // not the URL or version: a client's "?" or "HTTP/" reads as empty
+    Assert (not updatableRequest.httpMethod ().empty () and not updatableRequest.httpVersion ().empty () and updatableRequest.url () != URI{});
     // now synchronously (since we know all the bytes are here) read the rest of the headers
     while (true) {
         static const String kCRLF_{"\r\n"sv};
@@ -416,7 +427,15 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
             fIncompleteHeaderSince_ = Time::GetTickCount (); // its first bytes are here: the poller hands a connection over when some come
         }
-        switch (ReadHeaders_ ()) {
+        MyMessage_::ReadHeadersResult headerRead{};
+        try {
+            headerRead = ReadHeaders_ ();
+        }
+        catch (const ClientErrorException& e) {
+            AnswerClientError_ (e); // a malformed request (RFC 9112, section 3: an invalid request-line SHOULD be answered 400)
+            return eClose;
+        }
+        switch (headerRead) {
             case MyMessage_::eIncompleteButMoreMayBeAvailable:
                 return eTryAgainLater; // read the rest when it comes
             case MyMessage_::eIncompleteDeadEnd:
@@ -492,6 +511,23 @@ Connection::MyMessage_::ReadHeadersResult Connection::ReadHeaders_ ()
             AssertNotReached ();
     }
     return result;
+}
+
+void Connection::AnswerClientError_ (const ClientErrorException& e) noexcept
+{
+    Response& answer = fMessage_->rwResponse ();
+    try {
+        answer.statusAndOverrideReason = make_tuple (e.GetStatus (), e.GetReason ());
+        answer.rwHeaders ().connection = Headers::eClose;
+        answer.rwHeaders ().date       = DateTime::Now ();
+        answer.contentType             = DataExchange::InternetMediaTypes::kText_PLAIN;
+        answer.writeln (Characters::ToString (e));
+        answer.End ();
+    }
+    catch (...) {
+        DbgTrace ("Answering a malformed request failed: {}"_f, current_exception ()); // the client gone, say
+        answer.Abort ();
+    }
 }
 
 void Connection::ApplyDefaultResponseHeaders_ ()
