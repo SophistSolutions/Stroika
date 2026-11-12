@@ -239,6 +239,9 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 }
                 return nullopt; // if nothing upstream available (but not zero/eof)
             }
+#if qCompilerAndStdLib_MemoryInsertAt_Buggy
+            [[gnu::noinline, gnu::optimize ("O0")]]
+#endif
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};

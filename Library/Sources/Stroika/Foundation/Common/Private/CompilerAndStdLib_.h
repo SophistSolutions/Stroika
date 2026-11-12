@@ -314,7 +314,7 @@ make[2]: *** Waiting for unfinished jobs....
 Segmentation fault (core dumped)
  */
 /*
- *  \note This flag covers TWO symptoms, both g++ <= 14 optimizer bugs, and almost certainly the same
+ *  \note This flag covers THREE symptoms, all g++ <= 14 optimizer bugs, and almost certainly the same
  *        underlying defect - so one flag, one place to bump when g++-14 support is dropped:
  *
  *          1.  Memory::Insert () miscompiled. DataStructures/Array.inl takes the Insert_BWA_ ()
@@ -331,6 +331,11 @@ Segmentation fault (core dumped)
  *              all - an inlined function takes its caller's flags, and these are all inline templates.
  *              Measured: noinline alone does NOT fix it, noipa alone does NOT fix it, and passing the
  *              span by value does NOT fix it. Only noinline+O0 does.
+ *
+ *          3.  (2026-11-11) Streams::BufferedInputStream's unseekable rep, Read (): its first read from upstream
+ *              got 12 bytes, yet it handed its caller 0 - which reads as EOF - so the Modbus server closed each
+ *              connection unanswered (Tests/54, ubuntu-24.04 g++-14.2 Release; g++-14.3 on ubuntu-26.04 clean).
+ *              fprintf probes in Read () moved the fault rather than showed it. noinline+O0 on Read () fixes it.
  */
 #ifndef qCompilerAndStdLib_MemoryInsertAt_Buggy
 

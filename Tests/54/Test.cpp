@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -179,6 +180,10 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
+#if qStroika_Platform_POSIX
+    // a write to a connection its peer closed fails the test - rather than killing it with SIGPIPE
+    Execution::SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
