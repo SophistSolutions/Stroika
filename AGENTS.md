@@ -569,6 +569,10 @@ still compile". Say which one you did.
 - **Comments say what IS, and why - not why it changed** (LGP, 2026-10-18): most readers meet the code for the first
   time. The case for a change ("refuses what works today") goes in the chat and the commit - an UPGRADE NOTE aside. A
   design question LGP keeps asking ("why validate reading, not writing?") is answered in the comment.
+  So a comment on a fixed line makes sense to a reader who never saw the bug: it says what the line does, and why where
+  that is not obvious - pointing at the API doc that requires it (LGP, 2026-11-12). `return nullopt; // nothing available
+  without blocking (@see InputStream::IRep::Read)`, not `// the Ptr's ReadOrThrow is what throws` - which answers only
+  the old code, that threw.
 - **A note that looks back names the version** - "before Stroika v3.0d25 it was an Execution::Function", not "it used to
   be" - in a `\note` and an `UPGRADE NOTE:` alike. That is the release the change first ships in: while `STROIKA_VERSION`
   says `3.0d25x`, the work is toward 3.0d25.
