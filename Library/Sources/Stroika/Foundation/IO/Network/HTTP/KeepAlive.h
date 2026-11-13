@@ -27,6 +27,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         static KeepAlive Parse (const String& headerValue);
 
+        /**
+         *  \brief Each limit the stricter of the two - the fewer messages, the shorter timeout; a limit only one sets, that one's
+         */
         static optional<KeepAlive> Merge (const optional<KeepAlive>& lhs, const optional<KeepAlive>& rhs);
 
         /**

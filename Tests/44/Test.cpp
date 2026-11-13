@@ -269,6 +269,26 @@ namespace {
         h.keepAlive = written;
         EXPECT_EQ (h.LookupOne (String{HeaderName::kKeepAlive}), "timeout=5, max=100"sv);
     }
+
+    /*
+     *  Merging two Keep-Alive limits keeps the stricter of each - the fewer messages, the shorter timeout; a limit only one sets,
+     *  that one's
+     */
+    GTEST_TEST (Foundation_IO_Network_HTTP, KeepAlive_Merge_)
+    {
+        optional<KeepAlive> m = KeepAlive::Merge (KeepAlive{.fMessages = 100, .fTimeout = 5s}, KeepAlive{.fMessages = 5, .fTimeout = 60s});
+        ASSERT_TRUE (m.has_value ());
+        EXPECT_TRUE (m->fMessages == 5u);
+        EXPECT_TRUE (m->fTimeout == 5s);
+        m = KeepAlive::Merge (KeepAlive{.fMessages = 3}, KeepAlive{.fTimeout = 10s});
+        ASSERT_TRUE (m.has_value ());
+        EXPECT_TRUE (m->fMessages == 3u);
+        EXPECT_TRUE (m->fTimeout == 10s);
+        m = KeepAlive::Merge (nullopt, KeepAlive{.fMessages = 7});
+        ASSERT_TRUE (m.has_value ());
+        EXPECT_TRUE (m->fMessages == 7u);
+        EXPECT_FALSE (KeepAlive::Merge (nullopt, nullopt).has_value ());
+    }
 }
 
 namespace {

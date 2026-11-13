@@ -47,10 +47,10 @@ KeepAlive KeepAlive::Parse (const String& headerValue)
 optional<KeepAlive> KeepAlive::Merge (const optional<KeepAlive>& lhs, const optional<KeepAlive>& rhs)
 {
     if (lhs and rhs) {
-        KeepAlive r = *lhs;
-        r.fMessages = Memory::NullCoalesce (lhs->fMessages, rhs->fMessages);
-        r.fTimeout  = Memory::NullCoalesce (lhs->fTimeout, rhs->fTimeout);
-        return r;
+        auto stricter = [] (const auto& a, const auto& b) {
+            return a and b ? remove_cvref_t<decltype (a)>{min (*a, *b)} : Memory::NullCoalesce (a, b);
+        };
+        return KeepAlive{.fMessages = stricter (lhs->fMessages, rhs->fMessages), .fTimeout = stricter (lhs->fTimeout, rhs->fTimeout)};
     }
     return Memory::NullCoalesce (lhs, rhs);
 }

@@ -564,7 +564,7 @@ bool Connection::ApplyKeepAlive_ ()
 {
     bool thisMessageKeepAlive = fMessage_->request ().keepAliveRequested;
     if (thisMessageKeepAlive) {
-        // a request's Keep-Alive header (HTTP 1.1 and earlier) fills in limits not already set (@see remainingConnectionLimits)
+        // a request's Keep-Alive header (HTTP 1.1 and earlier) can lower these limits, each the smaller (@see remainingConnectionLimits)
         if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
             fRemaining_ = KeepAlive::Merge (fRemaining_, *keepAliveValue);
         }

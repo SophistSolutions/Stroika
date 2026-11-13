@@ -329,7 +329,7 @@ namespace Stroika::Frameworks::WebServer {
          *      o   fTimeout: how long it may stay idle between requests - ConnectionManager closes it then, if its
          *          Options::fIdleConnectionTimeout would not first.
          *
-         *  A request's Keep-Alive header (max, timeout) fills in what is not already set (@see HTTP::KeepAlive::Merge).
+         *  A request's Keep-Alive header (max, timeout) can lower these - each the smaller of the two (@see HTTP::KeepAlive::Merge).
          *
          *  \par Example Usage
          *      \code
