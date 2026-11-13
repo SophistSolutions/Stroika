@@ -773,6 +773,21 @@ namespace {
             EXPECT_EQ (d.As<time_t> (), kTEST); // source - http://www.onlineconversion.com/unix_time.htm
         }
     }
+
+    /*
+     *  NowUTC () is UTC - between two readings of time () - and Now () local time
+     */
+    GTEST_TEST (Foundation_Time, DateTime_NowUTC_)
+    {
+        TraceContextBumper ctx{"DateTime_NowUTC_"};
+        DateTime           before{::time (nullptr)};
+        DateTime           utc = DateTime::NowUTC ();
+        DateTime           after{::time (nullptr)};
+        EXPECT_EQ (utc.GetTimezone (), Timezone::kUTC);
+        EXPECT_LE (before, utc);
+        EXPECT_LE (utc, after.AddSeconds (1)); // time () has whole seconds; Windows' system time, milliseconds
+        EXPECT_EQ (DateTime::Now ().GetTimezone (), Timezone::kLocalTime);
+    }
 }
 
 namespace {

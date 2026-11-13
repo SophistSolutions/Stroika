@@ -316,9 +316,11 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Return the current DateTime in UTC
-         * 
-         *  \brief equivilent to Now().AsUTC ()
+         *  \brief Return the current DateTime in UTC
+         *
+         *  Prefer it wherever UTC is wanted (an HTTP Date header, say): Now ().AsUTC () works out the local time zone's offset
+         *  twice (on POSIX, with mktime, under the C library's timezone lock), and is ambiguous in the hour that repeats when
+         *  daylight saving time ends.
          */
         static DateTime NowUTC () noexcept;
 

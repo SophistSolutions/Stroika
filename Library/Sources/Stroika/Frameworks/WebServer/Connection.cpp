@@ -525,7 +525,7 @@ void Connection::AnswerRejectedRequest_ (const IO::Network::HTTP::Exception& e) 
     try {
         answer.statusAndOverrideReason = make_tuple (e.GetStatus (), e.GetReason ());
         answer.rwHeaders ().connection = Headers::eClose;
-        answer.rwHeaders ().date       = DateTime::Now ();
+        answer.rwHeaders ().date       = DateTime::NowUTC ();
         answer.contentType             = DataExchange::InternetMediaTypes::kText_PLAIN;
         answer.writeln (Characters::ToString (e));
         answer.End ();
@@ -542,7 +542,7 @@ void Connection::ApplyDefaultResponseHeaders_ ()
         fMessage_->rwResponse ().rwHeaders () += *fDefaultGETResponseHeaders_;
     }
     // https://tools.ietf.org/html/rfc7231#section-7.1.1.2  : ...An origin server MUST send a Date header field in all other cases
-    fMessage_->rwResponse ().rwHeaders ().date = DateTime::Now ();
+    fMessage_->rwResponse ().rwHeaders ().date = DateTime::NowUTC ();
 
     // @todo can short-circuit the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
     // so may need to revisit the bodyHasEntity logic) - just look at METHOD of request and http-status - oh - that cannot check

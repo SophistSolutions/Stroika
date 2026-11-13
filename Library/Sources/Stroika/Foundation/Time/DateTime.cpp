@@ -694,10 +694,9 @@ DateTime DateTime::AsTimezone (Timezone tz) const
 DateTime DateTime::Now () noexcept
 {
 #if qStroika_Platform_POSIX
-    // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
-    // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
-    return DateTime{::time (nullptr)}.AsLocalTime ();
+    return NowUTC ().AsLocalTime ();
 #elif qStroika_Platform_Windows
+    // Windows converts to local time itself, in one call - cheaper than NowUTC ().AsLocalTime (), which works out the offset here
     ::SYSTEMTIME st{};
     ::GetLocalTime (&st);
     return DateTime{st, Timezone::kLocalTime};
@@ -709,8 +708,16 @@ DateTime DateTime::Now () noexcept
 
 DateTime DateTime ::NowUTC () noexcept
 {
-    // @todo COULD be more efficient, but KISS for now
-    return Now ().AsUTC ();
+#if qStroika_Platform_POSIX
+    return DateTime{::time (nullptr)}; // seconds since the Epoch (00:00:00 UTC, January 1, 1970): already UTC
+#elif qStroika_Platform_Windows
+    ::SYSTEMTIME st{};
+    ::GetSystemTime (&st);
+    return DateTime{st, Timezone::kUTC};
+#else
+    AssertNotImplemented ();
+    return DateTime{};
+#endif
 }
 
 optional<bool> DateTime::IsDaylightSavingsTime () const
