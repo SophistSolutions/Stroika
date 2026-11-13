@@ -1477,6 +1477,30 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 
 /*
+ *  NOT a bug - a choice the standard leaves to each library: whether copying a std::shared_ptr (its use-count increment) is an
+ *  acquire. Every library's decrement is acq_rel (the last owner must see the others' uses before it deletes), and use_count ()
+ *  a relaxed load; shared_ptr itself needs no ordering from the increment:
+ *
+ *      libstdc++ 11 to 16      acquire - ext/atomicity.h: __atomic_fetch_add (__mem, __val, __ATOMIC_ACQ_REL)
+ *      libc++ 22               relaxed - __libcpp_atomic_refcount_increment: __atomic_add_fetch (..., 1, __ATOMIC_RELAXED)
+ *      MSVC STL 14.51          relaxed - _MT_INCR: _INTRIN_RELAXED (_InterlockedIncrement)
+ *
+ *  1 only for the versions checked; any other library or version - a newer libstdc++ too - is 0, the safe guess. Memory::SharedByValue
+ *  relies on it only in ThreadSanitizer builds, which see no fences: there it checks for a sole owner through a copy, which (only
+ *  where this is 1) synchronizes with the release of a copy just dropped on another thread - so a wrong 1 is a real race there.
+ *  Tests/40's SynchronizedSequence_CopyReadElsewhereWhileWritten_ reports that race under ThreadSanitizer. A libstdc++ outside the
+ *  versions checked makes that test warn (a REGRESSION TEST ISSUE) in every build - and in a ThreadSanitizer build g++ warns of the
+ *  fence SharedByValue then uses (-Wtsan), and the test reports the race: check its ext/atomicity.h, and raise the 16.
+ */
+#ifndef qCompilerAndStdLib_shared_ptr_copy_is_acquire
+#if defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_shared_ptr_copy_is_acquire (11 <= _GLIBCXX_RELEASE and _GLIBCXX_RELEASE <= 16)
+#else
+#define qCompilerAndStdLib_shared_ptr_copy_is_acquire 0
+#endif
+#endif
+
+/*
  *  g++ (11 to 16) with -fsanitize=undefined will not evaluate, in a constant expression, a comparison of a static's address
  *  (an inline variable template's, or a function's static) with nullptr - though no object's address is null; without it
  *  g++ evaluates it, as clang and MSVC do. Seen as EnumNameText::View () compares its pointer (into

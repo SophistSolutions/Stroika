@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Memory {
@@ -268,7 +269,7 @@ namespace Stroika::Foundation::Memory {
     inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (COPIER&& copier, unsigned int n)
     {
         Require (n != 0);
-        if (static_cast<unsigned int> (fSharedImpl_.use_count ()) > n) [[unlikely]] {
+        if (UseCountAcquire_ () > n) [[unlikely]] {
             BreakReferences_ (forward<COPIER> (copier));
             Assert (this->use_count () == 1);
         }
@@ -282,6 +283,24 @@ namespace Stroika::Foundation::Memory {
         else {
             AssureNOrFewerReferences (fCopier_, n);
         }
+    }
+    template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
+    inline unsigned int SharedByValue<T, TRAITS>::UseCountAcquire_ () const
+    {
+#if Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer and qCompilerAndStdLib_shared_ptr_copy_is_acquire
+        /*
+         *  ThreadSanitizer checks the memory model, but does not model fences: it would report the race the fence prevents (and g++
+         *  warns of a fence there: -Wtsan). So here the same acquire is an atomic operation it does see: copying the shared_ptr,
+         *  whose increment is an acquire where qCompilerAndStdLib_shared_ptr_copy_is_acquire.
+         */
+        shared_ptr_type probe   = fSharedImpl_;
+        long            nShared = probe.use_count ();
+        return nShared == 0 ? 0 : static_cast<unsigned int> (nShared - 1); // not counting probe
+#else
+        unsigned int result = static_cast<unsigned int> (fSharedImpl_.use_count ());
+        atomic_thread_fence (memory_order_acquire);
+        return result;
+#endif
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     template <typename COPIER>

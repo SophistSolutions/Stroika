@@ -2111,6 +2111,58 @@ namespace {
         EXPECT_FALSE (returned);
     }
 
+    /*
+     *  A copy of a Synchronized container, taken under its lock, read on another thread and dropped, while the original is
+     *  written: once the copy is gone, copy-on-write writes in place - so the copy's reads must happen-before that write, or it
+     *  is a data race (which ThreadSanitizer reports; @see qCompilerAndStdLib_shared_ptr_copy_is_acquire)
+     */
+    GTEST_TEST (Foundation_Execution_Threads, SynchronizedSequence_CopyReadElsewhereWhileWritten_)
+    {
+        Debug::TraceContextBumper traceCtx{"SynchronizedSequence_CopyReadElsewhereWhileWritten_"};
+#if defined(_GLIBCXX_RELEASE) and not qCompilerAndStdLib_shared_ptr_copy_is_acquire
+        // the define is 0 here, so ThreadSanitizer builds fall back to a fence, which it cannot see: check the newer library
+        Stroika::Frameworks::Test::WarnTestIssue (
+            "libstdc++ {} is outside the versions qCompilerAndStdLib_shared_ptr_copy_is_acquire was checked for: "
+            "check its ext/atomicity.h"_f(_GLIBCXX_RELEASE));
+#endif
+        constexpr int               kSize_  = 64;
+        constexpr int               kReads_ = 2000;
+        Synchronized<Sequence<int>> s;
+        for (int i = 0; i < kSize_; ++i) {
+            s.rwget ()->push_back (0);
+        }
+        // counted relaxed (each read and write): they order nothing, for ThreadSanitizer or anyone
+        atomic<int>  nReads{0};
+        atomic<int>  nWrites{0};
+        atomic<bool> stop{false};
+        Thread::Ptr  reader = Thread::New (
+            [&] () {
+                long sum = 0;
+                while (not stop) {
+                    for (int i : s.load ()) {
+                        sum += i;
+                    }
+                    nReads.fetch_add (1, memory_order_relaxed);
+                    // the copy gone and the lock free, wait for two more writes - the second surely made after the copy went,
+                    // so in place
+                    int seen = nWrites.load (memory_order_relaxed);
+                    while (nWrites.load (memory_order_relaxed) < seen + 2 and not stop) {
+                        this_thread::yield ();
+                    }
+                }
+                DbgTrace ("sum={}"_f, sum);
+            },
+            Thread::eAutoStart);
+        int i = 0;
+        for (; nReads.load (memory_order_relaxed) < kReads_; ++i) {
+            s.rwget ()->SetAt (i % kSize_, i);
+            nWrites.fetch_add (1, memory_order_relaxed);
+        }
+        stop = true;
+        reader.WaitForDone ();
+        EXPECT_EQ (s.load ()[(i - 1) % kSize_], i - 1);
+    }
+
     GTEST_TEST (Foundation_Execution_Threads, all)
     {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
