@@ -197,23 +197,21 @@ namespace {
                                                                          "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
 
         {
-            EXPECT_EQ (reader.GetData ("sample_zip/TODO.txt").size (), 243u);
+            Memory::BLOB todo = reader.GetData ("sample_zip/TODO.txt");
+            EXPECT_EQ (todo.size (), 243u);
             EXPECT_EQ (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size (), 4296u);
             EXPECT_EQ (reader.GetData ("sample_zip/Common-Valgrind.supp").size (), 1661u);
             EXPECT_EQ (reader.GetData ("sample_zip/Tests-Description.txt").size (), 1934u);
-            EXPECT_TRUE (
-                BinaryToText::Reader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
-                    .ReadAll ()
-                    .Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+            EXPECT_EQ (reader.GetData ("sample_zip/TODO.txt"), todo); // the same again, after reading others
+            EXPECT_TRUE (BinaryToText::Reader::New (todo.As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
             EXPECT_TRUE (
                 BinaryToText::Reader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
-            try {
-                auto i = reader.GetData ("file-not-found");
-                EXPECT_TRUE (false);
-            }
-            catch (...) {
-                // good
-            }
+            EXPECT_THROW (reader.GetData ("file-not-found"), runtime_error);
+        }
+        // not an archive (no signature), and one cut short
+        for (span<const uint8_t> notAnArchive : {span{ksample_zip_7z_}.last (100), span{ksample_zip_7z_}.first (1000)}) {
+            EXPECT_THROW (Archive::_7z::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (notAnArchive))),
+                          BadFormatException);
         }
 #else
         GTEST_SKIP () << "built without LZMA";

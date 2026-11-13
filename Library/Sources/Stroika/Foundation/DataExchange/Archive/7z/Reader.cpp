@@ -4,8 +4,9 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
-#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Reader.h"
@@ -38,8 +39,30 @@ namespace {
 }
 
 namespace {
+    void ThrowIfSzErr_ (SRes err)
+    {
+        switch (err) {
+            case SZ_OK:
+                return;
+            case SZ_ERROR_MEM:
+                Execution::Throw (bad_alloc{});
+            case SZ_ERROR_NO_ARCHIVE:
+            case SZ_ERROR_ARCHIVE:
+            case SZ_ERROR_INPUT_EOF:
+            case SZ_ERROR_DATA:
+            case SZ_ERROR_CRC:
+                Execution::Throw (BadFormatException{"Not a 7z archive, or a damaged one (LZMA SDK error {})"_f(err)});
+            case SZ_ERROR_UNSUPPORTED:
+                Execution::Throw (Execution::Exception<runtime_error>{"7z archive needs a feature this reader lacks (LZMA SDK error {})"_f(err)});
+            default:
+                Execution::Throw (Execution::Exception<runtime_error>{"7z: LZMA SDK error {}"_f(err)});
+        }
+    }
+}
 
-    struct Rep_ : Reader::IRep {
+namespace {
+
+    struct Rep_ final : Reader::IRep {
     private:
         // could do smarter/block allocation or arena allocation, but KISS for now
         static void* Alloc_ (void* /*p*/, size_t size)
@@ -56,7 +79,10 @@ namespace {
         mutable ISzAlloc fAllocImp_{};
         mutable ISzAlloc fAllocTempImp_{};
         CSzArEx          fDB_{};
-        // GetData's WriteContext: it reads through fLookStream_, moving it and fInSeekStream_; GetContainedFiles only reads fDB_
+        // fDB_'s index of each file (not directory), by name
+        Mapping<String, UInt32> fFileIndexes_;
+        // GetData's WriteContext: it reads through fLookStream_, moving it and fInSeekStream_, and replaces fBlock_; GetContainedFiles
+        // only reads fFileIndexes_
         mutable Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         struct MyISeekInStream : ISeekInStream {
             Streams::InputStream::Ptr<byte> fInStream_;
@@ -72,7 +98,7 @@ namespace {
                 size_t           sz    = pThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), *size}).size ();
                 Assert (sz <= *size);
                 *size = sz;
-                return SZ_OK; // not sure on EOF/underflow?SZ_ERROR_READ
+                return SZ_OK; // *size 0 at the end of the stream, as ISeekInStream specifies
             }
             static SRes Stream_Seek_ (void* pp, Int64* pos, ESzSeek origin)
             {
@@ -96,6 +122,14 @@ namespace {
         };
         MyISeekInStream     fInSeekStream_;
         mutable CLookToRead fLookStream_{};
+        /*
+         *  The block (7z's 'folder') GetData last decompressed, kept for the next call: a solid archive packs many files into one
+         *  block, so reading each would otherwise decompress the whole block again. These are SzArEx_Extract's in/out arguments,
+         *  which replaces the block when a file is in another. Holds memory the size of the block until then.
+         */
+        mutable Byte*  fBlock_{nullptr}; // from fAllocImp_; nullptr: none held
+        mutable UInt32 fBlockIndex_{};   // any value while fBlock_ is nullptr
+        mutable size_t fBlockSize_{};    // ditto
 
     public:
         Rep_ (const Streams::InputStream::Ptr<byte>& in)
@@ -109,32 +143,34 @@ namespace {
             ::LookToRead_CreateVTable (&fLookStream_, false);
             fLookStream_.realStream = &fInSeekStream_;
 
-            SRes ret{};
-            if ((ret = ::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
-                // throw
-                throw "bad";
+            ThrowIfSzErr_ (::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_)); // which frees fDB_ itself on failure
+            try {
+                for (UInt32 i = 0; i < fDB_.NumFiles; ++i) {
+                    if (not SzArEx_IsDir (&fDB_, i)) {
+                        size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr); // with its NUL; 0 when the archive stores no names
+                        if (nameLen < 1) {
+                            break;
+                        }
+                        StackBuffer<char16_t> fileName{Memory::eUninitialized, nameLen};
+                        (void)::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (fileName.data ()));
+                        fFileIndexes_.Add (String{span{fileName.data (), nameLen - 1}}, i, AddReplaceMode::eAddIfMissing); // of two the same, the first
+                    }
+                }
+            }
+            catch (...) {
+                ::SzArEx_Free (&fDB_, &fAllocImp_); // no ~Rep_ for a constructor that throws
+                throw;
             }
         }
         ~Rep_ ()
         {
+            IAlloc_Free (&fAllocImp_, fBlock_);
             ::SzArEx_Free (&fDB_, &fAllocImp_);
         }
         virtual Set<String> GetContainedFiles () const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
-            Set<String>                                             result;
-            for (unsigned int i = 0; i < fDB_.NumFiles; ++i) {
-                if (not SzArEx_IsDir (&fDB_, i)) {
-                    size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
-                    if (nameLen < 1) {
-                        break;
-                    }
-                    StackBuffer<char16_t>   fileName{Memory::eUninitialized, nameLen};
-                    [[maybe_unused]] size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
-                    result.Add (String{&fileName[0]});
-                }
-            }
-            return result;
+            return Set<String>{fFileIndexes_.Keys ()};
         }
         virtual Streams::InputStream::Ptr<byte> GetSource () const override
         {
@@ -143,44 +179,21 @@ namespace {
         virtual Memory::BLOB GetData (const String& fileName) const override
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            UInt32                                                   idx = GetIdx_ (fileName);
-            if (idx == -1) {
-                throw "bad"; //filenotfound
+            optional<UInt32>                                         idx = fFileIndexes_.Lookup (fileName);
+            if (not idx) [[unlikely]] {
+                Execution::Throw (Execution::Exception<runtime_error>{"File '{}' not found"_f(fileName)});
             }
-
-            byte*  outBuffer     = 0;          // it must be 0 before first call for each new archive
-            UInt32 blockIndex    = 0xFFFFFFFF; // can have any value if outBuffer = 0
-            size_t outBufferSize = 0;          // can have any value if outBuffer = 0
-
             size_t offset{};
             size_t outSizeProcessed{};
-
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&outBuffer, this] () noexcept { IAlloc_Free (&fAllocImp_, outBuffer); });
-
-            SRes ret;
-            if ((ret = ::SzArEx_Extract (&fDB_, &fLookStream_.s, idx, &blockIndex, reinterpret_cast<uint8_t**> (&outBuffer), &outBufferSize,
-                                         &offset, &outSizeProcessed, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
-                throw "bad";
+            if (SRes err = ::SzArEx_Extract (&fDB_, &fLookStream_.s, *idx, &fBlockIndex_, &fBlock_, &fBlockSize_, &offset,
+                                             &outSizeProcessed, &fAllocImp_, &fAllocTempImp_);
+                err != SZ_OK) [[unlikely]] {
+                // a failed decode leaves fBlock_ partly filled, though marked as fBlockIndex_ - drop it, or the next call would use it
+                IAlloc_Free (&fAllocImp_, fBlock_);
+                fBlock_ = nullptr;
+                ThrowIfSzErr_ (err);
             }
-            return Memory::BLOB (outBuffer + offset, outBuffer + offset + outSizeProcessed);
-        }
-        UInt32 GetIdx_ (const String& fn) const
-        {
-            // could create map to lookup once and maintain
-            for (UInt32 i = 0; i < fDB_.NumFiles; ++i) {
-                if (not SzArEx_IsDir (&fDB_, i)) {
-                    size_t nameLen = SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
-                    if (nameLen < 1) {
-                        break;
-                    }
-                    StackBuffer<char16_t>   fileName{Memory::eUninitialized, nameLen};
-                    [[maybe_unused]] size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
-                    if (String{&fileName[0]} == fn) {
-                        return i;
-                    }
-                }
-            }
-            return static_cast<UInt32> (-1);
+            return Memory::BLOB{fBlock_ + offset, fBlock_ + offset + outSizeProcessed};
         }
     };
 }
