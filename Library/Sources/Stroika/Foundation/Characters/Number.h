@@ -449,6 +449,18 @@ namespace Stroika::Foundation::Characters::Number {
          *  Ignore whitespace before and after the number.
          */
         bool fIgnoreSurroundingWhitespace{false};
+
+        /**
+         *  Accept a + or - sign before the digits. Turn it off for a format whose numbers are digits only - HTTP's Content-Length,
+         *  or RFC 9110's delta-seconds.
+         */
+        bool fAcceptSign{true};
+
+        /**
+         *  A number out of T's range reads as T's nearest limit, not as an error - as RFC 9110's delta-seconds asks (a value too big
+         *  is taken as the greatest one representable).
+         */
+        bool fSaturate{false};
     };
 
     /**
@@ -456,7 +468,8 @@ namespace Stroika::Foundation::Characters::Number {
      *  number; options say what else to accept)
      *
      *  s is just the number: an optional + or - sign, then digits in options.fRadix - no whitespace, no radix prefix, no digit
-     *  separators, nothing after (unless options say otherwise). The same text parses the same in any locale (this uses
+     *  separators, nothing after (unless options say otherwise: fAcceptSign false allows no sign; fSaturate turns out of range into
+     *  T's nearest limit). The same text parses the same in any locale (this uses
      *  std::from_chars).
      *
      *  The error - a DataExchange::BadFormatException, a runtime error: bad data, not a bad call - quotes s, and says whether it is

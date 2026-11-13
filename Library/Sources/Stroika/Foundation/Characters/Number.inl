@@ -489,6 +489,9 @@ namespace Stroika::Foundation::Characters::Number {
             const char* e        = text.data () + text.size ();
             bool        negative = b != e and *b == '-';
             if (b != e and (*b == '+' or *b == '-')) {
+                if (not options.fAcceptSign) {
+                    return notAnInteger ();
+                }
                 ++b; // the sign is read here, so a prefix can follow it (and from_chars takes no +, nor - for an unsigned type)
             }
             if (options.fAcceptRadixPrefix and e - b > 2 and b[0] == '0') {
@@ -519,6 +522,9 @@ namespace Stroika::Foundation::Characters::Number {
                     }
                 }
                 if (ptr == e and (ec == errc{} or ec == errc::result_out_of_range)) {
+                    if (options.fSaturate) {
+                        return negative ? numeric_limits<T>::min () : numeric_limits<T>::max ();
+                    }
                     return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + " is out of range ("sv +
                                                                  String{to_string (+numeric_limits<T>::min ())} + " to "sv +
                                                                  String{to_string (+numeric_limits<T>::max ())} + ")"sv}};

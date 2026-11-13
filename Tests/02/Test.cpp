@@ -2859,6 +2859,16 @@ namespace {
             EXPECT_TRUE (errorText (Number::Parse<int8_t> ("128")).Contains ("is out of range (-128 to 127)"sv));
             EXPECT_EQ (Number::Parse<int> ("x").value_or (0), 0); // String2Int's lenient behavior, if wanted
             EXPECT_THROW ((void)Execution::ThrowIfFailed (Number::Parse<int> ("x")), DataExchange::BadFormatException);
+            // fAcceptSign false: digits only
+            EXPECT_EQ (*Number::Parse<int> ("33", {.fAcceptSign = false}), 33);
+            EXPECT_TRUE (errorText (Number::Parse<int> ("+33", {.fAcceptSign = false})).Contains ("is not an integer"sv));
+            EXPECT_TRUE (errorText (Number::Parse<int> ("-33", {.fAcceptSign = false})).Contains ("is not an integer"sv));
+            // fSaturate: out of T's range reads as its nearest limit - even past what from_chars can hold; not a number is still an error
+            EXPECT_EQ (*Number::Parse<uint16_t> ("70000", {.fSaturate = true}), 65535);
+            EXPECT_EQ (*Number::Parse<int8_t> ("-200", {.fSaturate = true}), -128);
+            EXPECT_EQ (*Number::Parse<uint16_t> ("-1", {.fSaturate = true}), 0);
+            EXPECT_EQ (*Number::Parse<uint32_t> ("99999999999999999999999", {.fSaturate = true}), numeric_limits<uint32_t>::max ());
+            EXPECT_TRUE (errorText (Number::Parse<uint16_t> ("7x", {.fSaturate = true})).Contains ("is not an integer"sv));
         }
         {
             // Number::Parse: the same - nan, inf and infinity as such, but text that is not a number, or too large, is an error
