@@ -3,7 +3,7 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Containers/SortedAssociation.h"
 #include "Stroika/Foundation/Debug/Main.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 
@@ -31,8 +31,13 @@ Capturer::Capturer ()
                       return thisObj->fCaptureSets_.load ();
                   },
                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& captureSets) {
-                      Capturer* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::captureSets);
-                      thisObj->fCaptureSets_ = captureSets;
+                      Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::captureSets);
+                      auto      lock    = thisObj->fCaptureSets_.rwget ();
+                      lock.store (captureSets);
+                      thisObj->fCaptureSetsChanged_.Set ();
+                      if (not captureSets.empty ()) {
+                          thisObj->StartRunner_ (); // holding the lock, so two callers cannot both start one
+                      }
                   }}
 {
     Require (Debug::AppearsDuringMainLifetime ());
@@ -57,79 +62,50 @@ void Capturer::RemoveMeasurementsCallback (MeasurementsCallbackID cb)
 void Capturer::AddCaptureSet (const CaptureSet& cs)
 {
     RunnerOnce_ (cs);
-    auto rwLock = fCaptureSets_.rwget ();
-    rwLock->Add (cs);
-    ++fCaptureSetChangeCount_;
-    ManageRunner_ (true); // start while still holding lock
+    auto lock = fCaptureSets_.rwget ();
+    lock->Add (cs);
+    fCaptureSetsChanged_.Set ();
+    StartRunner_ (); // holding the lock, so two callers cannot both start one
 }
 
-void Capturer::ManageRunner_ (bool on)
+void Capturer::StartRunner_ ()
 {
-    bool threadPoolRunning = fThreadPool_.GetTasksCount () != 0;
-    if (on) {
-        if (not threadPoolRunning) {
-            fThreadPool_.AddTask ([this] () { Runner_ (); });
-            fThreadPool_.SetPoolSize (1);
-        }
-    }
-    else {
-        if (threadPoolRunning) {
-            fThreadPool_.AbortTasks ();
-            fThreadPool_.SetPoolSize (0);
-        }
+    if (fThreadPool_.GetTasksCount () == 0) {
+        fThreadPool_.AddTask ([this] () { Runner_ (); });
+        fThreadPool_.SetPoolSize (1);
     }
 }
 
 void Capturer::Runner_ ()
 {
+    // One thread runs every capture set, each on its own schedule: runQueue holds each one's next run time, soonest first - a
+    // SortedAssociation, since two can be due at once.
     //
-    // really only need one thread - and just wait right amount of time to wakeup to service next captureset.
-    //
-    // Compute a list of the 'next runs' (sorted by next first). Then WaitUntil () on that.
-    // and then RunOnce_(thatCaptureSet); this doesn't exactly guarantee they run at the right time but close enuf and with just one thread
-    //
+    // When the capture sets change, every schedule starts over: keeping the unchanged ones' would mean telling which sets are new,
+    // which the captureSets property cannot - and changes are rare.
+    SortedAssociation<TimePointSeconds, CaptureSet> runQueue;
 
-    // First walk list of capture-sets and produce such an 'queue' as a local variable. At top of loop, recompute if change count
-    // indicates in needs recomputing (rare). Else just keep adjusting it.
-    uint64_t changeCountForCaptureSet{0};
-
-    // NOTE - we use a SortedMapping instead of an acutal Queue, because we always know WHEN each item should run next, and a sorted mapping
-    // tells is quicly and easily the 'next' item to run. If we used a Q, we would add back the just ran item at the end but it might
-    // not belong at the end of the Queue cuz it runs on a different schedule
-    SortedMapping<TimePointSeconds, CaptureSet> runQueue;
-
-    auto recomputeSortOrder = [&] () {
-        TimePointSeconds now  = Time::GetTickCount ();
-        auto             lock = fCaptureSets_.cget (); // hold lock until I've examined changeCount
-
-        // it would be nice to be able to preserve the timing info in the runQueue for items not changed, but that would require
-        // being able to tell which CaptureSets were new and old, which is not always possible given the current API (SetCaptureSet).
-        // and updating the capture sets should be rare, so it should cause little problem to recompute it, and reset the counters.
-        runQueue.clear ();
-        SortedMapping<TimePointSeconds, CaptureSet> tmp;
-        for (const auto& i : lock.load ()) {
-            runQueue.Add (now + i.runPeriod (), i);
-        }
-        changeCountForCaptureSet = fCaptureSetChangeCount_;
-    };
-
-    // Note this runs in a threadpool which can be canceled as needed, so this need not check for a termination condition - it will be ended by a thread abort
+    // runs in a threadpool, which aborts it when the Capturer goes - so no other termination condition
     while (true) {
-        if (changeCountForCaptureSet < fCaptureSetChangeCount_) {
-            recomputeSortOrder (); // updates runQueue as a side-effect
+        if (fCaptureSetsChanged_.PeekIsSet ()) {
+            fCaptureSetsChanged_.Reset (); // before reading them: a change from here on sets it again
+            TimePointSeconds now = Time::GetTickCount ();
+            runQueue.RemoveAll ();
+            for (const CaptureSet& cs : fCaptureSets_.load ()) {
+                runQueue.Add (now + cs.runPeriod (), cs);
+            }
         }
-
-        Assert (not runQueue.empty ()); // because otherwise the thread would have been aborted, and we wouldn't get this far (race??? - maybe need to do ifcheck)
-
-        // otherwise pop the first item from the Q, and wait til then. Then process it, and push it back onto the Q with the appropriate
-        // 'next' time.
-        auto iterator = runQueue.begin ();
-        Assert (iterator != runQueue.end ());
-        KeyValuePair<TimePointSeconds, CaptureSet> runNext = *iterator;
-        SleepUntil (runNext.fKey);
+        if (runQueue.empty ()) {
+            fCaptureSetsChanged_.Wait ();
+            continue;
+        }
+        KeyValuePair<TimePointSeconds, CaptureSet> runNext = *runQueue.begin ();
+        if (fCaptureSetsChanged_.WaitUntilQuietly (runNext.fKey) == WaitableEvent::WaitStatus::eTriggered) {
+            continue; // the capture sets changed while waiting
+        }
+        runQueue.Remove (runQueue.begin ());
         RunnerOnce_ (runNext.fValue);
-        runQueue.erase (iterator);
-        runQueue.Add (runNext.fKey + runNext.fValue.runPeriod (), runNext.fValue); // interpret time offset as wrt leading edge
+        runQueue.Add (runNext.fKey + runNext.fValue.runPeriod (), runNext.fValue); // a period after it was due, not after it finished
     }
 }
 

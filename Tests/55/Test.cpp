@@ -64,6 +64,93 @@ namespace {
         EXPECT_GT (othersCalls.load (), othersCallsThen) << "no capture since - so the test shows nothing";
     }
 }
+
+namespace {
+    // an Instrument that only counts its captures (its copies too: a CaptureSet holds a copy)
+    Instrument CountingInstrument_ (const Characters::String& name, atomic<unsigned int>& count)
+    {
+        struct Rep_ : Instrument::IRep {
+            atomic<unsigned int>& fCount;
+            Rep_ (atomic<unsigned int>& count)
+                : fCount{count}
+            {
+            }
+            virtual MeasurementSet Capture () override
+            {
+                ++fCount;
+                MeasurementSet none; // not MeasurementSet{}: that copy-list-initializes its Range, whose default constructor is explicit
+                return none;
+            }
+            virtual unique_ptr<IRep> Clone () const override
+            {
+                return make_unique<Rep_> (fCount);
+            }
+            virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
+            {
+                return nullptr;
+            }
+            virtual void SetContext ([[maybe_unused]] const shared_ptr<Instrument::ICaptureContext>& context) override
+            {
+            }
+        };
+        return Instrument{InstrumentNameType{name}, make_unique<Rep_> (count), {}, {}, DataExchange::ObjectVariantMapper{}};
+    }
+    // does count reach n within 10s
+    bool Reaches_ (const atomic<unsigned int>& count, unsigned int n)
+    {
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; count < n and Time::GetTickCount () < giveUpAt;) {
+            Execution::Sleep (20ms);
+        }
+        return count >= n;
+    }
+
+    /*
+     *  Capture sets due at the same time each run: the capturing thread's queue, keyed by when each is due, kept only one of them
+     */
+    GTEST_TEST (Frameworks_SystemPerformance, Capturer_SetsDueTogether_)
+    {
+        Debug::TraceContextBumper ctx{"Capturer_SetsDueTogether_"};
+        atomic<unsigned int>      a{0}; // these before the capturer, so they outlive the capturing thread's calls
+        atomic<unsigned int>      b{0};
+        Capturer                  capturer;
+        capturer.AddCaptureSet (CaptureSet{100ms, {CountingInstrument_ ("a"sv, a)}});
+        capturer.AddCaptureSet (CaptureSet{100ms, {CountingInstrument_ ("b"sv, b)}});
+        EXPECT_TRUE (Reaches_ (a, 3) and Reaches_ (b, 3)) << "a: " << a.load () << ", b: " << b.load ();
+    }
+
+    /*
+     *  A capture set added while the capturing thread waits for another, due much later, runs on its own schedule: it waited
+     *  for the other
+     */
+    GTEST_TEST (Frameworks_SystemPerformance, Capturer_AddedWhileWaiting_)
+    {
+        Debug::TraceContextBumper ctx{"Capturer_AddedWhileWaiting_"};
+        atomic<unsigned int>      a{0}; // these before the capturer, so they outlive the capturing thread's calls
+        atomic<unsigned int>      b{0};
+        Capturer                  capturer;
+        capturer.AddCaptureSet (CaptureSet{1h, {CountingInstrument_ ("a"sv, a)}});
+        Execution::Sleep (100ms); // so the capturing thread is waiting for it
+        capturer.AddCaptureSet (CaptureSet{100ms, {CountingInstrument_ ("b"sv, b)}});
+        EXPECT_TRUE (Reaches_ (b, 3)) << "b: " << b.load ();
+    }
+
+    /*
+     *  Setting captureSets starts capturing them, and setting none stops it: the capturing thread never saw a set
+     */
+    GTEST_TEST (Frameworks_SystemPerformance, Capturer_SetCaptureSets_)
+    {
+        Debug::TraceContextBumper ctx{"Capturer_SetCaptureSets_"};
+        atomic<unsigned int>      a{0}; // before the capturer, so it outlives the capturing thread's calls
+        Capturer                  capturer;
+        capturer.captureSets = Containers::Collection<CaptureSet>{CaptureSet{100ms, {CountingInstrument_ ("a"sv, a)}}};
+        EXPECT_TRUE (Reaches_ (a, 3)) << "a: " << a.load ();
+        capturer.captureSets = Containers::Collection<CaptureSet>{};
+        Execution::Sleep (50ms); // for a capture under way as it was set
+        unsigned int aThen = a;
+        Execution::Sleep (500ms); // five periods
+        EXPECT_EQ (a.load (), aThen) << "still capturing a set no longer there";
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

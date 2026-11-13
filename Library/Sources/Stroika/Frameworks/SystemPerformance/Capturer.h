@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Execution/CallbackRegistry.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "Stroika/Frameworks/SystemPerformance/CaptureSet.h"
@@ -175,16 +176,23 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         /**
+         *  Setting it replaces every capture set; each is first run a runPeriod later.
+         *
+         *  \note any change to the capture sets starts every one's schedule over.
          */
         Common::Property<Collection<CaptureSet>> captureSets;
 
     public:
         /**
+         *  Runs cs once (on this thread) before it returns, then each runPeriod after that.
+         *
+         *  \note any change to the capture sets starts every one's schedule over.
          */
         nonvirtual void AddCaptureSet (const CaptureSet& cs);
 
     private:
-        nonvirtual void ManageRunner_ (bool on);
+        // starts the capturing thread unless it is running; called holding fCaptureSets_'s lock
+        nonvirtual void StartRunner_ ();
 
     private:
         nonvirtual void Runner_ ();
@@ -199,7 +207,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     private:
         Execution::Synchronized<Collection<CaptureSet>> fCaptureSets_;
-        uint64_t fCaptureSetChangeCount_{0}; // doesn't need to be atomic because only updated/checked holding capturesets lock
+        Execution::WaitableEvent fCaptureSetsChanged_; // set with each change to fCaptureSets_, so the capturing thread re-reads them at once
         Execution::CallbackRegistry<void (const MeasurementSet&)> fCallbacks_;
         Execution::Synchronized<MeasurementSet>                   fCurrentMeasurementSet_;
         Execution::ThreadPool fThreadPool_{Execution::ThreadPool::Options{.fThreadCount = 0, .fThreadPoolName = "SystemPerformanceCapturer"}}; // Subtle - construct last so auto-destructed first (shuts down threads)
