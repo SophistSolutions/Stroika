@@ -269,6 +269,10 @@ namespace Stroika::Frameworks::WebServer {
         ConnectionManager (const SocketAddress& bindAddress, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
         ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
         ConnectionManager (const ConnectionManager&) = delete;
+        /**
+         *  \pre not called from one of its own handlers (a Route's, or an interceptor's): they run on its threads, which destroying
+         *       it aborts, then waits for - and a thread never waits for itself (Thread asserts it).
+         */
 #if qStroika_Foundation_Debug_DefaultTracingOn
         ~ConnectionManager ();
 #else

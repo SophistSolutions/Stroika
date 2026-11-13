@@ -55,6 +55,9 @@ namespace Stroika::Frameworks::SystemPerformance {
      * 
      *  \pre  Debug::AppearsDuringMainLifetime() at all points during the Capturer lifetime since it owns threads.
      *
+     *  \pre  not destroyed from one of its own measurements callbacks (AddMeasurementsCallback): they run on its capturing thread,
+     *        which destroying it aborts, then waits for - and a thread never waits for itself (Thread asserts it).
+     *
      *  \par Example Usage
      *      This example shows using capturer with callbacks, and raw mode - treating the measurements as 'untyped'
      *      VariantValue objects.
