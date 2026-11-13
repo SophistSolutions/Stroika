@@ -31,6 +31,7 @@
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Execution/ProgressMonitor.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -1155,6 +1156,35 @@ namespace {
             callbacks.Call ();
             EXPECT_EQ (calls, 1u);
         }
+    }
+}
+
+namespace {
+    /*
+     *  ProgressMonitor::Updater: a subtask's task info lasts as long as its Updater - the copies handed to the code doing its
+     *  work change nothing when they go
+     */
+    GTEST_TEST (Foundation_Execution, ProgressMonitor_SubTaskInfo_)
+    {
+        Debug::TraceContextBumper ctx{"ProgressMonitor_SubTaskInfo_"};
+        using TaskInfo = ProgressMonitor::CurrentTaskInfo;
+        String                   lastNotified; // the task name the latest progress notification saw
+        ProgressMonitor          monitor{[&] (const ProgressMonitor& pm) { lastNotified = pm.GetCurrentTaskInfo ().fName; }};
+        ProgressMonitor::Updater top = monitor;
+        top.SetCurrentTaskInfo (TaskInfo{"top"_k});
+        auto doWork = [] (ProgressMonitor::Updater progress) { progress.SetProgress (1.0f); }; // given a copy, as usual
+        {
+            ProgressMonitor::Updater sub{top, 0.0f, 0.5f, TaskInfo{"sub"_k}};
+            EXPECT_EQ (monitor.GetCurrentTaskInfo ().fName, "sub"sv);
+            doWork (sub);
+            EXPECT_EQ (monitor.GetCurrentTaskInfo ().fName, "sub"sv) << "a copy restored the task info";
+        }
+        EXPECT_EQ (monitor.GetCurrentTaskInfo ().fName, "top"sv);
+        EXPECT_EQ (lastNotified, "top"sv) << "restoring the task info notified no one";
+        {
+            ProgressMonitor::Updater sub{top, 0.5f, 1.0f, TaskInfo{"kept"_k}, false};
+        }
+        EXPECT_EQ (monitor.GetCurrentTaskInfo ().fName, "kept"sv);
     }
 }
 

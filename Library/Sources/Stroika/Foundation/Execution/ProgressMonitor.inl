@@ -71,6 +71,12 @@ namespace Stroika::Foundation::Execution {
      *************************** ProgressMonitor::Updater ***************************
      ********************************************************************************
      */
+    inline ProgressMonitor::Updater::Updater (const Updater& src)
+        : fRep_{src.fRep_}
+        , fFromProg_{src.fFromProg_}
+        , fToProg_{src.fToProg_}
+    {
+    }
     inline ProgressMonitor::Updater::Updater (nullptr_t)
     {
     }
@@ -100,8 +106,7 @@ namespace Stroika::Foundation::Execution {
     inline ProgressMonitor::Updater::~Updater ()
     {
         if (fRestoreTaskInfo_) {
-            fRestoreTaskInfo_ = fRep_->fCurrentTaskInfo_.load ();
-            CallNotifyProgress_ ();
+            SetCurrentTaskInfo_ (*fRestoreTaskInfo_);
         }
     }
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
@@ -137,13 +142,18 @@ namespace Stroika::Foundation::Execution {
     inline void ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
     {
         if (fRep_ != nullptr) {
-            bool changed             = fRep_->fCurrentTaskInfo_ != taskInfo;
-            fRep_->fCurrentTaskInfo_ = taskInfo;
-            if (changed) {
-                CallNotifyProgress_ ();
-            }
+            SetCurrentTaskInfo_ (taskInfo);
         }
         ThrowIfCanceled ();
+    }
+    inline void ProgressMonitor::Updater::SetCurrentTaskInfo_ (const CurrentTaskInfo& taskInfo)
+    {
+        RequireNotNull (fRep_);
+        bool changed             = fRep_->fCurrentTaskInfo_ != taskInfo;
+        fRep_->fCurrentTaskInfo_ = taskInfo;
+        if (changed) {
+            CallNotifyProgress_ ();
+        }
     }
     inline void ProgressMonitor::Updater::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
     {

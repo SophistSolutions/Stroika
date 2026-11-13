@@ -247,10 +247,13 @@ namespace Stroika::Foundation::Execution {
     /**
      *  The Updater is the API passed to code which knows about its progress through a long-lived task and makes callbacks
      *  to indicate phase, and percent progress (# 0..1).
-     * 
+     *
+     *  A subtask's Updater - made from its parent's, with a subrange - can also name the subtask (CurrentTaskInfo) while it
+     *  exists: by default, once destroyed it restores the task info the ProgressMonitor had when it was made. The code doing
+     *  the subtask's work gets copies of it, as usual (Updaters are passed by value), and a copy never restores the task
+     *  info: only the Updater that saved it does.
+     *
      *      \note in old RFLLib code - this was called ProgressSubTask
-     * 
-     *      \todo Consider if DTOR should REMOVE added 'curTaskInfo' (stack behavior will require restructuring) - save old info on entry/construction perhaps
      */
     class ProgressMonitor::Updater {
     public:
@@ -260,15 +263,18 @@ namespace Stroika::Foundation::Execution {
          *
          *  Helper used to continue reporting progress, but breaking the progress into subtasks,
          *  and doing the arithmetic of integrating the total into an overall progress total.
-         * 
+         *
+         *  restoreTaskInfoOnDTOR: when this Updater is destroyed, set the ProgressMonitor's CurrentTaskInfo back to what it
+         *  was when this Updater was made (before any taskInfo given here).
+         *
          *  \note - initial updater generated via ProgressMonitor::operator Updater (); null-updater
          *        maybe used if there are no progress updates to display;
-         * 
+         *
          *  \note - all 'Updater' methods (besides the constructor and destructor) - are expected to be called from the context
          *        of the worker task (especially ThrowIfCanceled).
          */
-        Updater ()               = delete;
-        Updater (const Updater&) = default;
+        Updater () = delete;
+        Updater (const Updater& src); ///< \brief reports progress as src does, but never restores the task info - only src does that
         Updater (nullptr_t);
         Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, bool restoreTaskInfoOnDTOR = true);
         Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo,
@@ -279,6 +285,12 @@ namespace Stroika::Foundation::Execution {
 
     public:
         ~Updater ();
+
+    public:
+        /**
+         *  An Updater stands for one task (or subtask), for one scope: none is assigned another
+         */
+        nonvirtual Updater& operator= (const Updater&) = delete;
 
     public:
         bool operator== (const nullptr_t) const
@@ -317,6 +329,10 @@ namespace Stroika::Foundation::Execution {
 
     private:
         friend class ProgressMonitor;
+
+    private:
+        // SetCurrentTaskInfo, but not a cancelation point
+        nonvirtual void SetCurrentTaskInfo_ (const CurrentTaskInfo& taskInfo);
 
     private:
         nonvirtual void CallNotifyProgress_ () const noexcept;
