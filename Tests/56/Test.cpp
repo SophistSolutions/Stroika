@@ -2398,14 +2398,12 @@ namespace {
             return a;
         };
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
-        // BWA: told read under its lock - cget () - not through a copy (load ()) while the callback may still append: ThreadSanitizer
-        // reports a copy's reads as racing copy-on-write's later write in place (Memory::SharedByValue's use_count () check -
-        // #1205). Restore load () - the reproducer - when that is fixed
+
         auto waitForChanges = [&] (size_t n) {
-            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; told.cget ()->size () < n and Time::GetTickCount () < giveUpAt;) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; told.load ().size () < n and Time::GetTickCount () < giveUpAt;) {
                 Execution::Sleep (50ms);
             }
-            return told.cget ()->size () >= n;
+            return told.load ().size () >= n;
         };
         optional<Interface> via = AnSSDPInterface_ ();
         if (not via) {
@@ -2585,7 +2583,8 @@ namespace {
         const Interface                                                    on1 = separate[0];
         const Interface                                                    on2 = separate[1];
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
-        auto toldSize  = [&] () { return told.cget ()->size (); };               // (under its lock: @see SSDP_CachingListener_)
+
+        auto toldSize  = [&] () { return told.load ().size (); };
         auto waitUntil = [] (const function<bool ()>& done) {
             for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not done () and Time::GetTickCount () < giveUpAt;) {
                 Execution::Sleep (50ms);
@@ -2663,8 +2662,7 @@ namespace {
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
         auto                                                               usnsTold = [&] (bool alive) {
             Containers::Set<String> result;
-            auto lockedTold = told.cget (); // BWA: under its lock, not through a copy (load ()) - as in SSDP_CachingListener_
-            for (const SSDP::Advertisement& a : lockedTold.cref ()) {
+            for (const SSDP::Advertisement& a : told.load ()) {
                 if (a.fAlive == alive) {
                     result += a.fUSN;
                 }
@@ -2749,7 +2747,8 @@ namespace {
         byebye.fUSN    = usn;
         byebye.fTarget = deviceType;
         Execution::Synchronized<Containers::Sequence<SSDP::Advertisement>> told; // ours - Synchronized: the callback runs on its own thread
-        auto toldSize  = [&] () { return told.cget ()->size (); };               // (under its lock: @see SSDP_CachingListener_)
+
+        auto toldSize  = [&] () { return told.load ().size (); };
         auto waitUntil = [] (const function<bool ()>& done) {
             for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not done () and Time::GetTickCount () < giveUpAt;) {
                 Execution::Sleep (50ms);
