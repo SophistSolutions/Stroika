@@ -30,5 +30,9 @@ namespace Stroika::Foundation::DataExchange::Archive::Reader {
     {
         return _ConstGetRep ().GetData (fileName);
     }
+    inline Streams::InputStream::Ptr<byte> Ptr::GetSource () const
+    {
+        return _ConstGetRep ().GetSource ();
+    }
 
 }

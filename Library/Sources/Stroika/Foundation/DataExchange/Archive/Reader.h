@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
  *  \file
@@ -27,6 +28,21 @@ namespace Stroika::Foundation::DataExchange::Archive::Reader {
      */
     class IRep;
 
+    /**
+     *  A reader is a view over the stream it was made from (GetSource ()) - an extension of that InputStream::Ptr: its calls, const
+     *  ones included, read and move that stream.
+     *
+     *  Unlike a Compression::Reader - a one-pass transform, which takes its source with each call and keeps none - an archive reader
+     *  keeps its source, since it reads the files in it by name, in any order.
+     *
+     *  \note Since Archive::Reader::Ptr is a smart pointer, the constness of its methods says whether they modify the smart pointer,
+     *        not the reader it points to - as for Streams::InputStream::Ptr. So two calls at once, const ones included, are safe only
+     *        where that reader's rules say so (see the New () that made it).
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
+     *          Typically - as for the stream it reads - the caller must synchronize all access, const calls included: see the New ()
+     *          that made it.
+     */
     class Ptr {
     public:
         Ptr ()           = delete;
@@ -37,29 +53,40 @@ namespace Stroika::Foundation::DataExchange::Archive::Reader {
 
     public:
         /**
+         *  \note const as a smart pointer's methods are: not safe to call concurrently on one reader unless its New () says so
          */
         nonvirtual Set<String> GetContainedFiles () const;
 
     public:
         /**
          *  maybe define iterator/indexes and maybe have return stream
+         *
+         *  \note const as a smart pointer's methods are: not safe to call concurrently on one reader unless its New () says so
          */
         nonvirtual BLOB GetData (const String& fileName) const;
+
+    public:
+        /**
+         *  \brief The stream this reader reads - as given its New (). Reading or seeking it moves the reader's position too, so
+         *         the two need the same synchronization.
+         */
+        nonvirtual Streams::InputStream::Ptr<byte> GetSource () const;
 
     protected:
         nonvirtual const IRep& _ConstGetRep () const;
 
     private:
-        shared_ptr<IRep> fRep_;
+        shared_ptr<const IRep> fRep_;
     };
 
     /**
      */
     class IRep {
     public:
-        virtual ~IRep ()                                           = default;
-        virtual Set<String> GetContainedFiles () const             = 0;
-        virtual BLOB        GetData (const String& fileName) const = 0;
+        virtual ~IRep ()                                                               = default;
+        virtual Set<String>                     GetContainedFiles () const             = 0;
+        virtual BLOB                            GetData (const String& fileName) const = 0;
+        virtual Streams::InputStream::Ptr<byte> GetSource () const                     = 0;
     };
 
 }

@@ -406,6 +406,10 @@ namespace {
                 Archive::Reader::Ptr reader = Archive::Zip::Reader::New (store);
                 EXPECT_EQ (reader.GetContainedFiles (), (Containers::Set<String>{"file-a.zip"}));
                 EXPECT_EQ (reader.GetData ("file-a.zip"), Memory::BLOB{ksample_zip_});
+                // GetSource () is the very stream the reader reads: moving one moves the other
+                InputStream::Ptr<byte> storeIn = store;
+                storeIn.Seek (3);
+                EXPECT_EQ (reader.GetSource ().GetOffset (), 3u);
             }
         }
 #else

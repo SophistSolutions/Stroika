@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Private_minizip_.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
@@ -130,6 +131,8 @@ namespace {
     struct Rep_ final : public Reader::IRep {
         MyZipLibInStream_ fInSeekStream_;
         unzFile           fZipFile_;
+        // a WriteContext even in a const method: each moves fZipFile_'s cursor (current entry, inflate state, fInSeekStream_)
+        mutable Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
         Rep_ (const InputStream::Ptr<byte>& in)
             : fInSeekStream_{in}
@@ -147,8 +150,9 @@ namespace {
         }
         virtual Set<String> GetContainedFiles () const override
         {
-            Set<String>       result;
-            unz_global_info64 gi;
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Set<String>                                              result;
+            unz_global_info64                                        gi;
             ThrowIfMinizipErr_ (unzGetGlobalInfo64 (fZipFile_, &gi), "unzGetGlobalInfo64"sv);
             for (size_t i = 0; i < gi.number_entry; i++) {
                 char            filename_inzip[10 * 1024];
@@ -247,8 +251,13 @@ namespace {
 #endif
             return result;
         }
+        virtual InputStream::Ptr<byte> GetSource () const override
+        {
+            return fInSeekStream_.fInStream_;
+        }
         virtual Memory::BLOB GetData (const String& fileName) const override
         {
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             // See comments in GetContainedFiles about filename character encoding
             if (unzLocateFile_ (fZipFile_, fileName.AsUTF8<string> ().c_str (), 1) != UNZ_OK) [[unlikely]] {
                 Throw (Execution::Exception<runtime_error>{Format ("File '{}' not found"_f, fileName)});

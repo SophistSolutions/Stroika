@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 
@@ -55,6 +56,8 @@ namespace {
         mutable ISzAlloc fAllocImp_{};
         mutable ISzAlloc fAllocTempImp_{};
         CSzArEx          fDB_{};
+        // GetData's WriteContext: it reads through fLookStream_, moving it and fInSeekStream_; GetContainedFiles only reads fDB_
+        mutable Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
         struct MyISeekInStream : ISeekInStream {
             Streams::InputStream::Ptr<byte> fInStream_;
             MyISeekInStream (const Streams::InputStream::Ptr<byte>& in)
@@ -118,7 +121,8 @@ namespace {
         }
         virtual Set<String> GetContainedFiles () const override
         {
-            Set<String> result;
+            Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            Set<String>                                             result;
             for (unsigned int i = 0; i < fDB_.NumFiles; ++i) {
                 if (not SzArEx_IsDir (&fDB_, i)) {
                     size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
@@ -132,9 +136,14 @@ namespace {
             }
             return result;
         }
+        virtual Streams::InputStream::Ptr<byte> GetSource () const override
+        {
+            return fInSeekStream_.fInStream_;
+        }
         virtual Memory::BLOB GetData (const String& fileName) const override
         {
-            UInt32 idx = GetIdx_ (fileName);
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            UInt32                                                   idx = GetIdx_ (fileName);
             if (idx == -1) {
                 throw "bad"; //filenotfound
             }

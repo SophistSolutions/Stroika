@@ -17,7 +17,11 @@ namespace Stroika::Foundation::DataExchange::Compression {
     using Memory::BLOB;
 
     /**
-     *  Abstraction for Readers that map files or streams to collections of files, like zip files, tar files, etc.
+     *  Compresses or decompresses a stream - a one-pass transform: each call takes its source and returns the transformed stream,
+     *  keeping nothing but its options, so its const methods may be called concurrently (each stream it returns follows a stream's
+     *  rules). Unlike an Archive::Reader, which keeps its source, to read the files in it by name.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Reader {
     public:
