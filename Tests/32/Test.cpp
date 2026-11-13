@@ -403,12 +403,17 @@ namespace {
             // names of any length the format allows (16 bits), the empty one too
             String                  longName{string (12'000, 'n')};
             MemoryStream::Ptr<byte> store = MemoryStream::New<byte> ();
+            Memory::BLOB            longData{span{ksample_zip_}.first (100)};
+            Memory::BLOB            emptyNameData{span{ksample_zip_}.last (100)};
             {
                 Archive::Writer::Ptr writer = Archive::Zip::Writer::New (store);
-                writer.Add (longName, Memory::BLOB{});
-                writer.Add ("", Memory::BLOB{});
+                writer.Add (longName, longData);
+                writer.Add ("", emptyNameData);
             }
-            EXPECT_EQ (Archive::Zip::Reader::New (store).GetContainedFiles (), (Containers::Set<String>{longName, ""}));
+            Archive::Reader::Ptr reader = Archive::Zip::Reader::New (store);
+            EXPECT_EQ (reader.GetContainedFiles (), (Containers::Set<String>{longName, ""}));
+            EXPECT_EQ (reader.GetData (longName), longData);
+            EXPECT_EQ (reader.GetData (""), emptyNameData);
         }
         {
             MemoryStream::Ptr<byte> store = MemoryStream::New<byte> ();

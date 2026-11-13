@@ -148,15 +148,18 @@ namespace {
             AssertNotNull (fZipFile_);
             unzClose (fZipFile_);
         }
-        virtual Set<String> GetContainedFiles () const override
+        /*
+         *  Calls f with each entry's name (its UTF-8 bytes), from the first entry - wherever the last call left the current one -
+         *  until f returns true; that entry is then the current one. Returns whether f did.
+         *
+         *  Not minizip's unzLocateFile_, which refuses a name of 256 bytes or more.
+         */
+        bool ForEachEntry_ (const invocable<string_view> auto& f) const
         {
-            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            Set<String>                                              result;
-            unz_global_info64                                        gi;
+            unz_global_info64 gi;
             ThrowIfMinizipErr_ (unzGetGlobalInfo64 (fZipFile_, &gi), "unzGetGlobalInfo64"sv);
             string nameBuf (numeric_limits<uint16_t>::max (), '\0'); // holds any entry's name: its length is a 16-bit field (APPNOTE 4.4.10)
             for (ZPOS64_T i = 0; i < gi.number_entry; ++i) {
-                // from the first entry, wherever GetData left the current one
                 ThrowIfMinizipErr_ (i == 0 ? unzGoToFirstFile (fZipFile_) : unzGoToNextFile_ (fZipFile_), "unzGoToFirstFile/unzGoToNextFile_"sv);
                 unz_file_info64 fileInfo;
                 ThrowIfMinizipErr_ (unzGetCurrentFileInfo64 (fZipFile_, &fileInfo, nameBuf.data (), static_cast<uLong> (nameBuf.size ()),
@@ -164,13 +167,23 @@ namespace {
                                     "unzGetCurrentFileInfo64"sv);
                 Assert (fileInfo.size_filename <= nameBuf.size ());
                 // by its length: minizip adds no NUL to a name that fills nameBuf
-                string_view name{nameBuf.data (), static_cast<size_t> (fileInfo.size_filename)};
-                if (name.ends_with ('/')) {
-                    continue; // only list files - not directories for now
+                if (f (string_view{nameBuf.data (), static_cast<size_t> (fileInfo.size_filename)})) {
+                    return true;
                 }
-                // From https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT, must check bit 11 to see if really unicode, but not sure what code page if not unicode so just assume unicode!
-                result.Add (String::FromUTF8 (span{name}));
             }
+            return false;
+        }
+        virtual Set<String> GetContainedFiles () const override
+        {
+            Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Set<String>                                              result;
+            ForEachEntry_ ([&] (string_view name) {
+                if (not name.ends_with ('/')) { // only list files - not directories for now
+                    // From https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT, must check bit 11 to see if really unicode, but not sure what code page if not unicode so just assume unicode!
+                    result.Add (String::FromUTF8 (span{name}));
+                }
+                return false;
+            });
 #if 0
         // Keep temporarily, because we will want a traversal variant that captures this extra info
         uLong i;
@@ -258,13 +271,15 @@ namespace {
         {
             Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
             // See comments in GetContainedFiles about filename character encoding
-            if (unzLocateFile_ (fZipFile_, fileName.AsUTF8<string> ().c_str (), 1) != UNZ_OK) [[unlikely]] {
+            string fileNameUTF8 = fileName.AsUTF8<string> ();
+            if (not ForEachEntry_ ([&] (string_view name) { return name == fileNameUTF8; })) [[unlikely]] {
                 Throw (Execution::Exception<runtime_error>{Format ("File '{}' not found"_f, fileName)});
             }
-            const char*             password = nullptr;
-            int                     err      = unzOpenCurrentFilePassword (fZipFile_, password);
-            [[maybe_unused]] auto&& cleanup  = Finally ([this] () noexcept { unzCloseCurrentFile_ (fZipFile_); });
-            MemoryStream::Ptr<byte> tmpBuf   = MemoryStream::New<byte> ();
+            const char* password = nullptr;
+            ThrowIfMinizipErr_ (unzOpenCurrentFilePassword (fZipFile_, password), "unzOpenCurrentFilePassword"sv);
+            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { unzCloseCurrentFile_ (fZipFile_); });
+            MemoryStream::Ptr<byte> tmpBuf  = MemoryStream::New<byte> ();
+            int                     err;
             do {
                 byte buf[10 * 1024];
                 err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (std::size (buf)));
