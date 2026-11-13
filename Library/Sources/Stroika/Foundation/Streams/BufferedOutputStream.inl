@@ -21,9 +21,10 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             ~Rep_ ()
             {
                 if (IsOpenWrite ()) {
+                    // a Flush that fails here - its destination failed, as when a peer resets its connection - loses the unwritten
+                    // bytes: nothing a destructor can report
                     IgnoreExceptionsForCall (Flush ());
                 }
-                WeakAssert (fUnwrittenAppends_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
             }
 
         public:

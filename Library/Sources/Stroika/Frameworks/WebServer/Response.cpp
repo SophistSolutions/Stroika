@@ -516,8 +516,7 @@ bool Response::End ()
         }
         catch (...) {
             DbgTrace ("Exception during Response::End () automaticaly triggers Response::Abort()"_f);
-            Abort ();
-            WeakAssert (this->responseAborted ()); // NOT ALWAYS TRUE, cuz could have been completed before we got to abort
+            Abort (); // does nothing once completed - as when the final Flush above fails (a client gone): so not always responseAborted ()
             Ensure (this->responseCompleted ());
             Execution::ReThrow (); // but still rethrow so caller can see failure
         }
