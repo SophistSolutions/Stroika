@@ -662,15 +662,17 @@ namespace {
     }
 
     /*
-     *  A malformed request - its request line, a header line, or its HTTP version - is answered 400 (Bad Request), and its
-     *  connection closed.
+     *  A malformed request - its request line, a header line, its HTTP version, or its Content-Length - is answered 400 (Bad
+     *  Request), and its connection closed.
      */
     GTEST_TEST (Frameworks_WebServer, MalformedRequest_)
     {
         TraceContextBumper ctx{"MalformedRequest_"};
         ConnectionManager  server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_), Sequence<Route>{kFRED_}};
         for (string_view request : {"GARBAGE\r\nHost: localhost\r\n\r\n"sv, "GET /FRED HTTP/1.1\r\nHost localhost\r\n\r\n"sv,
-                                    "GET /FRED HTTP/\r\nHost: localhost\r\n\r\n"sv, "GET /FRED HTTP/one\r\nHost: localhost\r\n\r\n"sv}) {
+                                    "GET /FRED HTTP/\r\nHost: localhost\r\n\r\n"sv, "GET /FRED HTTP/one\r\nHost: localhost\r\n\r\n"sv,
+                                    "GET /FRED HTTP/1.1\r\nHost: localhost\r\nContent-Length: abc\r\n\r\n"sv,
+                                    "GET /FRED HTTP/1.1\r\nHost: localhost\r\nContent-Length: 5, 6\r\n\r\n"sv}) {
             IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
 #if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
             client.Write (as_bytes (span<const char>{request}));

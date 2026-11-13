@@ -304,6 +304,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<uint64_t> value of the Content-Length header.
          *  \note this refers to the (possibly encoded) size in bytes of the HTTP payload body (so if zipped its the size of the zipfile not the size after unzip).
+         *  \note Set from text (Add, Set), a value that is not digits - or a list of different values - throws ClientErrorException:
+         *        RFC 9112 (6.3) makes it an unrecoverable error.
          *
          *  \par Example Usage
          *      \code

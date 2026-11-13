@@ -1,12 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 
 #include "Headers.h"
 
@@ -23,6 +24,28 @@ using Debug::AssertExternallySynchronizedChecker;
 namespace {
     constexpr string_view kKeepAlive_ = "Keep-Alive"sv;
     constexpr string_view kClose_     = "close"sv;
+
+    /*
+     *  RFC 9112 6.3: a Content-Length is digits, and one that is not is an unrecoverable error - misreading it is how requests are
+     *  smuggled - so a server answers 400 and closes (as WebServer does for this ClientErrorException), and a client discards the
+     *  response. Except: a list of the same valid value ("5, 5") is that value.
+     */
+    uint64_t ParseContentLength_ (const String& value)
+    {
+        optional<uint64_t> result;
+        for (const String& item : value.Tokenize ({','})) {
+            auto n = Number::Parse<uint64_t> (item.Trim (), {.fAcceptSign = false});
+            if (not n or (result and *result != *n)) {
+                result = nullopt;
+                break;
+            }
+            result = *n;
+        }
+        if (not result) {
+            Execution::Throw (ClientErrorException{"Invalid Content-Length ({})"_f(value)});
+        }
+        return *result;
+    }
 }
 
 /*
@@ -628,7 +651,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         if (nRemovals != nullptr) {
             *nRemovals = (value == nullopt and fContentLength_ != nullopt) ? 1 : 0;
         }
-        this->contentLength = value ? Number::Parse<uint64_t> (*value).value_or (0) : optional<uint64_t>{};
+        this->contentLength = value ? ParseContentLength_ (*value) : optional<uint64_t>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentType)) {

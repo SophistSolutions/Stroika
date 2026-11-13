@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
+#include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookie.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
@@ -304,6 +305,24 @@ namespace {
         ASSERT_TRUE (m.has_value ());
         EXPECT_TRUE (m->fMessages == 7u);
         EXPECT_FALSE (KeepAlive::Merge (nullopt, nullopt).has_value ());
+    }
+
+    /*
+     *  Content-Length read as RFC 9112 (6.3) has it: digits, or a list of the same value; anything else - not digits, a sign, a
+     *  list of different values - throws ClientErrorException
+     */
+    GTEST_TEST (Foundation_IO_Network_HTTP, ContentLength_RFC9112_)
+    {
+        Headers one;
+        one.Add ("Content-Length"sv, "5"sv);
+        EXPECT_TRUE (one.contentLength () == 5u);
+        Headers repeated;
+        repeated.Add ("Content-Length"sv, "5, 5"sv);
+        EXPECT_TRUE (repeated.contentLength () == 5u);
+        for (string_view bad : {"abc"sv, "-1"sv, "+5"sv, "5x"sv, "5, 6"sv, ""sv}) {
+            Headers h;
+            EXPECT_THROW (h.Add ("Content-Length"sv, String{bad}), ClientErrorException) << bad;
+        }
     }
 }
 
