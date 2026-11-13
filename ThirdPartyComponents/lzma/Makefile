@@ -17,19 +17,14 @@ include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 #
-# CHECK FOR UPDATED VERSIONS http://www.7-zip.org/sdk.html
+# CHECK FOR UPDATED VERSIONS https://www.7-zip.org/sdk.html
 #
-
-
-
-#NO - BIG CHANGES - AND NOT DOCUMENTED AND NOT CLEAR BETTER - VERSION=1700
-VERSION=1604
-#VERSION=1602
-BASENAME=lzma$(VERSION)
+VERSION=26.06
+BASENAME=lzma$(subst .,,$(VERSION))
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).7z
 
 FETCHURLS=
-FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
+FETCHURLS+=https://github.com/ip7z/7zip/releases/download/$(VERSION)/$(BASENAME).7z
 FETCHURLS+=https://sourceforge.net/projects/sevenzip/files/LZMA%20SDK/$(BASENAME).7z
 
 
@@ -54,13 +49,6 @@ endif
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
-CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
-
-
-
-ifeq (Unix,$(BuildPlatform))
-LIBS	=	-lstdc++ -lc
-endif
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -84,7 +72,6 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVar
 # -- LGP 2019-09-25
 #
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
-CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
 
 
 ###
@@ -98,7 +85,6 @@ CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
 ###		-- LGP 2019-09-26
 ###
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
-CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 
 
 all:
@@ -159,40 +145,26 @@ ifeq (Unix,$(BuildPlatform))
 	$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) \
 		AR='$(AR)' \
 		CC='$(CC)' \
-		CXX='$(CXX)' \
 		CFLAGS='$(CFLAGS)' \
-		CXXFLAGS='$(CXXFLAGS)' \
-		LD='$(LINKER)' \
-		LDFLAGS='${Platform_LDFLAGS}' \
 		BuildPlatform='$(BuildPlatform)' \
-		LIBS='$(LIBS)' \
 		all
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/lzma.a  $(PER_CONFIGURATION_BUILDS_DIR_)lib/liblzma.a
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR_)include/lzma/
-	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)lzma $(PER_CONFIGURATION_BUILDS_DIR_)
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)7zDec $(PER_CONFIGURATION_BUILDS_DIR_)/bin/
 else
 	PATH='$(TOOLS_PATH_ADDITIONS):$(PATH)';\
 		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) \
 			CC='$(CC)' \
-			CXX='$(CXX)' \
-			LD='$(LINKER)' \
 			AR='$(LIBTOOL)' \
 			BuildPlatform='$(BuildPlatform)' \
 			INCLUDE='$(PLATFORM_INCLUDES_PATH)' \
-			LIBS='oleaut32.lib ole32.lib user32.lib' \
 			ARCRATEFLAGS='-nologo' \
 			ARTARGETPREFIX=-out: \
-			LINKTARGETPREFIX=-out: \
-			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
+			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} \
 			CFLAGS='$(CFLAGS)' \
-			CXXFLAGS='$(CXXFLAGS)' \
-			LDFLAGS='-nologo -debug -incremental:no -opt:ref ${Platform_LDFLAGS}' \
 			all
 	# Now copy the output to the BUILD directory
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR_)lib/
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)include/lzma && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)C/7z.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)C/7zCrc.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)C/7zTypes.h $(PER_CONFIGURATION_BUILDS_DIR_)include/lzma/
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)lzma.exe $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)7zDec.exe $(PER_CONFIGURATION_BUILDS_DIR_)/bin/
 endif
 	@mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	@cp lzma.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"

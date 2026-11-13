@@ -62,23 +62,22 @@ namespace {
 
 namespace {
 
+    // the LZMA SDK's allocator - for its main and temporary allocations alike. Could do smarter/block allocation or arena
+    // allocation, but KISS for now
+    void* Alloc_ (ISzAllocPtr, size_t size)
+    {
+        Require (size > 0);
+        return new byte[size];
+    }
+    void Free_ (ISzAllocPtr, void* address)
+    {
+        delete[] reinterpret_cast<byte*> (address);
+    }
+    constexpr ISzAlloc kAlloc_{Alloc_, Free_};
+
     struct Rep_ final : Reader::IRep {
     private:
-        // could do smarter/block allocation or arena allocation, but KISS for now
-        static void* Alloc_ (void* /*p*/, size_t size)
-        {
-            Require (size > 0);
-            return new byte[size];
-        }
-        static void Free_ (void* /*p*/, void* address)
-        {
-            delete[] reinterpret_cast<byte*> (address);
-        }
-
-    private:
-        mutable ISzAlloc fAllocImp_{};
-        mutable ISzAlloc fAllocTempImp_{};
-        CSzArEx          fDB_{};
+        CSzArEx fDB_{};
         // fDB_'s index of each file (not directory), by name
         Mapping<String, UInt32> fFileIndexes_;
         // GetData's WriteContext: it reads through fLookStream_, moving it and fInSeekStream_, and replaces fBlock_; GetContainedFiles
@@ -104,18 +103,23 @@ namespace {
                     Execution::ReThrow (e);
                 }
             }
-            static SRes Stream_Read_ (void* pp, void* buf, size_t* size)
+            // the SDK passes its interfaces const; this is the very (non-const) object it was given
+            static MyISeekInStream* This_ (ISeekInStreamPtr pp)
             {
-                MyISeekInStream* pThis = (MyISeekInStream*)pp;
-                size_t           want  = exchange (*size, 0); // 0 if it fails: the SDK's CLookToRead takes *size even then
+                return const_cast<MyISeekInStream*> (static_cast<const MyISeekInStream*> (pp));
+            }
+            static SRes Stream_Read_ (ISeekInStreamPtr pp, void* buf, size_t* size)
+            {
+                MyISeekInStream* pThis = This_ (pp);
+                size_t           want  = exchange (*size, 0); // 0 if it fails: the SDK's CLookToRead2 takes *size even then
                 return pThis->Guarded_ ([&] () {
                     *size = pThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), want}).size ();
                     Assert (*size <= want); // 0 at the end of the stream, as ISeekInStream specifies
                 });
             }
-            static SRes Stream_Seek_ (void* pp, Int64* pos, ESzSeek origin)
+            static SRes Stream_Seek_ (ISeekInStreamPtr pp, Int64* pos, ESzSeek origin)
             {
-                MyISeekInStream* pThis = (MyISeekInStream*)pp;
+                MyISeekInStream* pThis = This_ (pp);
                 Whence           whence;
                 switch (origin) {
                     case SZ_SEEK_SET:
@@ -154,13 +158,14 @@ namespace {
             }
         };
         mutable MyISeekInStream fInSeekStream_;
-        mutable CLookToRead     fLookStream_{};
+        mutable CLookToRead2    fLookStream_{};
+        mutable Byte            fLookBuffer_[1 << 14]; // fLookStream_'s
         /*
          *  The block (7z's 'folder') GetData last decompressed, kept for the next call: a solid archive packs many files into one
          *  block, so reading each would otherwise decompress the whole block again. These are SzArEx_Extract's in/out arguments,
          *  which replaces the block when a file is in another. Holds memory the size of the block until then.
          */
-        mutable Byte*  fBlock_{nullptr}; // from fAllocImp_; nullptr: none held
+        mutable Byte*  fBlock_{nullptr}; // from kAlloc_; nullptr: none held
         mutable UInt32 fBlockIndex_{};   // any value while fBlock_ is nullptr
         mutable size_t fBlockSize_{};    // ditto
 
@@ -168,16 +173,16 @@ namespace {
         Rep_ (const Streams::InputStream::Ptr<byte>& in)
             : fInSeekStream_{in}
         {
-            fAllocImp_     = ISzAlloc{Alloc_, Free_};
-            fAllocTempImp_ = ISzAlloc{Alloc_, Free_};
-
             ::SzArEx_Init (&fDB_);
 
-            ::LookToRead_CreateVTable (&fLookStream_, false);
+            ::LookToRead2_CreateVTable (&fLookStream_, false);
+            fLookStream_.buf     = fLookBuffer_;
+            fLookStream_.bufSize = std::size (fLookBuffer_);
+            LookToRead2_INIT (&fLookStream_);
             fLookStream_.realStream = &fInSeekStream_;
 
             try {
-                ThrowIfFailed_ (::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_));
+                ThrowIfFailed_ (::SzArEx_Open (&fDB_, &fLookStream_.vt, &kAlloc_, &kAlloc_));
                 for (UInt32 i = 0; i < fDB_.NumFiles; ++i) {
                     if (not SzArEx_IsDir (&fDB_, i)) {
                         size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr); // with its NUL; 0 when the archive stores no names
@@ -192,14 +197,14 @@ namespace {
             }
             catch (...) {
                 // no ~Rep_ for a constructor that throws; harmless after a failed SzArEx_Open, which frees fDB_ itself
-                ::SzArEx_Free (&fDB_, &fAllocImp_);
+                ::SzArEx_Free (&fDB_, &kAlloc_);
                 throw;
             }
         }
         ~Rep_ ()
         {
-            IAlloc_Free (&fAllocImp_, fBlock_);
-            ::SzArEx_Free (&fDB_, &fAllocImp_);
+            IAlloc_Free (&kAlloc_, fBlock_);
+            ::SzArEx_Free (&fDB_, &kAlloc_);
         }
 
     private:
@@ -229,11 +234,11 @@ namespace {
             }
             size_t offset{};
             size_t outSizeProcessed{};
-            if (SRes err = ::SzArEx_Extract (&fDB_, &fLookStream_.s, *idx, &fBlockIndex_, &fBlock_, &fBlockSize_, &offset,
-                                             &outSizeProcessed, &fAllocImp_, &fAllocTempImp_);
+            if (SRes err = ::SzArEx_Extract (&fDB_, &fLookStream_.vt, *idx, &fBlockIndex_, &fBlock_, &fBlockSize_, &offset,
+                                             &outSizeProcessed, &kAlloc_, &kAlloc_);
                 err != SZ_OK) [[unlikely]] {
                 // a failed decode leaves fBlock_ partly filled, though marked as fBlockIndex_ - drop it, or the next call would use it
-                IAlloc_Free (&fAllocImp_, fBlock_);
+                IAlloc_Free (&kAlloc_, fBlock_);
                 fBlock_ = nullptr;
                 ThrowIfFailed_ (err);
             }

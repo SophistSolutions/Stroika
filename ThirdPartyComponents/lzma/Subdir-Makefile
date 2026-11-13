@@ -1,278 +1,50 @@
-
+#
+# The LZMA SDK's C 7z decoder, as one library - the objects of its own C/Util/7z/makefile.gcc, less that sample program
+# (7zMain, 7zFile, 7zAlloc). It is all Stroika uses (DataExchange::Archive::_7z::Reader).
+#
 OBJ_SUFFIX=.o
 LIB_SUFFIX=.a
-
-COMMON_OBJS = \
-  CommandLineParser$(OBJ_SUFFIX) \
-  CRC$(OBJ_SUFFIX) \
-  CrcReg$(OBJ_SUFFIX) \
-  IntToString$(OBJ_SUFFIX) \
-  ListFileUtils$(OBJ_SUFFIX) \
-  NewHandler$(OBJ_SUFFIX) \
-  StdInStream$(OBJ_SUFFIX) \
-  StdOutStream$(OBJ_SUFFIX) \
-  MyString$(OBJ_SUFFIX) \
-  Sha256Reg$(OBJ_SUFFIX) \
-  StringConvert$(OBJ_SUFFIX) \
-  StringToInt$(OBJ_SUFFIX) \
-  UTFConvert$(OBJ_SUFFIX) \
-  MyVector$(OBJ_SUFFIX) \
-  Wildcard$(OBJ_SUFFIX) \
-  XzCrc64Reg$(OBJ_SUFFIX) \
-
-WIN_OBJS = \
-  DLL$(OBJ_SUFFIX) \
-  ErrorMsg$(OBJ_SUFFIX) \
-  FileDir$(OBJ_SUFFIX) \
-  FileFind$(OBJ_SUFFIX) \
-  FileIO$(OBJ_SUFFIX) \
-  FileLink$(OBJ_SUFFIX) \
-  FileName$(OBJ_SUFFIX) \
-  MemoryLock$(OBJ_SUFFIX) \
-  PropVariant$(OBJ_SUFFIX) \
-  PropVariantConv$(OBJ_SUFFIX) \
-  Synchronization$(OBJ_SUFFIX) \
-  System$(OBJ_SUFFIX) \
-  TimeUtils$(OBJ_SUFFIX) \
-
-7ZIP_COMMON_OBJS = \
-  CreateCoder$(OBJ_SUFFIX) \
-  CWrappers$(OBJ_SUFFIX) \
-  FilePathAutoRename$(OBJ_SUFFIX) \
-  FileStreams$(OBJ_SUFFIX) \
-  InBuffer$(OBJ_SUFFIX) \
-  InOutTempBuffer$(OBJ_SUFFIX) \
-  FilterCoder$(OBJ_SUFFIX) \
-  LimitedStreams$(OBJ_SUFFIX) \
-  MethodId$(OBJ_SUFFIX) \
-  MethodProps$(OBJ_SUFFIX) \
-  OffsetStream$(OBJ_SUFFIX) \
-  OutBuffer$(OBJ_SUFFIX) \
-  ProgressUtils$(OBJ_SUFFIX) \
-  PropId$(OBJ_SUFFIX) \
-  StreamBinder$(OBJ_SUFFIX) \
-  StreamObjects$(OBJ_SUFFIX) \
-  StreamUtils$(OBJ_SUFFIX) \
-  UniqBlocks$(OBJ_SUFFIX) \
-  VirtThread$(OBJ_SUFFIX) \
-
-AR_OBJS = \
-  LzmaHandler$(OBJ_SUFFIX) \
-  SplitHandler$(OBJ_SUFFIX) \
-  XzHandler$(OBJ_SUFFIX) \
-
-AR_COMMON_OBJS = \
-  CoderMixer2$(OBJ_SUFFIX) \
-  CrossThreadProgress$(OBJ_SUFFIX) \
-  DummyOutStream$(OBJ_SUFFIX) \
-  HandlerOut$(OBJ_SUFFIX) \
-  InStreamWithCRC$(OBJ_SUFFIX) \
-  ItemNameUtils$(OBJ_SUFFIX) \
-  MultiStream$(OBJ_SUFFIX) \
-  OutStreamWithCRC$(OBJ_SUFFIX) \
-  ParseProperties$(OBJ_SUFFIX) \
-
-
-7Z_OBJS = \
-  $O\7zCompressionMode$(OBJ_SUFFIX) \
-  $O\7zDecode$(OBJ_SUFFIX) \
-  $O\7zEncode$(OBJ_SUFFIX) \
-  $O\7zExtract$(OBJ_SUFFIX) \
-  $O\7zFolderInStream$(OBJ_SUFFIX) \
-  $O\7zFolderOutStream$(OBJ_SUFFIX) \
-  $O\7zHandler$(OBJ_SUFFIX) \
-  $O\7zHandlerOut$(OBJ_SUFFIX) \
-  $O\7zHeader$(OBJ_SUFFIX) \
-  $O\7zIn$(OBJ_SUFFIX) \
-  $O\7zOut$(OBJ_SUFFIX) \
-  $O\7zProperties$(OBJ_SUFFIX) \
-  $O\7zRegister$(OBJ_SUFFIX) \
-  $O\7zSpecStream$(OBJ_SUFFIX) \
-  $O\7zUpdate$(OBJ_SUFFIX) \
-
-COMPRESS_OBJS = \
-  $O\Bcj2Coder$(OBJ_SUFFIX) \
-  $O\Bcj2Register$(OBJ_SUFFIX) \
-  $O\BcjCoder$(OBJ_SUFFIX) \
-  $O\BcjRegister$(OBJ_SUFFIX) \
-  $O\BranchMisc$(OBJ_SUFFIX) \
-  $O\BranchRegister$(OBJ_SUFFIX) \
-  $O\ByteSwap$(OBJ_SUFFIX) \
-  $O\CopyCoder$(OBJ_SUFFIX) \
-  $O\CopyRegister$(OBJ_SUFFIX) \
-  $O\DeltaFilter$(OBJ_SUFFIX) \
-  $O\Lzma2Decoder$(OBJ_SUFFIX) \
-  $O\Lzma2Encoder$(OBJ_SUFFIX) \
-  $O\Lzma2Register$(OBJ_SUFFIX) \
-  $O\LzmaDecoder$(OBJ_SUFFIX) \
-  $O\LzmaEncoder$(OBJ_SUFFIX) \
-  $O\LzmaRegister$(OBJ_SUFFIX) \
-
-CRYPTO_OBJS = \
-  7zAes$(OBJ_SUFFIX) \
-  7zAesRegister$(OBJ_SUFFIX) \
-  MyAes$(OBJ_SUFFIX) \
-  MyAesReg$(OBJ_SUFFIX) \
-  RandGen$(OBJ_SUFFIX) \
-
-
-
-
-
-C_OBJS = \
-  7zStream$(OBJ_SUFFIX) \
-  7zAlloc$(OBJ_SUFFIX) \
-  7zArcIn$(OBJ_SUFFIX) \
-  7zBuf$(OBJ_SUFFIX) \
-  7zBuf2$(OBJ_SUFFIX) \
-  7zCrc$(OBJ_SUFFIX) \
-  7zCrcOpt$(OBJ_SUFFIX) \
-  7zDec$(OBJ_SUFFIX) \
-  CpuArch$(OBJ_SUFFIX) \
-  Delta$(OBJ_SUFFIX) \
-  LzmaDec$(OBJ_SUFFIX) \
-  Lzma2Dec$(OBJ_SUFFIX) \
-  Ppmd7$(OBJ_SUFFIX) \
-  Ppmd7Dec$(OBJ_SUFFIX) \
-  7zFile$(OBJ_SUFFIX) \
-  7zStream$(OBJ_SUFFIX) \
-  7zArcIn$(OBJ_SUFFIX) \
-  Alloc$(OBJ_SUFFIX) \
-  Bcj2$(OBJ_SUFFIX) \
-  Bra$(OBJ_SUFFIX) \
-  Bra86$(OBJ_SUFFIX) \
-  BraIA64$(OBJ_SUFFIX) \
-  CpuArch$(OBJ_SUFFIX) \
-  Delta$(OBJ_SUFFIX) \
-  LzFind$(OBJ_SUFFIX) \
-  Lzma2Dec$(OBJ_SUFFIX) \
-  Lzma2Enc$(OBJ_SUFFIX) \
-  LzmaDec$(OBJ_SUFFIX) \
-  LzmaEnc$(OBJ_SUFFIX) \
-  Sha256$(OBJ_SUFFIX) \
-  Sort$(OBJ_SUFFIX) \
-  Xz$(OBJ_SUFFIX) \
-  XzDec$(OBJ_SUFFIX) \
-  XzEnc$(OBJ_SUFFIX) \
-  XzIn$(OBJ_SUFFIX)
-
-
-ifneq (,$(findstring VisualStudio,$(BuildPlatform)))
-C_OBJS+=\
-  Bcj2Enc$(OBJ_SUFFIX)\
-  MtCoder$(OBJ_SUFFIX)\
-  Threads$(OBJ_SUFFIX)\
-  LzFindMt$(OBJ_SUFFIX)
-endif
-  
-  
-LibObjs=	\
-		$(C_OBJS)\
-		C_FileIO$(OBJ_SUFFIX) \
-		System$(OBJ_SUFFIX) \
-		Bench$(OBJ_SUFFIX) \
-		BenchCon$(OBJ_SUFFIX) \
-		ConsoleClose$(OBJ_SUFFIX) \
-		LzmaDecoder$(OBJ_SUFFIX) \
-		LzmaEncoder$(OBJ_SUFFIX) \
-		LzmaRegister$(OBJ_SUFFIX) \
-		CreateCoder$(OBJ_SUFFIX) \
-		CWrappers$(OBJ_SUFFIX) \
-		FileStreams$(OBJ_SUFFIX) \
-		FilterCoder$(OBJ_SUFFIX) \
-		MethodProps$(OBJ_SUFFIX) \
-		StreamUtils$(OBJ_SUFFIX) \
-		CommandLineParser$(OBJ_SUFFIX) \
-		CRC$(OBJ_SUFFIX) \
-		CrcReg$(OBJ_SUFFIX) \
-		IntToString$(OBJ_SUFFIX) \
-		MyString$(OBJ_SUFFIX) \
-		MyVector$(OBJ_SUFFIX) \
-		MyWindows$(OBJ_SUFFIX) \
-		StringConvert$(OBJ_SUFFIX) \
-		StringToInt$(OBJ_SUFFIX) \
-		PropVariant$(OBJ_SUFFIX) \
-		7zCrc$(OBJ_SUFFIX) \
-		7zCrcOpt$(OBJ_SUFFIX) \
-		Alloc$(OBJ_SUFFIX) \
-		Bra86$(OBJ_SUFFIX) \
-		CpuArch$(OBJ_SUFFIX) \
-		LzFind$(OBJ_SUFFIX) \
-		LzmaDec$(OBJ_SUFFIX) \
-		LzmaEnc$(OBJ_SUFFIX) \
-		Lzma86Dec$(OBJ_SUFFIX) \
-		Lzma86Enc$(OBJ_SUFFIX)
-
-ifneq (,$(findstring VisualStudio,$(BuildPlatform)))
-LibObjs+=		\
-  FileIO$(OBJ_SUFFIX)\
-  System$(OBJ_SUFFIX)
-endif
-
-
-
-Objs=	$(LibObjs) \
-		LzmaAlone$(OBJ_SUFFIX) \
-
-
-SubDirs2Compile=	\
-	CPP/7zip/Bundles/LzmaCon \
-	CPP/Common \
-	CPP/7zip/UI/Common \
-	CPP/7zip/UI/Console \
-	CPP/7zip/Compress \
-	CPP/7zip/Common \
-	CPP/Windows \
-	C \
-	C/Util/7z
-
-
-vpath %cpp $(SubDirs2Compile)
-vpath %c $(SubDirs2Compile)
-
-CC?=gcc
-CXX?=g++
-override CFLAGS+=-D_7ZIP_ST
-override CXXFLAGS+=-D_7ZIP_ST
 
 AR?=ar
 ARCRATEFLAGS=cru
 ARTARGETPREFIX=
 
-LD=$(CC)
-#LDFLAGS=
-LINKTARGETPREFIX= -o 
+# as that makefile: PPMd-compressed archives too; no encoders
+override CFLAGS+=-DZ7_PPMD_SUPPORT -DZ7_EXTRACT_ONLY
 
-# may need to add define
-#-D_7ZIP_PPMD_SUPPPORT
+Objs=	\
+	7zArcIn$(OBJ_SUFFIX) \
+	7zBuf$(OBJ_SUFFIX) \
+	7zBuf2$(OBJ_SUFFIX) \
+	7zCrc$(OBJ_SUFFIX) \
+	7zCrcOpt$(OBJ_SUFFIX) \
+	7zDec$(OBJ_SUFFIX) \
+	7zStream$(OBJ_SUFFIX) \
+	Bcj2$(OBJ_SUFFIX) \
+	Bra$(OBJ_SUFFIX) \
+	Bra86$(OBJ_SUFFIX) \
+	BraIA64$(OBJ_SUFFIX) \
+	CpuArch$(OBJ_SUFFIX) \
+	Delta$(OBJ_SUFFIX) \
+	Lzma2Dec$(OBJ_SUFFIX) \
+	LzmaDec$(OBJ_SUFFIX) \
+	Ppmd7$(OBJ_SUFFIX) \
+	Ppmd7Dec$(OBJ_SUFFIX)
 
-
-
-%$(OBJ_SUFFIX) : %.cpp
-	echo '$(CXX) $(CXXFLAGS) -c $<'
-	"$(CXX)" $(CXXFLAGS) -c $<
+vpath %.c C
 
 %$(OBJ_SUFFIX) : %.c
 	echo '$(CC) $(CFLAGS) -c $<'
 	"$(CC)" $(CFLAGS) -c $<
 
+all:	lzma$(LIB_SUFFIX)
 
-all:		lzma$(LIB_SUFFIX) 7zDec$(EXE_SUFFIX) lzma$(EXE_SUFFIX)
-
-lzma$(LIB_SUFFIX):	$(LibObjs)
-	echo "$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma$(LIB_SUFFIX) $(LibObjs)
-	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma$(LIB_SUFFIX) $(LibObjs)
-
-7zDec$(EXE_SUFFIX):	7zMain$(OBJ_SUFFIX) lzma$(LIB_SUFFIX)
-	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXE_SUFFIX) 7zMain$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
-	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXE_SUFFIX) 7zMain$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
-	
-lzma$(EXE_SUFFIX):	LzmaAlone$(OBJ_SUFFIX) 	lzma$(LIB_SUFFIX)
-	echo "$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXE_SUFFIX) LzmaAlone$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
-	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXE_SUFFIX) LzmaAlone$(OBJ_SUFFIX) lzma$(LIB_SUFFIX) $(LIBS)
+lzma$(LIB_SUFFIX):	$(Objs)
+	echo "$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma$(LIB_SUFFIX) $(Objs)
+	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma$(LIB_SUFFIX) $(Objs)
 
 clean:
 	@rm -f *$(OBJ_SUFFIX)
 
 clobber:	clean
-	@rm -f *$(LIB_SUFFIX) lzma
+	@rm -f *$(LIB_SUFFIX)
