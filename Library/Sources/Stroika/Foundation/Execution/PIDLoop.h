@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Execution {
             ValueType I{};
             ValueType D{};
 
-            nonvirtual strong_ordering operator<=> (const ControlParams& rhs) const = default;
+            nonvirtual auto operator<=> (const ControlParams& rhs) const = default;
 
             /**
              *  @see Characters::ToString ();
