@@ -53,6 +53,7 @@
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
+#include "Stroika/Foundation/Streams/InputStreamDelegationHelper.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 
@@ -78,6 +79,31 @@ using DataExchange::VariantValue;
  * Validating JSON parse results:
  *      http://json.parser.online.fr/
  */
+
+namespace {
+    // what FailingInputStreamRep_ throws: a type of its own, so a test sees that this exception - not another - reached the caller
+    struct StreamFailed_ : runtime_error {
+        StreamFailed_ ()
+            : runtime_error{"stream failed"}
+        {
+        }
+    };
+    // the stream it wraps, except that once fFailAt is set, the next read touching [fFailAt->first, fFailAt->second) fails - as
+    // a file or network stream can
+    struct FailingInputStreamRep_ : InputStreamDelegationHelper<byte> {
+        optional<pair<SeekOffsetType, SeekOffsetType>> fFailAt;
+        using InputStreamDelegationHelper<byte>::InputStreamDelegationHelper;
+        virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
+        {
+            SeekOffsetType at = GetReadOffset ();
+            if (fFailAt and at < fFailAt->second and fFailAt->first < at + intoBuffer.size ()) {
+                fFailAt = nullopt;
+                Execution::Throw (StreamFailed_{});
+            }
+            return InputStreamDelegationHelper<byte>::Read (intoBuffer, blockFlag);
+        }
+    };
+}
 
 namespace {
     GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Test1_7zArchive_)
@@ -207,6 +233,26 @@ namespace {
             EXPECT_TRUE (
                 BinaryToText::Reader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
             EXPECT_THROW (reader.GetData ("file-not-found"), runtime_error);
+
+            // the stream's own exception reaches the caller, and the reader still works after it
+            auto failing = [&] () {
+                return Memory::MakeSharedPtr<FailingInputStreamRep_> (
+                    ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_7z_})));
+            };
+            {
+                // opening: the header, at the end
+                auto in     = failing ();
+                in->fFailAt = pair{sizeof (ksample_zip_7z_) - 1, sizeof (ksample_zip_7z_)};
+                EXPECT_THROW (Archive::_7z::Reader::New (InputStream::Ptr<byte>{in}), StreamFailed_);
+            }
+            {
+                // reading: the packed files, after the 32-byte signature header
+                auto                 in = failing ();
+                Archive::Reader::Ptr r  = Archive::_7z::Reader::New (InputStream::Ptr<byte>{in});
+                in->fFailAt             = pair{32u, 33u};
+                EXPECT_THROW (r.GetData ("sample_zip/TODO.txt"), StreamFailed_);
+                EXPECT_EQ (r.GetData ("sample_zip/TODO.txt"), todo);
+            }
         }
         // not an archive (no signature), and one cut short
         for (span<const uint8_t> notAnArchive : {span{ksample_zip_7z_}.last (100), span{ksample_zip_7z_}.first (1000)}) {
@@ -428,6 +474,27 @@ namespace {
                 InputStream::Ptr<byte> storeIn = store;
                 storeIn.Seek (3);
                 EXPECT_EQ (reader.GetSource ().GetOffset (), 3u);
+            }
+            // the stream's own exception reaches the caller, and the reader still works after it
+            {
+                Memory::BLOB archive = store.As<Memory::BLOB> ();
+                auto         failing = [&] () {
+                    return Memory::MakeSharedPtr<FailingInputStreamRep_> (ExternallyOwnedSpanInputStream::New<byte> (archive.As<span<const byte>> ()));
+                };
+                {
+                    // opening: the central directory, at the end
+                    auto in     = failing ();
+                    in->fFailAt = pair{archive.size () - 1, archive.size ()};
+                    EXPECT_THROW (Archive::Zip::Reader::New (InputStream::Ptr<byte>{in}), StreamFailed_);
+                }
+                {
+                    // reading: file-a.zip, the first (and only) entry
+                    auto                 in = failing ();
+                    Archive::Reader::Ptr r  = Archive::Zip::Reader::New (InputStream::Ptr<byte>{in});
+                    in->fFailAt             = pair{0u, 1u};
+                    EXPECT_THROW (r.GetData ("file-a.zip"), StreamFailed_);
+                    EXPECT_EQ (r.GetData ("file-a.zip"), Memory::BLOB{ksample_zip_});
+                }
             }
         }
 #else

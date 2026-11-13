@@ -29,17 +29,13 @@ using std::byte;
 using namespace Stroika::Foundation::DataExchange::Archive::Zip::PrivateMinizip_;
 
 namespace {
-    void ThrowIfMinizipErr_ (int err, const String& doing)
-    {
-        if (err != UNZ_OK) [[unlikely]] {
-            Throw (Execution::Exception<runtime_error>{Format ("error {} with zipfile in {}"_f, err, doing)});
-        }
-    }
-}
-
-namespace {
+    /*
+     *  minizip's view of fInStream_. A callback keeps fInStream_'s exception and returns minizip's error value: unwinding through
+     *  minizip would leak what it allocated around the call. RethrowStreamFailure () rethrows it once minizip has returned.
+     */
     struct MyZipLibInStream_ final : zlib_filefunc64_def {
         InputStream::Ptr<byte> fInStream_;
+        exception_ptr          fFailure_;
 #if qStroika_Foundation_Debug_AssertionsChecked
         bool fOpened_{false};
 #endif
@@ -60,9 +56,13 @@ namespace {
 #if qStroika_Foundation_Debug_AssertionsChecked
                 Assert (myThis->fOpened_);
 #endif
-                size_t sz = myThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), size}).size ();
-                Assert (sz <= size);
-                return static_cast<uLong> (sz);
+                return myThis->Guarded_ (
+                    [&] () {
+                        size_t sz = myThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), size}).size ();
+                        Assert (sz <= size);
+                        return static_cast<uLong> (sz);
+                    },
+                    uLong{0});
             };
             this->zwrite_file = [] (voidpf /*opaque*/, voidpf /*stream*/, const void* /*buf*/, uLong /*size*/) -> uLong {
                 RequireNotReached (); // read only zip
@@ -74,7 +74,7 @@ namespace {
 #if qStroika_Foundation_Debug_AssertionsChecked
                 Assert (myThis->fOpened_);
 #endif
-                return myThis->fInStream_.GetOffset ();
+                return myThis->Guarded_ ([&] () { return ZPOS64_T{myThis->fInStream_.GetOffset ()}; }, static_cast<ZPOS64_T> (-1));
             };
             this->zseek64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
@@ -82,21 +82,27 @@ namespace {
 #if qStroika_Foundation_Debug_AssertionsChecked
                 Assert (myThis->fOpened_);
 #endif
+                Whence whence;
                 switch (origin) {
                     case ZLIB_FILEFUNC_SEEK_SET:
-                        myThis->fInStream_.Seek (offset);
+                        whence = eFromStart;
                         break;
                     case ZLIB_FILEFUNC_SEEK_CUR:
-                        myThis->fInStream_.Seek (eFromCurrent, offset);
+                        whence = eFromCurrent;
                         break;
                     case ZLIB_FILEFUNC_SEEK_END:
-                        myThis->fInStream_.Seek (eFromEnd, offset);
+                        whence = eFromEnd;
                         break;
                     default:
                         AssertNotReached ();
                         return UNZ_PARAMERROR;
                 }
-                return UNZ_OK;
+                return myThis->Guarded_ (
+                    [&] () {
+                        myThis->fInStream_.Seek (whence, offset);
+                        return long{UNZ_OK};
+                    },
+                    -1L);
             };
             this->zclose_file = [] ([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -109,11 +115,11 @@ namespace {
             };
             this->zerror_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-                [[maybe_unused]] MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
+                MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
 #if qStroika_Foundation_Debug_AssertionsChecked
                 Assert (myThis->fOpened_);
 #endif
-                return UNZ_OK; // @todo - see what this means?
+                return myThis->fFailure_ == nullptr ? 0 : -1; // minizip asks after a short read: an error, or the end?
             };
             this->opaque = this;
         }
@@ -123,14 +129,39 @@ namespace {
             Assert (not fOpened_);
 #endif
         }
+        void RethrowStreamFailure ()
+        {
+            if (exception_ptr e = exchange (fFailure_, nullptr)) [[unlikely]] {
+                Execution::ReThrow (e);
+            }
+        }
+
+    private:
+        /*
+         *  f (), or failed if it throws - its exception kept for RethrowStreamFailure (). Once one has, every call fails, so
+         *  minizip goes no further on what it read.
+         */
+        template <typename T>
+        T Guarded_ (const invocable auto& f, T failed) noexcept
+        {
+            if (fFailure_ == nullptr) {
+                try {
+                    return f ();
+                }
+                catch (...) {
+                    fFailure_ = current_exception ();
+                }
+            }
+            return failed;
+        }
     };
 }
 
 namespace {
 
     struct Rep_ final : public Reader::IRep {
-        MyZipLibInStream_ fInSeekStream_;
-        unzFile           fZipFile_;
+        mutable MyZipLibInStream_ fInSeekStream_;
+        unzFile                   fZipFile_;
         // a WriteContext even in a const method: each moves fZipFile_'s cursor (current entry, inflate state, fInSeekStream_)
         mutable Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 
@@ -139,6 +170,7 @@ namespace {
             , fZipFile_{unzOpen2_64 ("", &fInSeekStream_)}
         {
             if (fZipFile_ == nullptr) [[unlikely]] {
+                fInSeekStream_.RethrowStreamFailure ();
                 static const Execution::Exception<runtime_error> kException_{"failed to open zipfile"sv};
                 Throw (kException_);
             }
@@ -147,6 +179,14 @@ namespace {
         {
             AssertNotNull (fZipFile_);
             unzClose (fZipFile_);
+        }
+        // after a call into minizip: what a stream callback threw, else what err says
+        void ThrowIfFailed_ (int err, const String& doing) const
+        {
+            fInSeekStream_.RethrowStreamFailure ();
+            if (err != UNZ_OK) [[unlikely]] {
+                Throw (Execution::Exception<runtime_error>{Format ("error {} with zipfile in {}"_f, err, doing)});
+            }
         }
         /*
          *  Calls f with each entry's name (its UTF-8 bytes), from the first entry - wherever the last call left the current one -
@@ -157,14 +197,14 @@ namespace {
         bool ForEachEntry_ (const invocable<string_view> auto& f) const
         {
             unz_global_info64 gi;
-            ThrowIfMinizipErr_ (unzGetGlobalInfo64 (fZipFile_, &gi), "unzGetGlobalInfo64"sv);
+            ThrowIfFailed_ (unzGetGlobalInfo64 (fZipFile_, &gi), "unzGetGlobalInfo64"sv);
             string nameBuf (numeric_limits<uint16_t>::max (), '\0'); // holds any entry's name: its length is a 16-bit field (APPNOTE 4.4.10)
             for (ZPOS64_T i = 0; i < gi.number_entry; ++i) {
-                ThrowIfMinizipErr_ (i == 0 ? unzGoToFirstFile (fZipFile_) : unzGoToNextFile_ (fZipFile_), "unzGoToFirstFile/unzGoToNextFile_"sv);
+                ThrowIfFailed_ (i == 0 ? unzGoToFirstFile (fZipFile_) : unzGoToNextFile_ (fZipFile_), "unzGoToFirstFile/unzGoToNextFile_"sv);
                 unz_file_info64 fileInfo;
-                ThrowIfMinizipErr_ (unzGetCurrentFileInfo64 (fZipFile_, &fileInfo, nameBuf.data (), static_cast<uLong> (nameBuf.size ()),
-                                                             nullptr, 0, nullptr, 0),
-                                    "unzGetCurrentFileInfo64"sv);
+                ThrowIfFailed_ (unzGetCurrentFileInfo64 (fZipFile_, &fileInfo, nameBuf.data (), static_cast<uLong> (nameBuf.size ()),
+                                                         nullptr, 0, nullptr, 0),
+                                "unzGetCurrentFileInfo64"sv);
                 Assert (fileInfo.size_filename <= nameBuf.size ());
                 // by its length: minizip adds no NUL to a name that fills nameBuf
                 if (f (string_view{nameBuf.data (), static_cast<size_t> (fileInfo.size_filename)})) {
@@ -276,7 +316,7 @@ namespace {
                 Throw (Execution::Exception<runtime_error>{Format ("File '{}' not found"_f, fileName)});
             }
             const char* password = nullptr;
-            ThrowIfMinizipErr_ (unzOpenCurrentFilePassword (fZipFile_, password), "unzOpenCurrentFilePassword"sv);
+            ThrowIfFailed_ (unzOpenCurrentFilePassword (fZipFile_, password), "unzOpenCurrentFilePassword"sv);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { unzCloseCurrentFile_ (fZipFile_); });
             MemoryStream::Ptr<byte> tmpBuf  = MemoryStream::New<byte> ();
             int                     err;
@@ -284,6 +324,7 @@ namespace {
                 byte buf[10 * 1024];
                 err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (std::size (buf)));
                 if (err < 0) [[unlikely]] {
+                    fInSeekStream_.RethrowStreamFailure ();
                     Throw (Execution::Exception<runtime_error>{Format ("File '{}' error {} extracting"_f, fileName, err)});
                 }
                 else if (err > 0) {

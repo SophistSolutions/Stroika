@@ -84,44 +84,77 @@ namespace {
         // GetData's WriteContext: it reads through fLookStream_, moving it and fInSeekStream_, and replaces fBlock_; GetContainedFiles
         // only reads fFileIndexes_
         mutable Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        /*
+         *  The LZMA SDK's view of fInStream_. The SDK is C, so an exception must not unwind through it - it would free nothing on the
+         *  way, and MSVC assumes extern "C" code never throws: a callback keeps fInStream_'s exception and returns SZ_ERROR_READ, and
+         *  RethrowStreamFailure () rethrows it once the SDK has returned.
+         */
         struct MyISeekInStream : ISeekInStream {
             Streams::InputStream::Ptr<byte> fInStream_;
+            exception_ptr                   fFailure_;
             MyISeekInStream (const Streams::InputStream::Ptr<byte>& in)
                 : fInStream_{in}
             {
                 Read = Stream_Read_;
                 Seek = Stream_Seek_;
             }
+            void RethrowStreamFailure ()
+            {
+                if (exception_ptr e = exchange (fFailure_, nullptr)) [[unlikely]] {
+                    Execution::ReThrow (e);
+                }
+            }
             static SRes Stream_Read_ (void* pp, void* buf, size_t* size)
             {
                 MyISeekInStream* pThis = (MyISeekInStream*)pp;
-                size_t           sz    = pThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), *size}).size ();
-                Assert (sz <= *size);
-                *size = sz;
-                return SZ_OK; // *size 0 at the end of the stream, as ISeekInStream specifies
+                size_t           want  = exchange (*size, 0); // 0 if it fails: the SDK's CLookToRead takes *size even then
+                return pThis->Guarded_ ([&] () {
+                    *size = pThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), want}).size ();
+                    Assert (*size <= want); // 0 at the end of the stream, as ISeekInStream specifies
+                });
             }
             static SRes Stream_Seek_ (void* pp, Int64* pos, ESzSeek origin)
             {
                 MyISeekInStream* pThis = (MyISeekInStream*)pp;
+                Whence           whence;
                 switch (origin) {
                     case SZ_SEEK_SET:
-                        *pos = pThis->fInStream_.Seek (*pos);
+                        whence = eFromStart;
                         break;
                     case SZ_SEEK_CUR:
-                        *pos = pThis->fInStream_.Seek (eFromCurrent, *pos);
+                        whence = eFromCurrent;
                         break;
                     case SZ_SEEK_END:
-                        *pos = pThis->fInStream_.Seek (eFromEnd, *pos);
+                        whence = eFromEnd;
                         break;
                     default:
                         AssertNotReached ();
                         return SZ_ERROR_UNSUPPORTED;
                 }
-                return SZ_OK;
+                return pThis->Guarded_ ([&] () { *pos = pThis->fInStream_.Seek (whence, *pos); });
+            }
+
+        private:
+            /*
+             *  f (), or SZ_ERROR_READ if it throws - its exception kept for RethrowStreamFailure (). Once one has, every call fails,
+             *  so the SDK goes no further on what it read.
+             */
+            SRes Guarded_ (const invocable auto& f) noexcept
+            {
+                if (fFailure_ == nullptr) {
+                    try {
+                        f ();
+                        return SZ_OK;
+                    }
+                    catch (...) {
+                        fFailure_ = current_exception ();
+                    }
+                }
+                return SZ_ERROR_READ;
             }
         };
-        MyISeekInStream     fInSeekStream_;
-        mutable CLookToRead fLookStream_{};
+        mutable MyISeekInStream fInSeekStream_;
+        mutable CLookToRead     fLookStream_{};
         /*
          *  The block (7z's 'folder') GetData last decompressed, kept for the next call: a solid archive packs many files into one
          *  block, so reading each would otherwise decompress the whole block again. These are SzArEx_Extract's in/out arguments,
@@ -143,8 +176,8 @@ namespace {
             ::LookToRead_CreateVTable (&fLookStream_, false);
             fLookStream_.realStream = &fInSeekStream_;
 
-            ThrowIfSzErr_ (::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_)); // which frees fDB_ itself on failure
             try {
+                ThrowIfFailed_ (::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_));
                 for (UInt32 i = 0; i < fDB_.NumFiles; ++i) {
                     if (not SzArEx_IsDir (&fDB_, i)) {
                         size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr); // with its NUL; 0 when the archive stores no names
@@ -158,7 +191,8 @@ namespace {
                 }
             }
             catch (...) {
-                ::SzArEx_Free (&fDB_, &fAllocImp_); // no ~Rep_ for a constructor that throws
+                // no ~Rep_ for a constructor that throws; harmless after a failed SzArEx_Open, which frees fDB_ itself
+                ::SzArEx_Free (&fDB_, &fAllocImp_);
                 throw;
             }
         }
@@ -167,6 +201,16 @@ namespace {
             IAlloc_Free (&fAllocImp_, fBlock_);
             ::SzArEx_Free (&fDB_, &fAllocImp_);
         }
+
+    private:
+        // after a call into the SDK: what a stream callback threw, else what err says
+        void ThrowIfFailed_ (SRes err) const
+        {
+            fInSeekStream_.RethrowStreamFailure ();
+            ThrowIfSzErr_ (err);
+        }
+
+    public:
         virtual Set<String> GetContainedFiles () const override
         {
             Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -191,7 +235,7 @@ namespace {
                 // a failed decode leaves fBlock_ partly filled, though marked as fBlockIndex_ - drop it, or the next call would use it
                 IAlloc_Free (&fAllocImp_, fBlock_);
                 fBlock_ = nullptr;
-                ThrowIfSzErr_ (err);
+                ThrowIfFailed_ (err);
             }
             return Memory::BLOB{fBlock_ + offset, fBlock_ + offset + outSizeProcessed};
         }
