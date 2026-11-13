@@ -138,14 +138,14 @@ namespace Stroika::Foundation::Execution {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fRep_);
         AssertNotNull (fRep_->fDetailedRunnableRep_);
-        return fRep_->fDetailedRunnableRep_->fProcessResult;
+        return fRep_->fDetailedRunnableRep_->load ().fProcessResult;
     }
     inline optional<pid_t> ProcessRunner::BackgroundProcess::GetChildProcessID () const
     {
         Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fRep_);
         AssertNotNull (fRep_->fDetailedRunnableRep_);
-        return fRep_->fDetailedRunnableRep_->fRunningPID;
+        return fRep_->fDetailedRunnableRep_->load ().fRunningPID;
     }
 
     /// DEPRECATED

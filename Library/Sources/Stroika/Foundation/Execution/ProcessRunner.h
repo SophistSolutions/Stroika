@@ -357,18 +357,25 @@ namespace Stroika::Foundation::Execution {
         nonvirtual function<void ()> CreateSimpleRunnable_ ();
 
     private:
-        /**
-         * Capture the process results and running PID. NOTE - this uses Synchronized, since its generally looked at and set from
-         * two different threads.
+        /*
+         *  The child process's state: set by the thread running it, read by every BackgroundProcess on it - so all of it under one
+         *  lock (DetailedRunnableRep_ is Synchronized).
          */
-        struct DetailedRunnableRep_ {
-            Synchronized<optional<ProcessResultType>> fProcessResult;
-            Synchronized<optional<pid_t>>             fRunningPID;
+        struct DetailedRunnableState_ {
+            optional<ProcessResultType> fProcessResult;
+            optional<pid_t>             fRunningPID;
+            /*
+             *  Set as the child is reaped (POSIX) or its process handle closed (Windows), in the same step, holding the lock: from
+             *  then on its PID may be another process's. BackgroundProcess::Terminate signals the child only holding the lock, and
+             *  not once this is set - so never a reused PID. Never set for a detached child, which is not waited for.
+             */
+            bool fChildGone{false};
         };
+        using DetailedRunnableRep_ = Synchronized<DetailedRunnableState_>;
 
     private:
-        /**
-         * @brief DOESNT run anything - but creates a function object that when run will do the work of running the process, and returns a shared DetailedRunnableRep_ to track the progress of the runnable when run
+        /*
+         *  DOESNT run anything - but creates a function object that when run will do the work of running the process, and returns a shared DetailedRunnableRep_ to track the progress of the runnable when run
          * 
          *  Note that 'in' will be sent to the stdin of the subprocess, 'out' will be read from the
          *  stdout of the subprocess and error will be read from the stderr of the subprocess.
@@ -497,6 +504,9 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \note it is perfectly legal to launch a subprocess, and not track it in any way, just ignoring (not saving)
      *        the BackgroundProcess object.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
+     *          A BackgroundProcess is a handle: its copies share one process, whose state the thread running it updates.
      */
     class ProcessRunner::BackgroundProcess {
     private:

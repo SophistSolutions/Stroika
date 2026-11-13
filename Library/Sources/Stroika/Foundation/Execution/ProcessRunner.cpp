@@ -356,7 +356,12 @@ void ProcessRunner::BackgroundProcess::Terminate ()
     //
     // @todo - probably not 100% right (esp error checking!!!
     //
-    if (optional<pid_t> o = fRep_->fDetailedRunnableRep_->fRunningPID.load ()) {
+    // holding the child state's lock: the runner cannot reap the child meanwhile, after which its PID may be another process's
+    auto child = fRep_->fDetailedRunnableRep_->cget ();
+    if (child->fChildGone) {
+        return;
+    }
+    if (optional<pid_t> o = child->fRunningPID) {
 #if qStroika_Platform_POSIX
         ::kill (*o, SIGTERM);
 #elif qStroika_Platform_Windows
@@ -379,8 +384,9 @@ String ProcessRunner::BackgroundProcess::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fRep_ and fRep_->fDetailedRunnableRep_) {
-        sb << "processID: "sv << fRep_->fDetailedRunnableRep_->fRunningPID.load ();
-        sb << ", processResult: "sv << fRep_->fDetailedRunnableRep_->fProcessResult.load ();
+        auto child = fRep_->fDetailedRunnableRep_->load ();
+        sb << "processID: "sv << child.fRunningPID;
+        sb << ", processResult: "sv << child.fProcessResult;
     }
     sb << "}"sv;
     return sb;
@@ -440,7 +446,7 @@ void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::P
         fStdErr_                = error;
         auto [runable, results] = CreateDetailedRunnable_ ();
         runable (); // after runnable called, results should be ready
-        results->fProcessResult.load ().value_or (ProcessResultType{}).ThrowIfFailed ();
+        results->load ().fProcessResult.value_or (ProcessResultType{}).ThrowIfFailed ();
     }
     else {
         // Use 'BackgroundProcess' to get a thread we can interrupt when time is up, for timeout
@@ -461,9 +467,9 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
             auto [runnable, prDetails] = CreateDetailedRunnable_ ();
 #if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
             auto                    pd2     = prDetails;
-            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->fProcessResult.load (); });
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->load ().fProcessResult; });
 #else
-            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->load ().fProcessResult; });
 #endif
             runnable ();
         }
@@ -477,9 +483,9 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
             auto [runnable, prDetails] = CreateDetailedRunnable_ ();
 #if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
             auto                    pd2     = prDetails;
-            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->fProcessResult.load (); });
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->load ().fProcessResult; });
 #else
-            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->load ().fProcessResult; });
 #endif
             Thread::Ptr t = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
@@ -825,7 +831,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
         DbgTrace ("In Parent Fork: child process PID={}"_f, childPID);
 #endif
         if (runneeDetails != nullptr) {
-            runneeDetails->fRunningPID.store (childPID);
+            runneeDetails->rwget ()->fRunningPID = childPID;
         }
         /*
          * WE ARE PARENT
@@ -991,19 +997,42 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
 
         //  Wait for child if not detached (future versions might handle differently, we mix detached with not waiting for child to finish in this routine)
         if (not options.fDetached) {
+            // reaped holding the child state's lock, and marked gone in the same step (@see DetailedRunnableState_::fChildGone)
+            auto reapIfExited = [&] () -> int {
+                if (runneeDetails == nullptr) {
+                    return ::waitpid (childPID, &status, WNOHANG);
+                }
+                auto child  = runneeDetails->rwget ();
+                int  result = ::waitpid (childPID, &status, WNOHANG);
+                if (result != 0) {
+                    child->fChildGone = true; // reaped - or failed, so no child of ours to signal either way
+                }
+                return result;
+            };
             // polled, between sleeps: a blocking waitpid sees an abort only if its signal comes once it has blocked (#1195)
             Time::DurationSeconds pollEvery = 1ms;
-            while ((waitResult = ::waitpid (childPID, &status, WNOHANG)) == 0) {
+            while ((waitResult = reapIfExited ()) == 0) {
                 Sleep (pollEvery);
                 pollEvery = min<Time::DurationSeconds> (pollEvery * 2, 100ms);
             }
         }
     }
     catch (...) {
-        // an abort, or a failure passing its input or output: leave the child neither running nor unreaped (as on Windows)
+        // an abort, or a failure passing its input or output: leave the child neither running nor unreaped (as on Windows) - reaped
+        // holding the child state's lock, and marked gone in the same step (@see DetailedRunnableState_::fChildGone)
         if (not options.fDetached) {
-            (void)::kill (childPID, SIGKILL);
-            while (::waitpid (childPID, nullptr, 0) < 0 and errno == EINTR) {
+            auto killAndReap = [childPID] () {
+                (void)::kill (childPID, SIGKILL);
+                while (::waitpid (childPID, nullptr, 0) < 0 and errno == EINTR) {
+                }
+            };
+            if (runneeDetails == nullptr) {
+                killAndReap ();
+            }
+            else {
+                auto child = runneeDetails->rwget ();
+                killAndReap ();
+                child->fChildGone = true;
             }
         }
         ReThrow ();
@@ -1015,8 +1044,8 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
         ThrowPOSIXErrNoIfNegative (waitResult);
         Assert (waitResult == childPID);
         if (runneeDetails != nullptr) {
-            runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int>{},
-                                                                                  WIFSIGNALED (status) ? WTERMSIG (status) : optional<int>{}});
+            runneeDetails->rwget ()->fProcessResult = ProcessRunner::ProcessResultType{
+                WIFEXITED (status) ? WEXITSTATUS (status) : optional<int>{}, WIFSIGNALED (status) ? WTERMSIG (status) : optional<int>{}};
         }
         else if (not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
             // @todo fix this message
@@ -1062,6 +1091,23 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
     PROCESS_INFORMATION processInfo{};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread  = INVALID_HANDLE_VALUE;
+
+    // closed holding the child state's lock, and marked gone in the same step: once closed, the child's PID may be another process's
+    // (@see DetailedRunnableState_::fChildGone)
+    auto closeProcessHandles = [&] () {
+        auto close = [&] () {
+            SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+            SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+        };
+        if (runneeDetails == nullptr) {
+            close ();
+        }
+        else {
+            auto child = runneeDetails->rwget ();
+            close ();
+            child->fChildGone = true;
+        }
+    };
 
     try {
         {
@@ -1162,7 +1208,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
         }
 
         if (runneeDetails != nullptr) {
-            runneeDetails->fRunningPID.store (processInfo.dwProcessId);
+            runneeDetails->rwget ()->fRunningPID = processInfo.dwProcessId;
         }
 
         {
@@ -1336,8 +1382,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
             DWORD processExitCode{};
             Verify (::GetExitCodeProcess (processInfo.hProcess, &processExitCode));
 
-            SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-            SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+            closeProcessHandles ();
 
             readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
             readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
@@ -1355,7 +1400,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
                     DbgTrace ("storing process status (ExitCode): {}"_f, static_cast<int> (processExitCode));
                 }
 #endif
-                runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{static_cast<int> (processExitCode)});
+                runneeDetails->rwget ()->fProcessResult = ProcessRunner::ProcessResultType{static_cast<int> (processExitCode)};
             }
         }
     }
@@ -1363,8 +1408,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
         // sadly and confusingly, CreateProcess() appears to set processInfo.hProcess and processInfo.hThread to nullptr - at least on some failures
         if (processInfo.hProcess != INVALID_HANDLE_VALUE and processInfo.hProcess != nullptr) {
             (void)::TerminateProcess (processInfo.hProcess, static_cast<UINT> (-1)); // if it exceeded the timeout - kill it
-            SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-            SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+            closeProcessHandles ();
         }
         ReThrow ();
     }
