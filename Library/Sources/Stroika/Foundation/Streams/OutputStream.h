@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
      *  \brief  OutputStream<>::Ptr is Smart pointer to a stream-based sink of data.
      *
      *  \note Since OutputStream::Ptr<ELEMENT_TYPE> is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
-     *        the underlying thread object.
+     *        the underlying stream object.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
