@@ -816,7 +816,9 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
     }
     // we got here, the spawn succeeded, or the fork succeeded, and we are the parent process
     Assert (childPID > 0);
-    {
+    int status     = 0;
+    int waitResult = 0;
+    try {
         constexpr size_t kStackBufReadAtATimeSize_ = 10 * 1024;
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -989,30 +991,45 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
 
         //  Wait for child if not detached (future versions might handle differently, we mix detached with not waiting for child to finish in this routine)
         if (not options.fDetached) {
-            // not sure we need?
-            int status = 0;
-            int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
-            int result =
-                Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
-            // throw / warn if result other than child exited normally
-            if (runneeDetails != nullptr) {
-                // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-                runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{
-                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<int>{}, WIFSIGNALED (status) ? WTERMSIG (status) : optional<int>{}});
+            // polled, between sleeps: a blocking waitpid sees an abort only if its signal comes once it has blocked (#1195)
+            Time::DurationSeconds pollEvery = 1ms;
+            while ((waitResult = ::waitpid (childPID, &status, WNOHANG)) == 0) {
+                Sleep (pollEvery);
+                pollEvery = min<Time::DurationSeconds> (pollEvery * 2, 100ms);
             }
-            else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
-                // @todo fix this message
-                DbgTrace ("childPID={}, result={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, static_cast<int> (childPID),
-                          result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
-                StringBuilder stderrMsg;
-                if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
-                    stderrMsg << "..."sv;
-                    stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
-                }
-                stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
-                Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (), WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
-                                                WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
+        }
+    }
+    catch (...) {
+        // an abort, or a failure passing its input or output: leave the child neither running nor unreaped (as on Windows)
+        if (not options.fDetached) {
+            (void)::kill (childPID, SIGKILL);
+            while (::waitpid (childPID, nullptr, 0) < 0 and errno == EINTR) {
             }
+        }
+        ReThrow ();
+    }
+    // throw / warn if result other than child exited normally
+    if (not options.fDetached) {
+        // a failed waitpid (ECHILD: SIGCHLD ignored, so the child reaped already) leaves no exit status to report; thrown here,
+        // outside the try, so its catch never kills a PID that may have been reused
+        ThrowPOSIXErrNoIfNegative (waitResult);
+        Assert (waitResult == childPID);
+        if (runneeDetails != nullptr) {
+            runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int>{},
+                                                                                  WIFSIGNALED (status) ? WTERMSIG (status) : optional<int>{}});
+        }
+        else if (not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
+            // @todo fix this message
+            DbgTrace ("childPID={}, waitResult={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, static_cast<int> (childPID),
+                      waitResult, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
+            StringBuilder stderrMsg;
+            if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
+                stderrMsg << "..."sv;
+                stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
+            }
+            stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
+            Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (), WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
+                                            WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
         }
     }
 }
@@ -1293,8 +1310,10 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
                 // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
                 // process actually finishes, it will change state and the wait should return immediately.
                 double remainingTimeout = (timesWaited <= 5) ? 0.1 : 0.5;
-                DWORD  waitResult =
-                    ::WaitForMultipleObjects (static_cast<DWORD> (std::size (events)), events, false, static_cast<int> (remainingTimeout * 1000));
+                // alertable, so an abort (an APC) wakes it; the catch below then terminates the child
+                DWORD waitResult = ::WaitForMultipleObjectsEx (static_cast<DWORD> (std::size (events)), events, false,
+                                                               static_cast<int> (remainingTimeout * 1000), true);
+                Thread::CheckForInterruption ();
                 ++timesWaited;
 
                 readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);

@@ -159,6 +159,33 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, AbortWhileChildRuns_)
+    {
+        // The last BackgroundProcess going aborts its runner thread, and waits for it: that ends the child, rather than wait
+        // for it to exit - here, a child that closed its output (so the runner waits for its exit, not its output)
+        Debug::TraceContextBumper ctx{"AbortWhileChildRuns_"};
+        Time::TimePointSeconds    startedAt = Time::GetTickCount ();
+        optional<pid_t>           childPID;
+        {
+#if qStroika_Platform_POSIX
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "exec sleep 60 >/dev/null 2>&1"}};
+#else
+            ProcessRunner pr{"sleep 60"};
+#endif
+            ProcessRunner::BackgroundProcess bp = pr.RunInBackground ();
+            bp.WaitForStarted ();
+            childPID = bp.GetChildProcessID ();
+            Execution::Sleep (500ms); // for the runner to be waiting for it
+        }
+        EXPECT_LT (Time::GetTickCount () - startedAt, 30s) << "waited for the child to exit";
+#if qStroika_Platform_POSIX
+        ASSERT_TRUE (childPID.has_value ());
+        EXPECT_TRUE (::kill (*childPID, 0) != 0 and errno == ESRCH) << "the child runs on (or is unreaped)";
+#endif
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughIntraStroikaPipe)
     {
         Debug::TraceContextBumper        ctx{"EchoHiMomThroughIntraStroikaPipe"};
