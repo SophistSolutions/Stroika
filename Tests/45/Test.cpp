@@ -1154,6 +1154,32 @@ namespace {
 
 namespace {
     /*
+     *  A transfer waiting on a server that never answers ends once its thread is aborted - not only when it times out
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, AbortWhileWaiting_)
+    {
+        Debug::TraceContextBumper ctx{"AbortWhileWaiting_"};
+#if qStroika_HasComponent_libcurl
+        ConnectionOrientedMasterSocket::Ptr listener = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
+        listener.Bind (SocketAddress{V4::kLocalhost, 0});
+        listener.Listen (5); // never accepted: the connection is made (from the backlog), and the request sent, but never answered
+        Connection::Ptr c = LibCurl::Connection::New (kDefaultTestOptions_);
+        c.SetSchemeAndAuthority (URI{"http://127.0.0.1:{}"_f(listener.GetLocalAddress ()->GetPort ())});
+        c.SetTimeout (20s);
+        Thread::Ptr t = Thread::New ([&] () { (void)c.GET (URI{"/"sv}); }, Thread::eAutoStart);
+        Execution::Sleep (500ms); // for it to be waiting for the answer
+        Time::TimePointSeconds abortedAt = Time::GetTickCount ();
+        t.Abort ();
+        EXPECT_TRUE (t.WaitForDoneUntilQuietly (abortedAt + 30s));
+        EXPECT_LT (Time::GetTickCount () - abortedAt, 10s) << "the abort waited for the transfer's timeout";
+#else
+        GTEST_SKIP () << "libcurl not built in";
+#endif
+    }
+}
+
+namespace {
+    /*
      *  A server on loopback answering each request with its method, a newline, and its body - one request to a connection.
      *  With fEchoHeaders, it answers instead with the request's header block (its request line, then each header line, each
      *  ending in CRLF); fExtraResponseHeaders (lines, each ending in CRLF) go in each response's header.

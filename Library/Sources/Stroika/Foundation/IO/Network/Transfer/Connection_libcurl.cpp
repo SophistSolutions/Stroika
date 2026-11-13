@@ -398,6 +398,9 @@ namespace {
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, &s_ResponseHeaderWriteHandler_));
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEHEADER, this));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_XFERINFOFUNCTION, &s_TransferInfoHandler_));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_XFERINFODATA, this));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOPROGRESS, 0L)); // else libcurl calls no XFERINFOFUNCTION
 
                 if (fOptions_.fTCPKeepAlives) {
                     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TCP_KEEPALIVE, fOptions_.fTCPKeepAlives->fEnabled));
@@ -422,7 +425,8 @@ namespace {
          *  away: the unwinder then finds no handler at all and terminates. So catch it here, tell libcurl to give up on the
          *  transfer, and rethrow once its frames are gone.
          *
-         *  Returning fewer bytes than were handed to a write callback is how libcurl is told to abort one.
+         *  abortResult is what tells libcurl to abort the transfer: from a write callback, fewer bytes than it was handed; from
+         *  the transfer-info callback, anything but 0.
          */
         template <typename CALL_HANDLER>
         static size_t Invoke_ (void* userP, size_t abortResult, CALL_HANDLER&& callHandler) noexcept
@@ -505,6 +509,18 @@ namespace {
             to   = to.Trim ();
             fResponseHeaders_.Add (from, to);
             return nBytes;
+        }
+
+    private:
+        // libcurl calls it all through a transfer, about once a second even while waiting - so an abort is noticed here, not
+        // only when the transfer ends or times out
+        static int s_TransferInfoHandler_ (void* userP, [[maybe_unused]] curl_off_t dlTotal, [[maybe_unused]] curl_off_t dlNow,
+                                           [[maybe_unused]] curl_off_t ulTotal, [[maybe_unused]] curl_off_t ulNow)
+        {
+            return static_cast<int> (Invoke_ (userP, 1, [] ([[maybe_unused]] Rep_& rep) -> size_t {
+                Execution::Thread::CheckForInterruption ();
+                return 0;
+            }));
         }
 
     private:
