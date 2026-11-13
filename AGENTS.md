@@ -580,6 +580,10 @@ still compile". Say which one you did.
   constraints and measured negative results - what stops a future reader's wrong "simplification".
 - **A sample's comments teach the API** (LGP, 2026-11-07): one saying what a Stroika call already did for the program
   (SSDPClient: "ApplyOptions allowed only on or off") suits a sample, read to learn Stroika; library code does not restate it.
+- **One concern per place** (LGP, 2026-11-13): where a function's idea meets its thread-safety reasoning, or a tool's
+  workaround, give each its own place - usually a named helper with its own comment - so the function reads as its idea:
+  `SharedByValue::AssureNOrFewerReferences` is three lines; `UseCountAcquire_` holds the memory ordering, and inside it an `#if`
+  holds ThreadSanitizer's spelling of it.
 - **Claims that a tool lacks something carry a version**: "MSVC has no X, as of 19.51". And before changing a convention
   for a `-std=c++26` quirk, check the paper's status: draft features get withdrawn (P4144 removed `span` from an
   `initializer_list`).
