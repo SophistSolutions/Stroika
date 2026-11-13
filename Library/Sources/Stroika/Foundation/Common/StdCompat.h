@@ -651,9 +651,9 @@ namespace Stroika::Foundation::Common::StdCompat {
      * \brief Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS - used for the attribute [[no_unique_address]]
      * 
      *  MSVC accepts [[no_unique_address]] but ignores it, to keep its ABI, and supports [[msvc::no_unique_address]] instead
-     *  (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy)
+     *  (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE)
      */
-#if qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy && defined(_MSC_VER)
+#if qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE && defined(_MSC_VER)
 #if qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
 #define Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #else

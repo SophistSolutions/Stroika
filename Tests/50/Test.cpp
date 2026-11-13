@@ -349,9 +349,8 @@ namespace {
         try {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
-#if qCompilerAndStdLib_locale_pctX_print_time_Buggy
-            // NOTE - these values are wrong, but since using locale code, not easy to fix/workaround - but to note XCode locale stuff still
-            // somewhat broken...
+#if qCompilerAndStdLib_locale_en_US_time_24_hour
+            // macOS's en_US locale formats time 24-hour (@see qCompilerAndStdLib_locale_en_US_time_24_hour)
             EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "00:01:41");
             EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "0:01");
             EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (locale{}), "01:01:41");
@@ -571,7 +570,7 @@ namespace {
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
                 EXPECT_TRUE (tmp == "4/5/1903 12:01:41 AM" or tmp == "04/05/1903 12:01:41 AM");
 #else
-#if qCompilerAndStdLib_locale_pctX_print_time_Buggy
+#if qCompilerAndStdLib_locale_en_US_time_24_hour
                 EXPECT_EQ (tmp, "Sun Apr  5 00:01:41 1903");
 #else
                 EXPECT_EQ (tmp, "Sun 05 Apr 1903 12:01:41 AM");

@@ -231,7 +231,7 @@ foo.cpp:
  *
  *  Not every bug define goes through CompilerAndStdLib_AssumeBuggyIfNewerCheck_: one for an issue not expected to be fixed in
  *  a later release, whose workaround stays correct if it is anyway, is just defined for that compiler, with no version list
- *  to maintain (e.g. qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy).
+ *  to maintain (e.g. qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE).
  *
  */
 #ifndef CompilerAndStdLib_AssumeBuggyIfNewerCheck_
@@ -565,7 +565,7 @@ In file included from Test.cpp:15:
 #ifndef qCompilerAndStdLib_default_initializable_broken_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
-// appears fixed in XCode16
+// not Apple's clang: fixed as of XCode 16, older than Stroika supports
 #define qCompilerAndStdLib_default_initializable_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_default_initializable_broken_Buggy 0
@@ -595,7 +595,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 #ifndef qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
-// first noticed broken in apply clang 16
+// first seen in Apple clang 16 (XCode 16), older than Stroika supports - so not defined for Apple's
 // broken in  clang 17
 // broken in  clang 18
 // appears fixed for clang++19
@@ -1625,7 +1625,8 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
  */
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #if defined(__clang_major__) && !defined(__APPLE__)
-// broken on ubuntu clang++-15, but the xcode version of clang++ (uses much newer LIBCPP_VERSION) - seems OK
+// libc++ 15 and 16 lack parts of ranges (ranges::uninitialized_copy, above). Gated on the clang version, so it is defined for
+// clang with libstdc++ too, where the workaround is merely unneeded.
 // appears fixed in XCode16 (but broken in XCode 15.3 which now inculudes clang++ version: 15.0.7 and reports as > 15????--LGP 2026-03-20)
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
@@ -2099,6 +2100,9 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
 #endif
 
 /**
+ *  The error below is clang's (Apple's, in CI); its branch is commented out below. GCC 11 to 13's, which this is
+ *  defined for, is not recorded here.
+ *
  Compiling Tests/42/Test.cpp ... 
 Test.cpp:642:38: error: alias template 'SynchronizedLRUCache' requires template arguments; argument deduction only allowed for class templates
                 SynchronizedLRUCache cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
@@ -2292,6 +2296,8 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #endif
 
 /**
+*  The traces below are MSVC's: VS2022 17.0 to 17.4, fixed in 17.5 - older than Stroika supports, so no longer defined
+*  for it. GCC 11's address sanitizer is broken here too.
 * 
 * OR sometimes with VS2k22 17.4, when running from command line, just appears to hang from command line 
 *  (but see crash in debugger)
@@ -2375,19 +2381,20 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 #endif
 
 /*
+ *  NOT a bug - locale data, which each platform chooses: macOS's en_US locale formats time 24-hour, with no AM/PM - %X as
+ *  "00:01:41", %c as "Sun Apr  5 00:01:41 1903" (glibc's: "12:01:41 AM", "Sun 05 Apr 1903 12:01:41 AM"). Tests/50 expects each
+ *  platform's own. Gated on the platform, whose locale files these are, not on its compiler.
  */
-#ifndef qCompilerAndStdLib_locale_pctX_print_time_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// Still BROKEN on XCode 14
-// Still BROKEN on XCode 15
-// Still BROKEN on XCode 16
-// Still BROKEN on XCode 17
-#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
+#ifndef qCompilerAndStdLib_locale_en_US_time_24_hour
+#if defined(__APPLE__)
+#define qCompilerAndStdLib_locale_en_US_time_24_hour 1
 #else
-#define qCompilerAndStdLib_locale_pctX_print_time_Buggy 0
+#define qCompilerAndStdLib_locale_en_US_time_24_hour 0
 #endif
-
+#endif
+// DEPRECATED NAME - since 3.0d26 (to be removed in v3.0a1)
+#ifndef qCompilerAndStdLib_locale_pctX_print_time_Buggy
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy qCompilerAndStdLib_locale_en_US_time_24_hour
 #endif
 
 /*
@@ -2487,6 +2494,8 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 #endif
 
 /**
+ *  NOT a bug - [[no_unique_address]] permits overlap, it does not require it.
+ *
  *  This controls if you must use [[msvc::no_unique_address]] or [[no_unique_address]]: MSVC accepts [[no_unique_address]]
  *  but ignores it, to keep its ABI, and offers [[msvc::no_unique_address]] instead (as of MSVC 19.51).
  *
@@ -2496,14 +2505,19 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
  *      example failure in
  *                  static_assert (sizeof (SharedByValue<int>) == sizeof (shared_ptr<int>)); // no space overhead for copier (by default)
  */
-#ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy
+#ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE
 
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy 1
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE 1
 #else
-#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy 0
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE 0
 #endif
 
+#endif
+// DEPRECATED NAME - since 3.0d26 (to be removed in v3.0a1)
+#ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy                                                              \
+    qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE
 #endif
 
 /**
