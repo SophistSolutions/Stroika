@@ -28,30 +28,30 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *  \par Example Usage
      *      \code
      *          auto cc1 = CacheControl{CacheControl::eNoStore};                                // Cache-Control: no-store
-     *          auto cc2 = CacheControl{.fStoreRestriction=CacheControl::eNoStore, .fMaxAge=0}; // Cache-Control: no-store, max-age=0
+     *          auto cc2 = CacheControl{.fCacheability=CacheControl::eNoStore, .fMaxAge=0};     // Cache-Control: no-store, max-age=0
      *          auto cc3 = CacheControl{.fMaxAge=1234};                                         // Cache-Control: max-age=1234
-     *          auto cc3 = CacheControl{.fMaxAge=604800};                                       // Cache-Control: public, max-age=604800
+     *          auto cc4 = CacheControl{.fCacheability=CacheControl::ePublic, .fMaxAge=604800}; // Cache-Control: public, max-age=604800
      *      \endcode
      * 
      *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#caching_static_assets)
      *      \code
-     *          auto cc = CacheControl{.fVisibility=CacheControl::ePublic, .fImmutable=true, .fMaxAge=CacheControl::kMaximumAgeValue}; // Cache-Control: public, max-age=2147483647, immutable
+     *          auto cc = CacheControl{.fCacheability=CacheControl::ePublic, .fMaxAge=CacheControl::kMaximumAgeValue, .fImmutable=true}; // Cache-Control: public, max-age=2147483647, immutable
      *          see kImmutable
      *      \endcode
      * 
      *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#preventing_caching)
      *      \code
-     *          auto cc1 = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoStore};             // Cache-Control: no-store
-     *          auto cc2 = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoStore, .fMaxAge=0}; // Cache-Control: no-store max-age=0; like above but forces clear of existing cached item
+     *          auto cc1 = CacheControl{.fCacheability=CacheControl::eNoStore};                                   // Cache-Control: no-store
+     *          auto cc2 = CacheControl{.fCacheability=CacheControl::eNoStore, .fMaxAge=0};                       // Cache-Control: no-store, max-age=0; like above but forces clear of existing cached item
      *          see kDisableCaching
      *      \endcode
      *
      *  \par Example Usage (Web-Services) - just a rough example cuz this will depend alot on the web-service
      *      \code
-     *          auto cc1 = CacheControl{.fVisibility=CacheControl::ePrivate, .fMaxAge=Duration{30s}.As<int> ()}; // Cache-Control: private, max-age=30
+     *          auto cc1 = CacheControl{.fCacheability=CacheControl::ePrivate, .fMaxAge=30}; // Cache-Control: private, max-age=30
      *          auto cc2 = CacheControl::kDisableCaching;
      *          // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation
-     *          auto cc3 = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoCache};             // Cache-Control: no-cache
+     *          auto cc3 = CacheControl{.fCacheability=CacheControl::eNoCache};                                   // Cache-Control: no-cache
      *          auto cc3 = CacheControl{.fMaxAge=0, .fMustRevalidate=true};                                       // Cache-Control: max-age=0, must-revalidate
      *          auto cc4 = CacheControl::kMustRevalidate;
      *          auto cc5 = CacheControl::kPrivateMustRevalidate;        // ** probably best to use for most webservice calls, except those that have side-effects, and those should use kDisableCaching **
@@ -125,8 +125,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<uint32_t> fAge;
 
         /**
-         *  overrides fMaxAge & Expires, but ONLY for shared caches(e.g. proxies)
-         *  \note req fMaxAge <= kMaximumAgeValue
+         *  s-maxage: overrides fMaxAge & Expires, but ONLY for shared caches(e.g. proxies)
+         *  \note req fSharedMaxAge <= kMaximumAgeValue
          */
         optional<int> fSharedMaxAge;
 

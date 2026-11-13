@@ -1,10 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
@@ -26,10 +26,14 @@ using namespace Stroika::Foundation::Traversal;
 CacheControl CacheControl::Parse (const String& headerValue)
 {
     CacheControl r;
-    auto         parseInt = [] (const String& i) -> optional<uint32_t> {
-        // @todo validate/tweak/keep in range
-        auto v = Number::Parse<int32_t> (i).value_or (0);
-        return v < 0 ? optional<uint32_t>{} : static_cast<uint32_t> (v);
+    /*
+     *  RFC 9111's delta-seconds (1.2.2): digits, sent as a token or a quoted-string (recipients accept both: 5.2). One too big for
+     *  31 bits reads as kMaximumAgeValue (1.2.2); anything else - not digits, a sign included - as 0, the strictest reading (for
+     *  max-age, stale).
+     */
+    auto parseInt = [] (const String& arg) -> uint32_t {
+        String digits = arg.size () >= 2 and arg.StartsWith ("\""sv) and arg.EndsWith ("\""sv) ? arg.SubString (1, arg.size () - 1) : arg;
+        return min (Number::Parse<uint32_t> (digits, {.fAcceptSign = false, .fSaturate = true}).value_or (0), kMaximumAgeValue);
     };
     for (const String& v : headerValue.Tokenize ({',', ' '})) {
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control case insensitive
@@ -46,6 +50,9 @@ CacheControl CacheControl::Parse (const String& headerValue)
         if (String::EqualsComparer{eCaseInsensitive}(token, "must-revalidate"sv)) {
             r.fMustRevalidate = true;
         }
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "immutable"sv)) {
+            r.fImmutable = true;
+        }
         else if (String::EqualsComparer{eCaseInsensitive}(token, "no-transform"sv)) {
             r.fNoTransform = true;
         }
@@ -58,18 +65,18 @@ CacheControl CacheControl::Parse (const String& headerValue)
         else if (String::EqualsComparer{eCaseInsensitive}(token, "max-age"sv) && vv.length () >= 2) {
             r.fMaxAge = parseInt (vv[1]);
         }
-        else if (String::EqualsComparer{eCaseInsensitive}(token, "s-max-age"sv) && vv.length () >= 2) {
-            r.fSharedMaxAge = parseInt (vv[1]);
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "s-maxage"sv) && vv.length () >= 2) {
+            r.fSharedMaxAge = static_cast<int> (parseInt (vv[1]));
         }
         else if (String::EqualsComparer{eCaseInsensitive}(token, "max-stale"sv)) {
             MaxStale m;
             if (vv.length () >= 2) {
-                m.fAmount = parseInt (vv[1]);
+                m.fAmount = static_cast<int> (parseInt (vv[1]));
             }
             r.fMaxStale = m;
         }
         else if (String::EqualsComparer{eCaseInsensitive}(token, "min-fresh"sv) && vv.length () >= 2) {
-            r.fMinFresh = parseInt (vv[1]);
+            r.fMinFresh = static_cast<int> (parseInt (vv[1]));
         }
     DoneWithV:;
     }
@@ -114,7 +121,7 @@ String CacheControl::As () const
     }
     if (fSharedMaxAge) {
         handleComma ();
-        sb << "s-max-age={}"_f(*fSharedMaxAge);
+        sb << "s-maxage={}"_f(*fSharedMaxAge);
     }
     if (fMaxStale) {
         handleComma ();

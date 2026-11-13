@@ -249,6 +249,22 @@ namespace {
     }
 
     /*
+     *  Cache-Control as RFC 9111 has it: s-maxage (not "s-max-age") both ways; immutable read back; a delta-seconds argument
+     *  read quoted or not, one too big for 31 bits as kMaximumAgeValue, one not digits as 0
+     */
+    GTEST_TEST (Foundation_IO_Network_HTTP, CacheControl_RFC9111_)
+    {
+        CacheControl shared{.fSharedMaxAge = 600};
+        EXPECT_EQ (shared.As<String> (), "s-maxage=600"sv);
+        EXPECT_TRUE (CacheControl::Parse ("s-maxage=600") == shared);
+        EXPECT_TRUE (CacheControl::Parse (CacheControl::kImmutable.As<String> ()) == CacheControl::kImmutable);
+        EXPECT_TRUE (CacheControl::Parse ("max-age=\"5\"").fMaxAge == 5u);
+        EXPECT_TRUE (CacheControl::Parse ("max-age=99999999999").fMaxAge == CacheControl::kMaximumAgeValue);
+        EXPECT_TRUE (CacheControl::Parse ("max-age=-5").fMaxAge == 0u);
+        EXPECT_TRUE (CacheControl::Parse ("max-age=abc").fMaxAge == 0u);
+    }
+
+    /*
      *  A Keep-Alive header's parameters (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive) are all read,
      *  in either order, one that is not a number skipped - and written as read.
      */
