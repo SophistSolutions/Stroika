@@ -27,8 +27,8 @@ namespace Stroika::Foundation::Execution {
     {
         Characters::StringBuilder out;
         out << "{"sv;
-        out << "P: "sv << P << "',"sv;
-        out << "I: "sv << I << "',"sv;
+        out << "P: "sv << P << ", "sv;
+        out << "I: "sv << I << ", "sv;
         out << "D: "sv << D;
         out << "}"sv;
         return out.str ();
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Execution {
         , fMeasureFunction_{measureFunction}
         , fOutputFunction_{outputFunction}
     {
-        Require (updatePeriod > 0);
+        Require (updatePeriod > 0s);
         fUpdatableParams_.rwget ()->fSetPoint_ = (initialSetPoint);
     }
     template <typename CONTROL_VAR_TYPE>
@@ -73,9 +73,10 @@ namespace Stroika::Foundation::Execution {
     template <typename CONTROL_VAR_TYPE>
     inline void PIDLoop<CONTROL_VAR_TYPE>::SetSetPoint (ValueType sp)
     {
-        if (sp != fUpdatableParams_->fSetPoint_) {
+        auto updatableParams = fUpdatableParams_.rwget ();
+        if (sp != updatableParams->fSetPoint_) {
             // we cannot predict how fPrevError_/fIntegral_ should change with a new setpoint, so clear them
-            fUpdatableParams_ = {sp, ValueType{}, ValueType{}};
+            updatableParams.rwref () = {sp, ValueType{}, ValueType{}};
         }
     }
     template <typename CONTROL_VAR_TYPE>
@@ -91,25 +92,32 @@ namespace Stroika::Foundation::Execution {
     template <typename CONTROL_VAR_TYPE>
     void PIDLoop<CONTROL_VAR_TYPE>::RunDirectly ()
     {
-        Time::DurationSeconds nextRunAt = Time::GetTickCount ();
+        using namespace Characters::Literals;
+        Time::TimePointSeconds nextRunAt = Time::GetTickCount ();
         while (true) {
             SleepUntil (nextRunAt);
             try {
                 ValueType measuredValue = fMeasureFunction_ ();
-                ValueType setPoint      = fUpdatableParams_->fSetPoint_;
-                ValueType error         = setPoint - measuredValue;
-                ValueType derivative    = (error - fUpdatableParams_->fPrevError_) / fUpdatePeriod_;
+                ValueType setPoint;
+                ValueType error;
+                ValueType derivative;
+                ValueType integral;
                 {
-                    auto updateUpdatableParams = fUpdatableParams_.rwget ();
-                    updateUpdatableParams->fIntegral_ += error * fUpdatePeriod_;
-                    updateUpdatableParams->fPrevError_ = error;
+                    // read, compute and write back under one lock, so a SetSetPoint's reset is never overwritten from the old set point
+                    auto updatableParams = fUpdatableParams_.rwget ();
+                    setPoint             = updatableParams->fSetPoint_;
+                    error                = setPoint - measuredValue;
+                    derivative           = (error - updatableParams->fPrevError_) / fUpdatePeriod_.count ();
+                    updatableParams->fIntegral_ += error * fUpdatePeriod_.count ();
+                    updatableParams->fPrevError_ = error;
+                    integral                     = updatableParams->fIntegral_;
                 }
-                ValueType outputFunctionArgument = fPIDParams_.P * error + fPIDParams_.I * fUpdatableParams_->fIntegral_ + fPIDParams_.D * derivative;
+                ValueType outputFunctionArgument = fPIDParams_.P * error + fPIDParams_.I * integral + fPIDParams_.D * derivative;
                 fOutputFunction_ (outputFunctionArgument);
                 nextRunAt += fUpdatePeriod_;
 #if Stroika_Foundation_Execution_PIDLoop_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("Completed PIDLoop update: set-point={}, measuredValue{}, error={}, derivative={}, integral={}, outputFunctionArgument={}, nextRunAt={}"_f,
-                          setPoint, measuredValue, error, derivative, fUpdatableParams_->fIntegral_, outputFunctionArgument, nextRunAt);
+                          setPoint, measuredValue, error, derivative, integral, outputFunctionArgument, nextRunAt);
 #endif
             }
             catch (const Thread::AbortException&) {

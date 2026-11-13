@@ -30,6 +30,7 @@
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/Execution/PIDLoop.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/Execution/ProgressMonitor.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -1185,6 +1186,33 @@ namespace {
             ProgressMonitor::Updater sub{top, 0.5f, 1.0f, TaskInfo{"kept"_k}, false};
         }
         EXPECT_EQ (monitor.GetCurrentTaskInfo ().fName, "kept"sv);
+    }
+}
+
+namespace {
+    /*
+     *  PIDLoop: brings a simple process to its set point, then to a new one
+     */
+    GTEST_TEST (Foundation_Execution, PIDLoop_)
+    {
+        Debug::TraceContextBumper ctx{"PIDLoop_"};
+        atomic<double>            processVariable{0}; // the output moves it by its value: P = 0.5 halves the error each period
+        PIDLoop<double> loop{PIDLoop<double>::eAutoStart, PIDLoop<double>::ControlParams{0.5, 0, 0}, 1ms,
+                             [&] () { return processVariable.load (); }, [&] (double o) { processVariable = processVariable + o; }};
+        auto            reaches = [&] (double target) {
+            for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; Time::GetTickCount () < giveUpAt; Execution::Sleep (1ms)) {
+                if (abs (processVariable - target) < 0.01) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        loop.SetSetPoint (10);
+        EXPECT_TRUE (reaches (10));
+        loop.SetSetPoint (-5);
+        EXPECT_EQ (loop.GetSetPoint (), -5);
+        EXPECT_TRUE (reaches (-5));
+        EXPECT_EQ (Characters::ToString (loop.GetControlParams ()), "{P: 0.5, I: 0, D: 0}"sv);
     }
 }
 
