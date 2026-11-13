@@ -394,6 +394,21 @@ namespace {
             catch (...) {
                 // good
             }
+            // still the whole list, after a GetData has moved to the archive's last entry
+            (void)reader.GetData ("sample_zip/TODO.txt");
+            EXPECT_EQ (reader.GetContainedFiles (), (Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
+                                                                             "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
+        }
+        {
+            // names of any length the format allows (16 bits), the empty one too
+            String                  longName{string (12'000, 'n')};
+            MemoryStream::Ptr<byte> store = MemoryStream::New<byte> ();
+            {
+                Archive::Writer::Ptr writer = Archive::Zip::Writer::New (store);
+                writer.Add (longName, Memory::BLOB{});
+                writer.Add ("", Memory::BLOB{});
+            }
+            EXPECT_EQ (Archive::Zip::Reader::New (store).GetContainedFiles (), (Containers::Set<String>{longName, ""}));
         }
         {
             MemoryStream::Ptr<byte> store = MemoryStream::New<byte> ();

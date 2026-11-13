@@ -154,23 +154,22 @@ namespace {
             Set<String>                                              result;
             unz_global_info64                                        gi;
             ThrowIfMinizipErr_ (unzGetGlobalInfo64 (fZipFile_, &gi), "unzGetGlobalInfo64"sv);
-            for (size_t i = 0; i < gi.number_entry; i++) {
-                char            filename_inzip[10 * 1024];
-                unz_file_info64 file_info;
-                //uLong           ratio = 0;
-                //const char* string_method;
-                //char charCrypt = ' ';
-                ThrowIfMinizipErr_ (::unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof (filename_inzip), NULL, 0, NULL, 0),
-                                    "unzGetGlobalInfo64"sv);
-                if ((i + 1) < gi.number_entry) {
-                    ThrowIfMinizipErr_ (::unzGoToNextFile_ (fZipFile_), "unzGoToNextFile_"sv);
-                }
-                //tmphack
-                if (filename_inzip[::strlen (filename_inzip) - 1] == '/') {
+            string nameBuf (numeric_limits<uint16_t>::max (), '\0'); // holds any entry's name: its length is a 16-bit field (APPNOTE 4.4.10)
+            for (ZPOS64_T i = 0; i < gi.number_entry; ++i) {
+                // from the first entry, wherever GetData left the current one
+                ThrowIfMinizipErr_ (i == 0 ? unzGoToFirstFile (fZipFile_) : unzGoToNextFile_ (fZipFile_), "unzGoToFirstFile/unzGoToNextFile_"sv);
+                unz_file_info64 fileInfo;
+                ThrowIfMinizipErr_ (unzGetCurrentFileInfo64 (fZipFile_, &fileInfo, nameBuf.data (), static_cast<uLong> (nameBuf.size ()),
+                                                             nullptr, 0, nullptr, 0),
+                                    "unzGetCurrentFileInfo64"sv);
+                Assert (fileInfo.size_filename <= nameBuf.size ());
+                // by its length: minizip adds no NUL to a name that fills nameBuf
+                string_view name{nameBuf.data (), static_cast<size_t> (fileInfo.size_filename)};
+                if (name.ends_with ('/')) {
                     continue; // only list files - not directories for now
                 }
                 // From https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT, must check bit 11 to see if really unicode, but not sure what code page if not unicode so just assume unicode!
-                result.Add (String::FromUTF8 (filename_inzip));
+                result.Add (String::FromUTF8 (span{name}));
             }
 #if 0
         // Keep temporarily, because we will want a traversal variant that captures this extra info
