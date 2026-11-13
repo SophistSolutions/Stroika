@@ -514,6 +514,24 @@ namespace {
                     EXPECT_THROW (r.GetData ("file-a.zip"), StreamFailed_);
                     EXPECT_EQ (r.GetData ("file-a.zip"), Memory::BLOB{ksample_zip_});
                 }
+                // an entry GetData cannot read correctly is an error - not wrong bytes. archive, with one field of file-a.zip's changed
+                // alike in its local header (at 0) and its central directory entry
+                auto patched = [&] (size_t localField, size_t centralField, const function<void (uint8_t&)>& change) {
+                    vector<uint8_t> b    = archive.As<vector<uint8_t>> ();
+                    size_t          eocd = b.size () - 22; // the end of central directory record (no archive comment)
+                    Assert (b[eocd] == 0x50 and b[eocd + 1] == 0x4b and b[eocd + 2] == 0x05 and b[eocd + 3] == 0x06);
+                    size_t central = b[eocd + 16] | b[eocd + 17] << 8 | b[eocd + 18] << 16 | size_t{b[eocd + 19]} << 24;
+                    change (b[localField]);
+                    change (b[central + centralField]);
+                    return Archive::Zip::Reader::New (Memory::BLOB{b}.As<InputStream::Ptr<byte>> ());
+                };
+                // its CRC (local header 14, central 16): the bytes read do not match it
+                EXPECT_THROW (patched (14, 16, [] (uint8_t& v) { v ^= 1; }).GetData ("file-a.zip"), BadFormatException);
+                // its compression method (local header 8, central 10) made one this build cannot decode: bzip2 (12) or LZMA (14)
+                Assert (archive.As<vector<uint8_t>> ()[8] == 0); // Zip::Writer stores, uncompressed
+                for (int method : {12, 14}) {
+                    EXPECT_THROW (patched (8, 10, [=] (uint8_t& v) { v = static_cast<uint8_t> (method); }).GetData ("file-a.zip"), runtime_error);
+                }
             }
         }
 #else

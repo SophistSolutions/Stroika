@@ -9,8 +9,8 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Private_minizip_.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedChecker.h"
-#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Reader.h"
@@ -315,23 +315,41 @@ namespace {
             if (not ForEachEntry_ ([&] (string_view name) { return name == fileNameUTF8; })) [[unlikely]] {
                 Throw (Execution::Exception<runtime_error>{Format ("File '{}' not found"_f, fileName)});
             }
+            unz_file_info64 fileInfo;
+            ThrowIfFailed_ (unzGetCurrentFileInfo64 (fZipFile_, &fileInfo, nullptr, 0, nullptr, 0, nullptr, 0), "unzGetCurrentFileInfo64"sv);
+            if (fileInfo.compression_method != 0 and fileInfo.compression_method != Z_DEFLATED) [[unlikely]] {
+                Throw (Execution::Exception<runtime_error>{Format ("File '{}' uses compression method {}; this reader reads only stored (0) and deflated (8)"_f,
+                                                                   fileName, fileInfo.compression_method)});
+            }
             const char* password = nullptr;
             ThrowIfFailed_ (unzOpenCurrentFilePassword (fZipFile_, password), "unzOpenCurrentFilePassword"sv);
-            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { unzCloseCurrentFile_ (fZipFile_); });
-            MemoryStream::Ptr<byte> tmpBuf  = MemoryStream::New<byte> ();
-            int                     err;
-            do {
-                byte buf[10 * 1024];
-                err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (std::size (buf)));
-                if (err < 0) [[unlikely]] {
-                    fInSeekStream_.RethrowStreamFailure ();
-                    Throw (Execution::Exception<runtime_error>{Format ("File '{}' error {} extracting"_f, fileName, err)});
-                }
-                else if (err > 0) {
-                    Assert (static_cast<size_t> (err) <= std::size (buf));
-                    tmpBuf.Write (span{buf, static_cast<size_t> (err)});
-                }
-            } while (err > 0);
+            MemoryStream::Ptr<byte> tmpBuf = MemoryStream::New<byte> ();
+            try {
+                int err;
+                do {
+                    byte buf[10 * 1024];
+                    err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (std::size (buf)));
+                    if (err < 0) [[unlikely]] {
+                        fInSeekStream_.RethrowStreamFailure ();
+                        Throw (Execution::Exception<runtime_error>{Format ("File '{}' error {} extracting"_f, fileName, err)});
+                    }
+                    else if (err > 0) {
+                        Assert (static_cast<size_t> (err) <= std::size (buf));
+                        tmpBuf.Write (span{buf, static_cast<size_t> (err)});
+                    }
+                } while (err > 0);
+            }
+            catch (...) {
+                unzCloseCurrentFile_ (fZipFile_);
+                throw;
+            }
+            // closing checks what was read against the entry's CRC
+            if (int err = unzCloseCurrentFile_ (fZipFile_); err == UNZ_CRCERROR) [[unlikely]] {
+                Throw (BadFormatException{Format ("File '{}' is damaged: its CRC does not match"_f, fileName)});
+            }
+            else {
+                ThrowIfFailed_ (err, "unzCloseCurrentFile_"sv);
+            }
             return tmpBuf.As<Memory::BLOB> ();
         }
     };

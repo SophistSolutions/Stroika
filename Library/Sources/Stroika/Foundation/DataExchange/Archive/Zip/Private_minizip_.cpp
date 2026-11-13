@@ -1256,9 +1256,9 @@ int unz64local_CheckCurrentFileCoherencyHeader (unz64_s* s, uInt* piSizeVar, ZPO
         err = UNZ_BADZIPFILE;
 
     if ((err == UNZ_OK) and (s->cur_file_info.compression_method != 0) &&
-        /* #ifdef HAVE_BZIP2 */
+#ifdef HAVE_BZIP2 // else minizip would read a bzip2 entry raw - its compressed bytes as its contents
         (s->cur_file_info.compression_method != Z_BZIP2ED) &&
-        /* #endif */
+#endif
         (s->cur_file_info.compression_method != Z_DEFLATED))
         err = UNZ_BADZIPFILE;
 
@@ -1364,9 +1364,9 @@ int PrivateMinizip_::unzOpenCurrentFile3_ (unzFile file, int* method, int* level
     }
 
     if ((s->cur_file_info.compression_method != 0) &&
-        /* #ifdef HAVE_BZIP2 */
+#ifdef HAVE_BZIP2
         (s->cur_file_info.compression_method != Z_BZIP2ED) &&
-        /* #endif */
+#endif
         (s->cur_file_info.compression_method != Z_DEFLATED))
 
         err = UNZ_BADZIPFILE;
