@@ -76,7 +76,9 @@ namespace {
     inline void CLOSE_ (int& fd) noexcept
     {
         if (fd >= 0) [[likely]] {
-            IgnoreExceptionsForCall (Handle_ErrNoResultInterruption ([fd] () -> int { return ::close (fd); }));
+            // once, and its result ignored: on Linux and macOS a close that reports EINTR has closed fd anyway, so a retry
+            // could close one another thread has just been given
+            (void)::close (fd);
             fd = -1;
         }
     }

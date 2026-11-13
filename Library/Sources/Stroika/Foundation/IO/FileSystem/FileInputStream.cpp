@@ -206,7 +206,8 @@ namespace {
             return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (
                                               ::_read (fFD_, intoBuffer.data (), Common::StdCompat::saturate_cast<unsigned int> (nRequested)))));
 #else
-            return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoBuffer.data (), nRequested))));
+            return intoBuffer.subspan (0, static_cast<size_t> (Execution::Handle_ErrNoResultInterruption (
+                                              [&] () { return ::read (fFD_, intoBuffer.data (), nRequested); })));
 #endif
         }
         virtual Streams::SeekOffsetType GetReadOffset () const override

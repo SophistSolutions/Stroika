@@ -701,8 +701,15 @@ namespace Stroika::Foundation::Execution {
      *
      *  This behavior is meant to work with the frequent POSIX API semantics of a return value of < 0
      *  implying an error, and < 0 but errno == EINTR means retry the call. This API also provides a
-     *  cancelation point - so it makes otherwise blocking calls (like select, or read) work well with thread
-     *  interruption.
+     *  cancelation point, after the call.
+     *
+     *  \note An Abort () that comes while call is blocked interrupts it (Stroika's interruption signal has no SA_RESTART), and is
+     *        then thrown; but one that comes just before call blocks is seen only once call returns - perhaps never. So
+     *        this does not make a blocking call reliably abortable: for that, wait first (WaitForIOReady), then call
+     *        without blocking (@see https://github.com/SophistSolutions/Stroika/issues/1195).
+     *
+     *  \note Never wrap ::close (): POSIX leaves a descriptor's state unspecified after EINTR, and Linux and macOS have
+     *        already closed it, so a retry may close a descriptor another thread was just given.
      *
      *  \note   ***Cancelation Point***
      */

@@ -129,7 +129,7 @@ namespace {
 #if qStroika_Platform_Windows
                 int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Common::StdCompat::saturate_cast<unsigned int> (end - i)));
 #else
-                int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
+                auto n = Execution::Handle_ErrNoResultInterruption ([&] () { return ::write (fFD_, i, end - i); });
 #endif
                 Assert (n <= (end - i));
                 i += n;
