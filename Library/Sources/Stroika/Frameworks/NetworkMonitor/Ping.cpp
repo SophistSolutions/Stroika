@@ -102,19 +102,20 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 
     ICMP::V4::PacketHeader pingRequest = [&] () {
         ICMP::V4::PacketHeader tmp{};
-        tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
-        tmp.id        = static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_));
-        tmp.seq       = ++fNextSequenceNumber_;
-        tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount ().time_since_epoch ().count () * 1000);
+        tmp.type = ICMP::V4::ICMP_ECHO_REQUEST;
+        tmp.id   = static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_));
+        tmp.seq  = ++fNextSequenceNumber_;
         return tmp;
     }();
     (void)::memcpy (fSendPacket_.begin (), &pingRequest, sizeof (pingRequest));
     reinterpret_cast<ICMP::V4::PacketHeader*> (fSendPacket_.begin ())->checksum =
         IP::ip_checksum (fSendPacket_.begin (), fSendPacket_.begin () + fICMPPacketSize_);
+    // timed here, not from a timestamp sent in the request: one that fits there is too coarse, and wraps
+    Time::TimePointSeconds sentAt = Time::GetTickCount ();
     fSocket_.SendTo (fSendPacket_, SocketAddress{fDestination_, 0});
 
     // Find first packet responding (some packets could be bogus/ignored)
-    Time::TimePointSeconds pingTimeoutAfter = Time::GetTickCount () + fPingTimeout_;
+    Time::TimePointSeconds pingTimeoutAfter = sentAt + fPingTimeout_;
     while (true) {
         ThrowTimeoutExceptionAfter (pingTimeoutAfter);
         SocketAddress    fromAddress;
@@ -192,7 +193,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("reply->ttl = {}, nHops = {}"_f, replyIPHeader->ttl, nHops);
 #endif
-                return ResultType{Duration{Time::GetTickCount ().time_since_epoch ().count () - replyICMPHeader->timestamp / 1000.0}, nHops};
+                return ResultType{Duration{Time::GetTickCount () - sentAt}, nHops};
             }
             case ICMP::V4::ICMP_TTL_EXPIRE: {
                 Execution::Throw (ICMP::V4::TTLExpiredException{InternetAddress{replyIPHeader->saddr}});

@@ -52,7 +52,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
             uint16_t         checksum;
             uint16_t         id;
             uint16_t         seq;
-            uint32_t         timestamp; // not part of ICMP, but we need it
+            uint32_t         timestamp; // not part of ICMP: the first 4 bytes of an echo request's data, which its reply echoes back
         });
         static_assert (sizeof (PacketHeader) == 12, "Check Stroika_Foundation_Common_STRUCT_PACKED: ICMP::PacketHeader size wrong");
 
