@@ -770,6 +770,10 @@ namespace {
                                   ConnectionManager::Options{.fClientStallTimeout = 1s}};
         IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
         client.Write (as_bytes (span{"GET /BIG HTTP/1.1\r\nHost: localhost\r\n\r\n"sv})); // and never read the response
+        // FAILURE:
+        //      3.0d26x (3.0d25-194) Ubuntu 22.04 regression run, g++-debug-sanitize_undefined: the handler had not ended at 10 seconds
+        //      (normally ~3), and the test took 123 seconds. The host was thrashing those two minutes (swap full; systemd-oomd killed
+        //      the desktop session as it ended). Not reproduced: 20 runs alone, 10 of the whole test, same binary -- 2026-11-13
         for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s; not handlerDone;) {
             ASSERT_LT (Time::GetTickCount (), giveUpAt) << "the handler is still writing a response its client stopped taking";
             Execution::Sleep (10ms);
