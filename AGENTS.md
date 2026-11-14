@@ -598,7 +598,8 @@ still compile". Say which one you did.
   which also removes the warning suppressions guarding its uses. A renamed macro keeps its old name as a documented
   `#define OLD NEW` alias, plus an `UPGRADE NOTE:`. A deprecated declaration goes in its header's `.inl`, under a
   `DEPRECATED BELOW` marker, where that is easy (LGP, 2026-11-10): the `.h` then shows only the current API, as
-  `Transfer/Cache.inl` does. Deprecated means "still compiles and warns", not "still behaves the
+  `Transfer/Cache.inl` does. It keeps no doc comment: its `[[deprecated]]` message names the replacement (LGP,
+  2026-11-14). Deprecated means "still compiles and warns", not "still behaves the
   same": build no shims to keep old behaviour. In analysis, don't dwell on deprecated APIs, and never invest in one - no
   renames, fixes or forwarders.
 - **A workaround carries its own re-test trigger.** A disabled configuration's line names the issue URL; a third-party
