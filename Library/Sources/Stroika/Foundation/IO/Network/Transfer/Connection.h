@@ -453,6 +453,11 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  The cache object defaults to nullptr, but to have cached HTTP GETs, create a static Options object and have
          *  that object contain the Cache object reference, and then any Connections you create from that options
          *  object will share the same cache.
+         *
+         *  \note As of Stroika v3.0d26, neither backend (libcurl, WinHTTP) caches on its own, so this is the only cache. A
+         *        backend that did would keep its own cache off while this is set. These options might then gain a choice - an
+         *        enum saying 'use the backend's cache' or 'use Stroika's default cache' - with fCache becoming a
+         *        variant<that enum, Cache::Ptr>, so code setting nullptr or a Cache::Ptr still means what it does now.
          */
         Cache::Ptr fCache{nullptr};
     };
