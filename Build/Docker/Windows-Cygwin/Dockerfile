@@ -53,8 +53,8 @@ RUN  \
 # cyg-get's exit code tells nothing - it starts cygwin's setup and discards its result - so check that each command the
 # build needs is there (p7zip's is 7z). No double quotes in the bash script: PowerShell 5.1 passes them to bash.exe broken.
 RUN \
-    cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq xxd python3; \
-    C:\tools\cygwin\bin\bash.exe -c 'PATH=/usr/bin; for c in make git wget patch pkg-config automake dos2unix unzip 7z doxygen jq xxd python3; do command -v $c > /dev/null || { echo cyg-get did not install: $c; exit 1; }; done'; \
+    cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen xxd python3; \
+    C:\tools\cygwin\bin\bash.exe -c 'PATH=/usr/bin; for c in make git wget patch pkg-config automake dos2unix unzip 7z doxygen xxd python3; do command -v $c > /dev/null || { echo cyg-get did not install: $c; exit 1; }; done'; \
     if ($LASTEXITCODE -ne 0) { throw 'cyg-get did not install everything' }
 
 COPY Windows-Cygwin/Getting-Started-With-Stroika.md ./tools/cygwin/home

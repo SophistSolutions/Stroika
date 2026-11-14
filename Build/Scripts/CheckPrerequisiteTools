@@ -60,7 +60,6 @@ CheckTool_ pkg-config pkg-config --version
 #	realpath macOS ships rejects long options. Probe the flag rather than the binary, or that
 #	failure surfaces much later, inside the third-party builds.
 CheckTool_ realpath realpath --canonicalize-missing .
-CheckTool_ jq
 CheckTool_ xxd
 
 case "$DETECTED_HOST_OS_" in

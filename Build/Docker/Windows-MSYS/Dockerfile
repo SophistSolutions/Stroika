@@ -99,12 +99,11 @@ RUN  \
 
 # Install a bunch of components - mostly that Stroika builds will find handy
 # xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16) - weirdly in vim package
-# jq is MSYS's own (in /usr/bin) - MSYS2 no longer builds mingw-w64-x86_64-jq, only ucrt/clang variants.
 # python is MSYS's own too - /usr/bin/python3, which Stroika's Python build scripts name in their #! line - not
 # mingw-w64-x86_64-python: a native Windows program, it cannot open the /c/... paths make runs them by.
 RUN \
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; if ($LASTEXITCODE -ne 0) { throw ('msys failed, exit code ' + $LASTEXITCODE + ': ' + $Args) } } \
-    msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen pkg-config jq vim python'; \
+    msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen pkg-config vim python'; \
     msys 'pacman --noconfirm -Syuu'
 
 COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
@@ -140,7 +139,8 @@ CMD ["bash.exe", "--login"]
 #       Missing component jq: try pacman -S mingw-w64-x86_64-jq; and maybe add export PATH="$PATH:/mingw64/bin" to ~/.bashrc
 #       make[1]: *** [Makefile:363: check-prerequisite-tools-common] Error 1
 # when I try to build Stroika inside a container (following the instructions in Getting-Started-With-Stroika.md)
-# (jq was the mingw64 one then; jq and python are now MSYS's own, in /usr/bin - whether this is still needed is untested.)
+# (jq was the mingw64 one then; Stroika needs no jq since v3.0d26, and python is MSYS's own, in /usr/bin - whether this is
+# still needed is untested.)
 ENV MSYS2_PATH_TYPE=inherit
 
 

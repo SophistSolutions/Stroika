@@ -138,11 +138,10 @@ jobs:
         if: matrix.extra_apt_add_packages != null
         env:
           DEBIAN_FRONTEND: noninteractive
-          APT_ADD_JSON_ARRAY_STRING: ${{ toJSON(matrix.extra_apt_add_packages) }}
+          APT_ADD_PACKAGES: ${{ join(matrix.extra_apt_add_packages, ' ') }}
         run: |
-            echo "extra_apt_add_packages=\"${APT_ADD_JSON_ARRAY_STRING}"\"
-            readarray -t extra_apt_add_packages < <(echo "$APT_ADD_JSON_ARRAY_STRING" | jq -r '.[]')
-            for package in "${extra_apt_add_packages[@]}"; do
+            echo "extra_apt_add_packages=\"${APT_ADD_PACKAGES}\""
+            for package in $APT_ADD_PACKAGES; do
               echo "apt-get install -qq -y $package"
               apt-get install -qq -y "$package"
             done
@@ -153,7 +152,7 @@ jobs:
         if: always()
         env:
           DEBIAN_FRONTEND: noninteractive
-          APT_REMOVE_JSON_ARRAY_STRING: ${{ toJSON(matrix.extra_apt_remove_packages) }}
+          APT_REMOVE_PACKAGES: ${{ join(matrix.extra_apt_remove_packages, ' ') }}
         run: |
           echo "Before cleanup:" ; df -h
           df
@@ -165,12 +164,11 @@ jobs:
           rm -rf Archive License.txt
 
           # Keep this hack around in case I discover a way to make it work, but for now it doesn't due to how layers work in docker images --LGP 2025-12-12
-          echo "extra_apt_remove_packages=\"${APT_REMOVE_JSON_ARRAY_STRING}"\"
-          if [[ "$APT_REMOVE_JSON_ARRAY_STRING" == "null" ]] ; then
+          echo "extra_apt_remove_packages=\"${APT_REMOVE_PACKAGES}\""
+          if [[ -z "$APT_REMOVE_PACKAGES" ]] ; then
             echo "matrix.extra_apt_remove_packages is empty."
           else
-            readarray -t extra_apt_remove_packages < <(echo "$APT_REMOVE_JSON_ARRAY_STRING" | jq -r '.[]')
-            for package in "${extra_apt_remove_packages[@]}"; do
+            for package in $APT_REMOVE_PACKAGES; do
               echo "apt-get remove -y $package"
               apt-get remove -y "$package" || true
             done

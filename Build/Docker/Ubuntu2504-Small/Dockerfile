@@ -19,7 +19,6 @@ RUN apt-get -qq install -y build-essential
 #cmake:                         required to build Xerces
 #automake autoconf libtool-bin: required to build libcurl
 #doxygen:                       Not required, but if you want to generate docs
-#jq:                            needed for ApplyConfiguration to update vs-code configuration files
 #git:                           Not really a Stroika dependency, but its how we download/fetch stroika
 #xxd:                           used in regression tests (and maybe more soon as good resource strategy)
 #python3:                       switching build scripts to depend on python
@@ -31,7 +30,6 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y cmake; \
     apt-get -qq install -y automake autoconf libtool-bin; \
     apt-get -qq install -y doxygen; \
-    apt-get -qq install -y jq; \
     apt-get -qq install -y git; \
     apt-get -qq install -y xxd; \
     apt-get -qq install -y python3; \

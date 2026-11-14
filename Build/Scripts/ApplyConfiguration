@@ -391,24 +391,13 @@ def IntelliSenseModeFor_(c, compilerDriver):
     return os_ + "-" + toolSet + "-" + arch
 
 
-jqNewline_ = None
-
-
-def JQPretty_(doc):
-    """What jq prints for doc - with the line ending of the jq on PATH: CRLF from a native Windows one (MINGW's jq.exe)"""
-    global jqNewline_
-    if jqNewline_ is None:
-        jqNewline_ = "\r\n" if "\r\n" in Backtick_(["jq", "-n", "[1]"])[0] else "\n"
-    return (json.dumps(doc, indent=2, ensure_ascii=False) + "\n").replace("\n", jqNewline_)
-
-
 def VSCodeText_(c, existingText):
-    """The new .vscode/c_cpp_properties.json, given the old (None if there is none)"""
+    """The new .vscode/c_cpp_properties.json, given the old (None if there is none) - in the old one's line ending"""
     EMPTY = '{"configurations":[]}\n'
     text = EMPTY if existingText is None else existingText
     try:
         doc = json.loads(text)
-        if not (isinstance(doc, (dict, list)) and len(doc) > 0):  # jq ".[]" printed nothing
+        if not (isinstance(doc, (dict, list)) and len(doc) > 0):  # empty, or not an object or array: start afresh
             raise ValueError
     except ValueError:
         doc = json.loads(EMPTY)
@@ -459,12 +448,13 @@ def VSCodeText_(c, existingText):
     else:
         configs[index] = newCfg
     doc["configurations"] = configs
-    # sorted by name, ignoring ASCII case (jq's sort_by (.name|ascii_downcase)); an entry with no name first
+    # sorted by name, ignoring ASCII case only; an entry with no name first
     def SortKey(e):
         name = e.get("name") if isinstance(e, dict) else None
         return name.translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")) if isinstance(name, str) else ""
     doc["configurations"] = sorted(configs, key=SortKey)
-    return JQPretty_(doc)
+    newline = "\r\n" if existingText is not None and "\r\n" in existingText else "\n"
+    return (json.dumps(doc, indent=2, ensure_ascii=False) + "\n").replace("\n", newline)
 
 
 def ReadText_(path, encoding):
@@ -503,7 +493,6 @@ def Main_(argv):
     configMk = INTERMEDIATE_FILES_ + activeConfiguration + "/Configuration.mk"
     c = Config_(activeConfiguration)
     genVSIntellisense = genVSIntellisense and IsVisualStudio_(c.BuildPlatform)
-    jqInstalled = Backtick_(["which", "jq"])[0].strip() != ""  # (without jq, the .vscode file is left alone)
 
     if genConfigMake:
         if os.path.exists(configMk):
@@ -525,10 +514,7 @@ def Main_(argv):
         sys.stdout.write("done\n")
     if genVSCode:
         sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + VSCODE_CPP_FILE_ + '" ... ')
-        if jqInstalled:
-            WriteBytes_(VSCODE_CPP_FILE_, VSCodeText_(c, ReadText_(VSCODE_CPP_FILE_, "utf-8")).encode("utf-8"))
-        else:
-            sys.stdout.write("SKIPPED SINCE jq not installed ... ")
+        WriteBytes_(VSCODE_CPP_FILE_, VSCodeText_(c, ReadText_(VSCODE_CPP_FILE_, "utf-8")).encode("utf-8"))
         sys.stdout.write("done\n")
     sys.stdout.flush()
 
