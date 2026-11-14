@@ -3388,12 +3388,13 @@ namespace {
                 10, &failedTests);
         Tester ("double to text", Test_FloatToString_ToChars_, "to_chars+string", Test_FloatToString_ToString_, "Characters::ToString",
                 1500000, 3.4, &failedTests);
-        Tester ("Parse an int (stream)", Test_ParseInt_Stream_, "istringstream", Test_ParseInt_Number_, "Number::Parse<int>", 500000, 0.2, &failedTests);
-        Tester ("Parse a double (stream)", Test_ParseFloat_Stream_, "istringstream", Test_ParseFloat_Number_, "Number::Parse<double>",
+        Tester ("Parse an int (std::stream)", Test_ParseInt_Stream_, "istringstream", Test_ParseInt_Number_, "Number::Parse<int>", 500000,
+                0.2, &failedTests);
+        Tester ("Parse a double (std::stream)", Test_ParseFloat_Stream_, "istringstream", Test_ParseFloat_Number_, "Number::Parse<double>",
                 500000, 0.25, &failedTests);
-        Tester ("int to text (stream)", Test_IntToString_Stream_, "ostringstream", Test_IntToString_ToString_, "Characters::ToString",
+        Tester ("int to text (std::stream)", Test_IntToString_Stream_, "ostringstream", Test_IntToString_ToString_, "Characters::ToString",
                 500000, 0.5, &failedTests);
-        Tester ("double to text (stream)", Test_FloatToString_Stream_, "ostringstream", Test_FloatToString_ToString_,
+        Tester ("double to text (std::stream)", Test_FloatToString_Stream_, "ostringstream", Test_FloatToString_ToString_,
                 "Characters::ToString", 500000, 0.6, &failedTests);
         // each against std::to_chars, the floor; and fixed point and scientific against how ToString wrote them before v3.0d26 (a
         // reused thread_local stringstream) - ratios in one run, so the standard library's own speed moves both sides alike
