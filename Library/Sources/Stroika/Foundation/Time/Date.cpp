@@ -258,8 +258,8 @@ weekday Date::GetDayOfWeek () const
  */
 Date::SignedJulianDayNumber Time::DayDifference (const Date& lhs, const Date& rhs)
 {
-    return Common::StdCompat::saturate_cast<Date::SignedJulianDayNumber> (static_cast<int64_t> (lhs.GetJulianRep ()) -
-                                                                          static_cast<int64_t> (rhs.GetJulianRep ()));
+    return Common::StdCompat::saturating_cast<Date::SignedJulianDayNumber> (static_cast<int64_t> (lhs.GetJulianRep ()) -
+                                                                            static_cast<int64_t> (rhs.GetJulianRep ()));
 }
 
 /*

@@ -203,8 +203,8 @@ namespace {
              *  Standard blocking read
              */
 #if qStroika_Platform_Windows
-            return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (
-                                              ::_read (fFD_, intoBuffer.data (), Common::StdCompat::saturate_cast<unsigned int> (nRequested)))));
+            return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (
+                                              fFD_, intoBuffer.data (), Common::StdCompat::saturating_cast<unsigned int> (nRequested)))));
 #else
             return intoBuffer.subspan (0, static_cast<size_t> (Execution::Handle_ErrNoResultInterruption (
                                               [&] () { return ::read (fFD_, intoBuffer.data (), nRequested); })));

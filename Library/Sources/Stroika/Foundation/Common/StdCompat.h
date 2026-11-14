@@ -269,16 +269,19 @@ namespace Stroika::Foundation::Common::StdCompat {
     }
 
     /*
-     *  C++26's saturation arithmetic (<numeric>): a result the type cannot hold is held at its limit - numeric_limits<T>::min ()
+     *  C++26's saturating arithmetic (<numeric>): a result the type cannot hold is held at its limit - numeric_limits<T>::min ()
      *  or max () - rather than wrapping or being undefined. std's where the standard library has it, else equivalents - so every
      *  build before C++26 uses the versions below. As std's, for integer types only - not bool, nor a character type.
+     *
+     *  Named as C++26 was published (P3161, __cpp_lib_saturation_arithmetic 202603L). A library with only the earlier draft's
+     *  names (add_sat, sub_sat, mul_sat, div_sat, saturate_cast - 202311L: libstdc++ 14 and 15, for two) gets the versions below.
      */
-#if __cpp_lib_saturation_arithmetic >= 202311L
-    using std::add_sat;
-    using std::div_sat;
-    using std::mul_sat;
-    using std::saturate_cast;
-    using std::sub_sat;
+#if __cpp_lib_saturation_arithmetic >= 202603L
+    using std::saturating_add;
+    using std::saturating_cast;
+    using std::saturating_div;
+    using std::saturating_mul;
+    using std::saturating_sub;
 #else
     namespace Private_ {
         template <typename T>
@@ -292,12 +295,12 @@ namespace Stroika::Foundation::Common::StdCompat {
      *
      *  \par Example Usage
      *      \code
-     *          int n = StdCompat::saturate_cast<int> (into.size ());   // a size over INT_MAX gives INT_MAX
+     *          int n = StdCompat::saturating_cast<int> (into.size ());   // a size over INT_MAX gives INT_MAX
      *      \endcode
      */
     template <typename R, typename T>
         requires (Private_::ISignedOrUnsignedInteger_<R> and Private_::ISignedOrUnsignedInteger_<T>)
-    constexpr R saturate_cast (T x) noexcept
+    constexpr R saturating_cast (T x) noexcept
     {
         if (cmp_less (x, numeric_limits<R>::min ())) {
             return numeric_limits<R>::min ();
@@ -313,7 +316,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      */
     template <typename T>
         requires (Private_::ISignedOrUnsignedInteger_<T>)
-    constexpr T add_sat (T x, T y) noexcept
+    constexpr T saturating_add (T x, T y) noexcept
     {
         if constexpr (is_unsigned_v<T>) {
             T r = static_cast<T> (x + y);
@@ -335,7 +338,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      */
     template <typename T>
         requires (Private_::ISignedOrUnsignedInteger_<T>)
-    constexpr T sub_sat (T x, T y) noexcept
+    constexpr T saturating_sub (T x, T y) noexcept
     {
         if constexpr (is_unsigned_v<T>) {
             return x < y ? T{0} : static_cast<T> (x - y);
@@ -356,7 +359,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      */
     template <typename T>
         requires (Private_::ISignedOrUnsignedInteger_<T>)
-    constexpr T mul_sat (T x, T y) noexcept
+    constexpr T saturating_mul (T x, T y) noexcept
     {
         if (x == 0 or y == 0) {
             return T{0};
@@ -388,7 +391,7 @@ namespace Stroika::Foundation::Common::StdCompat {
      */
     template <typename T>
         requires (Private_::ISignedOrUnsignedInteger_<T>)
-    constexpr T div_sat (T x, T y) noexcept
+    constexpr T saturating_div (T x, T y) noexcept
     {
         if constexpr (is_signed_v<T>) {
             if (x == numeric_limits<T>::min () and y == -1) {

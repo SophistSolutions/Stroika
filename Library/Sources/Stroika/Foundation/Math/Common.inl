@@ -274,18 +274,6 @@ namespace Stroika::Foundation::Math {
 
     /*
      ********************************************************************************
-     ************************** Math::PinToMaxForType *******************************
-     ********************************************************************************
-     */
-    template <typename NEW_T, typename T>
-    constexpr NEW_T PinToMaxForType (T initialValue)
-    {
-        using LargerType = decltype (NEW_T{} + T{}); // maybe should use conditional<> for this?
-        return static_cast<NEW_T> (min<LargerType> (initialValue, numeric_limits<NEW_T>::max ()));
-    }
-
-    /*
-     ********************************************************************************
      ********************************** Math::Abs ***********************************
      ********************************************************************************
      */
@@ -376,4 +364,11 @@ namespace Stroika::Foundation::Math {
 namespace Stroika::Foundation::Math {
     [[deprecated ("Since C++20, use std::numbers::e_v")]] constexpr double  kE  = numbers::e_v<double>;
     [[deprecated ("Since C++20, use std::numbers::pi_v")]] constexpr double kPi = numbers::pi_v<double>;
+
+    template <typename NEW_T, typename T>
+    [[deprecated ("Since Stroika v3.0d26 use Common::StdCompat::saturating_cast")]] constexpr NEW_T PinToMaxForType (T initialValue)
+    {
+        using LargerType = decltype (NEW_T{} + T{});
+        return static_cast<NEW_T> (min<LargerType> (initialValue, numeric_limits<NEW_T>::max ()));
+    }
 }

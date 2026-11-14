@@ -651,59 +651,59 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"{}::SaturationArithmetic_"};
         // Common::StdCompat's saturation arithmetic is std's in C++26, and Stroika's own implementation before that
-        using Common::StdCompat::add_sat;
-        using Common::StdCompat::div_sat;
-        using Common::StdCompat::mul_sat;
-        using Common::StdCompat::saturate_cast;
-        using Common::StdCompat::sub_sat;
+        using Common::StdCompat::saturating_add;
+        using Common::StdCompat::saturating_cast;
+        using Common::StdCompat::saturating_div;
+        using Common::StdCompat::saturating_mul;
+        using Common::StdCompat::saturating_sub;
 
-        static_assert (saturate_cast<int8_t> (1000) == 127);
-        static_assert (saturate_cast<int8_t> (-1000) == -128);
-        static_assert (saturate_cast<uint8_t> (-5) == 0);
-        static_assert (saturate_cast<unsigned int> (ptrdiff_t{-5}) == 0u);
-        static_assert (saturate_cast<int> (numeric_limits<size_t>::max ()) == numeric_limits<int>::max ());
-        static_assert (saturate_cast<uint64_t> (numeric_limits<int64_t>::min ()) == 0u);
-        static_assert (saturate_cast<int64_t> (numeric_limits<uint64_t>::max ()) == numeric_limits<int64_t>::max ());
-        static_assert (saturate_cast<int> (42u) == 42);
+        static_assert (saturating_cast<int8_t> (1000) == 127);
+        static_assert (saturating_cast<int8_t> (-1000) == -128);
+        static_assert (saturating_cast<uint8_t> (-5) == 0);
+        static_assert (saturating_cast<unsigned int> (ptrdiff_t{-5}) == 0u);
+        static_assert (saturating_cast<int> (numeric_limits<size_t>::max ()) == numeric_limits<int>::max ());
+        static_assert (saturating_cast<uint64_t> (numeric_limits<int64_t>::min ()) == 0u);
+        static_assert (saturating_cast<int64_t> (numeric_limits<uint64_t>::max ()) == numeric_limits<int64_t>::max ());
+        static_assert (saturating_cast<int> (42u) == 42);
 
-        static_assert (add_sat<int8_t> (100, 100) == 127);
-        static_assert (add_sat<int8_t> (-100, -100) == -128);
-        static_assert (add_sat<int8_t> (100, -100) == 0);
-        static_assert (add_sat<uint8_t> (200, 100) == 255);
-        static_assert (add_sat (numeric_limits<int>::max (), 1) == numeric_limits<int>::max ());
-        static_assert (add_sat (numeric_limits<unsigned int>::max (), 1u) == numeric_limits<unsigned int>::max ());
+        static_assert (saturating_add<int8_t> (100, 100) == 127);
+        static_assert (saturating_add<int8_t> (-100, -100) == -128);
+        static_assert (saturating_add<int8_t> (100, -100) == 0);
+        static_assert (saturating_add<uint8_t> (200, 100) == 255);
+        static_assert (saturating_add (numeric_limits<int>::max (), 1) == numeric_limits<int>::max ());
+        static_assert (saturating_add (numeric_limits<unsigned int>::max (), 1u) == numeric_limits<unsigned int>::max ());
 
-        static_assert (sub_sat<int8_t> (-100, 100) == -128);
-        static_assert (sub_sat<int8_t> (100, -100) == 127);
-        static_assert (sub_sat<uint8_t> (5, 10) == 0);
-        static_assert (sub_sat (numeric_limits<int>::min (), 1) == numeric_limits<int>::min ());
-        static_assert (sub_sat (0, numeric_limits<int>::min ()) == numeric_limits<int>::max ());
-        static_assert (sub_sat (10u, 3u) == 7u);
+        static_assert (saturating_sub<int8_t> (-100, 100) == -128);
+        static_assert (saturating_sub<int8_t> (100, -100) == 127);
+        static_assert (saturating_sub<uint8_t> (5, 10) == 0);
+        static_assert (saturating_sub (numeric_limits<int>::min (), 1) == numeric_limits<int>::min ());
+        static_assert (saturating_sub (0, numeric_limits<int>::min ()) == numeric_limits<int>::max ());
+        static_assert (saturating_sub (10u, 3u) == 7u);
 
         // every sign combination, either side of each limit
-        static_assert (mul_sat<int8_t> (16, 8) == 127);
-        static_assert (mul_sat<int8_t> (-16, -8) == 127);
-        static_assert (mul_sat<int8_t> (-11, -11) == 121);
-        static_assert (mul_sat<int8_t> (-1, -128) == 127);
-        static_assert (mul_sat<int8_t> (-128, -1) == 127);
-        static_assert (mul_sat<int8_t> (16, -9) == -128);
-        static_assert (mul_sat<int8_t> (-16, 9) == -128);
-        static_assert (mul_sat<int8_t> (-16, 8) == -128);
-        static_assert (mul_sat<int8_t> (1, -128) == -128);
-        static_assert (mul_sat<uint8_t> (16, 16) == 255);
-        static_assert (mul_sat<uint8_t> (15, 17) == 255);
-        static_assert (mul_sat (numeric_limits<int64_t>::max (), int64_t{2}) == numeric_limits<int64_t>::max ());
-        static_assert (mul_sat (numeric_limits<int64_t>::min (), int64_t{-1}) == numeric_limits<int64_t>::max ());
-        static_assert (mul_sat (0, numeric_limits<int>::min ()) == 0);
+        static_assert (saturating_mul<int8_t> (16, 8) == 127);
+        static_assert (saturating_mul<int8_t> (-16, -8) == 127);
+        static_assert (saturating_mul<int8_t> (-11, -11) == 121);
+        static_assert (saturating_mul<int8_t> (-1, -128) == 127);
+        static_assert (saturating_mul<int8_t> (-128, -1) == 127);
+        static_assert (saturating_mul<int8_t> (16, -9) == -128);
+        static_assert (saturating_mul<int8_t> (-16, 9) == -128);
+        static_assert (saturating_mul<int8_t> (-16, 8) == -128);
+        static_assert (saturating_mul<int8_t> (1, -128) == -128);
+        static_assert (saturating_mul<uint8_t> (16, 16) == 255);
+        static_assert (saturating_mul<uint8_t> (15, 17) == 255);
+        static_assert (saturating_mul (numeric_limits<int64_t>::max (), int64_t{2}) == numeric_limits<int64_t>::max ());
+        static_assert (saturating_mul (numeric_limits<int64_t>::min (), int64_t{-1}) == numeric_limits<int64_t>::max ());
+        static_assert (saturating_mul (0, numeric_limits<int>::min ()) == 0);
 
-        static_assert (div_sat<int8_t> (-128, -1) == 127);
-        static_assert (div_sat (numeric_limits<int>::min (), -1) == numeric_limits<int>::max ());
-        static_assert (div_sat (7, -2) == -3);
-        static_assert (div_sat (7u, 2u) == 3u);
+        static_assert (saturating_div<int8_t> (-128, -1) == 127);
+        static_assert (saturating_div (numeric_limits<int>::min (), -1) == numeric_limits<int>::max ());
+        static_assert (saturating_div (7, -2) == -3);
+        static_assert (saturating_div (7u, 2u) == 3u);
 
         size_t big = numeric_limits<size_t>::max ();
-        EXPECT_EQ (saturate_cast<int> (big), numeric_limits<int>::max ());
-        EXPECT_EQ (mul_sat (numeric_limits<int>::max () / 2, 3), numeric_limits<int>::max ());
+        EXPECT_EQ (saturating_cast<int> (big), numeric_limits<int>::max ());
+        EXPECT_EQ (saturating_mul (numeric_limits<int>::max () / 2, 3), numeric_limits<int>::max ());
     }
 }
 

@@ -229,7 +229,7 @@ namespace {
                                         }));
 #elif qStroika_Platform_Windows
             int  flags        = 0;
-            int  nBytesToRead = Common::StdCompat::saturate_cast<int> (into.size ());
+            int  nBytesToRead = Common::StdCompat::saturating_cast<int> (into.size ());
             auto result       = into.subspan (0, static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (
                                                      ::recv (fSD_, reinterpret_cast<char*> (into.data ()), nBytesToRead, flags))));
 #else
@@ -534,7 +534,7 @@ namespace {
         DWORD ms = 0;
         if (timeout) {
             // at least a millisecond: under one is the shortest timeout there is, not none
-            ms = max<DWORD> (Common::StdCompat::saturate_cast<DWORD> (timeout->AsSaturated<chrono::milliseconds> ().count ()), 1);
+            ms = max<DWORD> (Common::StdCompat::saturating_cast<DWORD> (timeout->AsSaturated<chrono::milliseconds> ().count ()), 1);
         }
         s.setsockopt (SOL_SOCKET, optName, ms);
 #else

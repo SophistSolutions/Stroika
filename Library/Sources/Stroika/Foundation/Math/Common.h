@@ -174,13 +174,6 @@ namespace Stroika::Foundation::Math {
     constexpr T AtMost (T initialValue, T upperBound);
 
     /**
-     *  The given value as type NEW_T - or NEW_T's max, if it is larger. One below NEW_T's min is not held there (it wraps):
-     *  Common::StdCompat::saturate_cast holds both ends.
-     */
-    template <typename NEW_T, typename T>
-    [[deprecated ("Since Stroika v3.0d26 use Common::StdCompat::saturate_cast")]] constexpr NEW_T PinToMaxForType (T initialValue);
-
-    /**
      *      \note   we define this as an alternative to std::abs () - since that is not extendible to other types (just an overload for floating point and int types)
      *
      *  \note   when we port stroika bignum package - this should support those bignums.
