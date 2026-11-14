@@ -58,6 +58,11 @@ void IElementConsumer::Deactivating ()
  **************************** Registry::SimpleReader_<> *************************
  ********************************************************************************
  */
+String Registry::TrimXMLWhitespace_ (const String& text)
+{
+    return text.Trim ([] (Characters::Character c) { return c == ' ' or c == '\t' or c == '\r' or c == '\n'; });
+}
+
 template <>
 void Registry::SimpleReader_<String>::Deactivating ()
 {
@@ -67,108 +72,106 @@ void Registry::SimpleReader_<String>::Deactivating ()
 template <>
 void Registry::SimpleReader_<char>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<char> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<char> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned char>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<unsigned char> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<unsigned char> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<short>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<short> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<short> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned short>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<unsigned short> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<unsigned short> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<int>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<int> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<int> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned int>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<unsigned int> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<unsigned int> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<long int>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<long int> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<long int> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned long int>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<unsigned long int> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<unsigned long int> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<long long int>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<long long int> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<long long int> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<unsigned long long int>::Deactivating ()
 {
-    *fValue_ = Characters::Number::Parse<unsigned long long int> (fBuf_.str ()).value_or (0);
+    *fValue_ = Characters::Number::Parse<unsigned long long int> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
 }
 
 template <>
 void Registry::SimpleReader_<bool>::Deactivating ()
 {
-    *fValue_ = (fBuf_.str ().ToLowerCase () == "true"sv);
+    *fValue_ = (TrimXMLWhitespace_ (fBuf_.str ()).ToLowerCase () == "true"sv);
 }
 
 template <>
 void Registry::SimpleReader_<float>::Deactivating ()
 {
-    (*fValue_) = Characters::Number::Parse<float> (fBuf_.str ()).value_or (NAN);
+    (*fValue_) = Characters::Number::Parse<float> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (NAN);
 }
 
 template <>
 void Registry::SimpleReader_<double>::Deactivating ()
 {
-    (*fValue_) = Characters::Number::Parse<double> (fBuf_.str ()).value_or (NAN);
+    (*fValue_) = Characters::Number::Parse<double> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (NAN);
 }
 
 template <>
 void Registry::SimpleReader_<long double>::Deactivating ()
 {
-    (*fValue_) = Characters::Number::Parse<long double> (fBuf_.str ()).value_or (NAN);
+    (*fValue_) = Characters::Number::Parse<long double> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (NAN);
 }
 
 template <>
 void Registry::SimpleReader_<IO::Network::URI>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-    IgnoreExceptionsForCall (*fValue_ = IO::Network::URI::Parse (fBuf_.str ()));
+    IgnoreExceptionsForCall (*fValue_ = IO::Network::URI::Parse (TrimXMLWhitespace_ (fBuf_.str ())));
 }
 
 template <>
 void Registry::SimpleReader_<Time::DateTime>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-    IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::kISO8601Format));
+    IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (TrimXMLWhitespace_ (fBuf_.str ()), Time::DateTime::kISO8601Format));
 }
 
 template <>
 void Registry::SimpleReader_<Time::Duration>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-    // XML strips whitespace (space, tab, CR, LF) from around an xs:duration; Duration itself reads none
-    auto isXMLWhitespace = [] (Characters::Character c) { return c == ' ' or c == '\t' or c == '\r' or c == '\n'; };
-    IgnoreExceptionsForCall (*fValue_ = Time::Duration{fBuf_.str ().Trim (isXMLWhitespace)});
+    IgnoreExceptionsForCall (*fValue_ = Time::Duration{TrimXMLWhitespace_ (fBuf_.str ())});
 }
 
 /*

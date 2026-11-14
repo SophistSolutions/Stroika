@@ -441,6 +441,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         class OldOptionalTypesReader_;
 
     private:
+        // text without the XML whitespace (space, tab, CR, LF) around it - as XML Schema reads a value of every simple type but
+        // a string (its whiteSpace facet: collapse); a value's own parsing reads none
+        static String TrimXMLWhitespace_ (const String& text);
+
+    private:
         template <typename T>
         static ReaderFromVoidStarFactory cvtFactory_ (const ReaderFromTStarFactory<T>& tf);
 

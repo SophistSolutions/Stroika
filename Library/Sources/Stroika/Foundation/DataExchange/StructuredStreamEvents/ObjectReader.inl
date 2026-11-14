@@ -817,7 +817,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             virtual void Deactivating () override
             {
                 using SerializeAsType   = typename std::underlying_type<ENUM_TYPE>::type;
-                SerializeAsType tmp     = Characters::Number::Parse<SerializeAsType> (fBuf_.str ()).value_or (0);
+                SerializeAsType tmp     = Characters::Number::Parse<SerializeAsType> (TrimXMLWhitespace_ (fBuf_.str ())).value_or (0);
                 bool            inRange = true; // an enum with no bounds is any value
                 if constexpr (Common::IBoundedEnum<ENUM_TYPE>) {
                     inRange = Common::ToInt (Common::kEnumBounds<ENUM_TYPE>.fFirst) <= tmp and

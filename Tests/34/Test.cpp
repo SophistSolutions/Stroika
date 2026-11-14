@@ -1178,35 +1178,76 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_DataExchange_XML, SAXObjectReader_DurationWithWhitespace_)
+    enum class Level_ {
+        eLow  = 1,
+        eHigh = 2,
+    };
+    GTEST_TEST (Foundation_DataExchange_XML, SAXObjectReader_SimpleValuesWithWhitespace_)
     {
-        // XML strips whitespace from around a simple value; Duration itself reads none
+        // XML Schema collapses the whitespace around every simple value but a string's (https://www.w3.org/TR/xmlschema-2/#rf-whiteSpace),
+        // and a value's own parsing reads none; a string keeps its whitespace
         struct Values_ {
-            optional<Time::Duration> fPlain;
-            optional<Time::Duration> fPadded;
+            int                      fInt{};
+            bool                     fBool{};
+            double                   fDouble{};
+            Level_                   fLevel{};
+            IO::Network::URI         fURI;
+            optional<Time::DateTime> fDateTime;
+            optional<Time::Duration> fPlainDuration;
+            optional<Time::Duration> fDuration;
+            String                   fString;
         };
         auto mkdata_ = [] () {
             wstring      newDocXML = L"<Values>\n"
-                                     L"  <Plain>PT30S</Plain>\n"
-                                     L"  <Padded>\n    -P1DT2H\t</Padded>\n"
+                                     L"  <Int> 42 </Int>\n"
+                                     L"  <Bool>\n    true\n  </Bool>\n"
+                                     L"  <Double>\t1.5 </Double>\n"
+                                     L"  <Level> 2\n</Level>\n"
+                                     L"  <URI> http://www.example.com/a </URI>\n"
+                                     L"  <DateTime> 2026-11-14T05:30:00Z </DateTime>\n"
+                                     L"  <PlainDuration>PT30S</PlainDuration>\n"
+                                     L"  <Duration>\n    -P1DT2H\t</Duration>\n"
+                                     L"  <String>  kept  </String>\n"
                                      L"</Values>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
         ObjectReader::Registry registry;
+        registry.AddCommonType<int> ();
+        registry.AddCommonType<bool> ();
+        registry.AddCommonType<double> ();
+        registry.AddCommonReader_EnumAsInt<Level_> ();
+        registry.AddCommonType<IO::Network::URI> ();
+        registry.AddCommonType<Time::DateTime> ();
+        registry.AddCommonType<optional<Time::DateTime>> ();
         registry.AddCommonType<Time::Duration> ();
         registry.AddCommonType<optional<Time::Duration>> ();
+        registry.AddCommonType<String> ();
         registry.AddCommonReader_Class<Values_> ({
-            {Name{"Plain"}, &Values_::fPlain},
-            {Name{"Padded"}, &Values_::fPadded},
+            {Name{"Int"}, &Values_::fInt},
+            {Name{"Bool"}, &Values_::fBool},
+            {Name{"Double"}, &Values_::fDouble},
+            {Name{"Level"}, &Values_::fLevel},
+            {Name{"URI"}, &Values_::fURI},
+            {Name{"DateTime"}, &Values_::fDateTime},
+            {Name{"PlainDuration"}, &Values_::fPlainDuration},
+            {Name{"Duration"}, &Values_::fDuration},
+            {Name{"String"}, &Values_::fString},
         });
         Values_                                  values{};
         ObjectReader::IConsumerDelegateToContext ctx{
             registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
         XML::SAXParse (mkdata_ (), &ctx);
-        EXPECT_EQ (values.fPlain, Time::Duration{30});
-        EXPECT_EQ (values.fPadded, Time::Duration{"-P1DT2H"});
+        EXPECT_EQ (values.fInt, 42);
+        EXPECT_TRUE (values.fBool);
+        EXPECT_EQ (values.fDouble, 1.5);
+        EXPECT_TRUE (values.fLevel == Level_::eHigh);
+        EXPECT_EQ (values.fURI.As<String> (), "http://www.example.com/a"sv);
+        EXPECT_EQ (values.fDateTime, Time::DateTime::Parse ("2026-11-14T05:30:00Z"sv, Time::DateTime::kISO8601Format));
+        EXPECT_EQ (values.fPlainDuration, Time::Duration{30});
+        EXPECT_EQ (values.fDuration, Time::Duration{"-P1DT2H"});
+        EXPECT_EQ (values.fString, "  kept  "sv);
     }
 }
 
