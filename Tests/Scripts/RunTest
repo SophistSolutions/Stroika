@@ -4,7 +4,7 @@
 #	docker container there) - and report it the way 'make run-tests' always has:
 #
 #		{PREFIX_} [NN] {TestName} - {what is being run}
-#		{PREFIX_}      {each line of the test's stdout}
+#		{PREFIX_}      {each line of the test's output - stdout and stderr, in the order written}
 #		{PREFIX_} [NN] {TestName} - FAILED: exit status ...	- ONLY if it exited non-zero without reporting a
 #															  failure of its own (see the end of this script)
 #
@@ -13,7 +13,8 @@
 #
 #	Exits with the test's own status, or non-zero if it could not be run at all (e.g. the copy to REMOTE
 #	failed - reported as such, rather than running whatever stale file was left there). The test's stderr
-#	passes straight through, as it always has.
+#	is captured with its stdout: the test harness reports each failure there ("FAILED: ...", see
+#	Frameworks/Test/TestHarness.h), and the check at the end must see it.
 #
 #	Environment - normally exported by Tests/Makefile; all optional:
 #		PREFIX_					indentation leader for the report lines
@@ -61,7 +62,7 @@ if [ -z "$REMOTE" ] ; then
 	fi
 	report_ "$RunPrefix $VALPREFIX_ $SHOWN_EXE_ $ARGS_"
 	# eval, so RunPrefix and VALGRIND_OPTIONS are shell-parsed exactly as when make expanded them in place
-	OUTPUT_=$(eval "$RunPrefix $VALPREFIX_ \"\$EXE_\" $ARGS_")
+	OUTPUT_=$(eval "$RunPrefix $VALPREFIX_ \"\$EXE_\" $ARGS_" 2>&1)
 	RESULT_=$?
 else
 	SSH_="ssh $SSH_REMOTE_WARNINGS_OFF"
@@ -93,7 +94,7 @@ else
 		REMOTE_CMD_="cd $DIR_ && TMPDIR=$DIR_ $CMD_"
 	fi
 	report_ "copy $SHOWN_EXE_ to $REMOTE:$DIR_; ssh $REMOTE $REMOTE_CMD_"
-	OUTPUT_=$($SSH_ "$REMOTE" "$REMOTE_CMD_")
+	OUTPUT_=$($SSH_ "$REMOTE" "$REMOTE_CMD_" 2>&1)
 	RESULT_=$?
 
 	# Bring back any PerformanceDump.txt (it is written into the test's working directory - which used to
@@ -112,7 +113,8 @@ echo "$OUTPUT_" | sed -e "s/^/${PREFIX_}      /" | tr -d "\r"
 # dynamic loader, or because docker could not even start it - prints nothing, and neither does one that crashes
 # after its [  PASSED  ] (e.g. in a static destructor). Without this line, all the log shows is a missing
 # PASSED and one '***SOME TESTS FAILED***' for the whole configuration. Only when the test said nothing itself:
-# its own FAILED lines are not repeated, and a passing run's output is unchanged.
+# its own FAILED lines (gtest's '[  FAILED  ]', the harness's 'FAILED: ...') are not repeated, and a passing run
+# gets no such line.
 if [ $RESULT_ -ne 0 ] && ! echo "$OUTPUT_" | grep -q -F FAILED ; then
 	WHY_="exit status $RESULT_"
 	if [ $RESULT_ -gt 128 ] && SIG_=$(kill -l $((RESULT_ - 128)) 2> /dev/null) ; then
