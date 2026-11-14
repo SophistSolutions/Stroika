@@ -696,11 +696,14 @@ class Configure_:
         if self.ApplyDebugFlags:
             if self.gAssertionsEnabled is None:
                 self.gAssertionsEnabled = True
+            # --runtime-stack-check: on in a Debug build, where it costs little, and catches a stack buffer overrun where no
+            # sanitizer does (as set below: none on Ubuntu 22.04, no ASan on macOS). A Release build keeps the
+            # compiler's own default - see GetDefaultCZZFLAGS_flags_
+            if self.runtimeStackProtectorFlag is None:
+                self.runtimeStackProtectorFlag = True
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus) or self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
                 if self.ENABLE_GLIBCXX_DEBUG is None:
                     self.ENABLE_GLIBCXX_DEBUG = True
-                if self.runtimeStackProtectorFlag is None:
-                    self.runtimeStackProtectorFlag = True
 
                 skipSanCuzBroken = False
                 skipASANSanCuzBroken = False
@@ -1269,6 +1272,18 @@ class Configure_:
                 if self.INCLUDE_SYMBOLS_LIB:
                     if not isVisualStudio:
                         flags.append("-g")
+                # --runtime-stack-check: a canary in the stack frame, checked on return - so a stack buffer overrun aborts the program,
+                # rather than redirecting it (an attacker's way in). At any optimization level. Not running out of stack: that is
+                # -fstack-clash-protection, and the guard page. true checks every function (-fstack-protector-all) - with MSVC, which
+                # has no such option, every one with a local buffer (-GS); false, none.
+                # Unset - in a Release build - each compiler does as its platform recommends: on, for the code that ships, at a
+                # small cost (a hot path can pass false). As of 2026-11: Ubuntu's gcc 11-16, -fstack-protector-strong; Apple's
+                # clang, -fstack-protector; MSVC, -GS; Ubuntu's clang 15-22, none.
+                if self.runtimeStackProtectorFlag is not None:
+                    if isVisualStudio:
+                        flags.append("-GS" if self.runtimeStackProtectorFlag else "-GS-")
+                    else:
+                        flags.append("-fstack-protector-all" if self.runtimeStackProtectorFlag else "-fno-stack-protector")
                 if isVisualStudio:
                     flags.append("-EHa" if self.Windows_Exceptions_SupportStructuredExceptions else "-EHsc")
                     flags.append("-nologo")
@@ -1284,11 +1299,9 @@ class Configure_:
                     # flags.append("-experimental:module")
                     if self.ApplyDebugFlags:
                         flags.append("-RTCsu")  # Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
-                        flags.append("-GS")  # Enable Security Check
                         flags.append("-Oy-")  # (Dont) omit frame pointers
                         flags.append("-Od")  # Disable Optimization
                     if self.ApplyReleaseFlags:
-                        flags.append("-GS-")  # Disable Security Check
                         flags.append("-Gy")  # Enable Function Level Linking
                         flags.append("-Oy")  # Omit frame pointers
                         flags.append("-O2")  # Maximum Optimization (Favor Speed)
@@ -2281,7 +2294,7 @@ OPTIONS_ = [
             Set_("INCLUDE_SYMBOLS_EXE")),
     Option_("malloc-guard", TRUE_FALSE_, "defaults to false (for now experimental and only works with GCC)",
             Configure_.OptionMallocGuard_),
-    Option_("runtime-stack-check", TRUE_FALSE_, "gcc -fstack-protector-all",
+    Option_("runtime-stack-check", TRUE_FALSE_, "check the stack for overruns - gcc and clang: -fstack-protector-all, MSVC: -GS (false: -fno-stack-protector,\n-GS-). Unset: true with --apply-default-debug-flags, else each compiler's own default",
             Set_("runtimeStackProtectorFlag")),
     Option_("msvc-runtime-library", Values_("MultiThreaded", "MultiThreadedDebug", "MultiThreadedDLL", "MultiThreadedDebugDLL"),
             "MSVC_RUNTIME_LIBRARY windows value - defaults to no-DLL and debug based on assertion flag - https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html",
