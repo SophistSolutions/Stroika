@@ -2125,8 +2125,10 @@ namespace {
             "libstdc++ {} is outside the versions qCompilerAndStdLib_shared_ptr_copy_is_acquire was checked for: "
             "check its ext/atomicity.h"_f(_GLIBCXX_RELEASE));
 #endif
-        constexpr int               kSize_  = 64;
-        constexpr int               kReads_ = 2000;
+        constexpr int kSize_ = 64;
+        // under valgrind, which runs one thread at a time, each read waits seconds for the writes it spins on - and memcheck,
+        // seeing no races, needs only a few
+        const int                   kReads_ = Debug::IsRunningUnderValgrind () ? 10 : 2000;
         Synchronized<Sequence<int>> s;
         for (int i = 0; i < kSize_; ++i) {
             s.rwget ()->push_back (0);
