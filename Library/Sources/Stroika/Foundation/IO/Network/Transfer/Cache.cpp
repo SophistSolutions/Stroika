@@ -133,6 +133,9 @@ namespace {
                             // the stored response's Age is not its age now - the 304 brings its own, if any
                             headers.RemoveAll (
                                 [] (const auto& h) { return HTTP::kHeaderNameEqualsComparer (h.fKey, HTTP::HeaderName::kAge); });
+                            // each replaces the stored field of its name, whatever the case of either: headers compares names
+                            // case-insensitively, as the Element's fOtherHeaders does (Headers::As<Mapping> gives it
+                            // HTTP::kHeaderNameEqualsComparer)
                             for (const auto& [name, value] : response->GetHeaders ().As<Mapping<String, String>> ()) {
                                 if (not HTTP::kHeaderNameEqualsComparer (name, HTTP::HeaderName::kContentLength)) {
                                     headers.Add (name, value);

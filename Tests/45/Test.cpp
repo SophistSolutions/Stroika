@@ -872,6 +872,51 @@ namespace {
     }
 
     /*
+     *  A 304's header fields replace the stored response's of the same name (RFC 9111, 3.2), whatever the case of either name -
+     *  header names are case-insensitive (RFC 9110, 5.1), and an HTTP/2 server sends them lowercase.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_NotModifiedReplacesHeadersIgnoringCase_)
+    {
+        const String       xVersion{"X-Version"sv};
+        const Memory::BLOB body{initializer_list<uint8_t>{1, 2, 3}};
+        Cache::Ptr         cache = Cache::New ();
+        URI                site{"http://www.example.com"sv};
+        auto               fetch = [&] (const Response& answer) {
+            Request r;
+            r.fMethod               = HTTP::Methods::kGet;
+            r.fAuthorityRelativeURL = URI{"/a"sv};
+            Cache::EvalContext context;
+            EXPECT_FALSE (cache->OnBeforeFetch (&context, site, &r)); // nothing fresh in the cache
+            Response response = answer;
+            cache->OnAfterFetch (context, &response);
+            return context.fFullURI;
+        };
+        (void)fetch (Response{body, HTTP::StatusCodes::kOK,
+                              Containers::Mapping<String, String>{{String{HTTP::HeaderName::kETag}, "\"v1\""sv},
+                                                                  {String{HTTP::HeaderName::kCacheControl}, "max-age=0"sv},
+                                                                  {xVersion, "1"sv}}});
+        optional<URI> url = fetch (Response{Memory::BLOB{}, HTTP::StatusCodes::kNotModified,
+                                            Containers::Mapping<String, String>{{"cache-control"sv, "max-age=60"sv}, {"x-version"sv, "2"sv}}});
+        ASSERT_TRUE (url.has_value ());
+        optional<Cache::Element> element = cache->Lookup (*url);
+        ASSERT_TRUE (element.has_value ());
+        size_t nVersions{};
+        String version;
+        for (const auto& [name, value] : element->fOtherHeaders) {
+            if (HTTP::kHeaderNameEqualsComparer (name, xVersion)) {
+                ++nVersions;
+                version = value;
+            }
+        }
+        EXPECT_EQ (nVersions, 1u); // the 304's, not beside the stored one
+        EXPECT_EQ (version, "2"sv);
+        // fresh by the 304's max-age, not the stored max-age=0
+        optional<Time::DateTime> validUntil = element->IsValidUntil ();
+        ASSERT_TRUE (validUntil.has_value ());
+        EXPECT_TRUE (*validUntil > Time::DateTime::Now ());
+    }
+
+    /*
      *  What Lookup returns keeps the freshness the cache gave a response that says nothing of its own - its default TTL
      *  (Options::fDefaultResourceTTL).
      */
