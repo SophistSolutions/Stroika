@@ -56,9 +56,9 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
 
     public:
         Streams::InputStream::Ptr<byte> fInStream_; // consider wrapping in StreamReader for efficiency sake - maybe unhelpful due to CHUNK logic below
-        z_stream                             fZStream_{};
-        Stroika_ATTRIBUTE_INDETERMINATE byte fInBuf_[CHUNK_]; // uninitialized cuz written before read
-        SeekOffsetType                       _fSeekOffset{};
+        z_stream                                    fZStream_{};
+        Stroika_ATTRIBUTE_INDETERMINATE_MEMBER byte fInBuf_[CHUNK_]; // written before read
+        SeekOffsetType                              _fSeekOffset{};
         optional<byte> _fNextOutputByte_; // 'cached' next output byte - if not nullopt - magic needed to make AvailableToRead
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
 

@@ -612,8 +612,11 @@ namespace Stroika::Foundation::Common::StdCompat {
      *      \code
      *         Stroika_ATTRIBUTE_INDETERMINATE byte r[1024]; // don't initialize explicitly cuz filled in below before used (performance)
      *      \endcode
-     * 
-     * \note In a future version of Stroika, that requires c++26 (when all compilers support it), this macro will be removed, 
+     *
+     * \note Only on a local (automatic) variable or a parameter, as the standard allows (g++ 16.2 warns elsewhere: "'indeterminate'
+     *       on declaration other than parameter or automatic variable") - for a data member, Stroika_ATTRIBUTE_INDETERMINATE_MEMBER.
+     *
+     * \note In a future version of Stroika, that requires c++26 (when all compilers support it), this macro will be removed,
      *       and code can call [[indeterminate]] directly.
      */
 #if __has_cpp_attribute(indeterminate)
@@ -621,6 +624,19 @@ namespace Stroika::Foundation::Common::StdCompat {
 #else
 #define Stroika_ATTRIBUTE_INDETERMINATE
 #endif
+
+    /**
+     * \brief Stroika_ATTRIBUTE_INDETERMINATE_MEMBER marks a data member as intentionally uninitialized - as
+     *        Stroika_ATTRIBUTE_INDETERMINATE marks a local - but expands to nothing: the standard allows [[indeterminate]]
+     *        only on a local (automatic) variable or a parameter. A member's storage is its object's - where that object is a
+     *        local, mark its declaration with Stroika_ATTRIBUTE_INDETERMINATE.
+     *
+     *  \par Example Usage
+     *      \code
+     *         Stroika_ATTRIBUTE_INDETERMINATE_MEMBER byte fInBuf_[kChunkSize_]; // written before read
+     *      \endcode
+     */
+#define Stroika_ATTRIBUTE_INDETERMINATE_MEMBER
 
     /**
      * \brief Stroika_ATTRIBUTE_ASSUME(C) is used where you would put a C++ attribute assume expression, to assume a condition is true for a given block.
