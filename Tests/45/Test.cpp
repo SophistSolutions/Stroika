@@ -695,14 +695,13 @@ namespace {
                                            Containers::Mapping<String, String>{{String{HTTP::HeaderName::kCacheControl}, cacheControl}}}};
         };
         Time::DateTime           before = Time::DateTime::Now ();
-        optional<Time::DateTime> fresh  = element ("public, max-age=60"sv).fExpiresDueToMaxAge;
+        optional<Time::DateTime> fresh  = element ("public, max-age=60"sv).IsValidUntil ();
         Time::DateTime           after  = Time::DateTime::Now ();
         ASSERT_TRUE (fresh.has_value ());
         EXPECT_TRUE (before + Time::Duration{60} <= *fresh and *fresh <= after + Time::Duration{60});
-        optional<Time::DateTime> stale = element ("max-age=abc"sv).fExpiresDueToMaxAge;
+        optional<Time::DateTime> stale = element ("max-age=abc"sv).IsValidUntil ();
         ASSERT_TRUE (stale.has_value ());
         EXPECT_TRUE (*stale <= Time::DateTime::Now ());
-        EXPECT_FALSE (element ("no-cache"sv).fExpiresDueToMaxAge.has_value ());
         EXPECT_TRUE (element ("public, max-age=60"sv).IsCachable ());
         EXPECT_FALSE (element ("private, no-store"sv).IsCachable ());
         optional<Time::DateTime> noCache = element ("private, no-cache"sv).IsValidUntil ();
@@ -743,6 +742,34 @@ namespace {
         optional<Time::DateTime> expiresAlone = validUntil ({{expires, future}});
         ASSERT_TRUE (expiresAlone.has_value ());
         EXPECT_TRUE (*expiresAlone > Time::DateTime::Now ());
+    }
+
+    /*
+     *  Freshness counts from when the response was received, by this machine's clock, less the age it came with (RFC 9111, 4.2):
+     *  its Age - time spent in caches upstream - or the time since its Date, whichever is more. And Expires is taken relative to
+     *  the response's Date, so a server clock that runs fast or slow does not move it.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_ElementFreshnessCountsAge_)
+    {
+        const String date{HTTP::HeaderName::kDate};
+        const String age{HTTP::HeaderName::kAge};
+        const String expires{HTTP::HeaderName::kExpires};
+        const String cacheControl{HTTP::HeaderName::kCacheControl};
+        auto httpDate = [] (Time::Duration fromNow) { return (Time::DateTime::Now () + fromNow).Format (Time::DateTime::kHTTPDateFormat); };
+        // seconds from now that a response with these headers stays fresh
+        auto freshFor = [] (const Containers::Mapping<String, String>& headers) {
+            Time::DateTime           now   = Time::DateTime::Now ();
+            optional<Time::DateTime> until = Cache::Element{Response{Memory::BLOB{}, HTTP::StatusCodes::kOK, headers}}.IsValidUntil ();
+            return until ? (*until - now).As<double> () : numeric_limits<double>::quiet_NaN ();
+        };
+        auto around = [] (double seconds, double expected) { return std::abs (seconds - expected) < 5; }; // an HTTP date is to the second
+        EXPECT_TRUE (around (freshFor ({{cacheControl, "max-age=60"sv}, {age, "50"sv}}), 10));
+        EXPECT_TRUE (freshFor ({{cacheControl, "max-age=60"sv}, {age, "100"sv}}) <= 0);                  // older than its max-age
+        EXPECT_TRUE (around (freshFor ({{cacheControl, "max-age=60"sv}, {age, "50, 70"sv}}), 10));       // of a list, the first
+        EXPECT_TRUE (around (freshFor ({{cacheControl, "max-age=60"sv}, {age, "abc"sv}}), 60));          // not a number: ignored
+        EXPECT_TRUE (around (freshFor ({{cacheControl, "max-age=60"sv}, {date, httpDate (-50s)}}), 10)); // sent 50 seconds ago
+        // a server clock an hour fast: an Expires a minute after its Date is a minute from now
+        EXPECT_TRUE (around (freshFor ({{date, httpDate (3600s)}, {expires, httpDate (3660s)}}), 60));
     }
 
     /*
@@ -812,6 +839,36 @@ namespace {
         optional<Response> fromCache = cache->OnBeforeFetch (&context, site, &request);
         ASSERT_TRUE (fromCache.has_value ());
         EXPECT_TRUE (fromCache->GetData () == body);
+    }
+
+    /*
+     *  A response that came already older than its max-age (its Age) is stale at once, so asked for again; the 304 that renews
+     *  it brings its own age - none, here: from the origin server - so the stored response's Age no longer counts.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, Cache_NotModifiedRenewsAge_)
+    {
+        const String       cacheControl{HTTP::HeaderName::kCacheControl};
+        const Memory::BLOB body{initializer_list<uint8_t>{1, 2, 3}};
+        Cache::Ptr         cache = Cache::New ();
+        URI                site{"http://www.example.com"sv};
+        auto               fetch = [&] (const optional<Response>& answer) {
+            Request r;
+            r.fMethod               = HTTP::Methods::kGet;
+            r.fAuthorityRelativeURL = URI{"/a"sv};
+            Cache::EvalContext context;
+            optional<Response> fromCache = cache->OnBeforeFetch (&context, site, &r);
+            if (not fromCache and answer) {
+                Response response = *answer;
+                cache->OnAfterFetch (context, &response);
+            }
+            return fromCache.has_value ();
+        };
+        Containers::Mapping<String, String> headers{
+            {String{HTTP::HeaderName::kETag}, "\"v1\""sv}, {cacheControl, "max-age=60"sv}, {String{HTTP::HeaderName::kAge}, "100"sv}};
+        EXPECT_FALSE (fetch (Response{body, HTTP::StatusCodes::kOK, headers})); // nothing cached yet
+        EXPECT_FALSE (fetch (Response{Memory::BLOB{}, HTTP::StatusCodes::kNotModified,
+                                      Containers::Mapping<String, String>{{cacheControl, "max-age=60"sv}}})); // stale by its Age
+        EXPECT_TRUE (fetch (nullopt)); // fresh for a minute, from the 304
     }
 
     /*

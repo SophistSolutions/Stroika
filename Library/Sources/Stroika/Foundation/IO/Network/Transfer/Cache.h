@@ -81,7 +81,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
          *  This returns the amount of time you dont even need to bother revalidating with a conditional get.
          *
          *  From the response's headers, as RFC 9111 says: Cache-Control no-cache makes it already past (revalidate each use),
-         *  whatever else they say; else its max-age; else its Expires; else fExpiresDefault.
+         *  whatever else they say; else fFreshUntil; else fExpiresDefault.
          */
         nonvirtual optional<Time::DateTime> IsValidUntil () const;
 
@@ -96,9 +96,15 @@ namespace Stroika::Foundation::IO::Network::Transfer::Cache {
         /**
          *  The ETag came as a weak one (W/"...") - sent back as such, in If-None-Match, which compares weakly (RFC 9110, 13.1.2).
          */
-        bool                                      fETagIsWeak{false};
-        optional<Time::DateTime>                  fExpires;
-        optional<Time::DateTime>                  fExpiresDueToMaxAge;
+        bool                     fETagIsWeak{false};
+        optional<Time::DateTime> fExpires;
+        /**
+         *  When the response goes stale, by this machine's clock (RFC 9111, 4.2): from when it was received, its freshness lifetime -
+         *  its max-age, else its Expires less its Date - less the age it came with - its Age, or the time since its Date, whichever is
+         *  more. Missing where it has neither max-age nor Expires. So a response a proxy held a while, or a server clock that runs
+         *  fast or slow, does not stretch it.
+         */
+        optional<Time::DateTime>                  fFreshUntil;
         optional<Time::DateTime>                  fLastModified;
         optional<Containers::Set<String>>         fCacheControl; // parsed/split rep
         Memory::BLOB                              fBody;         // no point in a cache entry without this

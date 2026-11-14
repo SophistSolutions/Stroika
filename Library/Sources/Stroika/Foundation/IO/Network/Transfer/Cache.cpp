@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Cache/LRUCache.h"
+#include "Stroika/Foundation/Characters/Number.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
@@ -129,6 +130,9 @@ namespace {
                             // the 304's header fields update the stored response's (RFC 9111, 4.3.4), so it is fresh again by
                             // them - or by the default TTL - and stored again
                             Mapping<String, String> headers = context.fCachedElement->GetCombinedHeaders ();
+                            // the stored response's Age is not its age now - the 304 brings its own, if any
+                            headers.RemoveAll (
+                                [] (const auto& h) { return HTTP::kHeaderNameEqualsComparer (h.fKey, HTTP::HeaderName::kAge); });
                             for (const auto& [name, value] : response->GetHeaders ().As<Mapping<String, String>> ()) {
                                 if (not HTTP::kHeaderNameEqualsComparer (name, HTTP::HeaderName::kContentLength)) {
                                     headers.Add (name, value);
@@ -185,6 +189,11 @@ namespace {
 Transfer::Cache::Element::Element (const Response& response)
     : fBody{response.GetData ()}
 {
+    const DateTime          received = DateTime::Now (); // RFC 9111's response_time - it is just in
+    optional<uint32_t>      maxAge;
+    bool                    expiresMalformed{false};
+    optional<DateTime>      date;  // the server's clock, when it sent this
+    uint32_t                age{}; // seconds caches upstream held it
     Mapping<String, String> headers = response.GetHeaders ().As<Mapping<String, String>> ();
     for (auto hi = headers.begin (); hi != headers.end ();) {
         // HTTP Date formats:
@@ -211,10 +220,23 @@ Transfer::Cache::Element::Element (const Response& response)
             catch (...) {
                 // treat invalid dates as if the resource has already expired
                 //fExpires = DateTime::min ();  // better but cannot convert back to date - fix stk date stuff so this works
-                fExpires = DateTime::Now ();
+                fExpires         = DateTime::Now ();
+                expiresMalformed = true;
                 DbgTrace ("Malformed expires ({}) treated as expires immediately"_f, hi->fValue);
             }
             hi = headers.erase (hi);
+        }
+        // Date and Age are only read here - they stay among fOtherHeaders, so an answer from the cache carries them
+        else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kDate)) {
+            date = DateTime::ParseQuietly (hi->fValue, DateTime::kHTTPDateFormat); // one that does not parse: as if none (RFC 9110, 6.6.1)
+            ++hi;
+        }
+        else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kAge)) {
+            // delta-seconds; of a list, the first; one that is not a number is ignored (RFC 9111, 5.1)
+            if (auto a = Number::Parse<uint32_t> (hi->fValue.Tokenize ({','}).FirstValue (String{}).Trim (), {.fAcceptSign = false, .fSaturate = true})) {
+                age = *a;
+            }
+            ++hi;
         }
         else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kLastModified)) {
             try {
@@ -227,10 +249,7 @@ Transfer::Cache::Element::Element (const Response& response)
         }
         else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kCacheControl)) {
             fCacheControl = hi->fValue.Tokenize ({','}).Map<Set<String>> ([] (const String& d) { return d.Trim (); }); // "private, no-store"
-            // a max-age that is not a number reads as 0: stale, as RFC 9111 (4.2.1) encourages
-            if (optional<uint32_t> maxAge = HTTP::CacheControl::Parse (hi->fValue).fMaxAge) {
-                fExpiresDueToMaxAge = DateTime::Now () + Duration{chrono::seconds{*maxAge}};
-            }
+            maxAge = HTTP::CacheControl::Parse (hi->fValue).fMaxAge; // one that is not a number reads as 0: stale, as RFC 9111 (4.2.1) encourages
             hi = headers.erase (hi);
         }
         else if (HTTP::kHeaderNameEqualsComparer (hi->fKey, HTTP::HeaderName::kContentType)) {
@@ -242,6 +261,20 @@ Transfer::Cache::Element::Element (const Response& response)
         }
     }
     fOtherHeaders = headers;
+
+    // freshness (RFC 9111, 4.2), by this machine's clock; the request's round trip (response_delay, 4.2.3) is not known here.
+    // max-age, where there is one, overrides Expires (RFC 9111, 5.3)
+    optional<Duration> lifetime;
+    if (maxAge) {
+        lifetime = Duration{chrono::seconds{*maxAge}};
+    }
+    else if (fExpires) {
+        lifetime = expiresMalformed ? Duration{0} : *fExpires - date.value_or (received);
+    }
+    if (lifetime) {
+        Duration sinceDate = date ? max (received - *date, Duration{0}) : Duration{0};
+        fFreshUntil        = received + *lifetime - max (sinceDate, Duration{chrono::seconds{age}});
+    }
 }
 
 Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
@@ -291,12 +324,8 @@ optional<DateTime> Transfer::Cache::Element::IsValidUntil () const
     if (fCacheControl and fCacheControl->Contains (kNoCache_)) {
         return DateTime::Now ().AddSeconds (-1);
     }
-    // max-age, where there is one, overrides Expires (RFC 9111, 5.3)
-    if (fExpiresDueToMaxAge) {
-        return *fExpiresDueToMaxAge;
-    }
-    if (fExpires) {
-        return *fExpires;
+    if (fFreshUntil) {
+        return *fFreshUntil;
     }
     return fExpiresDefault;
 }
@@ -310,7 +339,7 @@ String Transfer::Cache::Element::ToString () const
         sb << " (weak)"sv;
     }
     sb << ", expires: "sv << fExpires;
-    sb << ", expiresDueToMaxAge: "sv << fExpiresDueToMaxAge;
+    sb << ", freshUntil: "sv << fFreshUntil;
     sb << ", lastModified: "sv << fLastModified;
     sb << ", cacheControl: "sv << fCacheControl;
     sb << ", contentType: "sv << fContentType;
