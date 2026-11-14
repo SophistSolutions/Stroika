@@ -220,7 +220,11 @@ namespace {
             ForEachEntry_ ([&] (string_view name) {
                 if (not name.ends_with ('/')) { // only list files - not directories for now
                     // From https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT, must check bit 11 to see if really unicode, but not sure what code page if not unicode so just assume unicode!
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+                    result.Add (String::FromUTF8 (span<const char>{name}));
+#else
                     result.Add (String::FromUTF8 (span{name}));
+#endif
                 }
                 return false;
             });
