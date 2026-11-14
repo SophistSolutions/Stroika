@@ -1796,9 +1796,9 @@ int main ()
 #ifndef qCompilerAndStdLib_num_get_subnormal_failbit_Buggy
 
 #if defined(_LIBCPP_VERSION)
-// broken in 15007 (clang++-15, Ubuntu 22.04), 220102 (Ubuntu 26.04)
+// broken in 15007 (clang++-15, Ubuntu 22.04), 220102 (Ubuntu 26.04), 220108 (Ubuntu 26.10)
 // broken in Apple's - XCode 16.4 and 26.3 (CI, 2026-11-05)
-#define qCompilerAndStdLib_num_get_subnormal_failbit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 220102)
+#define qCompilerAndStdLib_num_get_subnormal_failbit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 220108)
 #else
 #define qCompilerAndStdLib_num_get_subnormal_failbit_Buggy 0
 #endif
@@ -2593,9 +2593,9 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 #ifndef qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy
 
 #if defined(_LIBCPP_VERSION)
-// broken in 15007 (clang++-15, Ubuntu 22.04), 180100 (Ubuntu 24.04), 220102 (Ubuntu 26.04)
+// broken in 15007 (clang++-15, Ubuntu 22.04), 180100 (Ubuntu 24.04), 220102 (Ubuntu 26.04), 220108 (Ubuntu 26.10)
 // broken in Apple's 180100 (XCode 16), 200100 (XCode 26.3)
-#define qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 220102)
+#define qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 220108)
 #else
 #define qCompilerAndStdLib_codecvt_in_partial_for_invalid_Buggy 0
 #endif
