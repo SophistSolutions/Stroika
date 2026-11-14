@@ -2137,9 +2137,10 @@ namespace {
         atomic<int>  nReads{0};
         atomic<int>  nWrites{0};
         atomic<bool> stop{false};
-        Thread::Ptr  reader = Thread::New (
+        long long    readSum = 0; // checked below, so an optimizer cannot drop the reads
+        Thread::Ptr  reader  = Thread::New (
             [&] () {
-                long sum = 0;
+                long long sum = 0;
                 while (not stop) {
                     for (int i : s.load ()) {
                         sum += i;
@@ -2152,7 +2153,7 @@ namespace {
                         this_thread::yield ();
                     }
                 }
-                DbgTrace ("sum={}"_f, sum);
+                readSum = sum;
             },
             Thread::eAutoStart);
         int i = 0;
@@ -2162,6 +2163,7 @@ namespace {
         }
         stop = true;
         reader.WaitForDone ();
+        EXPECT_GE (readSum, 0); // every value written is
         EXPECT_EQ (s.load ()[(i - 1) % kSize_], i - 1);
     }
 
