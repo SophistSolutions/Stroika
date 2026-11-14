@@ -65,14 +65,12 @@ Which compiler is built against which standard library, and where each combinati
 
 | compiler | stdlib | GitHub Actions | release regression runs | notes |
 |---|---|---|---|---|
-| `g++ (distro default)` | libstdc++ | - | 26.04 |  |
 | `g++-11` | libstdc++ | 22.04 v3-Release | 22.04 | [^f] |
 | `g++-12` | libstdc++ | 22.04 **always** | 22.04, 24.04, 26.04 | [^f] |
 | `g++-13` | libstdc++ | 24.04 v3-Release, 26.04 v3-Release | 22.04, 24.04, 26.04 |  |
 | `g++-14` | libstdc++ | 24.04 **always**, 26.04 v3-Release | 24.04, 26.04 |  |
-| `g++-15` | libstdc++ | 25.04 v3-Release, 26.04 v3-Release | 26.04 |  |
-| `g++-16` | libstdc++ | 26.04 **always** | 26.04 |  |
-| `clang++ (distro default)` | libstdc++ | - | 26.04 |  |
+| `g++-15` | libstdc++ | 25.04 v3-Release, 26.04 v3-Release | 26.04, 26.10 |  |
+| `g++-16` | libstdc++ | 26.04 **always**, 26.10 v3-Release | 26.04, 26.10 |  |
 | `clang++-15` | libc++ | 22.04 v3-Release | 22.04 | [^f] [^j] |
 | `clang++-15` | libstdc++ | 22.04 v3-Release | 22.04 | [^f] |
 | `clang++-16` | libc++ | 24.04 v3-Release | 24.04 | [^j] |
@@ -85,9 +83,9 @@ Which compiler is built against which standard library, and where each combinati
 | `clang++-20` | libc++ | 26.04 v3-Release | - |  |
 | `clang++-20` | libstdc++ | 25.04 v3-Release | 26.04 |  |
 | `clang++-21` | libc++ | 26.04 v3-Release | - |  |
-| `clang++-21` | libstdc++ | - | 26.04 |  |
-| `clang++-22` | libc++ | - | 26.04 |  |
-| `clang++-22` | libstdc++ | 26.04 **always** | 26.04 |  |
+| `clang++-21` | libstdc++ | - | 26.04, 26.10 |  |
+| `clang++-22` | libc++ | - | 26.04, 26.10 |  |
+| `clang++-22` | libstdc++ | 26.04 **always**, 26.10 v3-Release | 26.04, 26.10 |  |
 | `XCode 16.4` | libc++ | macos-15 **always** | - | [^j] |
 | `XCode 26.3` | libc++ | macos-26 **always** | MacOS_XCode26_m1 |  |
 | `MSVC (VS2k22)` | MSVC STL | windows **always** | Windows_VS2k22 |  |
@@ -112,6 +110,7 @@ Run by hand for each release (see [Regression-Tests.md](Regression-Tests.md)); t
 - `Ubuntu2404_x86_64`
 - `Ubuntu2504_x86_64`
 - `Ubuntu2604_x86_64`
+- `Ubuntu2610_x86_64`
 - `Ubuntu2204-Cross-Compile2RaspberryPi`
 - `Ubuntu2404-Cross-Compile2RaspberryPi`
 - `Ubuntu2604-Cross-Compile2RaspberryPi`

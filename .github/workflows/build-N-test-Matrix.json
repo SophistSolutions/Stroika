@@ -384,6 +384,34 @@
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
+    {},
+    {
+        "#": "ubuntu 26.10"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.10-g++-16",
+        "compiler": "g++-16",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2610-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-26.10-clang++-22",
+        "compiler": "clang++-22",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2610-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "#": "try avoid runs out of disk space (debug symbols false)",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false",
+        "run_on_branch": "v3-Release"
+    },
     {
         "#": "MacOS"
     },

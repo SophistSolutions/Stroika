@@ -159,6 +159,20 @@ counted - its target keeps its earlier estimate (Ubuntu2404_x86_64 this time).
       ./Build/Scripts/RunRemoteRegressionTests
   ```
 
+- \$TEST_TARGET=Ubuntu2610_x86_64
+
+  (remote execute on machine medusa using docker and copy back results; takes about 3.5 h)
+
+  ```bash
+  RUN_IN_DOCKER=1 \
+      USE_TEST_BASENAME=Ubuntu2610_x86_64 \
+      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
+      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2610-regression-tests \
+      MACHINE=medusa.lan \
+      ./Build/Scripts/RunRemoteRegressionTests
+  ```
+
 - Raspberry Pi (armhf, and aarch64 from 24.04 on) - one run per Ubuntu LTS build host. The 22.04 run is
   the only home of the oldest armhf compilers (g++-11/12), so it is not redundant with the other two.
 

@@ -144,6 +144,9 @@ def read_regtest_configs():
             if m:
                 platform = "ubuntu-" + m.group(1)
                 continue
+            if s == "*)":
+                platform = None  # the fallback case, for an Ubuntu with no case of its own: no release run's platform
+                continue
             if "./configure " in s:
                 active = not s.startswith("#")
                 body = s[s.index("./configure "):]
@@ -165,8 +168,10 @@ def read_regtest_configs():
                     compiler = compiler + " (distro default)"
                 if name.startswith("raspberrypi"):
                     plat = "raspberrypi (cross)"
+                elif platform is None:
+                    continue
                 else:
-                    plat = platform or "?"
+                    plat = platform
                 rows.append({"platform": plat, "compiler": compiler,
                              "stdlib": stdlib or "libstdc++", "active": active, "name": name})
     return rows

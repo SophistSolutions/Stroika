@@ -169,6 +169,33 @@ basicUnixTestConfigurations_ ()
 		./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
 		;;
 
+	26.10)
+		#	The latest non-LTS: its newest compilers, and that the newest Ubuntu still works - the LTS cases above carry
+		#	the wide coverage (older compilers, valgrind, the release sanitizer builds)
+		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler
+		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components
+		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system
+		# clang-21
+		./configure clang++-21-debug --config-tag Unix --compiler-driver clang++-21 --apply-default-debug-flags --only-if-has-compiler
+		# clang-22
+		./configure clang++-22-debug --config-tag Unix --compiler-driver clang++-22 --apply-default-debug-flags --only-if-has-compiler
+		./configure clang++-22-release-libstdc++ --config-tag Unix --compiler-driver clang++-22 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
+		./configure clang++-22-release-libc++ --config-tag Unix --compiler-driver clang++-22 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
+		# g++-15
+		./configure g++-15-debug --config-tag Unix --compiler-driver g++-15 --apply-default-debug-flags --only-if-has-compiler
+		./configure g++-15-release --config-tag Unix --compiler-driver g++-15 --apply-default-release-flags --only-if-has-compiler
+		# g++-16
+		./configure g++-16-debug --config-tag Unix --compiler-driver g++-16 --apply-default-debug-flags --only-if-has-compiler
+		./configure g++-16-release --config-tag Unix --compiler-driver g++-16 --apply-default-release-flags --only-if-has-compiler
+		./configure g++-16-release++23 --config-tag Unix --compiler-driver g++-16 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++23
+		#	C++26 reflection (P2996) and annotations (P3394) - g++ wants -freflection for them: enum names by annotation (Common/Enumeration.h)
+		./configure g++-16-debug++26-reflection --config-tag Unix --compiler-driver g++-16 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++26 --append-CXXFLAGS -freflection
+		# Sanitizers (Debug only), with the default g++
+		# 	nb: TSAN and ASAN don't mix well
+		./configure g++-debug-sanitize_address_undefined_leak   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable
+		./configure g++-debug-sanitize_thread                   --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
+		;;
+
 	*)
 		"${MY_DIR_}/MakeDefaultConfigurations"
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler
