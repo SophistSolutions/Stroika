@@ -11,8 +11,6 @@ Generally will track stuff here between releases
 - document or reconsider the practice of #include Stroika-Frameowkrs-Precome
   Stroika-Foundation-Precompe.h on every cpp and .h file.
   
-- delete Stroika's TODO.md entry about AppVersion.h (now #1252);
-
 
 - **plato: finish its Remote-SSH client setup, as `lewis`** (2026-09-19; the `stroika-dev` account it was to log in as
   was deleted 2026-10-20). Its key and shared ssh files are prepared; what is left - test from plato - is in the shared
@@ -26,13 +24,6 @@ Generally will track stuff here between releases
      the container, though Regression-Tests.md's command line sets MONGO_CONNECTION_STRING - pass it as
      RunRemoteRegressionTests does. Check the container resolves medusa.lan: that script's comment has Docker's DNS set to
      8.8.8.8 (#876).
-   - **VS Code IntelliSense: `#include "AppVersion.h"` not found** (LGP 2026-10-23) in Samples/Service, and likely
-     WebServer, WebService, HTMLUI/Backend and Skel's Basic app - each Makefile generates it into
-     IntermediateFiles/$(CONFIGURATION)/<app>/ and adds that to the compiler's include path, which c_cpp_properties.json
-     lacks. Since f4caa91a7a ApplyConfiguration's default myDefaultIncludePath is [] (not ${workspaceFolder}, which took
-     a Skel app's root VERSION file for <version>), and nothing gives IntelliSense that directory instead. Only a
-     c_cpp_properties.json with no myDefaultIncludePath gets the new default. IntelliSense only: every 3.0d25 release run
-     built the samples.
    - **String: a UTF-8 (char8_t) rep** (LGP 2026-11-07; may postpone, once discussed) - so a constant u8 string that is not ASCII
      is shared, not decoded and copied: enum names are UTF-8 now (EnumNameText), shared already when ASCII, as nearly all are.
      String.inl's FromStringConstant has the @todo and the design question (a UTF-8 rep cannot index directly).
