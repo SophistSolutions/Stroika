@@ -248,9 +248,8 @@ namespace Stroika::Foundation::Time {
             return T{this->As<typename T::duration> ()};
         }
     }
-    template <typename T>
+    template <same_as<Characters::String> T>
     inline T Duration::As (const AsStringOptions& options) const
-        requires (same_as<T, Characters::String>)
     {
         return UnParseTime_ (count (), options);
     }
@@ -300,7 +299,7 @@ namespace Stroika::Foundation::Time {
              *      do math in floating point, and see if would 'fit' in target rep.
              */
             using TRatio   = typename T::period;
-            auto targetRes = (static_cast<long double> (this->count ()) * period::num / period::den) * TRatio ::den / TRatio::num;
+            auto targetRes = (static_cast<long double> (this->count ()) * period::num / period::den) * TRatio::den / TRatio::num;
             if (targetRes < T::min ().count ()) [[unlikely]] {
                 return T::min ();
             }

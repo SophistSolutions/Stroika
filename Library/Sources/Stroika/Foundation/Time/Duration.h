@@ -112,9 +112,9 @@ namespace Stroika::Foundation::Time {
          *      o   a number is digits; the last element's may have a fraction - a '.' or ',' and digits ("PT0.5S", "P0,5D")
          *  No whitespace, around the text or within it: XML strips it from around an xs:duration before the value is read, as
          *  the XML ObjectReader does. Every xs:duration is read - its format is a subset of this one (no weeks, a '.' only, a
-         *  fraction on the seconds only). The empty string is not read.
+         *  fraction on the seconds only). The empty string is not read. And, though not ISO 8601, infinity (fAcceptInfinity).
          *
-         *  There are no options yet. Possible ones, should text that uses them need reading - each off by default:
+         *  Possible options, should text that uses them need reading - each off by default:
          *      o   an exponent: "PT1E-3S" - ISO 8601-2 (https://www.iso.org/standard/70908.html). Stroika v3.0d12 to v3.0d22
          *          wrote one for a seconds part under 0.0001, with a lowercase 'e'
          *      o   negative elements: "PT-1S", "P-1Y-2M3DT-4H-5M-6S" - ISO 8601-2; Java's Duration and Period write them
@@ -124,7 +124,14 @@ namespace Stroika::Foundation::Time {
          *      o   what Stroika before v3.0d26 also read: designators out of place or repeated ("P30S", "PT1S1S"), weeks with
          *          other elements, a fraction on any element, ".5" and "5.", whitespace around or within the text
          */
-        struct ParseOptions {};
+        struct ParseOptions {
+            /**
+             *  Read "inf" or "infinity" - in any case, perhaps after a '-' - as an infinite Duration, as Number::Parse reads a
+             *  floating point infinity: what As<String> writes for one (AsStringOptions::fWriteInfinity). ISO 8601 has no
+             *  infinite duration. On by default, as fWriteInfinity is.
+             */
+            bool fAcceptInfinity{true};
+        };
 
     public:
         /**
@@ -139,6 +146,10 @@ namespace Stroika::Foundation::Time {
          *  a huge or tiny Duration short (Duration{numeric_limits<double>::max ()} writes about 300 digits of years, which no
          *  precision shortens); weeks ("P3W").
          *
+         *  An infinite Duration, which ISO 8601 cannot write, is the exception: fWriteInfinity, on by default.
+         *
+         *  \see FormatOptions: how Format () writes a Duration in words, for people to read ("3 seconds")
+         *
          *  \note Satisfies Concepts:
          *      o   Common::IConstexprable<AsStringOptions>
          */
@@ -149,6 +160,14 @@ namespace Stroika::Foundation::Time {
              *  same Duration.
              */
             Characters::Number::Precision fSecondsPrecision{Characters::Number::Precision::MaxSignificantDigits (6)};
+
+            /**
+             *  An infinite Duration (Duration{Time::kInfinity}) is written "inf" or "-inf", as Stroika writes a floating point
+             *  infinity - which Parse reads back (ParseOptions::fAcceptInfinity). If false, As<String> throws range_error for
+             *  one, so that only ISO 8601 is written. On by default: Time::kInfinity is the default timeout throughout Execution,
+             *  so a structure holding one must serialize.
+             */
+            bool fWriteInfinity{true};
 
             /**
              *  \brief The calling thread's: AsStringOptions{}, unless a ScopedThreadDefault has set others
@@ -296,8 +315,15 @@ namespace Stroika::Foundation::Time {
          *      o   int, float, etc...
          *      o   std::chrono::milliseconds etc...
          *
-         *  As<String> () gives back the text a Duration was read from, if it was; else writes it as the calling thread's
-         *  AsStringOptions say (AsStringOptions::GetThreadDefault ()). As<String> (options) writes it as options says.
+         *  About As<String>() and As<String>(options):
+         *      As<String> () gives back the text a Duration was read from, if it was; 
+         *      else writes it as the calling thread's AsStringOptions say (AsStringOptions::GetThreadDefault ()). 
+         * 
+         *      As<String> (options) writes it as options says.
+         *      It is the text for programs - JSON, XML, a configuration file - ISO 8601 ("PT1M30S"), which Parse reads back.
+         * 
+         *      \see Format
+         *      For people to read, Format () writes words ("1 minute, 30 seconds").
          *
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsSaturated()
          * 
@@ -310,9 +336,8 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const
             requires (Common::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or Common::IDuration<T> or
                       Common::ITimePoint<T>);
-        template <typename T>
-        nonvirtual T As (const AsStringOptions& options) const
-            requires (same_as<T, Characters::String>);
+        template <same_as<Characters::String> T>
+        nonvirtual T As (const AsStringOptions& options) const;
         DISABLE_COMPILER_MSC_WARNING_START (4996)
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
@@ -351,11 +376,17 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  \brief The unit names Format () and FormatAge () write, singular and plural - English by default
+         *
+         *  \see AsStringOptions: how As<String> () writes a Duration for programs to read (ISO 8601: "PT3S")
          */
         struct FormatOptions {
             /**
              */
             struct Labels {
+                /**
+                 *  An infinite Duration's (Time::kInfinity), in place of the numbers and units - after a '-' if negative
+                 */
+                Characters::String fInfinity{"infinity"sv};
                 Characters::String fYear{"year"sv};
                 Characters::String fYears{"years"sv};
                 Characters::String fMonth{"month"sv};
@@ -383,7 +414,17 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief The Duration in words, for people to read - "3 seconds", "1.003 seconds", "3 ms" - like JavaScript's 'humanize' APIs
+         *  \brief The Duration in words, for people to read - "3 seconds", "1 minute, 30 seconds", "3 ms" - like luxon's (JavaScript)
+         *         Duration.toHuman ()
+         *
+         *  Nothing reads it back: for text a program reads - JSON, XML, a configuration file - As<String> () writes ISO 8601
+         *  ("PT1M30S"), which Parse reads. ToString () writes this.
+         *
+         *  An infinite Duration (Time::kInfinity) is fLabels.fInfinity: "infinity", or "-infinity".
+         *
+         *  \see As<String>
+         *
+         *  \note   Aliases: toHuman, humanize (JavaScript); called PrettyPrint before Stroika v3.0d26
          *
          *  \par Example Usage
          *      \code
@@ -393,7 +434,7 @@ namespace Stroika::Foundation::Time {
          *          EXPECT_EQ (Duration{3}.Format (options), "3 secs");
          *      \endcode
          *
-         *  \note Format () formats with a FormatOptions{} built once, not per call: building one - its 22 labels - costs about as
+         *  \note Format () formats with a FormatOptions{} built once, not per call: building one - a String per label - costs about as
          *        much as the formatting. So FormatOptions is not a default argument (= {}).
          */
         nonvirtual Characters::String Format () const;
@@ -427,7 +468,7 @@ namespace Stroika::Foundation::Time {
          *
          *  Technically, this isn't an 'age' but just a 'now-centric' pretty printing of durations.
          *
-         *  \todo Just a DRAFT impl for now ... --LGP 2014-09-01 -- @todo FIX/revise/test
+         *  An infinite Duration (Time::kInfinity) is FormatOptions' fLabels.fInfinity: "infinity from now", or "infinity ago".
          *
          *  \par Example Usage
          *      \code
@@ -459,6 +500,8 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  Format (): the Duration in words ("3 seconds"), for debugging and logs. For text a program reads, As<String> ().
+         *
          *  @see Characters::ToString ();
          */
         nonvirtual Characters::String ToString () const;

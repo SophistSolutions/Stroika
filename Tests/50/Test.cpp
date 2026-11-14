@@ -956,6 +956,7 @@ namespace {
                 optional<double> fSeconds;
             };
             const double kDay     = kSecondsPerDay;
+            const double kInf     = numeric_limits<double>::infinity ();
             const Case   kCases[] = {
                 // ISO 8601
                 {"PT0S", 0},
@@ -986,6 +987,15 @@ namespace {
                 {"PT1", nullopt},
                 {"PT1.2.3S", nullopt},
                 {"PT-1S", nullopt}, // ISO 8601-2's negative element (ParseOptions)
+                // not ISO 8601: infinity, as Number::Parse reads a floating point one (ParseOptions::fAcceptInfinity)
+                {"inf", kInf},
+                {"-inf", -kInf},
+                {"Infinity", kInf},
+                {"INF", kInf},
+                {"+inf", nullopt},
+                {"infinite", nullopt},
+                {"inf ", nullopt},
+                {"PinfY", nullopt},
             };
             auto seconds = [] (const auto& parsed) { return parsed ? optional<double>{parsed->template As<double> ()} : nullopt; };
             for (const Case& c : kCases) {
@@ -996,6 +1006,22 @@ namespace {
             EXPECT_THROW ((void)Duration{"P30S"}, Duration::FormatException);
             EXPECT_TRUE (String::FromNarrowSDKString (Duration::Parse ("P30S"sv).error ().what ()).Contains ("S before the T"sv));
             EXPECT_THROW ((void)Duration{string{"PT1\xc3\xa9S"}}, Duration::FormatException); // a std::string is not checked for ASCII first
+            EXPECT_FALSE (Duration::Parse ("inf"sv, Duration::ParseOptions{.fAcceptInfinity = false}));
+            // an infinite Duration is written as a floating point one is, and read back
+            EXPECT_EQ (Duration{kInfinity}.As<String> (), "inf");
+            EXPECT_EQ (Duration{-kInfinity}.As<String> (), "-inf");
+            EXPECT_EQ (Duration{Duration{-kInfinity}.As<String> ()}, Duration{-kInfinity});
+            EXPECT_THROW ((void)Duration{kInfinity}.As<String> (Duration::AsStringOptions{.fWriteInfinity = false}), range_error);
+            // and in words
+            EXPECT_EQ (Duration{kInfinity}.Format (), "infinity");
+            EXPECT_EQ (Duration{-kInfinity}.Format (), "-infinity");
+            {
+                Duration::FormatOptions options;
+                options.fLabels.fInfinity = "forever";
+                EXPECT_EQ (Duration{kInfinity}.Format (options), "forever");
+            }
+            EXPECT_EQ (Duration{kInfinity}.FormatAge (), "infinity from now");
+            EXPECT_EQ (Duration{-kInfinity}.FormatAge (), "infinity ago");
             // negating keeps every digit, and the text
             EXPECT_EQ ((-Duration{1.23456789}).As<double> (), -1.23456789);
             EXPECT_EQ ((-Duration{"P1DT2H"}).As<String> (), "-P1DT2H");

@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
 
@@ -50,7 +51,7 @@ Duration::FormatException::FormatException (const String& details)
  ********************************************************************************
  */
 namespace {
-    // built once: building a FormatOptions - its 22 labels - costs about as much as formatting with it
+    // built once: building a FormatOptions - a String per label - costs about as much as formatting with it
     const Duration::FormatOptions& DefaultFormatOptions_ ()
     {
         static const Duration::FormatOptions kDefault_{};
@@ -162,6 +163,7 @@ String Duration::Format (const FormatOptions& options) const
 {
     auto                lingMgr = Linguistics::MessageUtilities::Manager::sThe.LookupHandler ();
     static const String kCommaSpace_{", "sv};
+    static const String kNeg_{"-"sv};
     /*
      *  From http://physics.nist.gov/cuu/Units/checklist.html
      *      There is a space between the numerical value and unit symbol, even when the value is used
@@ -169,8 +171,11 @@ String Duration::Format (const FormatOptions& options) const
      */
     static const String kSpaceBeforeUnit_{" "sv};
 
-    InternalNumericFormatType_ t        = As<InternalNumericFormatType_> ();
-    bool                       isNeg    = (t < 0);
+    InternalNumericFormatType_ t     = As<InternalNumericFormatType_> ();
+    bool                       isNeg = (t < 0);
+    if (isinf (t)) {
+        return isNeg ? kNeg_ + options.fLabels.fInfinity : options.fLabels.fInfinity;
+    }
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
     StringBuilder              result;
     if (timeLeft >= kSecondsPerYear_) {
@@ -326,7 +331,6 @@ String Duration::Format (const FormatOptions& options) const
         result << "0"sv << kSpaceBeforeUnit_ << options.fLabels.fSeconds;
     }
     if (isNeg) {
-        static const String kNeg_{"-"sv};
         result = kNeg_ + result;
     }
     return result;
@@ -353,6 +357,9 @@ String Duration::FormatAge (const AgeFormatOptions& ageOptions, const FormatOpti
     }
 
     String suffix = isNeg ? ageOptions.fLabels.fAgo : ageOptions.fLabels.fFromNow;
+    if (isinf (absT)) {
+        return "{} {}"_f(options.fLabels.fInfinity, suffix);
+    }
 
     auto fmtDate = [suffix] (int timeInSelectedUnit, const String& singularUnit, const String& pluralUnit) -> String {
         String label = Linguistics::MessageUtilities::Manager::sThe.PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
@@ -428,8 +435,7 @@ auto Duration::Parse_ (string_view text, const ParseOptions& options) -> Common:
     return result;
 }
 
-auto Duration::ParseTime_ (string_view s, [[maybe_unused]] const ParseOptions& options)
-    -> Common::StdCompat::expected<InternalNumericFormatType_, FormatException>
+auto Duration::ParseTime_ (string_view s, const ParseOptions& options) -> Common::StdCompat::expected<InternalNumericFormatType_, FormatException>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Duration::ParseTime_", "s = {}"_f, String::FromLatin1 (span<const char>{s})};
@@ -442,6 +448,17 @@ auto Duration::ParseTime_ (string_view s, [[maybe_unused]] const ParseOptions& o
     if (i != s.end () and *i == '-') {
         isNeg = true;
         ++i;
+    }
+    if (options.fAcceptInfinity) {
+        // the rest is just the word, in any case
+        auto isWord = [&] (string_view w) {
+            return equal (i, s.end (), w.begin (), w.end (),
+                          [] (char c, char lower) { return tolower (static_cast<unsigned char> (c)) == lower; });
+        };
+        if (isWord ("inf"sv) or isWord ("infinity"sv)) {
+            constexpr auto kInf = numeric_limits<InternalNumericFormatType_>::infinity ();
+            return isNeg ? -kInf : kInf;
+        }
     }
     if (i == s.end () or *i != 'P') {
         return error ("does not start with P, or -P"sv);
@@ -558,6 +575,13 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, const AsStringOptio
     Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}, seconds-precision={}"_f, t, options.fSecondsPrecision};
 #endif
     Require (not isnan (t));
+    if (isinf (t)) {
+        if (not options.fWriteInfinity) {
+            static const auto kException_ = Execution::Exception<range_error>{"an infinite Duration has no ISO 8601 form"sv};
+            Execution::Throw (kException_);
+        }
+        return String{t < 0 ? "-inf"sv : "inf"sv};
+    }
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
     StringBuilder              result;
