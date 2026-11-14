@@ -54,10 +54,6 @@ RUN apt-get -qq install -y p7zip-full; \
 RUN apt-get -qq install -y g++; \
     apt-get -qq clean -y;
 
-#Only needed to use sanitizer builds
-RUN apt-get -qq install -y libasan8 libubsan1 && \
-    apt-get -qq clean -y
-
 # echo on bash startup to read md file so more obvious how to get started
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
 COPY Ubuntu2610-Small/.bash_profile /root
