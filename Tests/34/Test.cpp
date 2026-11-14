@@ -1249,6 +1249,39 @@ namespace {
         EXPECT_EQ (values.fDuration, Time::Duration{"-P1DT2H"});
         EXPECT_EQ (values.fString, "  kept  "sv);
     }
+
+    GTEST_TEST (Foundation_DataExchange_XML, SAXObjectReader_Bool_)
+    {
+        // as XML Schema's boolean: true is "true" or "1", false is "false" or "0"
+        struct Values_ {
+            bool fTrue{};
+            bool fOne{};
+            bool fFalse{true};
+            bool fZero{true};
+        };
+        auto mkdata_ = [] () {
+            wstring      newDocXML = L"<Values><True>true</True><One>1</One><False>false</False><Zero>0</Zero></Values>";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
+        };
+        ObjectReader::Registry registry;
+        registry.AddCommonType<bool> ();
+        registry.AddCommonReader_Class<Values_> ({
+            {Name{"True"}, &Values_::fTrue},
+            {Name{"One"}, &Values_::fOne},
+            {Name{"False"}, &Values_::fFalse},
+            {Name{"Zero"}, &Values_::fZero},
+        });
+        Values_                                  values{};
+        ObjectReader::IConsumerDelegateToContext ctx{
+            registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
+        XML::SAXParse (mkdata_ (), &ctx);
+        EXPECT_TRUE (values.fTrue);
+        EXPECT_TRUE (values.fOne);
+        EXPECT_FALSE (values.fFalse);
+        EXPECT_FALSE (values.fZero);
+    }
 }
 
 namespace {

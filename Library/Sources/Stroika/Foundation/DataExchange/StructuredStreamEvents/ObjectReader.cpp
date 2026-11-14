@@ -132,7 +132,9 @@ void Registry::SimpleReader_<unsigned long long int>::Deactivating ()
 template <>
 void Registry::SimpleReader_<bool>::Deactivating ()
 {
-    *fValue_ = (TrimXMLWhitespace_ (fBuf_.str ()).ToLowerCase () == "true"sv);
+    // as XML Schema's boolean, whose true is "true" or "1" - though in any case
+    String text = TrimXMLWhitespace_ (fBuf_.str ()).ToLowerCase ();
+    *fValue_    = text == "true"sv or text == "1"sv;
 }
 
 template <>
