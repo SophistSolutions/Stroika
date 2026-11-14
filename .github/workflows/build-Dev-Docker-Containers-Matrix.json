@@ -40,6 +40,16 @@
         "container_images": "sophistsolutionsinc/stroika-buildvm-ubuntu2604-small sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests"
     },
     {
+        "comment": "Linux",
+        "comment2": "ubuntu 26.10"
+    },
+    {
+        "build_job": "Linux",
+        "runs_on": "ubuntu-latest",
+        "displayTargetName": "stroika-buildvm-ubuntu2610*",
+        "container_images": "sophistsolutionsinc/stroika-buildvm-ubuntu2610-small sophistsolutionsinc/stroika-buildvm-ubuntu2610-regression-tests"
+    },
+    {
         "comment": "Windows"
     },
     {
