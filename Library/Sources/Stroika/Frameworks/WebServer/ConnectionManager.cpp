@@ -314,16 +314,18 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fBindings_{bindAddresses}
-    , fInterceptors_{[] () {
-        Interceptor defaultErrorHandler = DefaultFaultInterceptor{};
-        return Interceptors_{.fDefaultErrorHandler = defaultErrorHandler, .fEarly = mkEarlyInterceptors_ (defaultErrorHandler)};
-    }()}
     , fRouter_{routes, fEffectiveOptions_.fCORS}
-    // note since Stroika v3.0d5, we set fQMax = so we don't get lots of useless requests that fill the Q. Probably shouldn't happen
-    // anyhow, since we have set 'backlog' - but in case, better failure mode ; arguably could be zero length, but for latency of threads waking up to pickup work;
-    // --LGP 2023-11-27
+    , fInterceptors_{[this] () {
+        Interceptor   defaultErrorHandler = DefaultFaultInterceptor{};
+        Interceptors_ interceptors{.fDefaultErrorHandler = defaultErrorHandler, .fEarly = mkEarlyInterceptors_ (defaultErrorHandler)};
+        DeriveConnectionOptions_ (interceptors);
+        return interceptors;
+    }()}
     , fActiveConnectionThreads_{ThreadPool::Options{.fThreadCount    = *fEffectiveOptions_.fMaxConcurrentlyHandledConnections,
                                                     .fThreadPoolName = fEffectiveOptions_.fThreadPoolName,
+                                                    // note since Stroika v3.0d5, we set fQMax = so we don't get lots of useless requests that fill the Q. Probably shouldn't happen
+                                                    // anyhow, since we have set 'backlog' - but in case, better failure mode ; arguably could be zero length, but for latency of threads waking up to pickup work;
+                                                    // --LGP 2023-11-27
                                                     .fQMax = ThreadPool::QMax{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections},
                                                     .fCollectStatistics = fEffectiveOptions_.fCollectStatistics}}
     , fWaitForReadyConnectionThread_{Thread::CleanupPtr::eAbortBeforeWaiting,
@@ -347,7 +349,6 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     Require (options.fIdleConnectionTimeout > 0s);
     Require (options.fRequestHeaderTimeout > 0s);
     Require (options.fClientStallTimeout > 0s);
-    DeriveConnectionOptions_ (fInterceptors_.rwget ().rwref ()); // here, once fRouter_ is made
 
     DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
               static_cast<const void*> (this), fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options),

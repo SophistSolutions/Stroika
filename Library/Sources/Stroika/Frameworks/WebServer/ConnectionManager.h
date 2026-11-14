@@ -544,9 +544,9 @@ namespace Stroika::Frameworks::WebServer {
     private:
         Options                                     fEffectiveOptions_;
         Traversal::Iterable<SocketAddress>          fBindings_; // just to return bindings API
+        Router                                      fRouter_;   // before fInterceptors_, whose connection options are derived from it
         Execution::Synchronized<Interceptors_>      fInterceptors_;
         Execution::Synchronized<optional<Duration>> fAutomaticTCPDisconnectOnClose_;
-        Router                                      fRouter_;
 
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
@@ -588,6 +588,8 @@ namespace Stroika::Frameworks::WebServer {
 
         // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
         // new tasks into an already destroyed threadpool.
+        // And last: it accepts - its thread calling onConnect_ - from the moment it is constructed, so everything onConnect_ reads is
+        // set up by the initializers of the members before it, never in the constructor body.
         IO::Network::Listener fListener_;
     };
 
