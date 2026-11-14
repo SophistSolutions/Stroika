@@ -277,7 +277,7 @@ Special Variables:               -    Extra params you can pass to the make line
 
 ### Amending a configuration
 
-Configuration files should **not** be edited by hand. Instead, the current command line is the first element of the configuration file: take that as a starting point and ammend it as needed, and re-run **make apply-configurations** or **make CONFIGURATION=X apply-configuration**.
+Configuration files should **not** be edited by hand. Instead, the current command line is the first element of the configuration file: take that as a starting point and amend it as needed, and re-run **make apply-configurations** or **make CONFIGURATION=X apply-configuration**.
 
 ### Environment variables that affect generation of configuration
 
@@ -287,19 +287,22 @@ The reason this is so important, is that it allows an external build system like
 
 ### Printing configure variables from a script
 
+`Build/Scripts/GetConfigurationParameter CONFIGURATION PARAMETER` prints one element of `ConfigurationFiles/CONFIGURATION.xml`:
+PARAMETER is the element's name, as that file shows it.
+
 #### Examples
 
-- `./Build/Scripts/GetConfigurationParameter Debug CFLAGS`
+- `./Build/Scripts/GetConfigurationParameter Debug ARCH`
 
-  -I"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/ATLMFC/include" -I"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.30.30705/include" -I"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/ucrt" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/shared" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/um" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/winrt" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.19041.0/cppwinrt" -I"C:/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/include/" -I"C:/Sandbox/Stroika/DevRoot/Library/Sources/" -I"C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/" -EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -DqDebug=1 -DqHasFeature_LibCurl=0 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=1 -DqHasFeature_ATLMFC=1 -DqHasFeature_Xerces=1 -DqHasFeature_ZLib=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqStroika_Foundation_Debug_Trace_TraceToFile=1 -DqStroika_Foundation_Debug_Trace_DefaultTracingOn=1  -fsanitize=address
+  x86_64
 
-- `./Build/Scripts/GetConfigurationParameter Debug Linker`
+- `./Build/Scripts/GetConfigurationParameter Debug LINKER`
 
   g++
 
-- `./Build/Scripts/GetConfigurationParameter Release CXXFLAGS`
+- `./Build/Scripts/GetConfigurationParameter Release PLATFORM_CXXFLAGS`
 
-  -flto --std=c++20 -O3 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/Release/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Release/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs -g
+  --std=c++20 -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-psabi -O3 -g -flto
 
 - defining sample configurations
   ~~~bash
