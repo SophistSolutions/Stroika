@@ -443,6 +443,13 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 #endif
 }
 
+/*
+ * This is the core control loop of the ConnectionManager. It runs forever, and 
+ * carefullychecks for ready connections, and assigns them to the thread pool for processing.
+ * 
+ * It also handles other housekeeping tasks, such as closing idle connections 
+ * and managing the lifecycle of connections.
+ */
 void ConnectionManager::WaitForReadyConnectionLoop_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
