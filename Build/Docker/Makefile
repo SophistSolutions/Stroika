@@ -48,19 +48,16 @@ endif
 ifeq (${DETECTED_HOST_OS},Linux)
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
-IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2504-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2604-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2610-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
-IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2610-regression-tests
 ifeq (${BUILD_DEV_IMAGES},1)
 IMAGES+= sophistsolutionsinc/stroika-dev
 IMAGES+= sophistsolutionsinc/stroika-dev-2204
 IMAGES+= sophistsolutionsinc/stroika-dev-2404
-IMAGES+= sophistsolutionsinc/stroika-dev-2504
 IMAGES+= sophistsolutionsinc/stroika-dev-2604
 IMAGES+= sophistsolutionsinc/stroika-dev-2610
 endif
@@ -84,9 +81,6 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:
 sophistsolutionsinc/stroika-buildvm-ubuntu2404-small:
 	docker build -f Ubuntu2404-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2404-small .
 
-sophistsolutionsinc/stroika-buildvm-ubuntu2504-small:
-	docker build -f Ubuntu2504-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2504-small .
-
 sophistsolutionsinc/stroika-buildvm-ubuntu2604-small:
 	docker build -f Ubuntu2604-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2604-small .
 
@@ -101,9 +95,6 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests:
 	docker build -f Ubuntu2404-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
-
-sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests:
-	docker build -f Ubuntu2504-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests .
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests:
 	docker build -f Ubuntu2604-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests .
@@ -143,9 +134,6 @@ sophistsolutionsinc/stroika-dev-2204:
 sophistsolutionsinc/stroika-dev-2404:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2404 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
 
-sophistsolutionsinc/stroika-dev-2504:
-	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2504 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests .
-
 sophistsolutionsinc/stroika-dev-2604:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2604 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2604-regression-tests .
 
@@ -162,18 +150,17 @@ STROIKA_DEV_HOST_KEYS_DIR?=${HOME}/.local/state/stroika-dev-containers
 # the container's pids.max.
 stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504 Stroika-Dev-2604 Stroika-Dev-2610; do mkdir -p ${STROIKA_DEV_HOST_KEYS_DIR}/$$i && chmod 700 ${STROIKA_DEV_HOST_KEYS_DIR}/$$i; done
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2604 Stroika-Dev-2610; do mkdir -p ${STROIKA_DEV_HOST_KEYS_DIR}/$$i && chmod 700 ${STROIKA_DEV_HOST_KEYS_DIR}/$$i; done
 	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--init --publish 10022:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
 	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--init --publish 10422:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2204:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
 	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--init --publish 10522:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2404:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
-	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--init --publish 10722:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2504:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
 	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2604 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2604 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--init --publish 10622:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2604:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
 	cd ${StroikaRoot} && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2610 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2610 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--init --publish 10822:22 --restart=unless-stopped -v ${STROIKA_DEV_HOST_KEYS_DIR}/Stroika-Dev-2610:/etc/ssh/persistent-host-keys" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="/usr/local/bin/stroika-dev-entrypoint.sh" Build/Scripts/RunInDockerEnvironment
 endif
 
 start-stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504 Stroika-Dev-2604 Stroika-Dev-2610; do docker start $$i; done
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2604 Stroika-Dev-2610; do docker start $$i; done
 endif
 
 
@@ -201,12 +188,20 @@ ifeq ($(STROIKA_VERSION_Final),true)
 endif
 
 
+# Removes the dev containers, and every tag of each image (latest, plus tag-images' v3 and a release's version). What is
+# already gone is skipped, so it is safe to run again.
 clean-images:
 ifeq (${DETECTED_HOST_OS},Linux)
-	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504 Stroika-Dev-2604 Stroika-Dev-2610 ; do docker stop $$i; docker rm -f $$i; done
-	for i in stroika-dev-2204 stroika-dev-2404 stroika-dev-2504 stroika-dev-2604 stroika-dev-2610 stroika-dev; do docker rmi -f sophistsolutionsinc/$$i; done
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2604 Stroika-Dev-2610 ; do \
+		if docker container inspect $$i >/dev/null 2>&1; then docker stop $$i && docker rm $$i; fi; \
+	done
+	for i in stroika-dev-2204 stroika-dev-2404 stroika-dev-2604 stroika-dev-2610 stroika-dev; do \
+		refs=$$(docker images --format '{{.Repository}}:{{.Tag}}' sophistsolutionsinc/$$i | grep -v ':<none>$$'); \
+		if [ -n "$$refs" ]; then docker rmi -f $$refs; fi; \
+	done
 endif
-	for image in ${IMAGES}; do  \
-		docker rmi -f $${image} ; \
+	for image in ${IMAGES}; do \
+		refs=$$(docker images --format '{{.Repository}}:{{.Tag}}' $${image} | grep -v ':<none>$$'); \
+		if [ -n "$$refs" ]; then docker rmi -f $$refs; fi; \
 	done
 
