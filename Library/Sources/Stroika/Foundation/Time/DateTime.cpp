@@ -644,10 +644,47 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
     return DateTime{when, Timezone::kUnknown};
 }
 
+namespace {
+    /*
+     *  A UTC date and time in local time, by the offset in effect at that moment (@see Timezone::kLocalTime), or nullopt where
+     *  the platform cannot say (with a 32-bit time_t, before 1901 or after 2038; on Windows, outside 1601-30827).
+     *
+     *  Timezone::GetBiasFromUTC takes a time in that zone, so cannot do this: the UTC date and time, read as local, can be on
+     *  the other side of a daylight saving change from the moment they name.
+     */
+    optional<DateTime> UTCToLocal_ (const Date& d, const TimeOfDay& tod)
+    {
+#if qStroika_Platform_POSIX
+        time_t t = chrono::system_clock::to_time_t (chrono::sys_days{d.As<chrono::year_month_day> ()} + chrono::seconds{tod.GetAsSecondsCount ()});
+        ::tm local{};
+        if (::localtime_r (&t, &local) != nullptr) {
+            return DateTime{local, Timezone::kLocalTime};
+        }
+#elif qStroika_Platform_Windows
+        int year = static_cast<int> (d.GetYear ());
+        if (1601 <= year and year <= 30827) {
+            ::DYNAMIC_TIME_ZONE_INFORMATION zone{};
+            (void)::GetDynamicTimeZoneInformation (&zone);
+            ::SYSTEMTIME utc = DateTime{d, tod}.As<::SYSTEMTIME> ();
+            ::SYSTEMTIME local{};
+            if (::SystemTimeToTzSpecificLocalTimeEx (&zone, &utc, &local)) {
+                return DateTime{local, Timezone::kLocalTime};
+            }
+        }
+#endif
+        return nullopt;
+    }
+}
+
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::kUTC) {
-        DateTime tmp = AddSeconds (Timezone::kLocalTime.GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0})));
+        TimeOfDay tod = Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0});
+        if (optional<DateTime> r = UTCToLocal_ (fDate_, tod)) {
+            return *r;
+        }
+        // the offset at these UTC fields read as local time - wrong only near a daylight saving change
+        DateTime tmp = AddSeconds (Timezone::kLocalTime.GetBiasFromUTC (fDate_, tod));
         return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime};
     }
     else if (GetTimezone () == Timezone::kLocalTime) {
@@ -664,18 +701,6 @@ DateTime DateTime::AsLocalTime () const
 
 DateTime DateTime::AsUTC () const
 {
-    [[maybe_unused]] auto oldCode = [&] () {
-        if (GetTimezone () == Timezone::kUTC) {
-            return *this;
-        }
-        else {
-            DateTime tmp = fTimezone_.has_value ()
-                               ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0})))
-                               : *this;
-            return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC};
-        }
-    };
-    Ensure (AsTimezone (Timezone::kUTC) == oldCode ());
     return AsTimezone (Timezone::kUTC);
 }
 
@@ -684,11 +709,16 @@ DateTime DateTime::AsTimezone (Timezone tz) const
     if (GetTimezone () == tz) {
         return *this;
     }
-    else {
-        DateTime tmp =
-            fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}))) : *this;
-        return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), tz};
+    if (not fTimezone_.has_value ()) {
+        return DateTime{fDate_, fTimeOfDay_, tz}; // no time zone to convert from
     }
+    if (tz == Timezone::kLocalTime) {
+        return AsLocalTime (); // its offset depends on the moment, not on a date and time in it
+    }
+    // to UTC, then to tz - UTC, or a fixed offset from it, so the same offset at every moment
+    DateTime utc = AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0})));
+    DateTime tmp = utc.AddSeconds (tz.GetBiasFromUTC (utc.fDate_, Memory::NullCoalesce (utc.fTimeOfDay_, TimeOfDay{0})));
+    return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), tz};
 }
 
 DateTime DateTime::Now () noexcept
@@ -993,8 +1023,8 @@ DateTime DateTime::AddSeconds (int64_t seconds) const
 
     Ensure (0 <= n and n < static_cast<int64_t> (TimeOfDay::kMaxSecondsPerDay));
     Assert (numeric_limits<int>::lowest () <= dayDiff and dayDiff <= numeric_limits<int>::max ());
-    if (n == 0) {
-        return DateTime{GetDate ().Add (days{dayDiff}), GetTimeOfDay (), GetTimezone ()};
+    if (n == 0 and not fTimeOfDay_.has_value ()) {
+        return DateTime{GetDate ().Add (days{dayDiff}), nullopt, GetTimezone ()}; // whole days added to a date alone: still a date alone
     }
     else {
         return DateTime{GetDate ().Add (days{dayDiff}), TimeOfDay{static_cast<uint32_t> (n)}, GetTimezone ()};

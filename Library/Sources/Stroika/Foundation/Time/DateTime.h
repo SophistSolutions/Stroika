@@ -362,7 +362,9 @@ namespace Stroika::Foundation::Time {
          *  Creates a new DateTime object known to be in localtime. If this DateTime timezone is unknown, then the
          *  the datetime will be just assumed to have been in localtime.
          *
-         *  \post result.GetTimezone () == Timezone::LocalTime ()
+         *  From another time zone, it is converted by the local offset in effect at that moment.
+         *
+         *  \post result.GetTimezone () == Timezone::kLocalTime
          */
         nonvirtual DateTime AsLocalTime () const;
 
@@ -386,7 +388,7 @@ namespace Stroika::Foundation::Time {
          *
          *  Either way, this will always produce a result in the timezone tz.
          *
-         *  \post result.GetTimezone () == Timezone::UTC ()
+         *  \post result.GetTimezone () == tz
          */
         nonvirtual DateTime AsTimezone (Timezone tz) const;
 

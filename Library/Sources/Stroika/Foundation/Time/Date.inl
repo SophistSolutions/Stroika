@@ -292,7 +292,8 @@ namespace Stroika::Foundation::Time {
             // note: only supports UNIX epoch
             using CLOCK_T    = typename T::clock;
             using DURATION_T = typename T::duration;
-            ::tm   asTM      = this->As<::tm> ();
+            ::tm asTM        = this->As<::tm> ();
+            asTM.tm_isdst    = -1; // the C library decides whether daylight saving time is in effect then
             time_t thisTimeT = mktime (&asTM);
             auto   t         = Time::clock_cast<CLOCK_T> (chrono::system_clock::from_time_t (thisTimeT));
             if constexpr (same_as<DURATION_T, chrono::system_clock::duration>) {

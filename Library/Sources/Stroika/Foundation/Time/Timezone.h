@@ -105,8 +105,8 @@ namespace Stroika::Foundation::Time {
      *      It is looked up each time it is used, not when a DateTime is made: a DateTime in kLocalTime is a wall-clock date and
      *      time, meaning whatever moment that is in the local time zone of then. Its offset from UTC depends on the date and time
      *      (daylight saving time), so GetBiasFromUTC () and the like take them.
-     *      A time to store or exchange is safest in UTC (AsUTC ()): a local one means another moment on another machine, and one
-     *      in the hour daylight saving time repeats is ambiguous.
+     *      Which to use depends on what the time means: UTC for a moment, the same everywhere (when a log entry was written);
+     *      kLocalTime for a time on the local clock (lunch at noon), whatever moment that is where and when it is read.
      *
      *  \par Where Stroika's local time can differ from what other code says
      *      o   Windows, TZ set (Cygwin passes its TZ, an IANA name, to the programs it starts): the C library's time functions
@@ -231,6 +231,8 @@ namespace Stroika::Foundation::Time {
          *  Depending on the form of the timezone, the offset from UTC could depend on the date (cuz of daylight savings time)
          *
          *  This offset (number of minutes) - is added to a UTC time to get the time in that local timezone.
+         *
+         *  date and tod are in this time zone - for kLocalTime, a local date and time.
          *
          *  \post  (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
          */

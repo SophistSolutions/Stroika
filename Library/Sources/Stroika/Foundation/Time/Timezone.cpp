@@ -15,14 +15,14 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Timezone.h"
 
@@ -58,37 +58,78 @@ namespace {
 }
 #endif
 
-namespace {
-    bool IsDaylightSavingsTime_ (const Date& date, const optional<TimeOfDay>& tod);
-
 #if qStroika_Platform_POSIX
-    /**
-     * Return the number of seconds which must be added to a LocalTime value to get GMT.
-     */
-    time_t GetLocaltimeToGMTOffset_ (bool applyDST);
-#endif
-}
-
-#if qStroika_Platform_Windows
 /*
  ********************************************************************************
- ***************************** GetWindowsLocalTime_ *****************************
+ ******************************* ThisYearsBiases_ *******************************
  ********************************************************************************
  */
 namespace {
     /*
-     *  Local time on Windows is Windows' own time zone - which GetLocalTime (so DateTime::Now ()) reads - and never TZ: no
-     *  Windows API reads TZ, only the C library's time functions, and those only in the old POSIX form (EST5EDT) - the IANA
-     *  names Cygwin sets (America/New_York) they read as UTC (as of UCRT 10.0.26100).
-     *
-     *  At a local date and time, by that year's rules: the bias from UTC, and whether daylight saving time is in effect.
+     *  This year's bias from UTC in standard time, and in daylight saving time (the same, in a zone without it): wherever
+     *  daylight saving time is used, it is in effect in one of January and July, and not in the other.
      */
-    struct WindowsLocalTime_ {
+    struct ThisYearsBiases_ {
+        Timezone::BiasInMinutesFromUTCType fStandardTime;
+        Timezone::BiasInMinutesFromUTCType fDaylightSavingsTime;
+    };
+    ThisYearsBiases_ GetThisYearsBiases_ ()
+    {
+        time_t now = ::time (nullptr);
+        ::tm   today{};
+        (void)::localtime_r (&now, &today);
+        ThisYearsBiases_ result{static_cast<Timezone::BiasInMinutesFromUTCType> (today.tm_gmtoff / 60),
+                                static_cast<Timezone::BiasInMinutesFromUTCType> (today.tm_gmtoff / 60)};
+        for (int month : {0, 6}) {
+            ::tm t{};
+            t.tm_year  = today.tm_year;
+            t.tm_mon   = month;
+            t.tm_mday  = 1;
+            t.tm_hour  = 12;
+            t.tm_isdst = -1; // the C library decides whether daylight saving time is in effect then
+            t.tm_wday  = -1; // mktime sets it only on success - (time_t)-1 is also a valid result
+            (void)::mktime (&t);
+            if (t.tm_wday != -1) {
+                (t.tm_isdst > 0 ? result.fDaylightSavingsTime : result.fStandardTime) =
+                    static_cast<Timezone::BiasInMinutesFromUTCType> (t.tm_gmtoff / 60);
+            }
+        }
+        return result;
+    }
+}
+#endif
+
+/*
+ ********************************************************************************
+ ********************************* GetLocalTime_ ********************************
+ ********************************************************************************
+ */
+namespace {
+    /*
+     *  At a local date and time, by the rules in effect then: the bias from UTC, and whether daylight saving time is in effect.
+     *
+     *  POSIX: the C library's local time zone - TZ, else /etc/localtime.
+     *
+     *  Windows: Windows' own time zone - which GetLocalTime (so DateTime::Now ()) reads - and never TZ: no Windows API reads
+     *  TZ, only the C library's time functions, and those only in the old POSIX form (EST5EDT) - the IANA names Cygwin sets
+     *  (America/New_York) they read as UTC (as of UCRT 10.0.26100).
+     */
+    struct LocalTime_ {
         Timezone::BiasInMinutesFromUTCType fBiasInMinutesFromUTC;
         bool                               fDaylightSavingsTime;
     };
-    WindowsLocalTime_ GetWindowsLocalTime_ (const Date& date, const optional<TimeOfDay>& tod)
+    LocalTime_ GetLocalTime_ (const Date& date, const optional<TimeOfDay>& tod)
     {
+#if qStroika_Platform_POSIX
+        ::tm t    = Date2TM_ (date, tod);
+        t.tm_wday = -1; // mktime sets it only on success - (time_t)-1 is also a valid result
+        (void)::mktime (&t);
+        if (t.tm_wday != -1) {
+            return {static_cast<Timezone::BiasInMinutesFromUTCType> (t.tm_gmtoff / 60), t.tm_isdst > 0};
+        }
+        // a time the C library cannot convert (with a 32-bit time_t, one before 1901 or after 2038): standard time, by this year's rules
+        return {GetThisYearsBiases_ ().fStandardTime, false};
+#elif qStroika_Platform_Windows
         ::DYNAMIC_TIME_ZONE_INFORMATION zone{};
         (void)::GetDynamicTimeZoneInformation (&zone);
         int                     year = static_cast<int> (date.GetYear ());
@@ -105,9 +146,9 @@ namespace {
         }
         // a year Windows has no rules for (a SYSTEMTIME's are 1601-30827): standard time, by today's rules
         return {static_cast<Timezone::BiasInMinutesFromUTCType> (-(zone.Bias + zone.StandardBias)), false};
+#endif
     }
 }
-#endif
 
 /*
  ********************************************************************************
@@ -204,11 +245,7 @@ Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTC (const Date
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
             return fBiasInMinutesFromUTC_;
         case TZ_::eLocalTime: {
-#if qStroika_Platform_POSIX
-            auto result = static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)) / 60);
-#elif qStroika_Platform_Windows
-            auto result = GetWindowsLocalTime_ (date, tod).fBiasInMinutesFromUTC;
-#endif
+            auto result = GetLocalTime_ (date, tod).fBiasInMinutesFromUTC;
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (result));
             return result;
         }
@@ -222,7 +259,7 @@ optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const optional
 {
     // @todo - fix for other (not fixed) timezones - like America/NewYork
     if (fTZ_ == TZ_::eLocalTime) {
-        return IsDaylightSavingsTime_ (date, tod);
+        return GetLocalTime_ (date, tod).fDaylightSavingsTime;
     }
     else {
         return {};
@@ -267,65 +304,18 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone"_f);
     }
-#if 0
-    //
-    // COULD look at /etc/localtime, but very hard to map this to olson db name
-    //
-    // One maybe close way is to see if /etc/localtime is a slink or exact copy of file in /usr/share/zoneinfo - that subdir/name
-    // is typically/often an Olson DB name.
-    //
-    if (not result.fID.has_value ()) {
-        // WEAK but maybe effective way
-        // http://www.linuxforums.org/forum/red-hat-fedora-linux/162483-changing-timezone-rhel-5-4-centos.html
-        try {
-            DataExchange::INI::Profile p = DataExchange::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New ("/etc/sysconfig/clock"sv));
-            if (auto o = p.fUnnamedSection.fProperties.Lookup ("ZONE"sv)) {
-                result.fID =  *o;
-            }
-        }
-        catch (...) {
-            DbgTrace ("Missing Zone ID from /etc/sysconfig/clock"_f);
-        }
-    }
-#endif
-#if 0
-    if (not result.fID.has_value ()) {
-        try {
-            // Not a good approach because this returns a zone abbreviation, which doesn't uniquely define a zone.
-            // For example, CDT could be Cocos Islands Time, or Central Daylight Time (North America) etc (see http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
-            String  tzAbbrev = get<0> (Execution::ProcessRunner {"date +%Z"sv}.Run (String {})).Trim ();
-            using   Containers::Mapping;
-            using   Common::KeyValuePair;
-            // Table from Hand-coded for a few empirical cases around 2015-06-01
-            static const    Mapping<String, String> kUNIXTZAbbrev2OlsonName_ =  {
-                KeyValuePair<String, String> {  "CST"sv,      "America/Chicago"sv },
-                KeyValuePair<String, String> {  "CDT"sv,      "America/Chicago"sv },
-                KeyValuePair<String, String> {  "CST6CDT"sv,   "America/Chicago"sv },
-                KeyValuePair<String, String> {  "EDT" sv,      "America/New_York"sv },
-                KeyValuePair<String, String> {  "EST"sv,       "America/New_York"sv },
-                KeyValuePair<String, String> {  "EST5EDT"sv,   "America/New_York"sv },
-                KeyValuePair<String, String> {  "PDT"sv,       "America/Los_Angeles"sv },
-                KeyValuePair<String, String> {  "PST"sv,       "America/Los_Angeles"sv },
-                KeyValuePair<String, String> {  "PDT8PST"sv,   "America/Los_Angeles"sv },
-            };
-            result.fID = kUNIXTZAbbrev2OlsonName_.LookupValue (tzAbbrev, tzAbbrev);
-        }
-        catch (...) {
-            DbgTrace ("Ignoring missing ID from date +%Z");
-        }
-    }
-#endif
     if (not result.fID.has_value ()) {
         // We could look to see if /etc/localtime is a symlink or a copy of any named file from /usr/share/zoneinfo, but
         // hope thats not needed!
     }
+    ThisYearsBiases_ biases = GetThisYearsBiases_ (); // first: it calls mktime, which sets tzname (as tzset does)
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     result.fStandardTime.fAbbreviation                = String::FromNarrowSDKString (tzname[0]);
     result.fStandardTime.fName                        = String::FromNarrowSDKString (tzname[0]);
-    result.fStandardTime.fBiasInMinutesFromUTC        = -GetLocaltimeToGMTOffset_ (false) / 60;
+    result.fStandardTime.fBiasInMinutesFromUTC        = biases.fStandardTime;
     result.fDaylightSavingsTime.fAbbreviation         = String::FromNarrowSDKString (tzname[1]);
     result.fDaylightSavingsTime.fName                 = String::FromNarrowSDKString (tzname[1]);
-    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = -GetLocaltimeToGMTOffset_ (true) / 60;
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = biases.fDaylightSavingsTime;
 #elif qStroika_Platform_Windows
     using Common::KeyValuePair;
     using Containers::Mapping;
@@ -439,83 +429,3 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
 #endif
     return result;
 }
-
-/*
- ********************************************************************************
- **************************** IsDaylightSavingsTime_ ****************************
- ********************************************************************************
- */
-namespace {
-    bool IsDaylightSavingsTime_ (const Date& date, const optional<TimeOfDay>& tod)
-    {
-#if qStroika_Platform_POSIX
-        struct tm asTM = Date2TM_ (date, tod);
-        /*
-         *  From http://pubs.opengroup.org/onlinepubs/7908799/xsh/mktime.html:
-         *
-         *      A positive or 0 value for tm_isdst causes mktime() to presume initially that Daylight Savings Time, respectively,
-         *      is or is not in effect for the specified time. A negative value for tm_isdst causes mktime() to attempt to determine
-         *      whether Daylight Saving Time is in effect for the specified time.
-         *
-         *      Local timezone information is set as though mktime() called tzset().
-         *
-         *      Upon successful completion, the values of the tm_wday and tm_yday components of the structure are set appropriately,
-         *      and the other components are set to represent the specified time since the Epoch, but with their values forced to the
-         *      ranges indicated in the <time.h> entry; the final value of tm_mday is not set until tm_mon and tm_year are determined.
-         *
-         *  But http://linux.die.net/man/3/localtime says:
-         *      The mktime() function modifies the fields of the tm structure as follows: tm_wday and tm_yday are set to values determined
-         *      from the contents of the other fields; if structure members are outside their valid interval, they will be normalized
-         *      (so that, for example, 40 October is changed into 9 November); tm_isdst is set (regardless of its initial value)
-         *      to a positive value or to 0, respectively, to indicate whether DST is or is not in effect at the specified time.
-         *
-         *  The POSIX part is not totally clear - but the linux docs do make it clear - that we can use this to test if is daylight savings time.
-         *
-         *  APPEARS to work since... --LGP 2011-10-15
-         */
-        asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
-        // https://github.com/SophistSolutions/Stroika/issues/652 (STK-515)  only works back to 1970 (Unix epoch time) - else assume NOT daylight savings time
-        if (::mktime (&asTM) == -1) {
-            return false;
-        }
-        else {
-            return asTM.tm_isdst >= 1;
-        }
-#elif qStroika_Platform_Windows
-        return GetWindowsLocalTime_ (date, tod).fDaylightSavingsTime;
-#endif
-    }
-}
-
-#if qStroika_Platform_POSIX
-/*
- ********************************************************************************
- ************************** GetLocaltimeToGMTOffset_ ****************************
- ********************************************************************************
- */
-namespace {
-    time_t GetLocaltimeToGMTOffset_ (bool applyDST)
-    {
-        /*
-         * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
-         * timezone global var???
-         */
-        struct tm aTm{};
-        aTm.tm_year = 70;
-        aTm.tm_mon  = 0; // Jan
-        aTm.tm_mday = 1;
-        constexpr bool kImplErrorUnderflow_{true}; // Jan 2: east of UTC, local midnight Jan 1 1970 is before the epoch, which mktime may refuse
-        if (kImplErrorUnderflow_) {
-            ++aTm.tm_mday;
-        }
-        aTm.tm_isdst  = applyDST;
-        time_t result = ::mktime (&aTm);
-        Assert (result != -1); // this shouldn't fail
-        if (kImplErrorUnderflow_) {
-            result -= 24 * 60 * 60;
-        }
-        Ensure (-60 * 60 * 24 <= result and result <= 60 * 60 * 24); // sanity check
-        return result;
-    }
-}
-#endif

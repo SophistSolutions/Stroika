@@ -866,6 +866,119 @@ namespace {
         EXPECT_EQ (DateTime{tv}.AsLocalTime ().AsUTC (), fromTimeT);
 #endif
     }
+
+    /*
+     *  Every half hour of 2026, UTC to local time and back, against the platform's own conversion: the local offset is the one
+     *  in effect at that moment - in the hours either side of a daylight saving change too, and on POSIX in zones whose offset
+     *  has changed since 1970 (London: +01:00 all year then; Kathmandu: +05:30)
+     */
+    GTEST_TEST (Foundation_Time, DateTime_LocalTimeAtEachMoment_)
+    {
+        TraceContextBumper ctx{"DateTime_LocalTimeAtEachMoment_"};
+        auto               platformLocal = [] (time_t t) -> DateTime {
+#if qStroika_Platform_POSIX
+            ::tm local{};
+            (void)::localtime_r (&t, &local);
+            return DateTime{local, Timezone::kLocalTime};
+#elif qStroika_Platform_Windows
+            ::DYNAMIC_TIME_ZONE_INFORMATION zone{};
+            (void)::GetDynamicTimeZoneInformation (&zone);
+            ::SYSTEMTIME utc = DateTime{t}.As<::SYSTEMTIME> ();
+            ::SYSTEMTIME local{};
+            EXPECT_TRUE (::SystemTimeToTzSpecificLocalTimeEx (&zone, &utc, &local));
+            return DateTime{local, Timezone::kLocalTime};
+#endif
+        };
+        auto sameClock = [] (const DateTime& a, const DateTime& b) {
+            return a.GetDate () == b.GetDate () and a.GetTimeOfDay () == b.GetTimeOfDay ();
+        };
+        auto check = [&] (const char* zoneName) {
+            const time_t kStart   = DateTime{Date{2026y, January, 1d}, TimeOfDay{0}, Timezone::kUTC}.As<time_t> ();
+            unsigned     failures = 0;
+            for (time_t t = kStart; t < kStart + 365 * 24 * 60 * 60 and failures < 3; t += 30 * 60) {
+                DateTime utc{t};
+                DateTime local = utc.AsLocalTime ();
+                if (not sameClock (local, platformLocal (t))) {
+                    ++failures;
+                    ADD_FAILURE () << "AsLocalTime of time_t " << t << " in " << zoneName;
+                }
+                // and back - but a local time in the hour that repeats is ambiguous, the platform picking either moment
+                bool ambiguous = sameClock (local, platformLocal (t - 3600)) or sameClock (local, platformLocal (t + 3600));
+                if (not ambiguous and local.AsUTC () != utc) {
+                    ++failures;
+                    ADD_FAILURE () << "AsUTC of AsLocalTime of time_t " << t << " in " << zoneName;
+                }
+            }
+        };
+#if qStroika_Platform_POSIX
+        for (const char* tz : {"America/New_York", "Europe/London", "Australia/Sydney", "Asia/Kathmandu"}) {
+            ScopedTZ_ setTZ{tz};
+            check (tz);
+        }
+#endif
+        check ("the machine's own time zone");
+    }
+
+    /*
+     *  AddSeconds to exactly midnight gives midnight; whole days added to a date alone leave it a date alone
+     */
+    GTEST_TEST (Foundation_Time, DateTime_AddSecondsToMidnight_)
+    {
+        TraceContextBumper ctx{"DateTime_AddSecondsToMidnight_"};
+        const Date         d{2026y, January, 1d};
+        EXPECT_EQ ((DateTime{d, TimeOfDay{5, 0, 0}}.AddSeconds (-5 * 60 * 60).GetTimeOfDay ()), (TimeOfDay{0}));
+        EXPECT_EQ ((DateTime{d, TimeOfDay{19, 0, 0}}.AddSeconds (5 * 60 * 60)), (DateTime{d.Add (1), TimeOfDay{0}}));
+        EXPECT_EQ ((DateTime{d}.AddSeconds (2 * 24 * 60 * 60)), (DateTime{d.Add (2)}));
+        EXPECT_FALSE ((DateTime{d}.AddSeconds (2 * 24 * 60 * 60).GetTimeOfDay ().has_value ()));
+    }
+
+    /*
+     *  AsTimezone gives the same moment in another time zone - UTC, a fixed offset, or local time
+     */
+    GTEST_TEST (Foundation_Time, DateTime_AsTimezone_)
+    {
+        TraceContextBumper ctx{"DateTime_AsTimezone_"};
+        const DateTime     noonUTC{Date{2026y, November, 16d}, TimeOfDay{12, 0, 0}, Timezone::kUTC};
+        for (Timezone tz : {Timezone::kUTC, Timezone{5 * 60}, Timezone{-(3 * 60 + 30)}, Timezone::kLocalTime}) {
+            DateTime d = noonUTC.AsTimezone (tz);
+            EXPECT_EQ (d.GetTimezone (), tz);
+            EXPECT_EQ (d, noonUTC) << tz.ToString ().AsNarrowSDKString ();
+            EXPECT_EQ (d.AsTimezone (Timezone{5 * 60}), noonUTC) << tz.ToString ().AsNarrowSDKString ();
+        }
+        EXPECT_EQ (noonUTC.AsTimezone (Timezone{5 * 60}).GetTimeOfDay (), (TimeOfDay{17, 0, 0}));
+        // with no time zone there is nothing to convert from: the same date and time, now in the zone given
+        EXPECT_EQ ((DateTime{Date{2026y, November, 16d}, TimeOfDay{12, 0, 0}}.AsTimezone (Timezone{5 * 60}).GetTimeOfDay ()), (TimeOfDay{12, 0, 0}));
+    }
+
+    /*
+     *  Date::As<time_point> is the date's local midnight - in summer too, when daylight saving time is in effect
+     */
+    GTEST_TEST (Foundation_Time, Date_AsTimePoint_)
+    {
+        TraceContextBumper ctx{"Date_AsTimePoint_"};
+        auto               check = [] (const char* zoneName) {
+            for (Date d : {Date{2026y, January, 15d}, Date{2026y, July, 15d}}) {
+                time_t viaDate = chrono::system_clock::to_time_t (d.As<chrono::system_clock::time_point> ());
+                EXPECT_EQ (viaDate, (DateTime{d, TimeOfDay{0}, Timezone::kLocalTime}.As<time_t> ()))
+                    << d.ToString ().AsNarrowSDKString () << " in " << zoneName;
+            }
+        };
+#if qStroika_Platform_POSIX
+        for (const char* tz : {"America/New_York", "Australia/Sydney"}) {
+            ScopedTZ_ setTZ{tz};
+            check (tz);
+        }
+        check ("the machine's own time zone");
+#elif qStroika_Platform_Windows
+        // Date::As<time_point> takes local time from the C library (@see Timezone's @todo), which follows TZ where it is set
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        const bool tzSet = std::getenv ("TZ") != nullptr;
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        if (not tzSet) {
+            check ("the machine's own time zone");
+        }
+#endif
+    }
 }
 
 namespace {
