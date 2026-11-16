@@ -1,8 +1,9 @@
-StroikaRoot	:=	$(abspath ../../)/
-SrcDir		:=	$(StroikaRoot)Samples/SSDPClient/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPClient/
+StroikaSourceRoot	:=	$(abspath ../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=	$(StroikaSourceRoot)Samples/SSDPClient/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-SSDPClient/
 
 
 TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-SSDPClient/
@@ -14,18 +15,18 @@ Objs	:=	\
 	$(ObjDir)SSDPClient${OBJ_SUFFIX}\
 
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Building Samples/SSDPClient:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Building Samples/SSDPClient:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SSDPClient...               "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SSDPClient...               "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
@@ -36,8 +37,8 @@ endif
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks, ${EXTRALINKARGS_})';\
+	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks, ${EXTRALINKARGS_})';\
 	fi
 	@$(call DEFAULT_LINK_LINE, $@, stroika-frameworks, ${EXTRALINKARGS_})

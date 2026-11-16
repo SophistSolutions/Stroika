@@ -7,11 +7,11 @@
 #
 #	@todo REDO using entire build system and cmake - full sqlite-src instead of amalagamation (that has .pc file)
 #
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
@@ -56,8 +56,8 @@ FETCHURLS+=https://www.sqlite.org/2023/$(AMALGAMATION_WITH_VERSION).zip
 
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/sqlite)/
-OUTPUT_WORKDIR_PRETTYNAME:="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/ThirdPartyComponents/sqlite)/
+OUTPUT_WORKDIR_PRETTYNAME:="$(shell $(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
 # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
 ifeq (3.81,$(firstword $(sort $(MAKE_VERSION) 3.81)))
@@ -95,7 +95,7 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaSourceRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 SILENT_BUILD_FLAG=	-silent
 ifeq ($(ECHO_BUILD_LINES),1)
@@ -112,24 +112,24 @@ CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 
 all:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/sqlite Build $(VERSION) {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/sqlite Build $(VERSION) {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(ZIPPEDFILE)
 ifneq ($(QUICK_BUILD), 1)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CURRENT
 endif
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
 	@$(MAKE) --no-print-directory $(PRODUCED_OUTPUT_ARTIFACTS)  >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt  2>&1
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@` "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@` "... "
 	@mkdir -p $@
 	@unzip -q $(ZIPPEDFILE) -d $@
 	@#intentionally make mv/rm code version agnostic due to issue with differently formatted zip files in different mirrors/repositories
@@ -194,21 +194,21 @@ $(ObjDir)%${OBJ_SUFFIX} : %.c
 
 
 check-prerequisite-tools:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking Prerequisite tools ... "
-	@{ type unzip > /dev/null; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool unzip && exit 1; }
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking Prerequisite tools ... "
+	@{ type unzip > /dev/null; } || { $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool unzip && exit 1; }
 	@$(ECHO) "done";
 
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking ... "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "sqlite $(VERSION) - Checking ... "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -  [Succeeded]";
 
 
 clobber::	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
-	@rm -rf  $(StroikaRoot)Builds/*/include/sqlite $(StroikaRoot)Builds/*/lib/*sqlite.*  $(StroikaRoot)Builds/*/lib/pkgconfig/sqlite.pc
+	@rm -rf  $(StroikaBuildsRoot)*/include/sqlite $(StroikaBuildsRoot)*/lib/*sqlite.*  $(StroikaBuildsRoot)*/lib/pkgconfig/sqlite.pc
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite
 endif
@@ -217,7 +217,7 @@ endif
 clean::
 	@rm -rf $(AMALGAMATION_WITH_VERSION)
 ifeq ($(CONFIGURATION),)
-	@rm -rf  $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/sqlite
+	@rm -rf  $(StroikaIntermediateFilesRoot)*/ThirdPartyComponents/sqlite
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif

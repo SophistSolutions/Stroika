@@ -1,8 +1,9 @@
-StroikaRoot	:=	$(abspath ../../../../)/
-SrcDir		:=  $(StroikaRoot)Tools/Sources/Stroika/Frameworks/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/
+StroikaSourceRoot	:=	$(abspath ../../../../)/
 
-include $(StroikaRoot)/Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)/Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=  $(StroikaSourceRoot)Tools/Sources/Stroika/Frameworks/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Tools/Frameworks/
 
 
 VPATH		=	$(SrcDir)
@@ -11,7 +12,7 @@ SubDirs	:=				\
 	WebServer	\
 
 
-include $(StroikaRoot)/Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)/Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all check:	$(SubDirs)

@@ -1,10 +1,11 @@
-StroikaRoot	:=	$(abspath ../../../../../../../)/
-SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Platform/Windows/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Execution/Platform/Windows/
+StroikaSourceRoot	:=	$(abspath ../../../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+SrcDir		:=  $(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Execution/Platform/Windows/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Execution/Platform/Windows/
+
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 vpath %cpp $(SrcDir)
 

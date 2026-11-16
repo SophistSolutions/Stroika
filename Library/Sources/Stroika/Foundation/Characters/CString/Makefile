@@ -1,10 +1,11 @@
-StroikaRoot	:=	$(abspath ../../../../../../)/
-SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/CString/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Characters/CString/
+StroikaSourceRoot	:=	$(abspath ../../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+SrcDir		:=	$(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Characters/CString/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Characters/CString/
+
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 vpath %cpp $(SrcDir)
 

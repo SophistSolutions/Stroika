@@ -1,8 +1,9 @@
-StroikaRoot	:=	$(abspath ../../../../../../)/
-SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/StructuredStreamEvents/
+StroikaSourceRoot	:=	$(abspath ../../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=	$(StroikaSourceRoot)Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/DataExchange/StructuredStreamEvents/
 
 
 vpath %cpp $(SrcDir)
@@ -12,7 +13,7 @@ Objs	:=	\
 	$(ObjDir)ObjectReader${OBJ_SUFFIX}\
 
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

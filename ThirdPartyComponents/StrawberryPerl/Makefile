@@ -3,12 +3,12 @@
 #	work for building openssl. Tried ActivePerl for a while but too buggy/PITA to install
 #
 #	To run STRAWBERRYPERL (roughly):
-#		PATH=$(StroikaRoot)ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin:$PATH		OR
+#		PATH=$(StroikaSourceRoot)ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin:$PATH		OR
 #		portableshell.bat from 'CURRENT' directory
 #
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 #
 # CHECK FOR UPDATED VERSIONS https://strawberryperl.com/releases.html
@@ -32,25 +32,25 @@ FETCHURLS_+=https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/down
 
 
 ${ZIPPED_SOURCES_FILE_}:
-	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
+	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaSourceRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
 
 check-prerequisite-tools:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "strawberry-perl $(PERL_VERSION_) - Checking Prerequisite tools ... "
-	@{ type unzip > /dev/null; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool unzip && exit 1; }
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "strawberry-perl $(PERL_VERSION_) - Checking Prerequisite tools ... "
+	@{ type unzip > /dev/null; } || { $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool unzip && exit 1; }
 	@$(ECHO) "done";
 
 ORIGs CURRENT:	$(ZIPPED_SOURCES_FILE_)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "strawberry-perl ${PERL_VERSION_} - Extracting $(ZIPPED_SOURCES_FILE_) to $@"` "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "strawberry-perl ${PERL_VERSION_} - Extracting $(ZIPPED_SOURCES_FILE_) to $@"` "... "
 	mkdir -p $@
 	unzip -q $(ZIPPED_SOURCES_FILE_) -d $@
 
 
 PRODUCED_OUTPUT_ARTIFACTS_=	\
-	${StroikaRoot}ThirdPartyComponents/StrawberryPerl/CURRENT		\
-	${StroikaRoot}ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin/perl.exe	\
+	${StroikaSourceRoot}ThirdPartyComponents/StrawberryPerl/CURRENT		\
+	${StroikaSourceRoot}ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin/perl.exe	\
 
 all:	
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/strawberry-perl Build $(PERL_VERSION_):"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/strawberry-perl Build $(PERL_VERSION_):"
 	@$(MAKE) --silent CURRENT
 	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) check
 
@@ -59,8 +59,8 @@ check:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "strawberry-perl ${libxml2_VERSION_} - Checking ... "
-	@${StroikaRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "strawberry-perl ${libxml2_VERSION_} - Checking ... "
+	@${StroikaSourceRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
 	@${ECHO} " Stroika/ThirdPartyComponents/strawberry-perl -    [Succeeded]";
 
 

@@ -5,9 +5,9 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 #
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include ${StroikaRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
+include ${StroikaSourceRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
@@ -15,7 +15,7 @@ CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 ifneq (${CONFIGURATION},)
-include ${StroikaRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for CMAKE_ARGS etc
+include ${StroikaSourceRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for CMAKE_ARGS etc
 endif
 
 #
@@ -30,9 +30,9 @@ ZIPPED_SOURCES_FILE_=../Origs-Cache/zstd-${ZSTD_VERSION_}.tar.gz
 FETCHURLS_=https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION_}/zstd-${ZSTD_VERSION_}.tar.gz
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/zstd)/
-OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
-COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zstd/CURRENT)/
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)${CONFIGURATION}/ThirdPartyComponents/zstd)/
+OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaSourceRoot}/ThirdPartyComponents/zstd/CURRENT)/
 
 
 #@todo dont understand why config=${CMAKE_BUILD_TYPE} NEEDED for windows, and needs to not exist on unix
@@ -79,8 +79,8 @@ all:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/zstd Build ${ZSTD_VERSION_} {${CONFIGURATION}}:"
-	@${StroikaRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/zstd Build ${ZSTD_VERSION_} {${CONFIGURATION}}:"
+	@${StroikaSourceRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
 	@#make ZIPPED_SOURCES_FILE_ even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@${MAKE} --no-print-directory --silent ${ZIPPED_SOURCES_FILE_}
 	@${MAKE} --no-print-directory --silent ${PRODUCED_OUTPUT_ARTIFACTS_}
@@ -100,16 +100,16 @@ ifeq (${CONFIGURATION},)
 endif
 	@${MAKE} --silent CURRENT
 
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
 	@echo "${CMAKE}" ${CMAKE_ARGS} -S "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}build/cmake" -B . >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} -S ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}build/cmake -B . >> CONFIGURE-OUT.txt 2>&1
 	@
 	@
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build .  ${CMAKE_BUILD_AND_INSTALL_ARGS} ${CMAKE_BUILD_TYPE_EXTRA_ARG_}  > BUILD-OUT.txt 2>&1
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
 	@# on windows, file named zstd_static.lib but referenced as zstd.lib in .pc file
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
@@ -117,11 +117,11 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 endif
 
 ${ZIPPED_SOURCES_FILE_}:
-	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
+	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaSourceRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
 
 
 ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaRoot}Build/Scripts/SubstituteBackVariables "zstd ${ZSTD_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to $@"` "... "
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables "zstd ${ZSTD_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1
@@ -133,8 +133,8 @@ endif
 
 
 check-prerequisite-tools:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "zstd ${VERSION} - Checking Prerequisite tools ... "
-	@{ type cmake > /dev/null 2>&1; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool cmake && exit 1; }
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "zstd ${VERSION} - Checking Prerequisite tools ... "
+	@{ type cmake > /dev/null 2>&1; } || { $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool cmake && exit 1; }
 	@$(ECHO) "done";
 
 
@@ -142,14 +142,14 @@ check:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "zstd ${ZSTD_VERSION_} - Checking ... "
-	@${StroikaRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "zstd ${ZSTD_VERSION_} - Checking ... "
+	@${StroikaSourceRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
 	@${ECHO} " Stroika/ThirdPartyComponents/zstd -    [Succeeded]";
 
 
 clean:
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}IntermediateFiles/*/ThirdPartyComponents/zstd
+	@rm -rf ${StroikaIntermediateFilesRoot}*/ThirdPartyComponents/zstd
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
@@ -157,7 +157,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}Builds/*/lib/*zstd${LIB_SUFFIX} ${StroikaRoot}Builds/*/include/{zstd}.h
+	@rm -rf ${StroikaBuildsRoot}*/lib/*zstd${LIB_SUFFIX} ${StroikaBuildsRoot}*/include/{zstd}.h
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}

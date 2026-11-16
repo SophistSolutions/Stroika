@@ -22,14 +22,133 @@
 #
 
 
-ifndef StroikaRoot
-$(error("StroikaRoot must be defined and included before this file"))
+#
+## THE DIRECTORIES A STROIKA BUILD USES
+#
+#	Each is an absolute path ending in /. On Windows the build root's DirectoryLayout.mk writes them C:/... (which make,
+#	Cygwin, MSYS and native Windows tools all read); what a makefile computes itself (StroikaSourceRoot, $(abspath ...))
+#	is spelled as the make in use spells it (/c/... for MSYS, /cygdrive/c/... for Cygwin) - so compare two directories
+#	only through $(realpath ...).
+#
+#	The source trees:
+#
+#		StroikaSourceRoot
+#			The top of the Stroika source tree. Each makefile sets it itself, from its own position
+#			(StroikaSourceRoot := $(abspath ../../)/), as it needs it to include this file. (Before Stroika v3.0d26,
+#			StroikaRoot.)
+#
+#		TOP_ROOT
+#			The top of the project being built. An application built on Stroika (as Skel sets one up) sets it to its own
+#			top directory, its StroikaSourceRoot being $(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/; building
+#			Stroika itself, it defaults to StroikaSourceRoot (below). Messages show paths relative to it
+#			(Build/Scripts/SubstituteBackVariables).
+#
+#	The build root, and what it says:
+#
+#		StroikaIntermediateFilesRoot	(default $(TOP_ROOT)IntermediateFiles/)
+#			The build root - as CMake's -B names a build directory: the directory that says where everything else is.
+#			It holds the objects, generated files, third-party component builds, each configuration's Configuration.mk
+#			(which ApplyConfiguration writes from the configuration's .xml, and this file includes) - and what makes it a
+#			build root:
+#				DirectoryLayout.mk		the directories below, each absolute (and the TOP_ROOT it builds, checked)
+#				ConfigurationFiles/		the named configurations
+#				Makefile				make run there builds the project (TOP_ROOT) into it
+#			Build/Scripts/MakeBuildRoot makes one, and nothing else does - where the build goes is a choice, never made
+#			for you: make (and configure) without one stops, printing the MakeBuildRoot command line that would make it.
+#			make clobber keeps those three; make distclean deletes the lot. Each source tree needs its own: two sharing
+#			one would share configurations and objects.
+#
+#		StroikaConfigurationFilesDir	($(StroikaIntermediateFilesRoot)ConfigurationFiles/)
+#			The named configurations, <name>.xml, which configure writes.
+#
+#		StroikaBuildsRoot				(MakeBuildRoot --builds-root; by default Builds/ beside the build root)
+#			The products: a directory per configuration, StroikaPlatformTargetBuildDir. Stroika has no install step -
+#			the tests, the samples and applications built on Stroika all use the libraries from here.
+#
+#		StroikaPlatformTargetBuildDir	($(StroikaBuildsRoot)$(CONFIGURATION)/ - defined below)
+#			One configuration's products: lib/ (StroikaLibDir), include/, bin/, Tests/, the samples. Also the --prefix the
+#			third-party components install into.
+#
+#	A make finds the build root through StroikaIntermediateFilesRoot - from the environment (a parent make exports it),
+#	make's command line, a makefile before this is included, or the default - TOP_ROOT's, so an application made by Skel
+#	(which sets TOP_ROOT in each makefile) has its own, shared with the Stroika inside it - or by being run in the build
+#	root itself. The rest is the build root's to say:
+#	StroikaBuildsRoot, given any other way, must match it. They are exported, so scripts run from make (configure,
+#	ApplyConfiguration, GetConfigurations, ...) see them; run by hand, the scripts find them the same way
+#	(Build/Lib/Python/DirectoryLayout.py).
+#
+ifndef StroikaSourceRoot
+ifdef StroikaRoot
+$(error StroikaRoot is named StroikaSourceRoot since Stroika v3.0d26: rename it in this makefile (@see the Stroika v3.0d26 upgrade notes, Release-Notes.md))
 endif
-export StroikaRoot
+$(error StroikaSourceRoot must be defined before including SharedMakeVariables-Default.mk)
+endif
+export StroikaSourceRoot
+
+ifndef TOP_ROOT
+export TOP_ROOT	:=	$(StroikaSourceRoot)
+endif
+
+StroikaIntermediateFilesRoot	?=	$(TOP_ROOT)IntermediateFiles/
+ifneq ($(abspath $(StroikaIntermediateFilesRoot))/,$(StroikaIntermediateFilesRoot))
+$(error StroikaIntermediateFilesRoot must be an absolute path ending in / (got "$(StroikaIntermediateFilesRoot)"))
+endif
+StroikaDirectoryLayout_	:=	$(StroikaIntermediateFilesRoot)DirectoryLayout.mk
+ifeq ($(wildcard $(StroikaDirectoryLayout_)),)
+# The MakeBuildRoot command line, run in TOP_ROOT, that makes the build root this make looks for (as DirectoryLayout.py's)
+StroikaMakeBuildRootCommand_	:=	$(patsubst $(TOP_ROOT)%,%,$(StroikaSourceRoot))Build/Scripts/MakeBuildRoot$(if $(filter-out $(StroikaSourceRoot),$(TOP_ROOT)), --top-root .)$(if $(filter-out $(TOP_ROOT)IntermediateFiles/,$(StroikaIntermediateFilesRoot)), --intermediate-files-root $(StroikaIntermediateFilesRoot))
+$(info No build root at $(StroikaIntermediateFilesRoot) (no DirectoryLayout.mk). To make it, run in $(TOP_ROOT):)
+$(info $(subst x, ,xxxx)$(StroikaMakeBuildRootCommand_))
+$(error No build root (Build/Scripts/MakeBuildRoot --help))
+endif
+StroikaIntermediateFilesRootFound_	:=	$(StroikaIntermediateFilesRoot)
+StroikaBuildsRootGiven_				:=	$(StroikaBuildsRoot)
+include $(StroikaDirectoryLayout_)
+ifneq ($(realpath $(StroikaIntermediateFilesRoot)),$(realpath $(StroikaIntermediateFilesRootFound_)))
+$(error $(StroikaDirectoryLayout_) was written for the build root $(StroikaIntermediateFilesRoot) - was it moved or copied? (Build/Scripts/MakeBuildRoot makes a new one))
+endif
+ifneq ($(realpath $(StroikaDirectoryLayoutTopRoot)),$(realpath $(TOP_ROOT)))
+$(error The build root $(StroikaIntermediateFilesRoot) builds $(StroikaDirectoryLayoutTopRoot), not this TOP_ROOT ($(TOP_ROOT)): each source tree needs its own (Build/Scripts/MakeBuildRoot))
+endif
+ifneq ($(origin StroikaBuildsRoot),file)
+$(error StroikaBuildsRoot was given on the $(origin StroikaBuildsRoot), but the build root says where it is: $(StroikaDirectoryLayout_))
+endif
+ifneq ($(StroikaBuildsRootGiven_),)
+ifneq ($(StroikaBuildsRootGiven_),$(StroikaBuildsRoot))
+$(error StroikaBuildsRoot is $(StroikaBuildsRootGiven_) here, but $(StroikaDirectoryLayout_) says $(StroikaBuildsRoot))
+endif
+endif
+export StroikaIntermediateFilesRoot StroikaConfigurationFilesDir StroikaBuildsRoot
+
+# A recipe command deleting what the build put in the build root, but not what makes it one: DirectoryLayout.mk, its
+# Makefile and its configurations (make clobber; make distclean deletes those too)
+StroikaClobberIntermediateFiles	=	/usr/bin/find $(StroikaIntermediateFilesRoot) -mindepth 1 -maxdepth 1 -not -name ConfigurationFiles -not -name DirectoryLayout.mk -not -name Makefile -exec rm -rf {} +
+
+# Put before the command of every $(shell ...) that runs a script, or a make, reading these directories:
+#     $(shell $(StroikaDirectoryLayoutEnv) $(StroikaSourceRoot)Build/Scripts/GetConfigurations --quiet)
+# GNU make passes its exported variables to a $(shell ...) only from version 4.4; before that, a $(shell ...) gets just
+# the environment make itself was started with - so a build root set on make's command line, or in a makefile (as
+# Skel's templates do), would not reach it. Recipes need nothing: every version passes them exported variables. The rest
+# follows from the build root.
+# Delete this, and its uses, once the oldest GNU make Stroika supports is 4.4 (as of 2026-11: macOS ships 3.81 - and
+# never anything newer, as later versions are GPLv3 - and Ubuntu 22.04 and 24.04 ship 4.3), or once the build moves to
+# CMake (https://github.com/SophistSolutions/Stroika/issues/1157), whichever comes first.
+StroikaDirectoryLayoutEnv	:=	StroikaIntermediateFilesRoot="$(StroikaIntermediateFilesRoot)" TOP_ROOT="$(TOP_ROOT)"
 
 ifneq ($(CONFIGURATION),)
+# A makefile setting StroikaApplyConfigurationIfMissing to 1 (Foundation's and Frameworks') applies the configuration
+# first, when run by itself before that has been done (make -C Library/Sources/Stroika/Foundation CONFIGURATION=...)
+ifeq ($(StroikaApplyConfigurationIfMissing),1)
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),clobber)
+ifeq ($(wildcard $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Configuration.mk),)
+StroikaApplyConfigurationOutput_	:=	$(shell $(StroikaDirectoryLayoutEnv) $(MAKE) --directory $(StroikaSourceRoot) --no-print-directory CONFIGURATION=$(CONFIGURATION) --silent apply-configuration)
+endif
+endif
+endif
+endif
 	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	-include $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Configuration.mk
 endif
 
 
@@ -44,26 +163,7 @@ endif
 #
 #	exported so scripts invoked from recipes can just use it, instead of each re-running
 #	Build/Scripts/DetectedHostOS for itself (and so it can be overridden on a make command line)
-export DETECTED_HOST_OS	:=	$(shell $(StroikaRoot)Build/Scripts/DetectedHostOS)
-
-
-
-# Needed to workaround a few MSYS issues/bugs?
-ifeq (${DETECTED_HOST_OS},MSYS)
-StroikaRoot_MIXED	:=	$(shell cygpath --mixed ${StroikaRoot})
-else
-StroikaRoot_MIXED	:=	${StroikaRoot}
-endif
-
-
-
-#
-# Some makefiles - apps building stroika as a part - may define TOP_ROOT (often will). Allow Stroika makefiles to referene
-# TOP_ROOT even if not in that context (just treat as alias for StroikaRoot)
-#
-ifndef TOP_ROOT
-export TOP_ROOT	:=	$(StroikaRoot)
-endif
+export DETECTED_HOST_OS	:=	$(shell $(StroikaSourceRoot)Build/Scripts/DetectedHostOS)
 
 
 
@@ -73,7 +173,7 @@ endif
 # (each recipe line, and since make 4.4 each $(shell ...)): many times a compile, slow on Windows. Every build uses ECHO.
 # nb we need to define ECHO at all (instead of using echo) because of some braindead default echo implementations, like AIX
 ifndef ECHO
-export ECHO:=	$(shell $(StroikaRoot)Build/Scripts/GetDefaultShellVariable ECHO)
+export ECHO:=	$(shell $(StroikaSourceRoot)Build/Scripts/GetDefaultShellVariable ECHO)
 endif
 
 FUNCTION_CAPITALIZE_WORD=$(shell $(ECHO) $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell $(ECHO) $1 | cut -c 2-99)
@@ -108,8 +208,8 @@ endif
 #	ObjDir_ToolsSafe: ObjDir in a form safe to pass to the build TOOLS (the compiler) - for ObjDir on a compile line, such
 #	as -I${ObjDir_ToolsSafe} for headers generated beside the objects (.embed files). With Visual Studio, make runs under
 #	MSYS2 or Cygwin, so ObjDir is a POSIX path (/c/... or /cygdrive/c/...) that cl.exe, a native Windows program, does not
-#	understand; cygpath --mixed gives C:/... (drive letter, forward slashes), which cl.exe and the shell both accept - the
-#	same conversion as StroikaRoot_MIXED, above. Elsewhere it is just ObjDir.
+#	understand; cygpath --mixed gives C:/... (drive letter, forward slashes), which cl.exe and the shell both accept.
+#	Elsewhere it is just ObjDir.
 #
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ObjDir_ToolsSafe	=	$(shell cygpath --mixed ${ObjDir})
@@ -118,10 +218,10 @@ ObjDir_ToolsSafe	=	${ObjDir}
 endif
 
 #
-#	This is typically the --prefix - in most third-party-component makefile/configure lines
+#	StroikaPlatformTargetBuildDir: @see THE DIRECTORIES A STROIKA BUILD USES, at the top of this file
 #
 ifndef StroikaPlatformTargetBuildDir
-	StroikaPlatformTargetBuildDir		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/
+	StroikaPlatformTargetBuildDir		:=	$(StroikaBuildsRoot)$(CONFIGURATION)/
 endif
 
 
@@ -130,7 +230,7 @@ endif
 #
 #		Directory where the library (.lib, or .a) Stroika libraries are found (Builds/$(CONFIGURATION)/)
 #
-#		Note - StroikaLibDir was StroikaPlatformTargetBuildDir (aka $(StroikaRoot)Builds/$(CONFIGURATION)/)	before Stroika 3.0d21
+#		Note - StroikaLibDir was StroikaPlatformTargetBuildDir (aka $(StroikaSourceRoot)Builds/$(CONFIGURATION)/)	before Stroika 3.0d21
 #		but was switched to this format to be more consistent with how pkgconfig works.
 #
 ifndef StroikaLibDir
@@ -259,12 +359,12 @@ CXXFLAGS       :=
 else
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 # use $(shell instead of $$() for windows else fails - probably due to my not knowing how to fully enuf disable path covnersions
-CPPFLAGS       =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${StroikaSourceRoot}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
 else
-CPPFLAGS       =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${StroikaSourceRoot}Build/Scripts/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
 endif
-CFLAGS         =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
-CXXFLAGS       =       $$(${StroikaRoot}Build/Scripts/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
+CFLAGS         =       $$(${StroikaSourceRoot}Build/Scripts/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
+CXXFLAGS       =       $$(${StroikaSourceRoot}Build/Scripts/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
 endif
 
 
@@ -421,7 +521,7 @@ DEFAULT_LINK_LINE=\
 		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}Build/Scripts/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
+		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaSourceRoot}Build/Scripts/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
 		$4 \
 		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
 else
@@ -475,7 +575,7 @@ endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 RC_FLAGS	=      ${CPPFLAGS} \
 						-nologo \
-						-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))"
+						-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaIntermediateFilesRoot)$(CONFIGURATION))"
 
 DEFAULT_RC_LINE=\
 	"$(RC)" \

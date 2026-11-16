@@ -1,10 +1,11 @@
-StroikaRoot	:=	$(abspath ../../../../../../../)/
-SrcDir		:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/InteretProtocol/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/InteretProtocol/
+StroikaSourceRoot	:=	$(abspath ../../../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+SrcDir		:=   $(StroikaSourceRoot)Library/Sources/Stroika/Foundation/IO/Network/InteretProtocol/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/IO/Network/InteretProtocol/
+
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 vpath %cpp $(SrcDir)

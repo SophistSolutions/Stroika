@@ -1,8 +1,9 @@
-StroikaRoot	:=	$(abspath ../../../../../)/
-SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Memory/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Memory/
+StroikaSourceRoot	:=	$(abspath ../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=	$(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Memory/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Memory/
 
 VPATH = $(SrcDir)
 
@@ -13,7 +14,7 @@ Objs	:=	\
 	$(ObjDir)MemoryAllocator${OBJ_SUFFIX}\
 
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

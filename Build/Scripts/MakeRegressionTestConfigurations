@@ -7,8 +7,8 @@
 # recipes because the configure lines are long and heavily conditional, and were nearly unreadable
 # as one backslash-continued shell blob inside a makefile.
 #
-# WARNING: this DELETES all existing configurations (ConfigurationFiles/*) first - by design, so the
-#          regression test matrix is exactly what is defined here and nothing left over.
+# WARNING: this DELETES all existing configurations (the build root's ConfigurationFiles/*)
+#          first - by design, so the regression test matrix is exactly what is defined here and nothing left over.
 #
 # Environment:
 #	EXTRA_CONFIGURE_ARGS		extra args for every configure line here (read by configure itself,
@@ -22,7 +22,8 @@
 #
 
 MY_DIR_="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-StroikaRoot_="$(cd -P "${MY_DIR_}/../.." && pwd)"
+StroikaSourceRoot_="$(cd -P "${MY_DIR_}/../.." && pwd)"
+CONFIGURATION_FILES_DIR_="${StroikaIntermediateFilesRoot:-${TOP_ROOT:-${StroikaSourceRoot_}/}IntermediateFiles/}ConfigurationFiles/"   # always the build root's ConfigurationFiles/ (SharedMakeVariables-Default.mk)
 
 DETECTED_HOST_OS="${DETECTED_HOST_OS:-$("${MY_DIR_}/DetectedHostOS")}"
 MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
@@ -39,7 +40,7 @@ MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
 #
 export EXTRA_CONFIGURE_ARGS="--all-available-third-party-components ${EXTRA_CONFIGURE_ARGS:-}"
 
-cd "$StroikaRoot_"
+cd "$StroikaSourceRoot_"
 
 
 basicUnixTestConfigurations_ ()
@@ -295,7 +296,7 @@ raspberryPiCrossCompileTestConfigurations_ ()
 case "${1:-}" in
 	'')
 		"${MY_DIR_}/PrintProgressLine" "${MAKE_INDENT_LEVEL}" "Making regression-test-configurations:"
-		rm -f ConfigurationFiles/*
+		rm -f "${CONFIGURATION_FILES_DIR_%/}"/*
 		# the configure lines below report at one level deeper than our own heading
 		export MAKE_INDENT_LEVEL=$((MAKE_INDENT_LEVEL + 1))
 		case "$DETECTED_HOST_OS" in

@@ -1,65 +1,57 @@
-#!/bin/bash
+#!/usr/bin/python3
 #
-#   This is mainly used for building apps on top of Stroika and having those apps share
-#   a common build root with Stroika itself (and common ConfigurationFiles).
+#   MakeBuildRoot [--intermediate-files-root DIR] [--builds-root DIR] [--top-root DIR]
 #
-# build-root:
-# 	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
-# 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./Build/Scripts/MakeBuildRoot ../../../
+#   Makes a build root - as cmake -B makes a build directory: the directory that says where everything else is. It is
+#   StroikaIntermediateFilesRoot, which holds the objects and other intermediate files, and the configurations
+#   (ConfigurationFiles/). MakeBuildRoot writes there
+#       DirectoryLayout.mk  the directories, each absolute: StroikaBuildsRoot, where the products go, ... - which make,
+#                           Python and sh read
+#       Makefile            so make run there builds the project (TOP_ROOT) into it
+#   and copies in any configurations from a ConfigurationFiles/ beside it (where they were before Stroika v3.0d26).
 #
-#   USAGE
+#   --intermediate-files-root   the build root: by default StroikaIntermediateFilesRoot from the environment, else
+#                               TOP_ROOT's IntermediateFiles/
+#   --builds-root               StroikaBuildsRoot: by default Builds/ beside the build root
+#   --top-root                  the project the build root builds (TOP_ROOT): by default TOP_ROOT from the environment,
+#                               else this Stroika tree; an application made by Skel gives its own top directory
+#   Each may be relative (to the current directory); DirectoryLayout.mk records them absolute. A build root made already
+#   is left as it is - though a --builds-root or --top-root given must match it.
 #
-#       Build/Scripts/MakeBuildRoot <root-directory>
+#   Nothing else makes one: make and configure stop without one, printing the command line that makes the build root they
+#   look for. So, first, in a new Stroika tree:
+#       Build/Scripts/MakeBuildRoot                         # IntermediateFiles/ here, and Builds/ beside it
+#   in an application made by Skel, in its top directory:
+#       ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .
+#   or to build out of the source tree:
+#       Build/Scripts/MakeBuildRoot --intermediate-files-root /fastdisk/stroika-out/IntermediateFiles/
+#       cd /fastdisk/stroika-out/IntermediateFiles && make default-configurations && make CONFIGURATION=Debug all -j8
 #
-#   Run it from the TOP of the checkout - it operates on ./Builds, ./IntermediateFiles and
-#   ./ConfigurationFiles relative to the current directory. <root-directory> must already exist;
-#   the three subdirectories under it are created if needed.
+#   Build/Lib/Python/DirectoryLayout.py does the work; the top of Build/Lib/Make/SharedMakeVariables-Default.mk documents
+#   the directories.
 #
-#   EXAMPLES
-#
-#       Build/Scripts/MakeBuildRoot /scratch/stroika-out
-#       Build/Scripts/MakeBuildRoot ../../../
-#
-#   DESTRUCTIVE: it does `rm -rf Builds ConfigurationFiles IntermediateFiles` first, so any existing
-#   output AND any existing configurations in this checkout are discarded. Re-run
-#   `make default-configurations` (or your own configure lines) afterwards.
-#
-#   WINDOWS - EXPECT THIS TO FAIL for an ordinary (non-administrator) account, by design as of
-#   2026-09. There is no working mechanism for aliasing a DIRECTORY there: a symbolic link made
-#   without SeCreateSymbolicLinkPrivilege is marked UNTRUSTED and Redirection Guard stops native
-#   tools traversing it (STATUS_UNTRUSTED_MOUNT_POINT - from MSVC that surfaces as an unrelated-
-#   looking "LNK1104: cannot open file"), directories cannot be hard linked at all, and a junction
-#   needs no privilege but is blocked by that same mitigation. MakeDirectoryLink verifies what it
-#   made and fails loudly rather than leaving a tree only half the toolchain can see, so this script
-#   stops with a real error instead of producing a checkout that mysteriously will not link.
-#   @see Documentation/Building-Stroika.md "Relocating build output", and
-#   https://github.com/SophistSolutions/Stroika/issues/1170 - deriving the three output roots from a
-#   StroikaOutputRoot make variable, which is the actual fix: works for every account on every
-#   platform, and is how CMake does it natively.
-#
-ROOT=$1
+import argparse
+import os
+import sys
 
-MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
-PREFIX=`Build/Scripts/PrintLevelLeader $MAKE_INDENT_LEVEL`
+THIS_DIR_ = os.path.dirname(os.path.abspath(__file__))
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the imports below
+sys.path.insert(0, os.path.join(THIS_DIR_, "..", "Lib", "Python"))
+import DirectoryLayout  # noqa: E402
 
-if [ ! -e $ROOT ] ; then
-	echo "$PREFIX$ROOT doesn't exist, so you cannot link to it as a build root"
-	exit 1;
-fi
-
-echo "$PREFIX""Linking Stroika output and configuration directories in $(Build/Scripts/SubstituteBackVariables $(pwd)) to $ROOT"
-
-rm -rf Builds ConfigurationFiles IntermediateFiles
-
-TARGET_INTERMEDIATEFILES=$ROOT/IntermediateFiles
-TARGET_BUILDS=$ROOT/Builds
-TARGET_CONFIGURATIONFILES=$ROOT/ConfigurationFiles
-
-mkdir -p $TARGET_INTERMEDIATEFILES
-Build/Scripts/MakeDirectoryLink $TARGET_INTERMEDIATEFILES || exit $?
-
-mkdir -p $TARGET_BUILDS
-Build/Scripts/MakeDirectoryLink $TARGET_BUILDS || exit $?
-
-mkdir -p $TARGET_CONFIGURATIONFILES
-Build/Scripts/MakeDirectoryLink $TARGET_CONFIGURATIONFILES || exit $?
+parser = argparse.ArgumentParser(description="Make a Stroika build root (StroikaIntermediateFilesRoot): the directory that says "
+                                 "where the build goes. Each directory may be relative (to the current directory).")
+parser.add_argument("--intermediate-files-root", dest="intermediateFilesRoot",
+                    help="the build root (StroikaIntermediateFilesRoot): by default the environment's, else TOP_ROOT's IntermediateFiles/")
+parser.add_argument("--builds-root", dest="buildsRoot", help="StroikaBuildsRoot, where the products go: by default Builds/ beside the build root")
+parser.add_argument("--top-root", dest="topRoot", default=os.environ.get("TOP_ROOT"),
+                    help="the project it builds (TOP_ROOT): by default the environment's, else this Stroika tree - in an application made "
+                    "by Skel, its top directory")
+parser.add_argument("oldRoot", nargs="?", help=argparse.SUPPRESS)
+args = parser.parse_args()
+if args.oldRoot is not None:
+    sys.exit("MakeBuildRoot ROOT-DIRECTORY (making links to it) is gone since Stroika v3.0d26: MakeBuildRoot "
+             "--intermediate-files-root DIR makes a build root, with no links (@see the Stroika v3.0d26 upgrade notes, Release-Notes.md)")
+intermediateFilesRoot = args.intermediateFilesRoot or os.environ.get("StroikaIntermediateFilesRoot") or \
+    DirectoryLayout.AbsoluteDir(args.topRoot or DirectoryLayout.STROIKA_SOURCE_ROOT) + "IntermediateFiles/"
+DirectoryLayout.MakeBuildRoot(intermediateFilesRoot, args.buildsRoot, args.topRoot)

@@ -1,8 +1,9 @@
-StroikaRoot	:=	$(abspath ../../../../../../)/
-SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Math/Optimization/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Math/Optimization/
+StroikaSourceRoot	:=	$(abspath ../../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=  $(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Math/Optimization/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Math/Optimization/
 
 vpath %cpp $(SrcDir)
 
@@ -10,7 +11,7 @@ vpath %cpp $(SrcDir)
 Objs	:=	\
 
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

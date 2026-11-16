@@ -1,6 +1,6 @@
-StroikaRoot	:=	$(abspath ../)/
+StroikaSourceRoot	:=	$(abspath ../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 .PHONY:	samples all check clobber
 
@@ -18,24 +18,24 @@ help:
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tools {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tools {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tools {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tools {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
@@ -44,7 +44,7 @@ endif
 
 clean clobber::
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else

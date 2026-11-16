@@ -39,12 +39,13 @@ Stroika uses a hand-rolled GNU Make + custom `configure` script build (not CMake
 
 ### One-time setup
 ```bash
+Build/Scripts/MakeBuildRoot     # the build root, IntermediateFiles/ (--help: elsewhere); every make, and configure, stop without one
 make check-prerequisite-tools   # verify required tools are installed
-make default-configurations     # create default named configurations under ConfigurationFiles/*.xml
+make default-configurations     # create default named configurations under IntermediateFiles/ConfigurationFiles/*.xml
 ```
 Configurations are named, XML-described build variants (compiler, flags, feature flags for optional
 components like boost/openssl/sqlite/mongocxx/etc). List them with `make list-configurations` /
-`make list-configuration-tags`. **Never hand-edit a `ConfigurationFiles/*.xml` file** — amend the
+`make list-configuration-tags`. **Never hand-edit a `ConfigurationFiles/*.xml` file** (in the build root, IntermediateFiles/) — amend the
 `configure` command line stored as the first element of the file and re-run `make apply-configurations`
 (or `make CONFIGURATION=X apply-configuration`).
 
@@ -57,7 +58,10 @@ make CONFIGURATION=Debug samples -j8    # sample apps
 make TAGS=Unix all -j8                  # build all configs tagged "Unix"
 ```
 Intermediate objects go to `IntermediateFiles/{CONFIGURATION}/`; final libs/executables to
-`Builds/{CONFIGURATION}/`.
+`Builds/{CONFIGURATION}/`; configurations to `IntermediateFiles/ConfigurationFiles/` - the build root, IntermediateFiles/,
+says where (an out-of-source build: `Documentation/Building-Stroika.md`, "Relocating build output"). In makefiles
+use `$(StroikaBuildsRoot)`, `$(StroikaIntermediateFilesRoot)`, `$(StroikaConfigurationFilesDir)` - never
+`$(StroikaSourceRoot)Builds/` and the like.
 
 ### Testing
 ```bash
@@ -318,7 +322,7 @@ The dev boxes run LGP's long builds and release regression runs (one platform ta
   are the same images. Stop your own by the PID you started, or a `pkill -f` pattern unique to your command.
 - **Keep scratch in one directory of your own** (eg `/Sandbox/claude/`), check `df -h` before building several
   configurations - the disk is shared, and has been filled - and delete scratch configurations (`Builds/<cfg>`,
-  `IntermediateFiles/<cfg>`, `ConfigurationFiles/<cfg>.xml`) as soon as you are done with them.
+  `IntermediateFiles/<cfg>`, `IntermediateFiles/ConfigurationFiles/<cfg>.xml`) as soon as you are done with them.
 
 ## Commits
 

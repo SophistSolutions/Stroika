@@ -5,11 +5,11 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 #
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include ${StroikaRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
+include ${StroikaSourceRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
 ifneq (${CONFIGURATION},)
-include ${StroikaRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
+include ${StroikaSourceRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
 
 #
@@ -27,9 +27,9 @@ FETCHURLS_+= https://github.com/google/googletest/archive/refs/tags/v${GOOGLETES
 
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/GoogleTest)/
-OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
-COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/GoogleTest/CURRENT)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)${CONFIGURATION}/ThirdPartyComponents/GoogleTest)/
+OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaSourceRoot}/ThirdPartyComponents/GoogleTest/CURRENT)
 
 
 
@@ -62,8 +62,8 @@ all:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/GoogleTest Build ${GOOGLETEST_VERSION_} {${CONFIGURATION}}:"
-	@${StroikaRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/GoogleTest Build ${GOOGLETEST_VERSION_} {${CONFIGURATION}}:"
+	@${StroikaSourceRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
 	@#make ZIPPED_SOURCES_FILE_ even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@${MAKE} --no-print-directory --silent ${ZIPPED_SOURCES_FILE_}
 	@${MAKE} --no-print-directory --silent ${PRODUCED_OUTPUT_ARTIFACTS_}
@@ -88,18 +88,18 @@ ifeq (${CONFIGURATION},)
 endif
 	@${MAKE} --silent CURRENT
 
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "GoogleTest ${GOOGLETEST_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "GoogleTest ${GOOGLETEST_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
 	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "GoogleTest ${GOOGLETEST_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "GoogleTest ${GOOGLETEST_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE}  > BUILD-OUT.txt 2>&1
 else
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build .  > BUILD-OUT.txt 2>&1
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "GoogleTest ${GOOGLETEST_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "GoogleTest ${GOOGLETEST_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
 else
@@ -113,11 +113,11 @@ endif
 
 
 ${ZIPPED_SOURCES_FILE_}:
-	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
+	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaSourceRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
 
 
 ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaRoot}Build/Scripts/SubstituteBackVariables "GoogleTest ${GOOGLETEST_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to $@"` "... "
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables "GoogleTest ${GOOGLETEST_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1
@@ -135,14 +135,14 @@ check:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "GoogleTest ${GOOGLETEST_VERSION_} - Checking ... "
-	@${StroikaRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "GoogleTest ${GOOGLETEST_VERSION_} - Checking ... "
+	@${StroikaSourceRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
 	@${ECHO} " Stroika/ThirdPartyComponents/GoogleTest -    [Succeeded]";
 
 
 clean:
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}IntermediateFiles/*/ThirdPartyComponents/GoogleTest
+	@rm -rf ${StroikaIntermediateFilesRoot}*/ThirdPartyComponents/GoogleTest
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
@@ -150,7 +150,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	# @rm -rf ${StroikaRoot}Builds/*/lib/{gmock,gtest,gtest_main}${LIB_SUFFIX} ${StroikaRoot}Builds/*/include/{gmock,gtest}
+	# @rm -rf ${StroikaBuildsRoot}*/lib/{gmock,gtest,gtest_main}${LIB_SUFFIX} ${StroikaBuildsRoot}*/include/{gmock,gtest}
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}

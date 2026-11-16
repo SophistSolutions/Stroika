@@ -29,7 +29,7 @@
 #   next account to open this tree, and there is no way for a script to ask on their behalf. So a
 #   silent success here is a narrower claim than it looks.
 #
-#   If two accounts do share a checkout on Windows - which is exactly what MakeBuildRoot invites, and
+#   If two accounts do share a checkout on Windows - as relocating build output with links invited, before v3.0d26, and
 #   what an RDP-plus-Remote-SSH setup makes easy to drift into - the link has to be RE-CREATED by
 #   whichever account is about to use it, and even that stands on a Microsoft policy rather than on
 #   anything we control. The real fix is to not need a directory link at all;
@@ -55,11 +55,11 @@
 #   links" right makes it work for that account, but that needs administrator setup, has to be
 #   repeated per account, and is a Microsoft policy that can change - so do not build a workflow on
 #   it.
-#   @see Documentation/Building-Stroika.md, and Build/Scripts/MakeBuildRoot which is the main caller.
+#   @see Documentation/Building-Stroika.md.
 #
 # EXAMPLES:
-#       ${StroikaRoot}Build/Scripts/MakeDirectoryLink /fastdisk/StroikaBuilds/Builds
-#       ${StroikaRoot}Build/Scripts/MakeDirectoryLink /fastdisk/StroikaBuilds/Builds ./Builds
+#       ${StroikaSourceRoot}Build/Scripts/MakeDirectoryLink /fastdisk/StroikaBuilds/Builds
+#       ${StroikaSourceRoot}Build/Scripts/MakeDirectoryLink /fastdisk/StroikaBuilds/Builds ./Builds
 #
 
 TARGET=$1
@@ -96,7 +96,7 @@ if [ ! -e "$TARGET" ] ; then
     #   Deliberately NOT guessing. Windows records file-vs-directory at symlink CREATION time, so a
     #   link made before its target exists is stamped with whichever kind we assumed - and if we
     #   assume wrong it is broken for good, in the way Stroika issue 1075 describes. The caller knows
-    #   which it meant; the filesystem does not. MakeBuildRoot mkdir -p's the target first.
+    #   which it meant; the filesystem does not.
     echo "ERROR: MakeDirectoryLink: target directory does not exist - create it first: $TARGET" 1>&2
     exit 1
 fi

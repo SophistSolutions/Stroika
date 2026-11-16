@@ -1,10 +1,11 @@
-StroikaRoot	:=	$(abspath ../../../../../../)/
-SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/
+StroikaSourceRoot	:=	$(abspath ../../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+SrcDir		:=	$(StroikaSourceRoot)Library/Sources/Stroika/Foundation/IO/Network/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/IO/Network/
+
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 SubDirs	:=				\
 	HTTP				\

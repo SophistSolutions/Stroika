@@ -1,13 +1,14 @@
 export TOP_ROOT:=$(abspath ../../../)/
-StroikaRoot	:=	$(TOP_ROOT)
+StroikaSourceRoot	:=	$(TOP_ROOT)
+
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
 SrcDir		:=	$(TOP_ROOT)Samples/HTMLUI/Backend/
-ObjDir		:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-HTMLUI/Backend/
 ResDir		:=	$(ObjDir)Resources/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-
-CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
+CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-HTMLUI/Backend/)
 
 TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/Backend/
 TARGETHTMLDIR	:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/html/
@@ -34,14 +35,14 @@ Objs	:=	\
 	$(ObjDir)WebServer${OBJ_SUFFIX}\
 	$(ObjDir)WSImpl${OBJ_SUFFIX}\
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
-VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
-VERSION_FILE_OUT=$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/AppVersion.h
+VERSION_FILE_IN=$(StroikaSourceRoot)STROIKA_VERSION
+VERSION_FILE_OUT=$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-HTMLUI/Backend/AppVersion.h
 $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
-	@mkdir -p $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI
-	@$(StroikaRoot)Build/Scripts/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion
+	@mkdir -p $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-HTMLUI
+	@$(StroikaSourceRoot)Build/Scripts/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion
 
 $(Objs):	$(VERSION_FILE_OUT)
 
@@ -69,7 +70,7 @@ $(ObjDir)WSImpl${OBJ_SUFFIX}:	${Resources_EmbedFiles}
 # Objs += $(SUBDIR_OBJS)
 
 all:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI/Backend:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/HTMLUI/Backend:"
 	@mkdir -p $(TARGETDIR)
 	@for s in ${SubDirs}; do $(MAKE) --directory $${s} -s MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all; done
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -77,15 +78,15 @@ all:
 
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/HTMLUI/Backend/...                "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/HTMLUI/Backend/...                "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
+	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
 	fi
 	@$(call DEFAULT_LINK_LINE,$@)
 
@@ -94,4 +95,4 @@ clean::
 	@rm -rf $(ObjDir)
 
 format-code:
-	@$(StroikaRoot)Build/Scripts/FormatCode Sources *.h *.inl *.cpp
+	@$(StroikaSourceRoot)Build/Scripts/FormatCode Sources *.h *.inl *.cpp

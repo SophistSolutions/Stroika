@@ -8,9 +8,9 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 .PHONY:	all clean clobber check doBuilds_
 
@@ -34,7 +34,7 @@ FETCHURLS+=https://sourceforge.net/projects/sevenzip/files/LZMA%20SDK/$(BASENAME
 .NOTPARALLEL:
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)/
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/ThirdPartyComponents/lzma)/
 
 # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
 ifeq (3.81,$(firstword $(sort $(MAKE_VERSION) 3.81)))
@@ -63,8 +63,8 @@ PRODUCED_OUTPUT_ARTIFACTS+=		$(PER_CONFIGURATION_BUILDS_DIR_)lib/lzma.lib
 endif
 
 
-#OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../lzma/"
-OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+#OUTPUT_WORKDIR_PRETTYNAME="{StroikaSourceRoot}Inter.../Thir.../lzma/"
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
 
 #
@@ -88,7 +88,7 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 
 
 all:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/lzma Build $(VERSION) {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/lzma Build $(VERSION) {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -113,26 +113,26 @@ endif
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaSourceRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
 check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "lzma ${VERSION} - Checking Prerequisite tools ... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "lzma ${VERSION} - Checking Prerequisite tools ... "
 	@$(MAKE) --no-print-directory --silent check_prerequisites_
 	@$(ECHO) "done"
 
 
 check_prerequisites_:
-	@{ type 7za > /dev/null 2>&1; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool 7za && exit 1; }
+	@{ type 7za > /dev/null 2>&1; } || { $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool 7za && exit 1; }
 	@#This weird redundant check for 7za is due to running WSL2 where the same stuff is in the path and there is a cygwin version in the path, but it wont work, so do this test which properly fails to trigger the error message about needing 7za installed under WSL2
-	@{ 7za --help > /dev/null 2>&1; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool 7za && exit 1; }
+	@{ 7za --help > /dev/null 2>&1; } || { $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool 7za && exit 1; }
 
 
 doBuilds_:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt ..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Build: see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -180,7 +180,7 @@ endif
 # .NOTPARALLEL:
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@` "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@` "... "
 	@(7za x -o$@ $(ZIPPEDFILE) > /dev/null 2> /dev/null) || (echo "WARNING: FAILURE in 7z rare, and testing - try again..."; rm -rf $@ ; 7za x -o$@ $(ZIPPEDFILE) > /dev/null)
 	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)" ] ; then \
 		cp Subdir-Makefile $@/Makefile;\
@@ -188,8 +188,8 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIP
 
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "lzma ${VERSION} - Checking ... "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "lzma ${VERSION} - Checking ... "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/lzma -    [Succeeded]";
 
 
@@ -199,7 +199,7 @@ clean:
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)Builds/*/{lzma}* $(StroikaRoot)Builds/*/include/lzma
+	@rm -rf $(StroikaBuildsRoot)*/{lzma}* $(StroikaBuildsRoot)*/include/lzma
 	@rm -rf CURRENT
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/lzma

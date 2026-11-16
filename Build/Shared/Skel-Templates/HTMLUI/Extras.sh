@@ -9,15 +9,15 @@ LC_APP_NAME=`echo -n "${APP_NAME}" | tr '[:upper:]' '[:lower:]'`
 
 sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/$TEMPLATE/Makefile > $APP_ROOT/Makefile
 
-# Patch TOP_ROOT and StroikaRoot, and HTMLUI->AppName in Makefiles
+# Patch TOP_ROOT and StroikaSourceRoot, and HTMLUI->AppName in Makefiles
 echo "Patching for HTMLUI Template::Makefiles..."
 for i in Backend Installers QuasarBasedHTMLApp;
 do
     cat $oldStroikaDir/Samples/HTMLUI/$i/Makefile  | \
-    sed 's/export TOP_ROOT:=.*/export TOP_ROOT:=$(abspath ..)\//' | \
-    sed 's/StroikaRoot:=.*/StroikaRoot:=$(TOP_ROOT)ThirdPartyComponents\/Stroika\/StroikaRoot\//' | \
+    sed 's/^export TOP_ROOT:=.*/export TOP_ROOT:=$(abspath ..)\//' | \
+    sed 's/^StroikaSourceRoot[[:space:]]*:=.*/StroikaSourceRoot:=$(TOP_ROOT)ThirdPartyComponents\/Stroika\/StroikaRoot\//' | \
     sed 's/SrcDir.*:=.*/SrcDir:=$(TOP_ROOT)Backend\//' | \
-    sed 's/VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION/VERSION_FILE_IN=$(TOP_ROOT)VERSION/' | \
+    sed 's/VERSION_FILE_IN=$(StroikaSourceRoot)STROIKA_VERSION/VERSION_FILE_IN=$(TOP_ROOT)VERSION/' | \
     sed "s/Samples-HTMLUI/${APP_NAME}/g" | \
     sed "s/Stroika-Sample-HTMLUI/${APP_NAME}/g" | \
     sed "s/Samples\/HTMLUI/${APP_NAME}/g" | \

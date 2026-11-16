@@ -1,11 +1,12 @@
-StroikaRoot	:=	$(abspath ../../)/
-SrcDir		:=	$(StroikaRoot)Samples/Service/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
+StroikaSourceRoot	:=	$(abspath ../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=	$(StroikaSourceRoot)Samples/Service/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-Service/
 
 
-CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/)
+CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-Service/)
 
 TARGETDIR	:=	${StroikaPlatformTargetBuildDir}Samples-Service/
 TARGETEXE	:=	$(TARGETDIR)Service${EXE_SUFFIX}
@@ -19,29 +20,29 @@ Objs	:=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
-VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
-VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/AppVersion.h
+VERSION_FILE_IN=$(StroikaSourceRoot)STROIKA_VERSION
+VERSION_FILE_OUT=$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-Service/AppVersion.h
 $(VERSION_FILE_OUT):	$(VERSION_FILE_IN)
-	@mkdir -p $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service
-	@$(StroikaRoot)Build/Scripts/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion
+	@mkdir -p $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-Service
+	@$(StroikaSourceRoot)Build/Scripts/MakeVersionFile $(VERSION_FILE_IN) $(VERSION_FILE_OUT) AppCPlusPlusVersion
 
 $(Objs):	$(VERSION_FILE_OUT)
 
 
 .PHONY: all
 all:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Service:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Service:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --silent installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/Service...            "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/Service...            "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
@@ -50,14 +51,14 @@ clobber::
 
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)';\
+	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)';\
 	fi
 	@$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)
 
 
 .PHONY:  installers installer-deb installer-rpm installer-wix
 installers installer-deb installer-rpm installer-wix:   $(TARGETEXE)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Service Installers:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/Service Installers:"
 	@$(MAKE) --no-print-directory --directory Installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@

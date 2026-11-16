@@ -1,15 +1,15 @@
-StroikaRoot	:=	$(abspath ../../../)/
+StroikaSourceRoot	:=	$(abspath ../../../)/
+
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 BASIC_NAME_LC=stroika-sampleservice
 BASIC_NAME=Stroika-SampleService
 OUTDIR_NAME=Samples-Service
 
-ObjDir				:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
-SrcDir				:=	$(StroikaRoot)Samples/Service/Instalers/
+ObjDir				:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/$(OUTDIR_NAME)/
+SrcDir				:=	$(StroikaSourceRoot)Samples/Service/Instalers/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
-
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 
@@ -18,12 +18,12 @@ TARGET_OUT_DIR=			${StroikaPlatformTargetBuildDir}$(OUTDIR_NAME)/
 BUILT_SERVICE_EXE				=	$(TARGET_OUT_DIR)Service${EXE_SUFFIX}
 
 
-VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
+VERSION_FILE_IN=$(StroikaSourceRoot)STROIKA_VERSION
 
 
 
-MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)Build/Scripts/ExtractVersionInformation $(VERSION_FILE_IN) Major.Minor)
-INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)Build/Scripts/ExtractVersionInformation $(VERSION_FILE_IN) DecoratedStageInfo)
+MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaSourceRoot)Build/Scripts/ExtractVersionInformation $(VERSION_FILE_IN) Major.Minor)
+INSTALLER_RELEASE_TAG=$(shell $(StroikaSourceRoot)Build/Scripts/ExtractVersionInformation $(VERSION_FILE_IN) DecoratedStageInfo)
 #INSTALLER_PLATFORM_TAG?=$(shell uname -m)
 INSTALLER_PLATFORM_TAG?=$(ARCH)
 INSTALLER_OS_TAG?=$(DETECTED_HOST_OS)
@@ -93,8 +93,8 @@ DEB_WORKDIR:=$(shell mktemp -d)/
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build-Output.txt
 $(TARGET_OUT_INSTALLER_DEB): $(BUILT_SERVICE_EXE) Makefile
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building DEB installer: "
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(DEB_WORKDIR)`"; log:" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(DEB_BUILD_OUT)`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building DEB installer: "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(DEB_WORKDIR)`"; log:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(DEB_BUILD_OUT)`
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-deb without a configuration argument)
 endif
@@ -108,7 +108,7 @@ endif
 	
 	@echo "Version: $(DEB_VERSION)" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/control
 	@cat $(BASIC_NAME_LC).control.static >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/control
-	@echo "Architecture: `$(StroikaRoot)Build/Scripts/MapArch2DebFileArchitecture ${ARCH}`" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/control
+	@echo "Architecture: `$(StroikaSourceRoot)Build/Scripts/MapArch2DebFileArchitecture ${ARCH}`" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/control
 
 	@echo "systemctl enable $(BASIC_NAME_LC)" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/postinst
 	@echo "systemctl start $(BASIC_NAME_LC)" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN/postinst
@@ -130,15 +130,15 @@ endif
 	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION).deb $(TARGET_OUT_INSTALLER_DEB)
 	
 	@rm -rf $(DEB_WORKDIR)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_DEB)"`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_DEB)"`
 
 
 RPM_WORKDIR=$(ObjDir)RPM_TMP/
 RPM_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 RPM_BUILD_OUT=$(ObjDir)RPM-Installer-Build-Output.txt
 $(TARGET_OUT_INSTALLER_RPM): $(BUILT_SERVICE_EXE) Makefile
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building RPM installer: "
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(RPM_WORKDIR)`"; log:" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(RPM_BUILD_OUT)`"..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building RPM installer: "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(RPM_WORKDIR)`"; log:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(RPM_BUILD_OUT)`"..."
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-rpm without a configuration argument)
 endif
@@ -165,17 +165,18 @@ endif
 	@cd $(RPM_WORKDIR) && rpmbuild -ba SPECS/$(BASIC_NAME_LC).spec > $(RPM_BUILD_OUT) 2>&1
 
 	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_INSTALLER_RPM)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_RPM)"`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_RPM)"`
 
 
 WIX_WORKDIR=$(ObjDir)WIX_TMP/
 WIX_OUT_OBJ=$(WIX_WORKDIR)Installer.wixobj
 WIX_OUT_OBJ_WIN=$(shell cygpath --mixed $(WIX_OUT_OBJ))
+WIX_SERVICE_EXE=$(WIX_WORKDIR)$(BASIC_NAME)-Service.exe
 WIX_BUILD_OUT=$(ObjDir)WIX-Installer-Build-Output.txt
 WIX_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
-WIX_4DOT_VERSION=$(shell $(StroikaRoot)Build/Scripts/ExtractVersionInformation $(VERSION_FILE_IN) Win32FourDot)
+WIX_4DOT_VERSION=$(shell $(StroikaSourceRoot)Build/Scripts/ExtractVersionInformation $(VERSION_FILE_IN) Win32FourDot)
 ifeq ($(qFeatureFlag_WIX),use)
-WIX_PATH_PREFIX=PATH="$(StroikaRoot)ThirdPartyComponents/WIX/CURRENT/:$(PATH)"
+WIX_PATH_PREFIX=PATH="$(StroikaSourceRoot)ThirdPartyComponents/WIX/CURRENT/:$(PATH)"
 else
 WIX_PATH_PREFIX=
 endif
@@ -186,8 +187,8 @@ CANDLE_ARCH=x64
 endif
 TARGET_OUT_INSTALLER_WIX_WINDOWSPATH=$(shell cygpath --mixed $(TARGET_OUT_INSTALLER_WIX))
 $(TARGET_OUT_INSTALLER_WIX): $(BUILT_SERVICE_EXE) Makefile
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building WIX installer: "
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(WIX_WORKDIR)` "; log: " `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(WIX_BUILD_OUT)`"..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building WIX installer: "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(WIX_WORKDIR)` "; log: " `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(WIX_BUILD_OUT)`"..."
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make WIX installer without a configuration argument)
 endif
@@ -195,7 +196,7 @@ endif
 	@#Make directories to be created by the installer
 	@mkdir -p $(WIX_WORKDIR)
 	@MAKEFLAGS= $(MAKE) doBld_ >> $(WIX_BUILD_OUT) 2>&1
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_WIX)"`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_WIX)"`
 
 
 # Broken out into a separate rule (as Samples/HTMLUI does) so MAKE ITSELF echoes each command
@@ -208,6 +209,6 @@ endif
 # reach the sub-make, since those travel in MAKEOVERRIDES rather than MAKEFLAGS.
 .PHONY: doBld_
 doBld_:
-	cp $(BUILT_SERVICE_EXE) $(WIX_WORKDIR)$(BASIC_NAME)-Service.exe
-	$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) Installer.wix -out "$(WIX_OUT_OBJ_WIN)"
-	$(WIX_PATH_PREFIX) $(StroikaRoot)Build/Scripts/RunWIXLight "$(WIX_OUT_OBJ_WIN)" -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'
+	cp $(BUILT_SERVICE_EXE) $(WIX_SERVICE_EXE)
+	$(WIX_PATH_PREFIX) candle.exe -v -arch $(CANDLE_ARCH) -dARCH=$(ARCH) -dCONFIGURATION=$(CONFIGURATION) -dDISPLAY_FULL_VERSION=$(WIX_VERSION) -dWIX_4DOT_VERSION=$(WIX_4DOT_VERSION) -dSERVICE_EXE="$(shell cygpath --mixed $(WIX_SERVICE_EXE))" Installer.wix -out "$(WIX_OUT_OBJ_WIN)"
+	$(WIX_PATH_PREFIX) $(StroikaSourceRoot)Build/Scripts/RunWIXLight "$(WIX_OUT_OBJ_WIN)" -ext WixUIExtension -cultures:en-us -loc Installer_en-us.wxl -out '$(TARGET_OUT_INSTALLER_WIX_WINDOWSPATH)'

@@ -28,8 +28,13 @@ tar xf v3-Release.tar.gz && mv Stroika-3-Release Stroika-Dev
 followed by:
 
 ```bash
+Stroika-Dev/Build/Scripts/MakeBuildRoot
 make --directory Stroika-Dev all run-tests
 ```
+
+MakeBuildRoot makes the build root: where the build goes - by default Stroika-Dev/IntermediateFiles/, with
+Stroika-Dev/Builds/ beside it (see [Relocating build output](#relocating-build-output)). Nothing else makes one: make
+stops without it, printing the command line that makes it.
 
 Or, for a depending on your system, for a quicker turnaround, perhaps:
 ```bash
@@ -100,6 +105,12 @@ You may find it helpful to review the instructions in [Installing-Required-Tools
 
 ### Things to try (explore)
 
+First make the build root, if you have not - every make needs one:
+
+- `Build/Scripts/MakeBuildRoot`
+
+  `Build/Scripts/MakeBuildRoot --help` lists its options; [Relocating build output](#relocating-build-output) says more.
+
 - `make help`
 
   Not needed, but gives some idea of make options.
@@ -112,7 +123,7 @@ You may find it helpful to review the instructions in [Installing-Required-Tools
 
   Not needed, but it&#39;s a springboard for setting up the configuration you want.
 
-  Review ConfigurationFiles/Debug.xml or any of the other default configuration files
+  Review IntermediateFiles/ConfigurationFiles/Debug.xml or any of the other default configuration files
 
 ---
 
@@ -120,7 +131,8 @@ You may find it helpful to review the instructions in [Installing-Required-Tools
 
 Like many non-trivial C/C++ libraries, you run configure to establish some build parameters, before invoking make. But unlike most such configuration systems, Stroika creates 'named' configurations, and facilitates building multiple such named configurations at once.
 
-Each configuration is stored in in a file named \${CONFIGNAME}.xml in the top-level `ConfigurationFiles/` directory.
+Each configuration is stored in a file named \${CONFIGNAME}.xml in the build root's `ConfigurationFiles/` (by default
+`IntermediateFiles/ConfigurationFiles/` - see [Relocating build output](#relocating-build-output)).
 
 - Examples of generating configurations
   - `./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --apply-default-debug-flags`
@@ -388,39 +400,56 @@ Final build products (libraries and executables) go into
 
 - **Builds/{CONFIGURATION-NAME}**.
 
-### Relocating build output - MakeBuildRoot
+and the configurations themselves into **IntermediateFiles/ConfigurationFiles/{CONFIGURATION-NAME}.xml** - all in the
+Stroika tree, unless you choose another build root.
 
-`Build/Scripts/MakeBuildRoot <ROOT>` redirects **Builds/**, **IntermediateFiles/** and
-**ConfigurationFiles/** somewhere else - a faster disk, or off a shared or network path - by
-replacing them with directory symbolic links. Re-running it recreates those links; `rm -rf` on a
-symbolic link removes the link and not what it points at, so relocated build output is not lost.
+### Relocating build output
 
-**On Windows this is not dependable, and that is not something Stroika can fix.** Windows marks a
-symbolic link created without `SeCreateSymbolicLinkPrivilege` as UNTRUSTED, and its Redirection
-Guard mitigation then stops native tools - MSVC’s `cl.exe` and `link.exe` among them - from
-traversing it, reporting `STATUS_UNTRUSTED_MOUNT_POINT`. For a relocated build directory that means
-the compiler cannot see the tree at all, while `ls` and `cat` are perfectly happy, so the failure
-surfaces far from its cause.
+**IntermediateFiles/** is the build root - as CMake's `-B` names a build directory: the directory that says where
+everything else is. It holds the intermediate files, the configurations (**ConfigurationFiles/**), and
+**DirectoryLayout.mk**, which says where the products (**Builds/**) go - by default beside it. `Build/Scripts/MakeBuildRoot`
+makes one, and nothing else does - where the build goes is your choice: `make` and `configure` stop without one, printing
+the command line that makes the one they look for. With no arguments, it makes the default, IntermediateFiles/ in the
+Stroika tree. To build out of the source tree - on a faster disk, off a shared or network path, or to keep the checkout
+clean - name another, and build there (the paths may be relative; DirectoryLayout.mk records them absolute):
 
-There is no workaround for a *directory*: directories cannot be hard linked, and a junction
-(`mklink /J`) needs no privilege but is exactly what Redirection Guard was built to block. So
-`MakeBuildRoot` verifies the links it creates and **fails** rather than leaving ones only some
-programs can follow.
+~~~bash
+Build/Scripts/MakeBuildRoot --intermediate-files-root /fastdisk/stroika-out/IntermediateFiles/   # Builds/: /fastdisk/stroika-out/Builds/
+cd /fastdisk/stroika-out/IntermediateFiles/
+make default-configurations
+make CONFIGURATION=Debug all -j8
+~~~
 
-Granting the account the **Create symbolic links** right (`secpol.msc` -> Local Policies -> User
-Rights Assignment, then log off and back on - for SSH, reconnect) makes it work for *that account*.
-But it needs administrator setup, it has to be repeated per account - switching Windows accounts means
-re-running `MakeBuildRoot` - and it is a Microsoft policy that can change. So treat it as a local
-convenience, not something to build a workflow on, and note that membership in Administrators is
-not sufficient: UAC filters that privilege out of a non-elevated shell.
+`MakeBuildRoot --builds-root DIR` puts the products somewhere else. Instead of building in the build root, you can set
+**StroikaIntermediateFilesRoot** to it - in the environment, or on the make command line; `configure` and the other build
+scripts, run by hand, follow it too.
 
-None of this applies on UNIX or macOS.
+The makefiles' variables for these directories - StroikaIntermediateFilesRoot, StroikaConfigurationFilesDir and
+StroikaBuildsRoot - are documented, with the other directories a build uses, at the top of
+`Build/Lib/Make/SharedMakeVariables-Default.mk`.
 
-The real fix is to stop needing a directory link at all - deriving the three output roots from a
-`StroikaOutputRoot` make variable, so relocating output is a variable rather than filesystem
-trickery. Tracked as [issue 1170](https://github.com/SophistSolutions/Stroika/issues/1170); the
-Windows symbolic-link background is consolidated in
-[issue 1075](https://github.com/SophistSolutions/Stroika/issues/1075).
+- `make clobber` empties the build root, but keeps its configurations and DirectoryLayout.mk; `make distclean` deletes
+  it all - run MakeBuildRoot again to build after it.
+- Give each source tree its own build root: make stops when a build root made for another tree is used.
+- On Windows, DirectoryLayout.mk writes the paths `C:/...`, which MSYS2, Cygwin and the native tools all read. Keep them
+  short: boost's build puts one `-I` per sublibrary on each command line, so a long path can exceed cmd.exe's 8191
+  characters; its makefile warns when its build directory's Windows path passes 95 characters
+  ([issue 769](https://github.com/SophistSolutions/Stroika/issues/769)).
+- Still written in the source tree: the third-party components' extracted sources (`ThirdPartyComponents/*/CURRENT`), and
+  the IDE files (`.vscode/`, `Workspaces/`), which also still assume the default directories.
+- An application made by `Skel` has its build root in its own top directory by default - IntermediateFiles/, with
+  Builds/ beside it - shared by its output and Stroika's. In that directory:
+  `ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .`
+- Before Stroika v3.0d26 the configurations were in ConfigurationFiles/ at the top of the tree: MakeBuildRoot copies any
+  there into the build root it makes, and `make distclean` deletes that old directory too.
+
+Before Stroika v3.0d26, `Build/Scripts/MakeBuildRoot <ROOT>` relocated the output by replacing those three directories
+with directory symbolic links into ROOT. On Windows such a link cannot be made to work dependably: a
+symbolic link created without `SeCreateSymbolicLinkPrivilege` is marked UNTRUSTED, and Redirection Guard then stops native
+tools - MSVC's `cl.exe` and `link.exe` among them - from traversing it (`STATUS_UNTRUSTED_MOUNT_POINT`); a directory cannot
+be hard linked, and a junction is blocked by the same mitigation. See
+[issue 1075](https://github.com/SophistSolutions/Stroika/issues/1075) and
+[issue 1170](https://github.com/SophistSolutions/Stroika/issues/1170).
 
 ---
 
@@ -450,7 +479,7 @@ things here is a breaking change for applications built against Stroika.
 
 ### Build/Scripts
 
-Programs run as commands - `$(StroikaRoot)Build/Scripts/PrintProgressLine ...`, not
+Programs run as commands - `$(StroikaSourceRoot)Build/Scripts/PrintProgressLine ...`, not
 `bash PrintProgressLine`. Consequently **they must keep their executable bit**; losing it breaks the
 build on UNIX while still appearing to work on Windows, since MSYS/Cygwin synthesize the mode.
 
@@ -462,7 +491,7 @@ A few are meant to be run by hand:
 - `FormatCode` - what `make format-code` runs (clang-format)
 - `RegressionTests`, `RunLocalWSLRegressionTests`, `RunRemoteRegressionTests` - test drivers
 - `RunInDockerEnvironment` - start a dev container with useful options preset
-- `MakeBuildRoot` - relocate build output; see [Relocating build output](#relocating-build-output---makebuildroot)
+- `MakeBuildRoot` - make a build root out of the source tree; see [Relocating build output](#relocating-build-output)
 
 Two that callers pick between deliberately: **`MakeFileLink`** and **`MakeDirectoryLink`** create an
 alias for a file / for a directory. They are separate because the two cases need different

@@ -1,8 +1,9 @@
-StroikaRoot	:=	$(abspath ../../../../../)/
-SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Time/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Time/
+StroikaSourceRoot	:=	$(abspath ../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=  $(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Time/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Time/
 
 vpath %cpp $(SrcDir)
 
@@ -14,7 +15,7 @@ Objs	:=	\
 	$(ObjDir)Timezone${OBJ_SUFFIX}\
 
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

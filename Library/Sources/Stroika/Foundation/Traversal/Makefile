@@ -1,9 +1,11 @@
-StroikaRoot	:=	$(abspath ../../../../../)/
-SrcDir		:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Traversal/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Traversal/
+StroikaSourceRoot	:=	$(abspath ../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=   $(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Traversal/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Traversal/
+
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 

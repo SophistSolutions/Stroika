@@ -14,7 +14,8 @@ get_script_dir () {
 }
 MY_PATH=$(get_script_dir)
 CONFIGURATION=$1
-if [ ! -e "$MY_PATH/../../ConfigurationFiles/$CONFIGURATION.xml" ] ; then
+CONFIGURATION_FILES_DIR_="${StroikaIntermediateFilesRoot:-${TOP_ROOT:-$MY_PATH/../../}IntermediateFiles/}ConfigurationFiles/"   # always the build root's ConfigurationFiles/ (SharedMakeVariables-Default.mk)
+if [ ! -e "${CONFIGURATION_FILES_DIR_%/}/$CONFIGURATION.xml" ] ; then
 	echo -n "\"$CONFIGURATION\" is not a valid configuration; valid configurations include: [ " && $MY_PATH/GetConfigurations && echo "]";
 	exit 1;
 fi

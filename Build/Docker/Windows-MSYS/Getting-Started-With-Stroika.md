@@ -7,6 +7,14 @@ git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
 ~~~
 
+## Make the build root
+
+Where the build goes: IntermediateFiles/, with Builds/ beside it (`Build/Scripts/MakeBuildRoot --help` for elsewhere). make
+stops without one.
+~~~
+Build/Scripts/MakeBuildRoot
+~~~
+
 ## Create default configurations
 
 This is not needed, and done automatically if you do not, but good to understand you CAN create whatever configurations you want.

@@ -17,7 +17,12 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${TSAN_SKIP_EXPECTED:=0}
 
 # Some scripts use this, especially when we invoke stuff from 'GetConfigurations'
-export StroikaRoot=`realpath .`
+export StroikaSourceRoot=`realpath .`
+
+# The build root - by default here - and its configurations; Builds/ is in its DirectoryLayout.mk, read once make has
+# made it (below). @see Build/Lib/Make/SharedMakeVariables-Default.mk
+INTERMEDIATE_FILES_ROOT_="${StroikaIntermediateFilesRoot:-IntermediateFiles/}"
+CONFIGURATION_FILES_DIR_="${INTERMEDIATE_FILES_ROOT_}ConfigurationFiles/"
 
 
 if [ "$BUILD_EXTRA_COMPILERS_IF_MISSING" == "" ] ; then 
@@ -128,7 +133,7 @@ echo "$PREFIX_OUT_LABEL" "    uname -a=`uname -a`" >>$TEST_OUT_FILE 2>&1
 # Run time depends heavily on the filesystem (e.g. WSL's drvfs /mnt/c is far slower than its own disk) - record it
 BUILD_DIR_FS_=""
 if [ "$DETECTED_HOST_OS" == "Linux" ] ; then BUILD_DIR_FS_=" (`stat -f -c %T . 2>/dev/null`)"; fi
-echo "$PREFIX_OUT_LABEL" "    BUILD DIRECTORY: $StroikaRoot$BUILD_DIR_FS_" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    BUILD DIRECTORY: $StroikaSourceRoot$BUILD_DIR_FS_" >>$TEST_OUT_FILE 2>&1
 GIT_COMMIT=`git describe --tags`
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    GIT COMMIT: $GIT_COMMIT" >>$TEST_OUT_FILE 2>&1
@@ -155,11 +160,22 @@ fi
 
 
 
+### The build root (MakeBuildRoot leaves one made already as it is)
+Build/Scripts/MakeBuildRoot --intermediate-files-root "$INTERMEDIATE_FILES_ROOT_" >>$TEST_OUT_FILE 2>&1
+
 ### Create the actual configuration files that drive what is built
 if [ $CONTINUE -eq 0 ] ; then
-	rm -rf ConfigurationFiles
+	rm -rf "${CONFIGURATION_FILES_DIR_%/}"
 	make $BUILD_CONFIGURATIONS_MAKEFILE_TARGET >>$TEST_OUT_FILE 2>&1
 fi
+# Builds/, from the build root's DirectoryLayout.mk (NAME=value lines, which sh reads too); shown relative to here, when
+# there - here spelled as DirectoryLayout.mk spells it (on Windows, C:/...)
+BUILDS_ROOT_="$(. "${INTERMEDIATE_FILES_ROOT_}DirectoryLayout.mk" && echo "$StroikaBuildsRoot")"
+HERE_="$(pwd -P)"
+if command -v cygpath >/dev/null ; then
+	HERE_="$(cygpath --mixed "$HERE_")"
+fi
+BUILDS_ROOT_="${BUILDS_ROOT_#$HERE_/}"
 
 
 ###todo FIX CROSS_COMPILE_CONFIGS configs here
@@ -275,7 +291,7 @@ echo >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "Configurations DETAILS ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
 for i in `Build/Scripts/GetConfigurations --quiet --all-default`; do
 	echo "   $i:"  >>$TEST_OUT_FILE 2>&1;
-	sed 's/^/      /' ConfigurationFiles/$i.xml >>$TEST_OUT_FILE
+	sed 's/^/      /' ${CONFIGURATION_FILES_DIR_}$i.xml >>$TEST_OUT_FILE
 	echo >>$TEST_OUT_FILE 2>&1
 done
 
@@ -453,9 +469,9 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 			RunPrefix=`Build/Scripts/GetConfigurationParameter $cfg RunPrefix`
 			for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
 				if [ "${RunPrefix}" = "" ] ; then
-					EXE_RUN_="Builds/${cfg}/${app}"
+					EXE_RUN_="${BUILDS_ROOT_}${cfg}/${app}"
 				else
-					EXE_RUN_="${RunPrefix} Builds/${cfg}/${app}"
+					EXE_RUN_="${RunPrefix} ${BUILDS_ROOT_}${cfg}/${app}"
 				fi
 				#echo -n "  $EXE_RUN_ ..."
 				echo -n "  $PREFIX_OUT_LABEL" "$EXE_RUN_..." >>$TEST_OUT_FILE 2>&1
@@ -485,10 +501,10 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 			for cfg in ${LOCAL_VALGRIND_CONFIGS} ; do
 				for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
 					SUPPRESSION_LINES_="--suppressions=Tests/Valgrind-MemCheck-Common.supp"
-					echo -n "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
-					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
+					echo -n "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp ${BUILDS_ROOT_}$cfg/$app ..."
+					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp ${BUILDS_ROOT_}$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 					STAGE_STARTAT_INT=$(date +%s)
-					valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
+					valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp ${BUILDS_ROOT_}$cfg/$app 2>&1 > /dev/null
 					if [ -s valgrind-log.tmp ] ; then
 						### on a line of its own, not after the '...' above - the summary finds valgrind's lines by their leading ==PID==
 						echo >> $TEST_OUT_FILE; cat valgrind-log.tmp >> $TEST_OUT_FILE
@@ -533,11 +549,13 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		# Build Stroika from THIS tree at THIS commit, not GitHub's tip of the same branch, so the skel app tests the code the
 		# rest of this run did (its committed state - uncommitted changes are not cloned)
 		SKEL_STROIKA_COMMIT=$(git rev-parse HEAD)
-		echo "Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote $StroikaRoot" >>$TEST_OUT_FILE 2>&1
+		echo "Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote $StroikaSourceRoot" >>$TEST_OUT_FILE 2>&1
 		rm -rf $USE_SKEL_NAME
-		Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote "$StroikaRoot" >>$TEST_OUT_FILE 2>&1
+		Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote "$StroikaSourceRoot" >>$TEST_OUT_FILE 2>&1
 		echo "git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout $SKEL_STROIKA_COMMIT" >>$TEST_OUT_FILE 2>&1
 		git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout --quiet $SKEL_STROIKA_COMMIT >>$TEST_OUT_FILE 2>&1
+		echo "cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root ." >>$TEST_OUT_FILE 2>&1
+		(cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .) >>$TEST_OUT_FILE 2>&1
 		echo -n "cd $USE_SKEL_NAME && make CONFIGURATION=Debug ... " 2>&1
 		echo "cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
 		if ! (cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1 ; then
@@ -668,7 +686,7 @@ fi
 ### CompilerAndStdLib_.h, configure's ApplyCompilerBugWorkarounds_). Done here, not in configure, because a configure
 ### message would reach every Stroika user, and only Stroika maintainers run this script.
 CompilerInventory_ () {
-	for f in ConfigurationFiles/*.xml; do
+	for f in ${CONFIGURATION_FILES_DIR_}*.xml; do
 		[ -e "$f" ] && Build/Scripts/GetConfigurationParameter "$(basename "$f" .xml)" CXX && echo
 	done 2>/dev/null | grep -v '^$' | sort -u | while IFS= read -r CXX_; do
 		echo "$CXX_ => $("$CXX_" --version 2>&1 | head -1 | tr -d '\r')"

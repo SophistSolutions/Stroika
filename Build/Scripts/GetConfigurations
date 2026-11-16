@@ -25,6 +25,7 @@ get_script_dir () {
      echo "$DIR"
 }
 MY_PATH=$(get_script_dir)
+CONFIGURATION_FILES_DIR_="${StroikaIntermediateFilesRoot:-${TOP_ROOT:-$MY_PATH/../../}IntermediateFiles/}ConfigurationFiles/"   # always the build root's ConfigurationFiles/ (SharedMakeVariables-Default.mk)
 QUIET=0
 ALL=1
 ALLDEFAULT=0
@@ -79,9 +80,9 @@ if [ ! -e $SORT ]; then
 	SORT=sort
 fi
 #NB: need full path top find cuz of winDoze
-if [ -e "$MY_PATH/../../ConfigurationFiles/" ] ; then
-	#/usr/bin/find "$MY_PATH/../../ConfigurationFiles/" -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 -I {} basename "{}" .xml | tr '\n' ' '
-	RAW_CONFIGS=`/usr/bin/find "$MY_PATH/../../ConfigurationFiles/" -type f -exec basename \{} .xml \; | $SORT | tr '\n' ' '`
+if [ -e "${CONFIGURATION_FILES_DIR_%/}/" ] ; then
+	#/usr/bin/find "${CONFIGURATION_FILES_DIR_%/}/" -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 -I {} basename "{}" .xml | tr '\n' ' '
+	RAW_CONFIGS=`/usr/bin/find "${CONFIGURATION_FILES_DIR_%/}/" -type f -exec basename \{} .xml \; | $SORT | tr '\n' ' '`
 fi
 # Take the raw configs, and apply restrictions to produce the list NEW_CONFIGS
 if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then

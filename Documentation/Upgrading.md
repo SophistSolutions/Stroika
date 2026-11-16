@@ -31,8 +31,10 @@ After each move to a new Stroika - a pull, or moving an app's `ThirdPartyCompone
   is rebuilt
 - configure's defaults change between versions, so a configuration an older Stroika made is not what the new one would make
 
-`make distclean` deletes the configurations too. A Skel app's `make all` makes its default ones again; for any other, copy its
-configure command line - the first element of its `ConfigurationFiles/NAME.xml` - before the `distclean`.
+`make distclean` deletes the build root, configurations and all: make it again with `Build/Scripts/MakeBuildRoot` (in a
+Skel app, `ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .`; make prints the line if you
+forget). A Skel app's `make all` then makes its default configurations again; for any other, copy its configure command
+line - the first element of its `IntermediateFiles/ConfigurationFiles/NAME.xml` - before the `distclean`.
 
 ### Example
 

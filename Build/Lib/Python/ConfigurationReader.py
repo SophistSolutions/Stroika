@@ -1,11 +1,11 @@
 """
-Reads a configuration - ConfigurationFiles/<name>.xml, as configure writes it: each element of <Configuration> is a
-parameter, its text the value (unescaped, as for any XML), and <ExtraMakeDefines> the list of its <MakeDefine>s.
+Reads a configuration - ConfigurationFiles/<name>.xml (wherever StroikaConfigurationFilesDir is: DirectoryLayout.py), as
+configure writes it: each element of <Configuration> is a parameter, its text the value (unescaped, as for any XML), and
+<ExtraMakeDefines> the list of its <MakeDefine>s.
 
 Python 3.9 or later (the oldest a supported build host has).
 """
 
-import os
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -13,8 +13,7 @@ import xml.etree.ElementTree as ET
 if sys.platform == "win32":  # (run as python3 SCRIPT, say - each script's #! line names a POSIX one)
     sys.exit("Stroika's build scripts need a POSIX python3 - on Windows, MSYS2's (pacman -S python) or Cygwin's - not a native Windows one")
 
-_THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-_CONFIGURATION_FILES = os.path.normpath(os.path.join(_THIS_DIR, "..", "..", "..", "ConfigurationFiles"))
+import DirectoryLayout  # noqa: E402
 
 # Bytes are decoded as latin-1, which maps each byte to one character and back, so values round-trip exactly - the file
 # names no encoding, and what is written from its values (Configuration.mk, say) is encoded the same way
@@ -55,7 +54,7 @@ def GetConfigurationParameter(configName, paramName):
     if _State.lastReadConfig != configName:
         _State.extraMakeDefines = []
         _State.configuration = {}
-        _ReadConfigFile(_CONFIGURATION_FILES + "/" + configName + ".xml")
+        _ReadConfigFile(DirectoryLayout.CONFIGURATION_FILES_DIR + configName + ".xml")
         _State.lastReadConfig = configName
 
     if paramName == "ExtraMakeDefines":

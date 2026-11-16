@@ -1,8 +1,9 @@
-StroikaRoot	:=	$(abspath ../../../../../../../)/
-SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Common/Platform/Windows/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Common/Platform/Windows/
+StroikaSourceRoot	:=	$(abspath ../../../../../../../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+
+SrcDir		:=  $(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Common/Platform/Windows/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Common/Platform/Windows/
 
 
 vpath %cpp $(SrcDir)
@@ -13,7 +14,7 @@ ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)Registry${OBJ_SUFFIX}
 endif
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 all:	 $(Objs)
 

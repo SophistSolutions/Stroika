@@ -31,7 +31,7 @@
   <?define Win64 = "no" ?>
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?endif ?>
-  <?define serviceEXESourcePath = "..\..\..\IntermediateFiles\$(var.CONFIGURATION)\Samples-Service\WIX_TMP\Stroika-SampleService-Service.exe" ?>
+  <?define serviceEXESourcePath = "$(var.SERVICE_EXE)" ?>
   <?define serviceName = "Stroika-Sample-Service" ?>
 
   <!--

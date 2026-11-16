@@ -5,9 +5,9 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 #
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include ${StroikaRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
+include ${StroikaSourceRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
@@ -17,7 +17,7 @@ CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 
 ifneq (${CONFIGURATION},)
-include ${StroikaRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
+include ${StroikaSourceRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
 
 #
@@ -44,9 +44,9 @@ FETCHURLS_+=http://prdownloads.sourceforge.net/libpng/zlib-${ZLIB_VERSION_}.tar.
 
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/zlib)/
-OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
-COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zlib/CURRENT)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)${CONFIGURATION}/ThirdPartyComponents/zlib)/
+OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaSourceRoot}/ThirdPartyComponents/zlib/CURRENT)
 
 
 
@@ -108,8 +108,8 @@ all:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/zlib Build ${ZLIB_VERSION_} {${CONFIGURATION}}:"
-	@${StroikaRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/zlib Build ${ZLIB_VERSION_} {${CONFIGURATION}}:"
+	@${StroikaSourceRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
 	@#make ZIPPED_SOURCES_FILE_ even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@${MAKE} --no-print-directory --silent ${ZIPPED_SOURCES_FILE_}
 	@${MAKE} --no-print-directory --silent ${PRODUCED_OUTPUT_ARTIFACTS_}
@@ -129,7 +129,7 @@ ifeq (${CONFIGURATION},)
 endif
 	@${MAKE} --silent CURRENT
 
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
 	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
@@ -143,9 +143,9 @@ ifeq (0,$(POST_132_Build_))
 endif
 endif
 	@
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build . --target zlibstatic --target zlib ${CMAKE_BUILD_AND_INSTALL_ARGS} ${CMAKE_BUILD_TYPE_EXTRA_ARG_}  > BUILD-OUT.txt 2>&1
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
 	@#FIX:  zsd.lib(zutil.obj) : warning LNK4099: PDB 'zsd.pdb' was not found with 'zsd.lib(zutil.obj)' or at 'C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\zsd.pdb'; linking object as if no debug info
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
@@ -155,7 +155,7 @@ ifeq (1,$(POST_132_Build_))
 endif
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Patching:" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc`
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Patching:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc`
 	@${SED} -i 's/^libdir=.*/libdir=$${prefix}\/lib/g' "${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc"
 ifeq (1,$(POST_132_Build_))
 	@${SED} -i 's/^Libs:.*/Libs: -L$${libdir} -lzs${MAYBED_}/g' "${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc"
@@ -171,11 +171,11 @@ endif
 
 
 ${ZIPPED_SOURCES_FILE_}:
-	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
+	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaSourceRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
 
 
 ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaRoot}Build/Scripts/SubstituteBackVariables "zlib ${ZLIB_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to $@"` "... "
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables "zlib ${ZLIB_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1
@@ -187,8 +187,8 @@ endif
 
 
 check-prerequisite-tools:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "zlib ${VERSION} - Checking Prerequisite tools ... "
-	@{ type cmake > /dev/null 2>&1; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool cmake && exit 1; }
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "zlib ${VERSION} - Checking Prerequisite tools ... "
+	@{ type cmake > /dev/null 2>&1; } || { $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool cmake && exit 1; }
 	@$(ECHO) "done";
 
 
@@ -196,14 +196,14 @@ check:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "zlib ${ZLIB_VERSION_} - Checking ... "
-	@${StroikaRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "zlib ${ZLIB_VERSION_} - Checking ... "
+	@${StroikaSourceRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
 	@${ECHO} " Stroika/ThirdPartyComponents/zlib -    [Succeeded]";
 
 
 clean:
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}IntermediateFiles/*/ThirdPartyComponents/zlib
+	@rm -rf ${StroikaIntermediateFilesRoot}*/ThirdPartyComponents/zlib
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
@@ -211,7 +211,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}Builds/*/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/include/{zlib,zconf}.h
+	@rm -rf ${StroikaBuildsRoot}*/lib/libz${LIB_SUFFIX} ${StroikaBuildsRoot}*/include/{zlib,zconf}.h
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}

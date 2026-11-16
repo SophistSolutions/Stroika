@@ -19,7 +19,7 @@ sed s/\$\{APP_NAME\}/${APP_NAME}/g < $TEMPLATE_SRC_DIR/MyApp/Sources/Makefile > 
 #
 #	Fields: <year> <PlatformToolset> <.sln VisualStudioVersion>
 #	Keep in sync with the versions Stroika itself ships projects for - the generated .sln refers to
-#	StroikaRoot/Library/Projects/VisualStudio.Net-<year>, so a year Stroika has no projects for
+#	ThirdPartyComponents/Stroika/StroikaRoot/Library/Projects/VisualStudio.Net-<year>, so a year Stroika has no projects for
 #	would produce a solution that cannot load.
 #
 substVSVars_ ()

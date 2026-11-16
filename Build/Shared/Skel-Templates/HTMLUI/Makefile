@@ -1,11 +1,11 @@
 export TOP_ROOT:=$(abspath ./)/
-StroikaRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
+StroikaSourceRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
 
-ifeq (,$(wildcard $(StroikaRoot)Makefile))
+ifeq (,$(wildcard $(StroikaSourceRoot)Makefile))
 $(warning "submodules missing: perhaps you should run `git submodule update --init --recursive`")
 endif
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 #not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
@@ -20,33 +20,33 @@ CONFIGURATION_TAGS?=$(TAGS)
 APPLY_CONFIGS=$(or \
 				$(CONFIGURATION), \
 				$(if $(CONFIGURATION_TAGS), \
-					$(shell $(StroikaRoot)Build/Scripts/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"),\
+					$(shell $(StroikaDirectoryLayoutEnv) $(StroikaSourceRoot)Build/Scripts/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"),\
 					$(if $(filter clobber, $(MAKECMDGOALS)),\
-						$(shell $(StroikaRoot)Build/Scripts/GetConfigurations --all --quiet),\
-						$(shell $(StroikaRoot)Build/Scripts/GetConfigurations --all-default)\
+						$(shell $(StroikaDirectoryLayoutEnv) $(StroikaSourceRoot)Build/Scripts/GetConfigurations --all --quiet),\
+						$(shell $(StroikaDirectoryLayoutEnv) $(StroikaSourceRoot)Build/Scripts/GetConfigurations --all-default)\
 					)\
 				)\
 			)
 
 all:
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building ${APP_NAME} all{$(CONFIGURATION)}:"
-	@$(MAKE) -silent IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building ${APP_NAME} all{$(CONFIGURATION)}:"
+	@$(MAKE) -silent $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 ifeq ($(CONFIGURATION),)
 	@#Cannot use APPLY_CONFIGS here because ConfigurationFiles may have changed and evaluated before here
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)" --all-default` ; do\
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)" --all-default` ; do\
 		$(MAKE) --no-print-directory --silent all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
 	@$(MAKE) --directory=ThirdPartyComponents --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(StroikaRoot)/Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)/Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory=Backend --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all
 	@$(MAKE) --silent html MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --silent installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
-IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT:
-ifeq ($(shell $(StroikaRoot)Build/Scripts/GetConfigurations --quiet),)
+$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT:
+ifeq ($(shell $(StroikaDirectoryLayoutEnv) $(StroikaSourceRoot)Build/Scripts/GetConfigurations --quiet),)
 	@$(MAKE) -silent default-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
@@ -58,70 +58,66 @@ STROIKA_CONFIG_PARAMS_RELEASE=--apply-default-release-flags
 
 .PHONY: default-configurations
 default-configurations:
-	@if [ ! -d ConfigurationFiles ] ; then $(MAKE) --silent build-root; fi
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Configuring...
+	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Configuring...
 ifeq ($(DETECTED_HOST_OS), Darwin)
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug --build-by-default $(DETECTED_HOST_OS) --config-tag Unix $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release --build-by-default $(DETECTED_HOST_OS) --config-tag Unix $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release-Logging --config-tag Unix --trace2file enable $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Debug --build-by-default $(DETECTED_HOST_OS) --config-tag Unix $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release --build-by-default $(DETECTED_HOST_OS) --config-tag Unix $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release-Logging --config-tag Unix --trace2file enable $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
 else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug --arch x86_64 --build-by-default never --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release --arch x86_64 --build-by-default never --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release-Logging --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86_64 --trace2file enable $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug-x86 --arch x86 --build-by-default never --config-tag Windows --config-tag x86 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug-x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release-x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release-x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Debug --arch x86_64 --build-by-default never --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release --arch x86_64 --build-by-default never --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release-Logging --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86_64 --trace2file enable $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Debug-x86 --arch x86 --build-by-default never --config-tag Windows --config-tag x86 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Debug-x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release-x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release-x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --config-tag Windows --config-tag x86_64 $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
 else
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
-	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release-Logging --config-tag Unix --only-if-has-compiler --trace2file enable $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Debug --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
+	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release-Logging --config-tag Unix --only-if-has-compiler --trace2file enable $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@$(MAKE) --silent Builds/__AUTOMATIC_MAKE_PROJECT_FILES__
+	@$(MAKE) --silent $(StroikaBuildsRoot)__AUTOMATIC_MAKE_PROJECT_FILES__
 endif
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations --all` ; do\
-		$(StroikaRoot)Build/Scripts/ApplyConfiguration --only-vscode $$i;\
+	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations --all` ; do\
+		$(StroikaSourceRoot)Build/Scripts/ApplyConfiguration --only-vscode $$i;\
 	done
 
-build-root:
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
-	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./Build/Scripts/MakeBuildRoot ../../../
-
 apply-configurations-to-vscode:
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
 	@for i in $(APPLY_CONFIGS) ; do\
-		MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)Build/Scripts/ApplyConfiguration --only-vscode $$i;\
+		MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaSourceRoot)Build/Scripts/ApplyConfiguration --only-vscode $$i;\
 	done
 
 list-configurations list-configuration-tags apply-configurations apply-configuration apply-configurations-if-needed reconfigure:
-	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+	@$(MAKE) --directory $(StroikaSourceRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
 
 project-files:
-	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+	@$(MAKE) --directory $(StroikaSourceRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
 	@#Workaround https://github.com/SophistSolutions/Stroika/issues/1075
-	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.ConfigurationBased.props; $(StroikaRoot)/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
-	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.user.props; $(StroikaRoot)/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.ConfigurationBased.props; $(StroikaSourceRoot)/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
+	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.user.props; $(StroikaSourceRoot)/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 
 distclean:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@):"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifneq ($(CONFIGURATION),)
 	$(error "make distclean applies to all configurations - and deletes all configurations")
 endif
-	@rm -rf Builds ConfigurationFiles IntermediateFiles
 	@$(MAKE) --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	-@$(MAKE) --no-print-directory --directory $(StroikaRoot) --silent $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	-@$(MAKE) --no-print-directory --directory $(StroikaSourceRoot) --silent $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@# last: the makes above need the build root; ConfigurationFiles/ is where the configurations were before Stroika v3.0d26
+	@rm -rf $(patsubst %/,%,$(StroikaBuildsRoot) $(StroikaIntermediateFilesRoot)) $(TOP_ROOT)ConfigurationFiles
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@):"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifeq ($(CONFIGURATION_TAGS),)
 	@if [ "$@" = "clobber" ] ; then \
-		rm -rf IntermediateFiles/* Builds/*;\
+		$(StroikaClobberIntermediateFiles); rm -rf $(StroikaBuildsRoot)*;\
 	fi
 	@if [ "$@" = "clean" ] ; then \
-		rm -rf IntermediateFiles/*/${APP_NAME}*;\
+		rm -rf $(StroikaIntermediateFilesRoot)*/${APP_NAME}*;\
 	fi
 	@# with no config specified, ${APP_NAME} NYI make clean/clobber (and not needed)
 	@#$(MAKE) --silent --directory ${APP_NAME} $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));
@@ -132,7 +128,7 @@ else
 	done
 endif
 else
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ${APP_NAME} --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -142,9 +138,9 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # errors you get out of the box with visual studio projects without doing a make project-files, so include
 # this to make the out of box experience installing Stroika a little more seemless.
 # SEE https://github.com/SophistSolutions/Stroika/issues/1072
-Builds/__AUTOMATIC_MAKE_PROJECT_FILES__:
+$(StroikaBuildsRoot)__AUTOMATIC_MAKE_PROJECT_FILES__:
 	@$(MAKE) project-files
-	@touch Builds/__AUTOMATIC_MAKE_PROJECT_FILES__
+	@touch $(StroikaBuildsRoot)__AUTOMATIC_MAKE_PROJECT_FILES__
 endif
 
 update-submodules:
@@ -152,8 +148,8 @@ update-submodules:
 
 STROIKA_COMMIT?=v3-Release
 latest-submodules:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Checkout Latest Stroika (STROIKA_COMMIT=${STROIKA_COMMIT})"
-	@(cd $(StroikaRoot) && git checkout $(STROIKA_COMMIT) --quiet && git pull --quiet)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Checkout Latest Stroika (STROIKA_COMMIT=${STROIKA_COMMIT})"
+	@(cd $(StroikaSourceRoot) && git checkout $(STROIKA_COMMIT) --quiet && git pull --quiet)
 
 format-code:
 	@$(MAKE) --directory=${APP_NAME} --no-print-directory format-code
@@ -161,7 +157,7 @@ format-code:
 
 html:
 ifeq ($(shell which quasar 2>/dev/null),)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaRoot)Build/Scripts/GetMessageForMissingTool quasar` "***"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool quasar` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else
 	@$(MAKE) --silent --directory QuasarBasedHTMLApp --no-print-directory all
@@ -169,5 +165,5 @@ endif
 
 .PHONY: installers installer-deb installer-rpm installer-wix
 installers installer-deb installer-rpm installer-wix:
-	@$(StroikaRoot)/Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building ${APP_NAME} Installers:"
+	@$(StroikaSourceRoot)/Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building ${APP_NAME} Installers:"
 	@$(MAKE) --no-print-directory --directory Installers --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@

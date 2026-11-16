@@ -20,7 +20,7 @@
 #   at some point from Samples/Service or Samples/HTMLUI): replace
 #           light.exe
 #   with
-#           $(StroikaRoot)Build/Scripts/RunWIXLight
+#           $(StroikaSourceRoot)Build/Scripts/RunWIXLight
 #   Changing nothing keeps today's behavior exactly - you simply do not get the fallback.
 #
 #   NB: this is a WRAPPER, not a replacement - it takes exactly light.exe's arguments and returns

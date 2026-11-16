@@ -61,8 +61,8 @@
 #   @see https://github.com/SophistSolutions/Stroika/issues/1075
 #
 # EXAMPLES:
-#       ${StroikaRoot}Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
-#       ${StroikaRoot}Build/Scripts/MakeFileLink "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+#       ${StroikaSourceRoot}Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+#       ${StroikaSourceRoot}Build/Scripts/MakeFileLink "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
 #
 
 TARGET=$1

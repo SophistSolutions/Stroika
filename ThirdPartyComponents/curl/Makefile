@@ -5,9 +5,9 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 #
@@ -60,8 +60,8 @@ FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl)/
-OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/ThirdPartyComponents/curl)/
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
 # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
 ifeq (3.81,$(firstword $(sort $(MAKE_VERSION) 3.81)))
@@ -95,11 +95,11 @@ endif
 
 
 all:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/libcurl $(VERSION) Build {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/libcurl $(VERSION) Build {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@$(MAKE) --no-print-directory --silent $(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  $(PRODUCED_OUTPUT_ARTIFACTS)
@@ -110,7 +110,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaSourceRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
@@ -126,7 +126,7 @@ endif
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine  $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@` "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine  $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@` "... "
 	@mkdir -p ORIGS && rm -rf $@ && mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
@@ -136,7 +136,7 @@ endif
 
 # NOT sure why needed - retest --LGP 2024-10-21 - and better document why if still needed
 ifeq (Unix,$(BuildPlatform))
-ifeq ($(shell test `$(StroikaRoot)Build/Scripts/GetGCCVersion $(LINKER) -i` -lt 12; echo $$?), 0)
+ifeq ($(shell test `$(StroikaSourceRoot)Build/Scripts/GetGCCVersion $(LINKER) -i` -lt 12; echo $$?), 0)
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
 endif
@@ -193,7 +193,7 @@ ifeq ($(qFeatureFlag_ZLib), no)
 LIBCURL_CONFIGURE += --without-zlib
 else
 ifeq (Unix,$(BuildPlatform))
-ifeq ($(shell $(StroikaRoot)Build/Scripts/CheckForLibrary "$(LINKER) $(LDFLAGS)" z),false)
+ifeq ($(shell $(StroikaSourceRoot)Build/Scripts/CheckForLibrary "$(LINKER) $(LDFLAGS)" z),false)
 LIBCURL_CONFIGURE += --with-zlib
 endif
 endif
@@ -260,10 +260,10 @@ ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #
 # BUT THEN got cross-compiling for raspberry pi on Ubuntu 22.04, so try a more sophisticated check
 ifneq ($(LINKER),)
-ifeq ($(shell $(StroikaRoot)Build/Scripts/CheckForLibrary "$(LINKER) $(LDFLAGS)" brotlicommon),false)
+ifeq ($(shell $(StroikaSourceRoot)Build/Scripts/CheckForLibrary "$(LINKER) $(LDFLAGS)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
-ifeq ($(shell $(StroikaRoot)Build/Scripts/CheckForLibrary "$(LINKER) $(LDFLAGS)" brotlidec),false)
+ifeq ($(shell $(StroikaSourceRoot)Build/Scripts/CheckForLibrary "$(LINKER) $(LDFLAGS)" brotlidec),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
 endif
@@ -285,39 +285,39 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (Unix,$(BuildPlatform))
 	@$(MAKE) --no-print-directory check_prerequisites_
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIGURE-OUT.txt) ... "`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIGURE-OUT.txt) ... "`
 	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR_) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR_) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt) ... "`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt) ... "`
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
 	@($(UNSET_LEAKY_ENV_VARS_) $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)") >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_DIR) ... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_ROOT) ... "
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG-OUT.txt
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
-	@$(StroikaRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd CURRENT/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(AS)' CC='$(CC)' AR='$(WIN_LIB32)'"
+	@$(StroikaSourceRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd CURRENT/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(AS)' CC='$(CC)' AR='$(WIN_LIB32)'"
 	@todo - INCOMPLETE WINDOZE BUILD
 endif
 
 
 check_prerequisites_:
 ifeq (Unix,$(BuildPlatform))
-	@type automake > /dev/null 2>&1 || ($(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool automake && exit 1)
-	@type autoconf > /dev/null 2>&1 || ($(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool autoconf && exit 1)
-	@type autoreconf > /dev/null 2>&1 || ($(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool autoreconf && exit 1)
-	@type libtool > /dev/null 2>&1 || ($(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool libtool && exit 1)
+	@type automake > /dev/null 2>&1 || ($(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool automake && exit 1)
+	@type autoconf > /dev/null 2>&1 || ($(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool autoconf && exit 1)
+	@type autoreconf > /dev/null 2>&1 || ($(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool autoreconf && exit 1)
+	@type libtool > /dev/null 2>&1 || ($(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool libtool && exit 1)
 endif
 
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "curl ${VERSION} - Checking ... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "curl ${VERSION} - Checking ... "
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/curl -    [Succeeded]";
 
 
@@ -325,14 +325,14 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "curl ${VERSION} - Checking Prerequisite tools ... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "curl ${VERSION} - Checking Prerequisite tools ... "
 	@$(MAKE) --no-print-directory --silent check_prerequisites_
 	@$(ECHO) "done";
 
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/curl/
+	@rm -rf $(StroikaIntermediateFilesRoot)*/ThirdPartyComponents/curl/
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
@@ -341,7 +341,7 @@ endif
 clobber:	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGs
-	@rm -rf $(StroikaRoot)Builds/*/lib/{libcurl}* $(StroikaRoot)Builds/*/include/curl
+	@rm -rf $(StroikaBuildsRoot)*/lib/{libcurl}* $(StroikaBuildsRoot)*/include/curl
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/curl
 endif

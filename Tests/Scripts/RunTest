@@ -43,7 +43,7 @@ ARGS_="$*"
 
 MY_DIR_="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TESTNAME_=$("${MY_DIR_}/PrintTestName" "$NN_")
-SHOWN_EXE_=$("${StroikaRoot}Build/Scripts/SubstituteBackVariables" "$EXE_")
+SHOWN_EXE_=$("${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables" "$EXE_")
 
 VALPREFIX_=
 if [ -n "$VALGRIND" ] ; then

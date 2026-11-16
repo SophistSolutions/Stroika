@@ -1,13 +1,9 @@
 #
 #
 #
-ifndef StroikaRoot
-$(error "StroikaRoot must be defined before is included SharedBuildRules-Default.mk")
-endif
-
-# Test some random variable defined in SharedMakeVariables-Default.mk to ensure it has been included
-ifndef DETECTED_HOST_OS
-$(warning "SharedMakeVariables-Default.mk must be included before SharedBuildRules-Default.mk")
+# SharedMakeVariables-Default.mk must come first: it defines (and checks) the directories this uses
+ifndef StroikaIntermediateFilesRoot
+$(error SharedMakeVariables-Default.mk must be included before SharedBuildRules-Default.mk)
 endif
 
 
@@ -59,16 +55,16 @@ endif
 
 ifdef OBJ_SUFFIX
 $(ObjDir)%${OBJ_SUFFIX} : %.cpp
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)Build/Scripts/SubstituteBackVariables $(abspath $<)) ... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(abspath $<)) ... "
 	@mkdir -p `dirname $@`
 	@if [ $(WRITE_PREPROCESSOR_OUTPUT) -eq 1 ]; then\
 		if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-			$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CPP_LINE,$<,$@)';\
+			$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CPP_LINE,$<,$@)';\
 		fi;\
 	   $(call DEFAULT_CPP_LINE,$<,$@); \
 	fi
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CXX_LINE,$<,$@)';\
+	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CXX_LINE,$<,$@)';\
 	fi
 	@$(call DEFAULT_CXX_LINE,$<,$@)
 endif
@@ -76,7 +72,7 @@ endif
 
 
 %.i : %.swsp
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaRoot)Build/Scripts/SubstituteBackVariables $(abspath $<)) ... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Compiling $(shell $(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(abspath $<)) ... "
 	@$(HTMLViewCompiler) $< $@
 
 

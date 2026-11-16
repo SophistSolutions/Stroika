@@ -1,9 +1,9 @@
-StroikaRoot	:=	$(abspath ../../../../../../../)/
+StroikaSourceRoot	:=	$(abspath ../../../../../../../)/
 
-SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/Digest/Algorithm/
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+SrcDir		:=  $(StroikaSourceRoot)Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Foundation/Cryptography/Digest/Algorithm/
 
 vpath %cpp $(SrcDir)
 
@@ -13,7 +13,7 @@ Objs	:=	\
 	$(ObjDir)MD5${OBJ_SUFFIX}\
 	$(ObjDir)SuperFastHash${OBJ_SUFFIX}\
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:	$(Objs)

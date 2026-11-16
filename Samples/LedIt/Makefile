@@ -1,9 +1,9 @@
-StroikaRoot	:=	$(abspath ../../)/
-SrcDir		:=	$(StroikaRoot)Samples/LedIt/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedIt/
+StroikaSourceRoot	:=	$(abspath ../../)/
 
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+SrcDir		:=	$(StroikaSourceRoot)Samples/LedIt/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-LedIt/
 
 TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-LedIt/
 TARGETEXE		:=	$(TARGETDIR)LedIt${EXE_SUFFIX}
@@ -42,18 +42,18 @@ CPPFLAGS += -DWIN32
 Objs += $(ObjDir)LedIt.res
 endif
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 all:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/LedIt:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/LedIt:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/LedIt...                    "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/LedIt...                    "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 
 
@@ -68,9 +68,9 @@ $(Objs):	$(ObjDir)LedIt_i.c $(ObjDir)LedIt_h.h
 MIDL_FLAGS +=	-env win32
 
 $(ObjDir)LedIt.tlb:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(SrcDir)Sources/LedIt.odl` "; see "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(SrcDir)Sources/LedIt.odl` "; see "`$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/LedIt.odl,$(ObjDir)LedIt.tlb,$(ObjDir)LedIt_h.h,$(ObjDir)LedIt_i.c)';\
+	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/LedIt.odl,$(ObjDir)LedIt.tlb,$(ObjDir)LedIt_h.h,$(ObjDir)LedIt_i.c)';\
 	fi
 	@$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/LedIt.odl,$(ObjDir)LedIt.tlb,$(ObjDir)LedIt_h.h,$(ObjDir)LedIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
 
@@ -79,9 +79,9 @@ $(ObjDir)LedIt.tlb:
 RC_FLAGS += /l 0x0409
 
 $(ObjDir)LedIt.res:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(SrcDir)Sources/LedIt.rc` "; see "`$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(SrcDir)Sources/LedIt.rc` "; see "`$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)Sources/LedIt.rc,$(ObjDir)LedIt.res)';\
+	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)Sources/LedIt.rc,$(ObjDir)LedIt.res)';\
 	fi
 	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/LedIt.rc,$(ObjDir)LedIt.res) > $(ObjDir)RC-Build.out 2>&1
 
@@ -96,8 +96,8 @@ endif
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@,stroika-frameworks, , ${LinkerArgs_ExtraSuffix_})';\
+	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@,stroika-frameworks, , ${LinkerArgs_ExtraSuffix_})';\
 	fi
 	@$(call DEFAULT_LINK_LINE,$@, stroika-frameworks, , ${LinkerArgs_ExtraSuffix_}) 

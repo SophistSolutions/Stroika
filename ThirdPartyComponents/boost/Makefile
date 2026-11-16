@@ -13,17 +13,17 @@
 #		@todo	Now that we pass in CFLAGS, CXXFLAGS etc, we probably can get away with fewer explicit settings in the build process (like _GLIBCXX_DEBUG)
 #
 
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 SHELL=/bin/bash
 
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
-OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")/"
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/ThirdPartyComponents/boost)
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")/"
 
 ##
 ## Check latest release: https://www.boost.org/releases/latest/
@@ -48,7 +48,7 @@ ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
-GCC_VERSION_INTEGER_ := $(shell $(StroikaRoot)Build/Scripts/GetGCCVersion "$(CXX)" -i 2>/dev/null)
+GCC_VERSION_INTEGER_ := $(shell $(StroikaSourceRoot)Build/Scripts/GetGCCVersion "$(CXX)" -i 2>/dev/null)
 
 
 all:	
@@ -57,8 +57,8 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/boost Build $(VERSION) {$(CONFIGURATION)}:"
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/boost Build $(VERSION) {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(ZIPPEDFILE)
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))  $(PRODUCED_OUTPUT_ARTIFACTS)
@@ -95,7 +95,7 @@ $(ZIPPEDFILE):
 	
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@` "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
@@ -106,7 +106,7 @@ else
 endif
 	@if [[ "$@" != "ORIGs" ]] ; then \
 		if [[ "${VERSION}" == "1_85_0" ]] ; then \
-			$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Patching $@ (see ${OUTPUT_WORKDIR_PRETTYNAME}PATCHING.OUT) ... "`;\
+			$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Patching $@ (see ${OUTPUT_WORKDIR_PRETTYNAME}PATCHING.OUT) ... "`;\
 			patch -p0 $@/tools/build/src/tools/msvc.jam Patches/MSVC144-Jam.Patch >> PATCHING.OUT;\
 		fi;\
 	fi
@@ -114,9 +114,9 @@ endif
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)Builds/*/include/boost
-	@rm -f $(StroikaRoot)Builds/*/lib/libboost_*
-	@rm -rf $(StroikaRoot)Builds/*/share/boost-build
+	@rm -rf $(StroikaBuildsRoot)*/include/boost
+	@rm -f $(StroikaBuildsRoot)*/lib/libboost_*
+	@rm -rf $(StroikaBuildsRoot)*/share/boost-build
 	@rm -rf CURRENT
 else
 	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR_)include/boost
@@ -128,7 +128,7 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/boost/
+	@rm -rf $(StroikaIntermediateFilesRoot)*/ThirdPartyComponents/boost/
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
@@ -141,8 +141,8 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized BuildPlatform)
 endif
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "boost ${VERSION} - Checking ... "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "boost ${VERSION} - Checking ... "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/boost -   [Succeeded]";
 
 
@@ -183,20 +183,20 @@ $(B2FullPath):
 BOOTSTRAP_TOOLSET?=
 
 bootstrap_:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP-OUT.txt"` "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP-OUT.txt"` "... "
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@### From https://www.boost.org/doc/libs/1_87_0/more/getting_started/windows.html#id37 - section 5.2
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && ($(StroikaRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "bootstrap.bat ${BOOTSTRAP_TOOLSET}" > ../../BOOTSTRAP-OUT.txt)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && ($(StroikaSourceRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "bootstrap.bat ${BOOTSTRAP_TOOLSET}" > ../../BOOTSTRAP-OUT.txt)
 	@#cuz seems this is place UNIX puts it, so keep consistent
 	@#NOTE as of 2025-02-06 - seeing this not always work for HearHE app on Windoze... Will need to debug further - but not reliably failing there either
 	@#					      failures seem worse the more -jN flag given, and if vscode running/watching, and maybe if I left app running when rebuilding/clobber???
 	@if [ ! -e "${B2FullPath}" ]; then cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe ${B2FullPath}; fi
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && ($(StroikaRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) ".\b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR_))" >> ../../BOOTSTRAP-OUT.txt 2>&1)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && ($(StroikaSourceRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) ".\b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR_))" >> ../../BOOTSTRAP-OUT.txt 2>&1)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR_)" > BOOTSTRAP-OUT.txt)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR_) >> BOOTSTRAP-OUT.txt 2>&1)
 endif
-	@if [ ! -e "${B2FullPath}" ]; then $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${B2FullPath} not found - so bootstrap failed"; exit 1; fi
+	@if [ ! -e "${B2FullPath}" ]; then $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${B2FullPath} not found - so bootstrap failed"; exit 1; fi
 
 
 
@@ -321,7 +321,7 @@ endif
 
 
 configureAndBuild_:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Config+Build; see ${OUTPUT_WORKDIR_PRETTYNAME}ConfigureAndBuild-OUT.txt"` "..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Config+Build; see ${OUTPUT_WORKDIR_PRETTYNAME}ConfigureAndBuild-OUT.txt"` "..."
 	@
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
 	@
@@ -340,7 +340,7 @@ configureAndBuild_:
 	@#  Empirically: 94 chars builds fine; 102 chars overran by 437, so warn from 95 up. Diagnostic
 	@#  only - the leading - keeps a missing cygpath/realpath from failing the build.
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	-@MAXCHAR=95 && WINPATH=$$(cygpath -w "$$(realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))") && if [[ $${#WINPATH} -gt $$MAXCHAR ]] ; then $(ECHO) && $(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#WINPATH} (> $$MAXCHAR): boost puts one -I per sublibrary on every command line, so a long build path can exceed the cmd.exe 8191 char limit. If the build fails, grep ConfigureAndBuild-OUT.txt for 'action contains a line that is too long' - if present, rebuild from a shorter root directory (https://github.com/SophistSolutions/Stroika/issues/769)" && $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
+	-@MAXCHAR=95 && WINPATH=$$(cygpath -w "$$(realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))") && if [[ $${#WINPATH} -gt $$MAXCHAR ]] ; then $(ECHO) && $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#WINPATH} (> $$MAXCHAR): boost puts one -I per sublibrary on every command line, so a long build path can exceed the cmd.exe 8191 char limit. If the build fails, grep ConfigureAndBuild-OUT.txt for 'action contains a line that is too long' - if present, rebuild from a shorter root directory (https://github.com/SophistSolutions/Stroika/issues/769)" && $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@
 	@#@todo - document why we need to patch project-config.jam file - why cannot specifiy ARCH/COMPILER externally?
@@ -360,8 +360,8 @@ endif
 	@
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-	    ($(ECHO) "$(StroikaRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild-OUT.txt) &&\
-	    ($(StroikaRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install >> ConfigureAndBuild-OUT.txt)
+	    ($(ECHO) "$(StroikaSourceRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild-OUT.txt) &&\
+	    ($(StroikaSourceRoot)Build/Scripts/RunArgumentsWithCommonBuildVars $(CONFIGURATION) $(B2FullPath) $(B2_CONFIGURATION_ARGS) install >> ConfigureAndBuild-OUT.txt)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	    $(ECHO) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild-OUT.txt &&\
@@ -379,7 +379,7 @@ endif
 	@#we built boost with --layout=system
 	@#Include this logic on ALL platforms because on ALL platforms we explicitly set --layout=system
 	@#
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Patching $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp"`
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "boost ${VERSION} - Patching $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp"`
 	@$(ECHO) Patching $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
 	@$(ECHO) "// GENERATED BY STROIKA MAKEFILE" >> $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
 	@$(ECHO) "#define BOOST_AUTO_LINK_SYSTEM 1" >> $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt

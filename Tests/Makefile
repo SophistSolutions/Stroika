@@ -1,6 +1,6 @@
-export StroikaRoot?=$(abspath ../)/
+export StroikaSourceRoot?=$(abspath ../)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 .PHONY:	tests all check clobber
@@ -66,12 +66,12 @@ all:		tests
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tests {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika Tests {$(CONFIGURATION)}:"
 	@for tst in $(TESTS) ; do\
 		$(MAKE) --directory $$tst --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
@@ -80,12 +80,12 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Tests $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
-	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Tests $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
+	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Tests/
 	@if [ "$@" = "clobber" ] ; then \
 		rm -rf ${StroikaPlatformTargetBuildDir}Tests/;\
 	fi
@@ -94,23 +94,23 @@ endif
 
 
 project-files:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio Tests project files:"
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio Tests project files:"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
 	@cd Projects/VisualStudio.Net-2022 && ./BuildProjectsFiles
 	@$(ECHO) done
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2026 project files..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2026 project files..."
 	@cd Projects/VisualStudio.Net-2026 && ./BuildProjectsFiles
 	@$(ECHO) done
 
 
 tests:
 ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)Build/Scripts/GetConfigurations` ; do\
+	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations` ; do\
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@(cd Projects/$(BuildPlatform) && ./BuildProjectsFiles)
 endif
@@ -134,8 +134,8 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i || exit $$?;\
 	done
 else
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@#NOTE - 'tr -d "\r"' strips CRs only (Windows test exes emit them). It used to be 'tr -d "\r\n"', which
 	@#also ate the NEWLINES, collapsing each test's entire output onto one line - terser, but it made the
 	@#run-tests logs very hard to read and impossible to grep line-wise.

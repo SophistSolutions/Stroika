@@ -4,10 +4,12 @@
 mkdir Sandbox && cd Sandbox
 git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
+Build/Scripts/MakeBuildRoot
 make all -j10
 ~~~
 
-`make all -j10` builds all defined (default) configurations.
+`Build/Scripts/MakeBuildRoot` makes the build root - where the build goes: IntermediateFiles/, with Builds/ beside it
+(`--help` for elsewhere); make stops without one. `make all -j10` builds all defined (default) configurations.
 
 Alternatively, you can replace the last step:
 ~~~bash
@@ -18,7 +20,7 @@ with:
 ~~~bash
 make default-configurations
 ~~~
-- review the created configurations in `ConfigurationFiles` - perhaps making more, or different ones.
+- review the created configurations in `IntermediateFiles/ConfigurationFiles` - perhaps making more, or different ones.
 
 then
 ~~~bash
@@ -33,4 +35,4 @@ make TAGS=Unix all -j10
 to build all configurations with the tag Unix
 
 To learn more about Building Stroika-based applications and configurations, see
-[StroikaRoot/Documentation/Building-Stroika.md](https://github.com/SophistSolutions/Stroika/blob/V2.1-Release/Documentation/Building-Stroika.md)
+[StroikaSourceRoot/Documentation/Building-Stroika.md](https://github.com/SophistSolutions/Stroika/blob/V2.1-Release/Documentation/Building-Stroika.md)

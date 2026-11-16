@@ -5,25 +5,25 @@
 ###				for preqequisites, or more importantly already built html
 
 export TOP_ROOT:=$(abspath ../../../)/
-StroikaRoot	:=	$(TOP_ROOT)
+StroikaSourceRoot	:=	$(TOP_ROOT)
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/
 
 PER_CONFIGURATION_BUILDS_DIR_:=${TARGETDIR}html/
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)/
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-HTMLUI/html)/
 
 NEED_GNU_MAKE_ := 4.0.0
 OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
 
 all:
-	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples-HTMLUI/HTML:"
+	@$(StroikaSourceRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples-HTMLUI/HTML:"
 ifeq ($(CONFIGURATION),)
 	@echo "Cannot complete build without a configuration" && exit 1;
 endif
 ifeq ($(OK_GNU_MAKE_VERSION_),)
-	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(shell realpath --canonicalize-missing $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Samples-HTMLUI/html)
 else
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
@@ -32,9 +32,9 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@rm -rf ../IntermediateFiles/*/Samples-HTMLUI/html
+	@rm -rf $(StroikaIntermediateFilesRoot)*/Samples-HTMLUI/html
 	@if [ "$@" = "clobber" ] ; then \
-		rm -rf ../Builds/*/Samples-HTMLUI/html;\
+		rm -rf $(StroikaBuildsRoot)*/Samples-HTMLUI/html;\
 	fi
 endif
 ifneq ($(CONFIGURATION),)
@@ -46,19 +46,19 @@ ifneq ($(CONFIGURATION),)
 endif
 
 check-prerequisites:
-	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking HTML prerequisites:"
-	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type quasar 2> /dev/null) || ($(StroikaRoot)/Build/Scripts/GetMessageForMissingTool quasar && exit 1)"
-	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type node 2> /dev/null) || ($(StroikaRoot)/Build/Scripts/GetMessageForMissingTool node && exit 1)"
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type npm 2> /dev/null) || ($(StroikaRoot)Build/Scripts/GetMessageForMissingTool npm && exit 1)"
+	@$(StroikaSourceRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking HTML prerequisites:"
+	@$(StroikaSourceRoot)/Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type quasar 2> /dev/null) || ($(StroikaSourceRoot)/Build/Scripts/GetMessageForMissingTool quasar && exit 1)"
+	@$(StroikaSourceRoot)/Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type node 2> /dev/null) || ($(StroikaSourceRoot)/Build/Scripts/GetMessageForMissingTool node && exit 1)"
+	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type npm 2> /dev/null) || ($(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool npm && exit 1)"
 
 ${PER_CONFIGURATION_BUILDS_DIR_}: $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
-	@$(StroikaRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "npm install ( log2" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`NPM-Install.txt ") ..."
+	@$(StroikaSourceRoot)/Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "npm install ( log2" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`NPM-Install.txt ") ..."
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm i > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/NPM-Install.txt 2>&1
 	@# note - this build ignores .env file; used only for test/dev builds (maybe overwrite .env file with one form CONFIGURATION?)
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_).env
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building ( log2" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`Build.txt ") ..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building ( log2" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}`Build.txt ") ..."
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm run build > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/Build.txt 2>&1
-	@$(StroikaRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Copying to `$(StroikaRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_BUILDS_DIR_}` "..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Copying to `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables ${PER_CONFIGURATION_BUILDS_DIR_}` "..."
 	@rm -rf ${PER_CONFIGURATION_BUILDS_DIR_} && mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_} && cp -r $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/dist/spa/* ${PER_CONFIGURATION_BUILDS_DIR_}
 
 
@@ -79,7 +79,7 @@ $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/TOOLS_CHECKED:
 
 
 $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_):
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Preparing symbolic links for " `$(StroikaRoot)Build/Scripts/SubstituteBackVariables "$@"` "... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Preparing symbolic links for " `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables "$@"` "... "
 	@rm -rf $@ && mkdir -p $@
 	@for i in ${SRC_FILES2Link_}; do cp -r `pwd`/$$i $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/$$i; done
 

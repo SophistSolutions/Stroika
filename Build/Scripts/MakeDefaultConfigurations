@@ -13,12 +13,12 @@
 set -e
 
 MY_DIR_="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-StroikaRoot_="$(cd -P "${MY_DIR_}/../.." && pwd)"
+StroikaSourceRoot_="$(cd -P "${MY_DIR_}/../.." && pwd)"
 
 DETECTED_HOST_OS="${DETECTED_HOST_OS:-$("${MY_DIR_}/DetectedHostOS")}"
 MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
 
-cd "$StroikaRoot_"
+cd "$StroikaSourceRoot_"
 
 "${MY_DIR_}/PrintProgressLine" "${MAKE_INDENT_LEVEL}" "Making default configurations:"
 

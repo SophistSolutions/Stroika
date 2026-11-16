@@ -11,11 +11,11 @@
 #	NOTE: this makefile - to build - requires an internet connection, as the build process downloads files
 #	todo: nice if we could fix that to use 'Origs-Cache' mike most of our other thirdpartycomponents.
 #
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include ${StroikaRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
+include ${StroikaSourceRoot}/Build/Lib/Make/SharedMakeVariables-Default.mk
 ifneq (${CONFIGURATION},)
-include ${StroikaRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
+include ${StroikaSourceRoot}Build/Lib/Make/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
 
 SHELL=/bin/bash
@@ -45,9 +45,9 @@ FETCHURLS_=
 FETCHURLS_+= https://github.com/mongodb/mongo-cxx-driver/archive/refs/tags/${MONGOCXXDRIRVER_VERSION_}.tar.gz
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
-PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/mongo-cxx-driver)/
-OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
-COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/mongo-cxx-driver/CURRENT)
+PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)${CONFIGURATION}/ThirdPartyComponents/mongo-cxx-driver)/
+OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
+COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaSourceRoot}/ThirdPartyComponents/mongo-cxx-driver/CURRENT)
 
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
@@ -113,7 +113,7 @@ endif
 # 	LDFLAGS	+= -Wno-free-nonheap-object
 # DID WORK:
 # 		-- LGP 2025-05-22
-ifneq (,$(shell ${StroikaRoot}Build/Scripts/GetGCCVersion $(CC)))
+ifneq (,$(shell ${StroikaSourceRoot}Build/Scripts/GetGCCVersion $(CC)))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
@@ -141,10 +141,10 @@ endif
 #       |                                  ^~~~~~~
 # gmake[7]: *** [src/bsoncxx/CMakeFiles/bsoncxx_static.dir/build.make:76: src/bsoncxx/CMakeFiles/bsoncxx_static.dir/lib/bsoncxx/v_noabi/bsoncxx/array/element.cpp.o] Error 1
 # gmake[6]: *** [CMakeFiles/Makefile2:2685: src/bsoncxx/CMakeFiles/bsoncxx_static.dir/all] Error 2
-# $(info GCC Version is $(shell ${StroikaRoot}Build/Scripts/GetGCCVersion ${CC}))
-# $(info COMPARE is $(shell expr $(shell ${StroikaRoot}Build/Scripts/GetGCCVersion ${CC}) \< 12))
-ifneq ($(shell ${StroikaRoot}Build/Scripts/GetGCCVersion ${CC}),)
-ifeq ($(shell expr "$(shell ${StroikaRoot}Build/Scripts/GetGCCVersion ${CC})" \< 12),1)
+# $(info GCC Version is $(shell ${StroikaSourceRoot}Build/Scripts/GetGCCVersion ${CC}))
+# $(info COMPARE is $(shell expr $(shell ${StroikaSourceRoot}Build/Scripts/GetGCCVersion ${CC}) \< 12))
+ifneq ($(shell ${StroikaSourceRoot}Build/Scripts/GetGCCVersion ${CC}),)
+ifeq ($(shell expr "$(shell ${StroikaSourceRoot}Build/Scripts/GetGCCVersion ${CC})" \< 12),1)
 CFLAGS:=$(filter-out -fsanitize=undefined, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=undefined, $(CXXFLAGS))
 endif
@@ -161,7 +161,7 @@ endif
 # got -O3, which hid this. Remove when GCC bug 59922 is fixed - a GCC release that compiles this cleanly with
 # 'gcc -O0 -fsanitize=thread -Werror=return-type -c':
 #		int f (int x) { if (1) { return x; } else (void)0; }
-ifneq ($(shell ${StroikaRoot}Build/Scripts/GetGCCVersion ${CC}),)
+ifneq ($(shell ${StroikaSourceRoot}Build/Scripts/GetGCCVersion ${CC}),)
 ifneq ($(findstring -fsanitize=thread,$(CFLAGS)),)
 ifeq ($(filter-out -O0,$(filter -O%,$(CFLAGS))),)
 CFLAGS		+= -O1
@@ -187,7 +187,7 @@ endif
 # and applies to everything since. Expressed as a >= test rather than a list of versions so it does not
 # go stale on the next bump: VersionCompare returns 2 for '<', so 'not 2' means >=. It compares
 # numerically, so 4.10.0 >= 4.4.0 holds (a plain string compare would get that wrong).
-ifneq (2,$(shell ${StroikaRoot}Build/Scripts/VersionCompare $(patsubst r%,%,${MONGOCXXDRIRVER_VERSION_}) 4.4.0; echo $$?))
+ifneq (2,$(shell ${StroikaSourceRoot}Build/Scripts/VersionCompare $(patsubst r%,%,${MONGOCXXDRIRVER_VERSION_}) 4.4.0; echo $$?))
 LIBABIVER_=1
 else
 LIBABIVER_=
@@ -211,8 +211,8 @@ all:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/mongo-cxx-driver Build ${MONGOCXXDRIRVER_VERSION_} {${CONFIGURATION}}:"
-	@${StroikaRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} "Stroika/ThirdPartyComponents/mongo-cxx-driver Build ${MONGOCXXDRIRVER_VERSION_} {${CONFIGURATION}}:"
+	@${StroikaSourceRoot}Build/Scripts/CheckValidConfiguration ${CONFIGURATION}
 	@#make ZIPPED_SOURCES_FILE_ even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@${MAKE} --no-print-directory --silent ${ZIPPED_SOURCES_FILE_}
 	@${MAKE} --no-print-directory --silent ${PRODUCED_OUTPUT_ARTIFACTS_}
@@ -231,7 +231,7 @@ ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@${MAKE} --silent CURRENT
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
 	@if [[ "${PYTHON_VERSION_}" == "" ]] ; then echo "PYTHON_VERSION_ not set"; exit 1; fi
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
 	@${ECHO} "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" > "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
@@ -246,7 +246,7 @@ endif
 		${SED} -i "s/-Werror -DCMAKE_CXX_LINK_EXECUTABLE/-DCMAKE_CXX_LINK_EXECUTABLE/" "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-src/src/libmongoc/CMakeLists.txt"; \
 	fi
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && ${ECHO} "${CMAKE} --build . --config=${CMAKE_BUILD_TYPE}" > BUILD-OUT.txt
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE} >> BUILD-OUT.txt 2>&1
@@ -254,7 +254,7 @@ else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && ${ECHO} "${CMAKE} --build ."  > BUILD-OUT.txt 2>&1
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build .  >> BUILD-OUT.txt 2>&1
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Install (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Install (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
 else
@@ -262,9 +262,9 @@ else
 endif
 ifeq (${MONGOCXXDRIRVER_VERSION_},r4.2.0)
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
-		${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
+		${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
 		${SED} -i "s/\-l[^ ]*\/zstd\.lib//" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
 		${ECHO} '+';\
 		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
@@ -273,9 +273,9 @@ endif
 	ln -s ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx1-static.pc
 else ifeq (${MONGOCXXDRIRVER_VERSION_},r4.3.0)
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
-		${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
+		${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
 		${SED} -i "s/\-l[^ ]*\/zstd\.lib//" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
 		${ECHO} '+';\
 		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
@@ -284,9 +284,9 @@ endif
 	ln -s ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx1-static.pc
 else ifeq (${MONGOCXXDRIRVER_VERSION_},r4.3.1)
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
-		${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
+		${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
 		${SED} -i "s/\-l[^ ]*\/zstd\.lib//" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
 		${ECHO} '+';\
 		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
@@ -297,9 +297,9 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@# Safe to leave enabled for a version that may not need it: the grep below tests for the defect
 	@# and the sed only runs if it is actually present, so this is a no-op once upstream fixes it.
 	@# As of r4.6.1 (mongo-c-driver 2.5.6) still needed: its mongoc2-static.pc's Libs gives zstd.lib as -l<path> (2026-10-20).
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 	@if grep -q "\-l[^ ]*zstd\.lib" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"; then\
-		${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
+		${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+2)) -n '+';\
 		${SED} -i "s/\-l[^ ]*\/zstd\.lib//" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
 		${ECHO} '+';\
 		${SED} -i "s/Requires: .*/&, libzstd/" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc";\
@@ -310,11 +310,11 @@ endif
 
 
 ${ZIPPED_SOURCES_FILE_}:
-	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
+	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaSourceRoot}Build/Scripts/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
 
 
 ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
-	@${StroikaRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to" `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@` "... "
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1
@@ -328,8 +328,8 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Checking Prerequisite tools ... "
-	@type python3 > /dev/null 2>&1 || ($(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool python3 && exit 1)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Checking Prerequisite tools ... "
+	@type python3 > /dev/null 2>&1 || ($(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool python3 && exit 1)
 	@$(ECHO) "done";
 
 
@@ -337,14 +337,14 @@ check:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@${StroikaRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Checking ... "
-	@${StroikaRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine ${MAKE_INDENT_LEVEL} -n "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Checking ... "
+	@${StroikaSourceRoot}Build/Scripts/CheckFileExists ${PRODUCED_OUTPUT_ARTIFACTS_}
 	@${ECHO} " Stroika/ThirdPartyComponents/mongo-cxx-driver -    [Succeeded]";
 
 
 clean:
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}IntermediateFiles/*/ThirdPartyComponents/mongo-cxx-driver
+	@rm -rf ${StroikaIntermediateFilesRoot}*/ThirdPartyComponents/mongo-cxx-driver
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
@@ -352,10 +352,10 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	@rm -rf	${StroikaRoot}Builds/*/lib/{*bson*,*mongo*}
-	@rm -rf	${StroikaRoot}Builds/*/lib/cmake/{*bson*,*mongoc*} 
-	@rm -rf	${StroikaRoot}Builds/*/lib/pkgconfig/{*bson*,*mongo*}
-	@rm -rf	${StroikaRoot}Builds/*/include/{*bson*,*mongoc*} 
+	@rm -rf	${StroikaBuildsRoot}*/lib/{*bson*,*mongo*}
+	@rm -rf	${StroikaBuildsRoot}*/lib/cmake/{*bson*,*mongoc*} 
+	@rm -rf	${StroikaBuildsRoot}*/lib/pkgconfig/{*bson*,*mongo*}
+	@rm -rf	${StroikaBuildsRoot}*/include/{*bson*,*mongoc*} 
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}

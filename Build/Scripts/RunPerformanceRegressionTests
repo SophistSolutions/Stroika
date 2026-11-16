@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Call from $StroikaRoot
+# Call from $StroikaSourceRoot
 #
 #	Examples:
 #		Build/Scripts/RunPerformanceRegressionTests
@@ -12,6 +12,9 @@
 #		PIN_CPU=3 Build/Scripts/RunPerformanceRegressionTests     # pin to a specific CPU
 #
 VER=`Build/Scripts/ExtractVersionInformation STROIKA_VERSION FullVersionString`
+
+# Builds/, from the build root's DirectoryLayout.mk (NAME=value lines, which sh reads too)
+BUILDS_="$(. "${StroikaIntermediateFilesRoot:-IntermediateFiles/}DirectoryLayout.mk" && echo "$StroikaBuildsRoot")"
 
 : "${USE_TEST_BASENAME:=UNKNOWN}"
 : "${PERF_TEST:=Test52}"
@@ -53,27 +56,27 @@ if [ "${NO_PIN-0}" != "1" ] && command -v taskset > /dev/null 2>&1 ; then
 fi
 
 if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
-    EXE=${EXE-"Builds/Release/Tests/$PERF_TEST"}
+    EXE=${EXE-"${BUILDS_}Release/Tests/$PERF_TEST"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Release-arm64"; fi
     CMDRUN_PREFIX="nice -10 $PIN_PREFIX"
 elif [ "$DETECTED_HOST_OS" == "Linux" ] ; then
     # Do something under GNU/Linux platform
     # These names must track Build/Scripts/MakeRegressionTestConfigurations - when they drifted (++2b renamed
     # ++23 there, but not here), 22.04 found nothing to run, and 24.04 silently switched from g++-12 to g++-14.
-    EXE=${EXE-"Builds/g++-optimized/Tests/$PERF_TEST"}
-	if [ ! -e "$EXE" ] ; then EXE="Builds/Release/Tests/$PERF_TEST"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-12-release++23/Tests/$PERF_TEST"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-13-release++23/Tests/$PERF_TEST"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-14-release++23/Tests/$PERF_TEST"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-15-release++23/Tests/$PERF_TEST"; fi	# 26.04 with only its default g++ (WSL_Ubuntu_Simple)
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-16-release++23/Tests/$PERF_TEST"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-release++23/Tests/$PERF_TEST"; fi
+    EXE=${EXE-"${BUILDS_}g++-optimized/Tests/$PERF_TEST"}
+	if [ ! -e "$EXE" ] ; then EXE="${BUILDS_}Release/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="${BUILDS_}g++-12-release++23/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="${BUILDS_}g++-13-release++23/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="${BUILDS_}g++-14-release++23/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="${BUILDS_}g++-15-release++23/Tests/$PERF_TEST"; fi	# 26.04 with only its default g++ (WSL_Ubuntu_Simple)
+	if [ ! -e "$EXE" ] ; then EXE="${BUILDS_}g++-16-release++23/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="${BUILDS_}g++-release++23/Tests/$PERF_TEST"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
     CMDRUN_PREFIX="nice -10 $PIN_PREFIX"
 elif [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
     # Do something under Windows NT platform
-    EXE2=${EXE-"Builds/Release-x86_64/Tests/$PERF_TEST"}
-    EXE=${EXE-"Builds/Release-x86/Tests/$PERF_TEST"}
+    EXE2=${EXE-"${BUILDS_}Release-x86_64/Tests/$PERF_TEST"}
+    EXE=${EXE-"${BUILDS_}Release-x86/Tests/$PERF_TEST"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-${DETECTED_HOST_OS}-vs2k"; fi
     USE_TEST_BASENAME_APP="x86-"
     USE_TEST_BASENAME_APP2="x86_64-"

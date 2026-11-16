@@ -1,18 +1,10 @@
-StroikaRoot	:=	$(abspath ../../../../)/
-SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
+StroikaSourceRoot	:=	$(abspath ../../../../)/
 
-ifneq ($(CONFIGURATION),)
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),clobber)
-ifeq ($(wildcard $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk),)
-$(shell $(MAKE) --directory $(StroikaRoot) --no-print-directory CONFIGURATION=$(CONFIGURATION) --silent apply-configuration)
-endif
-endif
-endif
-endif
+StroikaApplyConfigurationIfMissing	:=	1
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+SrcDir		:=	$(StroikaSourceRoot)Library/Sources/Stroika/Frameworks/
+ObjDir		:=	$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Frameworks/
 
 
 
@@ -37,7 +29,7 @@ SubDirs:=	\
 $(SubDirs):
 	@$(MAKE) --directory $@ -s
 
-CachedOBJSFile_ = $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/cached-list-objs
+CachedOBJSFile_ = $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Frameworks/cached-list-objs
 
 #
 # note also cannot just invoke
@@ -63,18 +55,18 @@ OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VER
 
 ifeq ($(OK_GNU_MAKE_VERSION_),)
 # REDIRECT to avoid: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.; not good solution cuz hides errors
-Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
+Objs := $(foreach dir, $(SubDirs), $(shell $(StroikaDirectoryLayoutEnv) $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
 else
 ifeq ($(wildcard $(CachedOBJSFile_)),)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clobber)
-$(shell $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $(CachedOBJSFile_)`" 1>&2)
+$(shell $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(CachedOBJSFile_)`" 1>&2)
 $(shell mkdir -p $(shell dirname $(CachedOBJSFile_)) )
 # REDIRECT to avoid: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.; not good solution cuz hides errors
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-$(file > $(CachedOBJSFile_),$(shell cygpath --mixed $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))))
+$(file > $(CachedOBJSFile_),$(shell cygpath --mixed $(foreach dir, $(SubDirs), $(shell $(StroikaDirectoryLayoutEnv) $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))))
 else
-$(file > $(CachedOBJSFile_),$(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null)))
+$(file > $(CachedOBJSFile_),$(foreach dir, $(SubDirs), $(shell $(StroikaDirectoryLayoutEnv) $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null)))
 endif
 endif
 endif
@@ -86,7 +78,7 @@ endif
 
 
 
-include $(StroikaRoot)Build/Lib/Make/SharedBuildRules-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedBuildRules-Default.mk
 
 
 
@@ -98,7 +90,7 @@ $(Objs): all_objs_
 
 .PHONY:	all_objs_
 all_objs_:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs {$(CONFIGURATION)}:";
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs {$(CONFIGURATION)}:";
 	@$(MAKE) --no-print-directory -s $(SubDirs) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
@@ -107,10 +99,10 @@ all_objs_:
 # unlike normal makefiles, we dont see the dependencies in this makefile - just sub-makes (to a degree).
 $(StroikaFrameworksLib):	$(Objs)
 	@mkdir -p $(StroikaLibDir)
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)Build/Scripts/SubstituteBackVariables $@` ... "
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@` ... "
 	@rm -f $@
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then \
-		$(StroikaRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) '$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))';\
+		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) '$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))';\
 	fi
 	@$(call DEFAULT_LIBRARY_GEN_LINE,$@,$(Objs))
 
@@ -120,9 +112,9 @@ all:	$(StroikaFrameworksLib)
 
 clean::
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)IntermediateFiles/*/Library/Frameworks
+	@rm -rf $(StroikaIntermediateFilesRoot)*/Library/Frameworks
 else
-	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks
+	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Library/Frameworks
 endif
 
 

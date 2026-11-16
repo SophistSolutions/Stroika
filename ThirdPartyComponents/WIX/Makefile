@@ -1,9 +1,9 @@
 #
 # This optional component may be used on windows to build windows installers (MSI files)
 #
-StroikaRoot	:=	$(abspath ../..)/
+StroikaSourceRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
+include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 ### https://wixtoolset.org/docs/releasenotes/
 ### We are way behind here - but some work to update -  up to WIX v5 --LGP 2024-07-18
@@ -26,8 +26,8 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 
 all:	
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/WIX Build $(VERSION) {$(CONFIGURATION)}:"
-	@$(StroikaRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/WIX Build $(VERSION) {$(CONFIGURATION)}:"
+	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --silent CURRENT
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
@@ -37,7 +37,7 @@ clobber:
 	@rm -rf CURRENT
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaSourceRoot)Build/Scripts/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 CURRENT:	$(ZIPPEDFILE)
 	@unzip -q $(ZIPPEDFILE) -d CURRENT
@@ -45,11 +45,11 @@ CURRENT:	$(ZIPPEDFILE)
 	@/bin/find CURRENT -name \*.dll -exec chmod +x {} \;
 
 check-prerequisite-tools:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking Prerequisite tools ... "
-	@{ type unzip > /dev/null; } || { $(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaRoot)Build/Scripts/GetMessageForMissingTool unzip && exit 1; }
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking Prerequisite tools ... "
+	@{ type unzip > /dev/null; } || { $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool unzip && exit 1; }
 	@$(ECHO) "done";
 
 check:
-	@$(StroikaRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking ... "
-	@$(StroikaRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "WIX $(VERSION) - Checking ... "
+	@$(StroikaSourceRoot)Build/Scripts/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/WIX -  [Succeeded]";

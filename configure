@@ -2,8 +2,9 @@
 #
 #   configure CONFIGURATION-NAME [OPTIONS]*         (configure --help lists the options)
 #
-#   Writes ConfigurationFiles/CONFIGURATION-NAME.xml: the named configuration - compilers, flags, third-party components
-#   - with the command line that made it, so 'make reconfigure' can re-run it. Run from the top of the Stroika tree.
+#   Writes ConfigurationFiles/CONFIGURATION-NAME.xml in the build root (StroikaConfigurationFilesDir): the named
+#   configuration - compilers, flags, third-party components - with the command line that made it, so 'make reconfigure'
+#   can re-run it. Run from the top of the Stroika tree, once there is a build root (Build/Scripts/MakeBuildRoot makes one).
 #
 #   A port of the Perl configure (configure.pl, through Stroika v3.0d25).
 #
@@ -34,6 +35,9 @@ LIBFEATUREFLAG_No_ = "no"
 
 if sys.platform == "win32":  # (run as python3 configure, say - the #! line names a POSIX one)
     sys.exit("configure needs a POSIX python3 - on Windows, MSYS2's (pacman -S python) or Cygwin's - not a native Windows one")
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the import below
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "Build", "Lib", "Python"))
+import DirectoryLayout  # noqa: E402
 IS_WINDOWS_HOST_ = sys.platform == "msys" or sys.platform.startswith("cygwin")  # MSYS2's or Cygwin's python
 IS_LINUX_HOST_ = sys.platform.startswith("linux")
 IS_MACOS_HOST_ = sys.platform == "darwin"
@@ -94,7 +98,6 @@ class Configure_:
     def __init__(self, argv):
         self.ARGV = list(argv)
         self.cache_ = {}
-        self.configurationFiles = "ConfigurationFiles/"
         self.configurationName = None
         indentLevel = os.environ.get("MAKE_INDENT_LEVEL") or ""
         self.MAKE_INDENT_LEVEL = int(indentLevel) if indentLevel.isdigit() else 0
@@ -491,7 +494,8 @@ class Configure_:
         includeAutomaticDependencies = not self.INCLUDES_PATH_SET
         if includeAutomaticDependencies:
             # @todo unclear if we want to add this to platform includes path - probably yes (alternative is FOUNDATION_INCLUDES_PATH below)
-            self.INCLUDES_PATH_ADD.append(self.Backtick("realpath --canonicalize-missing Builds/" + self.configurationName + "/include/").strip() + "/")
+            includeDir = DirectoryLayout.BUILDS_ROOT + self.configurationName + "/include/"
+            self.INCLUDES_PATH_ADD.append(self.Backtick("realpath --canonicalize-missing " + shlex.quote(includeDir)).strip() + "/")
             self.PLATFORM_INCLUDES_PATH = []
             self.FOUNDATION_INCLUDES_PATH.append(self.Backtick("realpath --canonicalize-missing Library/Sources/").strip() + "/")
             # for now include this (for Stroika/Current-Version.h) but later package all these up in Builds/$CONF/includes/Stroika
@@ -1514,7 +1518,7 @@ class Configure_:
                 # prepend, so stuff already there takes precedence
                 if self.RunPrefix != "":
                     self.RunPrefix = " " + self.RunPrefix
-                self.RunPrefix = "TSAN_OPTIONS=suppressions=${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" + self.RunPrefix
+                self.RunPrefix = "TSAN_OPTIONS=suppressions=${StroikaSourceRoot}/Tests/ThreadSanitizerSuppressions.supp" + self.RunPrefix
 
         if not self.FEATUREFLAG_OpenSSL:
             self.FEATUREFLAG_OpenSSL = LIBFEATUREFLAG_UseStaticTPP_
@@ -1958,12 +1962,11 @@ class Configure_:
         if IS_WINDOWS_HOST_ and re.match(r"MSYS|MINGW", self.Backtick("uname -s")):
             os.environ["MSYS2_ARG_CONV_EXCL"] = "*"
         self.ParseCommandLine_()
+        # after --help, which needs none; with no build root, this exits saying how to make one
+        self.configurationFiles = DirectoryLayout.CONFIGURATION_FILES_DIR
         self.PostProcessOptions_()
 
-        try:
-            os.mkdir(self.configurationFiles)
-        except OSError:
-            pass
+        os.makedirs(self.configurationFiles, exist_ok=True)
 
         generate = True
         generateBecause = ""
@@ -2050,7 +2053,7 @@ class Configure_:
         if generate:
             self.ValidateConfigurationAndEmitNeededWarnings_()
             masterXMLConfigFile = self.configurationFiles + self.configurationName + ".xml"
-            self.Print(self.PrintLevelLeader(self.MAKE_INDENT_LEVEL) + 'Writing "' + masterXMLConfigFile + '" ... ')
+            self.Print(self.PrintLevelLeader(self.MAKE_INDENT_LEVEL) + 'Writing "' + DirectoryLayout.ForDisplay(masterXMLConfigFile) + '" ... ')
             text = self.ConfigFileText_()
             self.Print("done\n")
             return masterXMLConfigFile, text
@@ -2349,7 +2352,7 @@ def Main_(argv):
         with open(fileName, "wb") as f:
             f.write(text.encode(ENCODING_, ENCODING_ERRORS_))
         try:
-            os.remove("IntermediateFiles/APPLIED_CONFIGURATIONS")
+            os.remove(DirectoryLayout.INTERMEDIATE_FILES_ROOT + "APPLIED_CONFIGURATIONS")
         except OSError:
             pass
     return 0
