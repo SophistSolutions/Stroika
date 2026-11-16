@@ -757,7 +757,7 @@ void ConnectionManager::RemoveInterceptor (const Interceptor& i)
         }
         return false;
     };
-    bool found = removeFrom (interceptors.fBefore) or removeFrom (interceptors.fAfter) or removeFrom (interceptors.fEarly);
+    [[maybe_unused]] bool found = removeFrom (interceptors.fBefore) or removeFrom (interceptors.fAfter) or removeFrom (interceptors.fEarly);
     Require (found);
     if (interceptors.fDefaultErrorHandler == i) {
         interceptors.fDefaultErrorHandler = nullopt; // it was the early one removed
