@@ -1,5 +1,8 @@
 StroikaSourceRoot	:=	$(abspath .)/
 
+# before SharedMakeVariables-Default.mk, which would make it all - and stop a plain make (help) with no build root
+.DEFAULT_GOAL := help
+
 include Build/Lib/Make/SharedMakeVariables-Default.mk
 
 ifeq ($(filter 3.81, $(firstword $(sort $(MAKE_VERSION) 3.81))),)
@@ -37,8 +40,6 @@ ECHO_TIMESTAMPS?=1
 # QUICK_BUILD=1 skips some steps you might occasionally want todo (done in regtests).
 #
 export QUICK_BUILD?=1
-
-.DEFAULT_GOAL := help
 
 #Handy shortcut
 CONFIGURATION_TAGS?=$(TAGS)

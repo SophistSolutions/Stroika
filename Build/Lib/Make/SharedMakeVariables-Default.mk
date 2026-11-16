@@ -54,9 +54,9 @@
 #				ConfigurationFiles/		the named configurations
 #				Makefile				make run there builds the project (TOP_ROOT) into it
 #			Build/Scripts/MakeBuildRoot makes one, and nothing else does - where the build goes is a choice, never made
-#			for you: make (and configure) without one stops, printing the MakeBuildRoot command line that would make it.
-#			make clobber keeps those three; make distclean deletes the lot. Each source tree needs its own: two sharing
-#			one would share configurations and objects.
+#			for you: make (but make help) and configure stop without one, printing the MakeBuildRoot command line that
+#			would make it. make clobber keeps those three; make distclean deletes the lot. Each source tree needs its
+#			own: two sharing one would share configurations and objects.
 #
 #		StroikaConfigurationFilesDir	($(StroikaIntermediateFilesRoot)ConfigurationFiles/)
 #			The named configurations, <name>.xml, which configure writes.
@@ -93,14 +93,21 @@ StroikaIntermediateFilesRoot	?=	$(TOP_ROOT)IntermediateFiles/
 ifneq ($(abspath $(StroikaIntermediateFilesRoot))/,$(StroikaIntermediateFilesRoot))
 $(error StroikaIntermediateFilesRoot must be an absolute path ending in / (got "$(StroikaIntermediateFilesRoot)"))
 endif
+
+# all, unless the including makefile names its own before including this one (the top Makefile's is help)
+.DEFAULT_GOAL	:=	$(or $(.DEFAULT_GOAL),all)
+
 StroikaDirectoryLayout_	:=	$(StroikaIntermediateFilesRoot)DirectoryLayout.mk
 ifeq ($(wildcard $(StroikaDirectoryLayout_)),)
 # The MakeBuildRoot command line, run in TOP_ROOT, that makes the build root this make looks for (as DirectoryLayout.py's)
 StroikaMakeBuildRootCommand_	:=	$(patsubst $(TOP_ROOT)%,%,$(StroikaSourceRoot))Build/Scripts/MakeBuildRoot$(if $(filter-out $(StroikaSourceRoot),$(TOP_ROOT)), --top-root .)$(if $(filter-out $(TOP_ROOT)IntermediateFiles/,$(StroikaIntermediateFilesRoot)), --intermediate-files-root $(StroikaIntermediateFilesRoot))
 $(info No build root at $(StroikaIntermediateFilesRoot) (no DirectoryLayout.mk). To make it, run in $(TOP_ROOT):)
 $(info $(subst x, ,xxxx)$(StroikaMakeBuildRootCommand_))
+# make help needs none
+ifneq ($(filter-out help,$(or $(MAKECMDGOALS),$(.DEFAULT_GOAL))),)
 $(error No build root (Build/Scripts/MakeBuildRoot --help))
 endif
+else
 StroikaIntermediateFilesRootFound_	:=	$(StroikaIntermediateFilesRoot)
 StroikaBuildsRootGiven_				:=	$(StroikaBuildsRoot)
 include $(StroikaDirectoryLayout_)
@@ -119,6 +126,7 @@ $(error StroikaBuildsRoot is $(StroikaBuildsRootGiven_) here, but $(StroikaDirec
 endif
 endif
 export StroikaIntermediateFilesRoot StroikaConfigurationFilesDir StroikaBuildsRoot
+endif
 
 # A recipe command deleting what the build put in the build root, but not what makes it one: DirectoryLayout.mk, its
 # Makefile and its configurations (make clobber; make distclean deletes those too)
@@ -194,8 +202,6 @@ export MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 # intentionally DONT set export for this cuz it could vary from makefile to makefile
 SHELL?=/bin/bash
-
-.DEFAULT_GOAL := all
 
 
 #

@@ -408,10 +408,11 @@ Stroika tree, unless you choose another build root.
 **IntermediateFiles/** is the build root - as CMake's `-B` names a build directory: the directory that says where
 everything else is. It holds the intermediate files, the configurations (**ConfigurationFiles/**), and
 **DirectoryLayout.mk**, which says where the products (**Builds/**) go - by default beside it. `Build/Scripts/MakeBuildRoot`
-makes one, and nothing else does - where the build goes is your choice: `make` and `configure` stop without one, printing
-the command line that makes the one they look for. With no arguments, it makes the default, IntermediateFiles/ in the
-Stroika tree. To build out of the source tree - on a faster disk, off a shared or network path, or to keep the checkout
-clean - name another, and build there (the paths may be relative; DirectoryLayout.mk records them absolute):
+makes one, and nothing else does - where the build goes is your choice: `make` (but `make help`) and `configure` stop
+without one, printing the command line that makes the one they look for. With no arguments, it makes the default,
+IntermediateFiles/ in the Stroika tree. To build out of the source tree - on a faster disk, off a shared or network path,
+or to keep the checkout clean - name another, and build there (the paths may be relative; DirectoryLayout.mk records them
+absolute):
 
 ~~~bash
 Build/Scripts/MakeBuildRoot --intermediate-files-root /fastdisk/stroika-out/IntermediateFiles/   # Builds/: /fastdisk/stroika-out/Builds/

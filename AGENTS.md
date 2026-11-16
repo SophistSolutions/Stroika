@@ -39,7 +39,7 @@ Stroika uses a hand-rolled GNU Make + custom `configure` script build (not CMake
 
 ### One-time setup
 ```bash
-Build/Scripts/MakeBuildRoot     # the build root, IntermediateFiles/ (--help: elsewhere); every make, and configure, stop without one
+Build/Scripts/MakeBuildRoot     # the build root, IntermediateFiles/ (--help: elsewhere); make (but make help) and configure stop without one
 make check-prerequisite-tools   # verify required tools are installed
 make default-configurations     # create default named configurations under IntermediateFiles/ConfigurationFiles/*.xml
 ```

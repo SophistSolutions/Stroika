@@ -18,8 +18,8 @@
 #   Each may be relative (to the current directory); DirectoryLayout.mk records them absolute. A build root made already
 #   is left as it is - though a --builds-root or --top-root given must match it.
 #
-#   Nothing else makes one: make and configure stop without one, printing the command line that makes the build root they
-#   look for. So, first, in a new Stroika tree:
+#   Nothing else makes one: make (but make help) and configure stop without one, printing the command line that makes the
+#   build root they look for. So, first, in a new Stroika tree:
 #       Build/Scripts/MakeBuildRoot                         # IntermediateFiles/ here, and Builds/ beside it
 #   in an application made by Skel, in its top directory:
 #       ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .
