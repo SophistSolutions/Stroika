@@ -64,14 +64,17 @@ do work remotely on other machines (MACHINE=ARG), and then copy back results to 
 checkin from one spot.
 
 Times below are approximate, from what the runs actually recorded - every run ends with a
-`Finished at ... (N minutes)` line in `Tests/HistoricalRegressionTestResults`. To recompute:
+`Finished at ... (N minutes)` line in `Tests/HistoricalRegressionTestResults` - and are for a medusa running nothing
+else: runs sharing it (its docker runs, and medusa-windows-dev, a VM on it) slow each other, up to twice as long, so a
+run made beside another is not counted. To recompute:
 
   ```bash
   grep -h 'Finished at' Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-OUT.txt
   ```
 
-Last updated from the 3.0d25 release runs (2026-10-12 to 10-21). A run that did not build and run in full is not
-counted - its target keeps its earlier estimate (Ubuntu2404_x86_64 this time).
+Last updated from the 3.0d25 release runs (2026-10-12 to 10-21), and Ubuntu2610_x86_64's first runs (2026-11-14). A
+run that did not build and run in full is not counted - its target keeps its earlier estimate (Ubuntu2404_x86_64 this
+time).
 
 - \$TEST_TARGET=MacOS_XCode26_m1
 
@@ -147,7 +150,7 @@ counted - its target keeps its earlier estimate (Ubuntu2404_x86_64 this time).
 
 - \$TEST_TARGET=Ubuntu2610_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 3.5 h)
+  (remote execute on machine medusa using docker and copy back results; takes about 5.5 h)
 
   ```bash
   RUN_IN_DOCKER=1 \
