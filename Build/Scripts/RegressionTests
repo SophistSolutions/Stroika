@@ -19,9 +19,14 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 # Some scripts use this, especially when we invoke stuff from 'GetConfigurations'
 export StroikaSourceRoot=`realpath .`
 
-# The build root - by default here - and its configurations; Builds/ is in its DirectoryLayout.mk, read once make has
-# made it (below). @see Build/Lib/Make/SharedMakeVariables-Default.mk
-INTERMEDIATE_FILES_ROOT_="${StroikaIntermediateFilesRoot:-IntermediateFiles/}"
+# The build root - this tree's own, as MakeBuildRoot with no options makes it (below) - and its configurations; Builds/
+# is in its DirectoryLayout.mk. A StroikaIntermediateFilesRoot in the environment would point this run's makes at another.
+# @see Build/Lib/Make/SharedMakeVariables-Default.mk
+if [ -n "${StroikaIntermediateFilesRoot:-}" ] ; then
+	echo "RegressionTests builds in this tree's own IntermediateFiles/ and Builds/: unset StroikaIntermediateFilesRoot" 1>&2
+	exit 1
+fi
+INTERMEDIATE_FILES_ROOT_=IntermediateFiles/
 CONFIGURATION_FILES_DIR_="${INTERMEDIATE_FILES_ROOT_}ConfigurationFiles/"
 
 
@@ -161,7 +166,7 @@ fi
 
 
 ### The build root (MakeBuildRoot leaves one made already as it is)
-Build/Scripts/MakeBuildRoot --intermediate-files-root "$INTERMEDIATE_FILES_ROOT_" >>$TEST_OUT_FILE 2>&1
+Build/Scripts/MakeBuildRoot >>$TEST_OUT_FILE 2>&1
 
 ### Create the actual configuration files that drive what is built
 if [ $CONTINUE -eq 0 ] ; then
@@ -554,13 +559,12 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote "$StroikaSourceRoot" >>$TEST_OUT_FILE 2>&1
 		echo "git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout $SKEL_STROIKA_COMMIT" >>$TEST_OUT_FILE 2>&1
 		git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout --quiet $SKEL_STROIKA_COMMIT >>$TEST_OUT_FILE 2>&1
-		# the app is its own project, with its own build root in its top directory - so not this run's, which an out-of-tree
-		# run names in StroikaIntermediateFilesRoot
-		echo "cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root ." >>$TEST_OUT_FILE 2>&1
-		(unset StroikaIntermediateFilesRoot TOP_ROOT; cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .) >>$TEST_OUT_FILE 2>&1
+		# the app is its own project, with its own build root in its top directory
+		echo "cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot" >>$TEST_OUT_FILE 2>&1
+		(cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot) >>$TEST_OUT_FILE 2>&1
 		echo -n "cd $USE_SKEL_NAME && make CONFIGURATION=Debug ... " 2>&1
 		echo "cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
-		if ! (unset StroikaIntermediateFilesRoot TOP_ROOT; cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1 ; then
+		if ! (cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1 ; then
 			# a failure of its own, counted in the summary as a sample app's is - the build's output, above, says why
 			echo -n "**FAILED** "
 			echo "**FAILED**" >>$TEST_OUT_FILE

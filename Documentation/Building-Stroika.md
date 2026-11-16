@@ -28,17 +28,18 @@ tar xf v3-Release.tar.gz && mv Stroika-3-Release Stroika-Dev
 followed by:
 
 ```bash
-Stroika-Dev/Build/Scripts/MakeBuildRoot
-make --directory Stroika-Dev all run-tests
+cd Stroika-Dev
+Build/Scripts/MakeBuildRoot
+make all run-tests
 ```
 
-MakeBuildRoot makes the build root: where the build goes - by default Stroika-Dev/IntermediateFiles/, with
-Stroika-Dev/Builds/ beside it (see [Relocating build output](#relocating-build-output)). Nothing else makes one: make
-stops without it, printing the command line that makes it.
+MakeBuildRoot, run once with no arguments in the top of the tree, makes the build root there - IntermediateFiles/, with
+the products in Builds/ (to build somewhere else: [Relocating build output](#relocating-build-output)). make stops
+without one, printing the line that makes it.
 
 Or, for a depending on your system, for a quicker turnaround, perhaps:
 ```bash
-make --directory Stroika-Dev all run-tests CONFIGURATION=Debug -j10
+make all run-tests CONFIGURATION=Debug -j10
 ```
 
 
@@ -405,25 +406,28 @@ Stroika tree, unless you choose another build root.
 
 ### Relocating build output
 
-**IntermediateFiles/** is the build root - as CMake's `-B` names a build directory: the directory that says where
-everything else is. It holds the intermediate files, the configurations (**ConfigurationFiles/**), and
-**DirectoryLayout.mk**, which says where the products (**Builds/**) go - by default beside it. `Build/Scripts/MakeBuildRoot`
-makes one, and nothing else does - where the build goes is your choice: `make` (but `make help`) and `configure` stop
-without one, printing the command line that makes the one they look for. With no arguments, it makes the default,
-IntermediateFiles/ in the Stroika tree. To build out of the source tree - on a faster disk, off a shared or network path,
-or to keep the checkout clean - name another, and build there (the paths may be relative; DirectoryLayout.mk records them
-absolute):
+Usually you run `Build/Scripts/MakeBuildRoot` once, with no arguments, in the top directory of what you build - Stroika's
+tree, or an application's - and it makes **IntermediateFiles/** there, the build root, with the products in **Builds/**,
+also there. `make` (but `make help`) and `configure` stop without a build root, printing the line that makes it.
+
+The build root is what CMake's `-B` names: the directory that says where everything else is. It holds the intermediate
+files, the configurations (**ConfigurationFiles/**), and **DirectoryLayout.mk**, which says where the products go.
+
+To build somewhere else - on a faster disk, off a shared or network path, or to keep the checkout clean - name all three
+directories: `--top-root` (the project to build: the directory you would otherwise run it in), `--intermediate-files-root`
+(the build root) and `--builds-root` (where the products go). Nothing in between is accepted, and MakeBuildRoot reads no
+environment variables. The paths may be relative (to the current directory); DirectoryLayout.mk records them absolute.
+Then build there:
 
 ~~~bash
-Build/Scripts/MakeBuildRoot --intermediate-files-root /fastdisk/stroika-out/IntermediateFiles/   # Builds/: /fastdisk/stroika-out/Builds/
+Build/Scripts/MakeBuildRoot --top-root . --intermediate-files-root /fastdisk/stroika-out/IntermediateFiles/ --builds-root /fastdisk/stroika-out/Builds/
 cd /fastdisk/stroika-out/IntermediateFiles/
 make default-configurations
 make CONFIGURATION=Debug all -j8
 ~~~
 
-`MakeBuildRoot --builds-root DIR` puts the products somewhere else. Instead of building in the build root, you can set
-**StroikaIntermediateFilesRoot** to it - in the environment, or on the make command line; `configure` and the other build
-scripts, run by hand, follow it too.
+Instead of building in the build root, you can set **StroikaIntermediateFilesRoot** to it - in the environment, or on the
+make command line; `configure` and the other build scripts, run by hand, follow it too.
 
 The makefiles' variables for these directories - StroikaIntermediateFilesRoot, StroikaConfigurationFilesDir and
 StroikaBuildsRoot - are documented, with the other directories a build uses, at the top of
@@ -438,9 +442,9 @@ StroikaBuildsRoot - are documented, with the other directories a build uses, at 
   ([issue 769](https://github.com/SophistSolutions/Stroika/issues/769)).
 - Still written in the source tree: the third-party components' extracted sources (`ThirdPartyComponents/*/CURRENT`), and
   the IDE files (`.vscode/`, `Workspaces/`), which also still assume the default directories.
-- An application made by `Skel` has its build root in its own top directory by default - IntermediateFiles/, with
-  Builds/ beside it - shared by its output and Stroika's. In that directory:
-  `ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .`
+- An application made by `Skel` has its build root in its own top directory by default - IntermediateFiles/, with the
+  products in Builds/ - shared by its output and Stroika's. In that directory:
+  `ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot`
 - Before Stroika v3.0d26 the configurations were in ConfigurationFiles/ at the top of the tree: MakeBuildRoot copies any
   there into the build root it makes, and `make distclean` deletes that old directory too.
 

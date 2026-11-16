@@ -183,5 +183,5 @@ mkFinish_ >> $OUTLOG 2>&1
 echo "  done"
 echo "Suggested next steps:"
 echo "  cd $APP_ROOT"
-echo "  ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .    # where the build goes: here, in IntermediateFiles/ and Builds/ (MakeBuildRoot --help)"
+echo "  ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot    # where the build goes: here, in IntermediateFiles/ and Builds/ (MakeBuildRoot --help)"
 echo "  make CONFIGURATION=Debug all -j8"

@@ -61,7 +61,7 @@
 #		StroikaConfigurationFilesDir	($(StroikaIntermediateFilesRoot)ConfigurationFiles/)
 #			The named configurations, <name>.xml, which configure writes.
 #
-#		StroikaBuildsRoot				(MakeBuildRoot --builds-root; by default Builds/ beside the build root)
+#		StroikaBuildsRoot				(MakeBuildRoot --builds-root; by default $(TOP_ROOT)Builds/)
 #			The products: a directory per configuration, StroikaPlatformTargetBuildDir. Stroika has no install step -
 #			the tests, the samples and applications built on Stroika all use the libraries from here.
 #
@@ -100,7 +100,8 @@ endif
 StroikaDirectoryLayout_	:=	$(StroikaIntermediateFilesRoot)DirectoryLayout.mk
 ifeq ($(wildcard $(StroikaDirectoryLayout_)),)
 # The MakeBuildRoot command line, run in TOP_ROOT, that makes the build root this make looks for (as DirectoryLayout.py's)
-StroikaMakeBuildRootCommand_	:=	$(patsubst $(TOP_ROOT)%,%,$(StroikaSourceRoot))Build/Scripts/MakeBuildRoot$(if $(filter-out $(StroikaSourceRoot),$(TOP_ROOT)), --top-root .)$(if $(filter-out $(TOP_ROOT)IntermediateFiles/,$(StroikaIntermediateFilesRoot)), --intermediate-files-root $(StroikaIntermediateFilesRoot))
+# - where the products go is the caller's choice, which nothing here knows
+StroikaMakeBuildRootCommand_	:=	$(patsubst $(TOP_ROOT)%,%,$(StroikaSourceRoot))Build/Scripts/MakeBuildRoot$(if $(filter-out $(TOP_ROOT)IntermediateFiles/,$(StroikaIntermediateFilesRoot)), --top-root . --intermediate-files-root $(StroikaIntermediateFilesRoot) --builds-root <products-directory>)
 $(info No build root at $(StroikaIntermediateFilesRoot) (no DirectoryLayout.mk). To make it, run in $(TOP_ROOT):)
 $(info $(subst x, ,xxxx)$(StroikaMakeBuildRootCommand_))
 # make help needs none

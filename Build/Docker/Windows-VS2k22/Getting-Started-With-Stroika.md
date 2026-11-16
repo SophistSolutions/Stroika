@@ -9,8 +9,8 @@ cd Stroika
 
 ## Make the build root
 
-Where the build goes: IntermediateFiles/, with Builds/ beside it (`Build/Scripts/MakeBuildRoot --help` for elsewhere). make
-stops without one.
+Where the build goes: IntermediateFiles/ and Builds/, in the tree's top (`Build/Scripts/MakeBuildRoot --help` to build
+elsewhere). make stops without one.
 ~~~
 Build/Scripts/MakeBuildRoot
 ~~~

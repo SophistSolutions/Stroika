@@ -78,10 +78,9 @@ def _MakeBuildRootCommand():
     topRoot = AbsoluteDir(os.environ.get("TOP_ROOT", STROIKA_SOURCE_ROOT))
     sourceRoot = AbsoluteDir(STROIKA_SOURCE_ROOT)
     command = (sourceRoot[len(topRoot):] if sourceRoot.startswith(topRoot) else sourceRoot) + "Build/Scripts/MakeBuildRoot"
-    if topRoot != sourceRoot:
-        command += " --top-root ."
     if AbsoluteDir(INTERMEDIATE_FILES_ROOT) != topRoot + "IntermediateFiles/":
-        command += " --intermediate-files-root " + INTERMEDIATE_FILES_ROOT
+        # where the products go is the caller's choice: nothing here knows it
+        command += " --top-root . --intermediate-files-root " + INTERMEDIATE_FILES_ROOT + " --builds-root <products-directory>"
     return (topRoot, command)
 
 
@@ -137,24 +136,30 @@ def _CopyOldConfigurations(configurationFilesDir, intermediateFilesRoot):
     return (old, copied)
 
 
-def MakeBuildRoot(intermediateFilesRoot, buildsRoot=None, topRoot=None):
+def _SameDir(a, b):
+    """Do a and b name the same directory - however spelled (C:/... or /c/...), or reached through links?"""
+    return os.path.realpath(ShellPath(a)) == os.path.realpath(ShellPath(b))
+
+
+def MakeBuildRoot(topRoot, intermediateFilesRoot, buildsRoot):
     """
-    Make intermediateFilesRoot a build root: its ConfigurationFiles/, its Makefile (make run there builds topRoot - by
-    default this Stroika - into it), and last its DirectoryLayout.mk (StroikaBuildsRoot: buildsRoot, by default Builds/
-    beside it). Each argument may be relative. One that is a build root already is left as it is - though a buildsRoot or
-    topRoot given must match it.
+    Make intermediateFilesRoot the build root for the project topRoot (TOP_ROOT), its products in buildsRoot: its
+    ConfigurationFiles/, its Makefile (make run there builds topRoot into it), and last its DirectoryLayout.mk. Each may be
+    relative. One that is a build root already is left as it is - if it records these same directories.
     """
+    topRoot = AbsoluteDir(topRoot)
     intermediateFilesRoot = AbsoluteDir(intermediateFilesRoot)
-    buildsRoot = AbsoluteDir(buildsRoot) if buildsRoot else None
-    topRoot = AbsoluteDir(topRoot or STROIKA_SOURCE_ROOT)
+    buildsRoot = AbsoluteDir(buildsRoot)
+    if not os.path.isfile(topRoot + "Makefile"):
+        sys.exit("No Makefile in " + topRoot + ": the top root - by default the current directory - is the project to build (the "
+                 "top of the Stroika tree, or of an application)")
     layout = ReadDirectoryLayout(intermediateFilesRoot)
     if layout is not None:
-        for name, given in (("StroikaBuildsRoot", buildsRoot), ("StroikaDirectoryLayoutTopRoot", topRoot)):
-            if given is not None and given != layout.get(name):
+        for name, given in (("StroikaDirectoryLayoutTopRoot", topRoot), ("StroikaBuildsRoot", buildsRoot)):
+            if name not in layout or not _SameDir(given, layout[name]):
                 sys.exit(intermediateFilesRoot + " is a build root already, with " + name + "=" + str(layout.get(name)) +
                          ", not " + given + ": to change that, delete it first")
         return
-    buildsRoot = buildsRoot or AbsoluteDir(os.path.dirname(intermediateFilesRoot.rstrip("/")) + "/Builds/")
     configurationFilesDir = intermediateFilesRoot + "ConfigurationFiles/"
     makefile = intermediateFilesRoot + "Makefile"
     if os.path.exists(makefile):

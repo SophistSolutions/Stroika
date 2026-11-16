@@ -8,8 +8,8 @@ Build/Scripts/MakeBuildRoot
 make all -j10
 ~~~
 
-`Build/Scripts/MakeBuildRoot` makes the build root - where the build goes: IntermediateFiles/, with Builds/ beside it
-(`--help` for elsewhere); make stops without one. `make all -j10` builds all defined (default) configurations.
+`Build/Scripts/MakeBuildRoot` makes the build root - where the build goes: IntermediateFiles/ and Builds/, in the tree's
+top (`--help` to build elsewhere); make stops without one. `make all -j10` builds all defined (default) configurations.
 
 Alternatively, you can replace the last step:
 ~~~bash
