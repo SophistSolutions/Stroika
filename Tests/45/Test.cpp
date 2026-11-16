@@ -83,6 +83,27 @@ namespace {
         }
         return false;
     }
+
+    /*
+     *  httpbin.org answers 429 Too Many Requests past 2 requests a second from one client IP that echo a body (POST, PUT), and
+     *  the tests send bursts of those - so wait a moment and ask again, as its answer says to ("retry after 1")
+     */
+    template <invocable F>
+    auto RetryIfTooManyRequests_ (F&& f)
+    {
+        constexpr unsigned int kMaxTries_{4};
+        for (unsigned int tries = 1;; ++tries) {
+            try {
+                return f ();
+            }
+            catch (const IO::Network::HTTP::Exception& e) {
+                if (e.GetStatus () != IO::Network::HTTP::StatusCodes::kTooManyRequests or tries == kMaxTries_) {
+                    ReThrow ();
+                }
+                Execution::Sleep (1s * tries);
+            }
+        }
+    }
 }
 
 namespace {
@@ -212,7 +233,8 @@ namespace {
         again:
 #endif
             try {
-                optResp = c.POST (URI{"/post"}, TypedBLOB{roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream});
+                optResp = RetryIfTooManyRequests_ (
+                    [&] () { return c.POST (URI{"/post"}, TypedBLOB{roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream}); });
             }
 #if qStroika_HasComponent_libcurl
             catch (const system_error& lce) {
@@ -279,7 +301,9 @@ namespace {
                 }
                 return BLOB (buf.begin (), buf.end ());
             }();
-            Response r = c.PUT (URI{"http://httpbin.org/put"}, TypedBLOB{roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream});
+            Response r = RetryIfTooManyRequests_ ([&] () {
+                return c.PUT (URI{"http://httpbin.org/put"}, TypedBLOB{roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream});
+            });
             EXPECT_TRUE (r.GetSucceeded ()); // because throws on failure
             {
                 VariantValue                  v  = Variant::JSON::Reader{}.Read (r.GetDataBinaryInputStream ());
