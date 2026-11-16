@@ -74,6 +74,9 @@ namespace Stroika::Foundation::Time {
      *          localtime changes, the DateTime then is relative to that new localtime. If the associated timezone is localtime, the
      *          interpretation of that timezone happens at the time a request requires it.
      *
+     *  \note   Time zones: handling them is complicated, and not quite portable - what local time is on each platform, and where
+     *          Stroika's answer can differ from the C and C++ libraries' (TZ on Windows, say): @see Timezone (Timezone.h).
+     *
      *  \note   Formats: kISO8601Format, kRFC1123Format and kHTTPDateFormat are LocaleIndependentFormat values - not strftime-style
      *          format strings, as Date's and TimeOfDay's kISO8601Format are - since an ISO 8601 or RFC 1123 date-time has a time zone, which
      *          std::time_put cannot quite write, nor std::time_get read. So DateTime writes and reads them itself (the
@@ -107,7 +110,14 @@ namespace Stroika::Foundation::Time {
          *  explicit DateTime (time_t unixEpochTime) noexcept
          *      Creates a DateTime object in UTC, using UNIX Epoch time.
          *
-         *  explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::UTC ()) noexcept;
+         *  explicit DateTime (const timespec& tmTime) noexcept, and on POSIX explicit DateTime (const timeval& tmTime) noexcept
+         *      The same: a moment since the UNIX Epoch, so in UTC (the fraction of a second dropped).
+         *
+         *  explicit DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz) noexcept;
+         *      A SYSTEMTIME carries no time zone, so say which: Timezone::kLocalTime for GetLocalTime's, Timezone::kUTC for
+         *      GetSystemTime's.
+         *
+         *  explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
          *      Most windows APIs return file-times in UTC (or so it appears). Because of this,
          *      our default interpretation of a FILETIME structure as as UTC.
          *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
@@ -131,11 +141,11 @@ namespace Stroika::Foundation::Time {
         constexpr DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         explicit DateTime (time_t unixEpochTime) noexcept;
         explicit DateTime (const ::tm& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
-        explicit DateTime (const ::timespec& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
+        explicit DateTime (const ::timespec& tmTime) noexcept;
 #if qStroika_Platform_POSIX
-        explicit DateTime (const ::timeval& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
+        explicit DateTime (const ::timeval& tmTime) noexcept;
 #elif qStroika_Platform_Windows
-        explicit DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
+        explicit DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz) noexcept;
         explicit DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
 #endif
         template <Common::ITimePoint T>
@@ -310,7 +320,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Return the current DateTime (in LocalTime)
+         *  \brief Return the current DateTime, in Timezone::kLocalTime - on Windows, Windows' own time zone (TZ is examined only on POSIX)
          */
         static DateTime Now () noexcept;
 
@@ -601,6 +611,24 @@ namespace Stroika::Foundation::Time {
         {
             return DateTime{tickCount};
         }
+        [[deprecated ("Since Stroika v3.0d26 - a timespec is a moment, so the DateTime is in UTC: DateTime{ts}, then AsLocalTime () or "
+                      "AsTimezone () for another time zone")]] explicit DateTime (const ::timespec& tmTime, const optional<Timezone>&) noexcept
+            : DateTime{tmTime}
+        {
+        }
+#if qStroika_Platform_POSIX
+        [[deprecated ("Since Stroika v3.0d26 - a timeval is a moment, so the DateTime is in UTC: DateTime{tv}, then AsLocalTime () or "
+                      "AsTimezone () for another time zone")]] explicit DateTime (const ::timeval& tmTime, const optional<Timezone>&) noexcept
+            : DateTime{tmTime}
+        {
+        }
+#elif qStroika_Platform_Windows
+        [[deprecated ("Since Stroika v3.0d26 - a SYSTEMTIME carries no time zone, so say which: Timezone::kLocalTime (as this "
+                      "did) for GetLocalTime's, Timezone::kUTC for GetSystemTime's")]] explicit DateTime (const ::SYSTEMTIME& sysTime) noexcept
+            : DateTime{sysTime, Timezone::kLocalTime}
+        {
+        }
+#endif
     };
 
     class DateTime::FormatException : public Execution::Exception<runtime_error> {

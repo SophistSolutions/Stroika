@@ -180,8 +180,8 @@ DateTime::DateTime (const ::tm& tmTime, const optional<Timezone>& tz) noexcept
 {
 }
 
-DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noexcept
-    : fTimezone_{tz}
+DateTime::DateTime (const ::timespec& tmTime) noexcept
+    : fTimezone_{Timezone::kUTC}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
@@ -204,8 +204,8 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
 }
 
 #if qStroika_Platform_POSIX
-DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcept
-    : fTimezone_{tz}
+DateTime::DateTime (const timeval& tmTime) noexcept
+    : fTimezone_{Timezone::kUTC}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime

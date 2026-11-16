@@ -15,7 +15,6 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Time/Date.h"
@@ -34,6 +33,50 @@ using namespace Stroika::Foundation::Time;
 using namespace Stroika::Frameworks;
 
 using Stroika::Foundation::Debug::TraceContextBumper;
+
+namespace {
+    /*
+     *  Test code only: sets TZ (nullptr: removes it) for this object's lifetime, has the C library read it again, then puts it
+     *  back. What that does differs by platform, since Stroika examines TZ only on POSIX (@see Timezone):
+     *      o   POSIX: TZ is the local time zone - so a test sets it to run in a time zone of its choosing, not the machine's
+     *      o   Windows: Stroika never looks at TZ, but the C library's time functions do - so a test sets it to make the C
+     *          library disagree with Windows, and checks that Stroika still follows Windows (DateTime_NowIsNowUTC_)
+     */
+    class ScopedTZ_ {
+    public:
+        ScopedTZ_ (const char* value)
+        {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
+            const char* was = std::getenv ("TZ");
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
+            fSaved_ = was == nullptr ? nullopt : optional<string>{was};
+            Set_ (value);
+        }
+        ScopedTZ_ (const ScopedTZ_&) = delete;
+        ~ScopedTZ_ ()
+        {
+            Set_ (fSaved_ ? fSaved_->c_str () : nullptr);
+        }
+
+    private:
+        static void Set_ (const char* value)
+        {
+#if qStroika_Platform_POSIX
+            if (value == nullptr) {
+                ::unsetenv ("TZ");
+            }
+            else {
+                ::setenv ("TZ", value, 1);
+            }
+            ::tzset ();
+#elif qStroika_Platform_Windows
+            ::_putenv_s ("TZ", value == nullptr ? "" : value); // "" removes it
+            ::_tzset ();
+#endif
+        }
+        optional<string> fSaved_;
+    };
+}
 
 #if qCompilerAndStdLib_arm_isConstantEvaluatedInCtor_UnusedValueWarning_Buggy
 // Wraps all the tests, not each line: constructing a Date or DateTime triggers it, and there are too many to wrap one by one
@@ -788,6 +831,41 @@ namespace {
         EXPECT_LE (utc, after.AddSeconds (1)); // time () has whole seconds; Windows' system time, milliseconds
         EXPECT_EQ (DateTime::Now ().GetTimezone (), Timezone::kLocalTime);
     }
+
+    /*
+     *  Now () and NowUTC () are the same moment, whatever TZ says: America/New_York (as Cygwin sets it - which Windows' C library
+     *  reads as UTC), and India's +05:30 - between them, a zone other than the machine's own, wherever it is
+     */
+    GTEST_TEST (Foundation_Time, DateTime_NowIsNowUTC_)
+    {
+        TraceContextBumper ctx{"DateTime_NowIsNowUTC_"};
+        for (const char* tz : {"America/New_York", "IST-5:30"}) {
+            ScopedTZ_ setTZ{tz};
+            EXPECT_LT (std::abs ((DateTime::Now () - DateTime::NowUTC ()).count ()), 2) << "TZ=" << tz;
+        }
+    }
+
+    /*
+     *  A timespec (and on POSIX a timeval) is a moment since the UNIX epoch, as a time_t is: the DateTime made from one is in
+     *  UTC - so in local time it is still the same moment
+     */
+    GTEST_TEST (Foundation_Time, DateTime_FromTimespec_)
+    {
+        TraceContextBumper ctx{"DateTime_FromTimespec_"};
+        ScopedTZ_          setTZ{"IST-5:30"}; // so on POSIX local time is surely not UTC (Windows' own zone may be)
+        constexpr time_t   kWhen = 1234567890;
+        const DateTime     fromTimeT{kWhen};
+        ::timespec         ts{};
+        ts.tv_sec = kWhen;
+        EXPECT_EQ (DateTime{ts}.GetTimezone (), Timezone::kUTC);
+        EXPECT_EQ (DateTime{ts}.AsLocalTime ().AsUTC (), fromTimeT);
+#if qStroika_Platform_POSIX
+        ::timeval tv{};
+        tv.tv_sec = kWhen;
+        EXPECT_EQ (DateTime{tv}.GetTimezone (), Timezone::kUTC);
+        EXPECT_EQ (DateTime{tv}.AsLocalTime ().AsUTC (), fromTimeT);
+#endif
+    }
 }
 
 namespace {
@@ -1254,34 +1332,19 @@ namespace {
     GTEST_TEST (Foundation_Time, LocalTimezoneOffsetText_)
     {
         TraceContextBumper ctx{"LocalTimezoneOffsetText_"};
-        // Timezone::kLocalTime's offset as text is the local offset - so run where local time is not UTC: India's, +05:30 (no daylight
-        // saving time), as a POSIX TZ string, which the Windows C runtime reads too; then put TZ back
-        auto setTZ = [] (const char* value) {
+        const Date         d{2020y, January, 15d};
+        const TimeOfDay    t{12, 0, 0};
+        // Timezone::kLocalTime's offset as text is the local offset, in whatever zone this machine is in: read back, the same moment
+        const DateTime local{d, t, Timezone::kLocalTime};
+        EXPECT_EQ (DateTime::Parse (local.Format (DateTime::kRFC1123Format), DateTime::kRFC1123Format).AsUTC (), local.AsUTC ());
 #if qStroika_Platform_POSIX
-            if (value == nullptr) {
-                ::unsetenv ("TZ");
-            }
-            else {
-                ::setenv ("TZ", value, 1);
-            }
-            ::tzset ();
-#elif qStroika_Platform_Windows
-            ::_putenv_s ("TZ", value == nullptr ? "" : value); // "" removes it
-            ::_tzset ();
-#endif
-        };
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        const char* was = std::getenv ("TZ");
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        const optional<string>  savedTZ = was == nullptr ? nullopt : optional<string>{was};
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { setTZ (savedTZ ? savedTZ->c_str () : nullptr); });
-        setTZ ("IST-5:30");
-        const Date      d{2020y, January, 15d};
-        const TimeOfDay t{12, 0, 0};
+        // and where local time is surely not UTC: India's, +05:30 (no daylight saving time), set with TZ - which only POSIX examines
+        ScopedTZ_ setTZ{"IST-5:30"};
         EXPECT_EQ (Timezone::kLocalTime.GetBiasInMinutesFromUTC (d, t), 5 * 60 + 30);
         EXPECT_EQ (Timezone::kLocalTime.AsHHMM (d, t, true), "+05:30");
         EXPECT_EQ (Timezone::kLocalTime.AsHHMM (d, t, false), "+0530");
         EXPECT_EQ ((DateTime{d, t, Timezone::kLocalTime}.Format (DateTime::kRFC1123Format)), "Wed, 15 Jan 2020 12:00:00 +0530");
+#endif
     }
 }
 

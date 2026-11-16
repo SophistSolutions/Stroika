@@ -80,7 +80,8 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *  \brief return a summary of information about the currently configured default timezone on this system.
+     *  \brief return a summary of information about the currently configured default timezone on this system - the one
+     *         Timezone::kLocalTime is (so on Windows, Windows' own setting: TZ is examined only on POSIX)
      */
     [[nodiscard]] TimeZoneInformationType GetCurrentLocaleTimezoneInfo ();
 
@@ -89,11 +90,34 @@ namespace Stroika::Foundation::Time {
      *
      *  But - it only supports these timezones:
      *      o   UTC
-     *      o   LocalTime () special - whatever timezone this computer is in
+     *      o   kLocalTime - special: floating - the local time zone at the moment the value is used, not when it was made
      *      o   Fixed Offset from UTC (suitable for reading and writing ISO8601 times)
+     *  and a DateTime may have none (kUnknown).
      *
      *  But it currently does NOT support the notion of timezone like American/NewYork (unless that happens to be localtime)
      *  That feature may be eventually added - https://github.com/SophistSolutions/Stroika/issues/772 (STK-636)
+     *
+     *  \par Local time
+     *      Handling local time is complicated, and not quite portable. Local time is:
+     *          o   POSIX: the C library's local time zone (mktime) - the TZ environment variable, else the system's (/etc/localtime)
+     *          o   Windows: Windows' own time zone setting, by each year's rules (GetTimeZoneInformationForYear - a year outside
+     *              1601-30827 as standard time). TZ is never examined on Windows.
+     *      It is looked up each time it is used, not when a DateTime is made: a DateTime in kLocalTime is a wall-clock date and
+     *      time, meaning whatever moment that is in the local time zone of then. Its offset from UTC depends on the date and time
+     *      (daylight saving time), so GetBiasFromUTC () and the like take them.
+     *      A time to store or exchange is safest in UTC (AsUTC ()): a local one means another moment on another machine, and one
+     *      in the hour daylight saving time repeats is ambiguous.
+     *
+     *  \par Where Stroika's local time can differ from what other code says
+     *      o   Windows, TZ set (Cygwin passes its TZ, an IANA name, to the programs it starts): the C library's time functions
+     *          (localtime, mktime, strftime's %z %Z) follow it, reading an IANA name as UTC; Stroika, Windows and
+     *          std::chrono::current_zone () (MSVC, as of 19.51) ignore it.
+     *      o   Windows, a past year: the C library applies this year's daylight saving rules (and refuses dates before 1970);
+     *          Stroika uses each year's own.
+     *      o   POSIX, TZ set: std::chrono::current_zone () (libstdc++, as of 16) ignores it - it names /etc/localtime's zone.
+     *
+     *  @todo Date::As<time_point> (local midnight) and DateTime::Format's %z %Z still take local time from the C library, so on
+     *        Windows follow TZ (@see https://github.com/SophistSolutions/Stroika/issues/806).
      *
      *  @see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
      *
@@ -141,11 +165,25 @@ namespace Stroika::Foundation::Time {
         static const Timezone kUTC; // defined constexpr
 
     public:
+        /**
+         *  \brief Local time, whatever it is when used - floating, not a zone fixed when a DateTime is made
+         *
+         *  A DateTime in kLocalTime holds a wall-clock date and time, read in the operating system's local time zone each time it
+         *  is converted (AsUTC (), comparing with another time zone, writing an offset). So the same value can mean a different
+         *  moment later - after the machine's time zone (or, on POSIX, TZ) changes - or on another machine.
+         *
+         *  The local time zone is, on POSIX, the C library's (TZ, else /etc/localtime); on Windows, Windows' own setting (TZ is
+         *  never examined there).
+         *
+         *  @see Timezone - how each platform defines local time, and where Stroika's can differ from what the C and C++ libraries say
+         *  @see GetCurrentLocaleTimezoneInfo () - its names and offsets
+         */
         static const Timezone kLocalTime; // defined constexpr
 
     public:
         /**
-         *  Returns Timezone object in localtime timezone.
+         *  \brief No time zone - for a DateTime whose date and time are in none said: read as UTC by AsUTC (), as local time by
+         *         AsLocalTime (), and compared with any other DateTime as if in its time zone
          */
 #if qCompilerAndStdLib_reflection_static_member_type_instantiated_while_incomplete_Buggy
         static const optional<Timezone>& kUnknown; // defined constexpr

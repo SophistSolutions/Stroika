@@ -33,6 +33,7 @@ using namespace Stroika::Foundation::Time;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if qStroika_Platform_POSIX
 namespace {
     tm Date2TM_ (const Date& d, const optional<TimeOfDay>& tod)
     {
@@ -55,17 +56,58 @@ namespace {
         return tm;
     }
 }
+#endif
 
 namespace {
     bool IsDaylightSavingsTime_ (const Date& date, const optional<TimeOfDay>& tod);
-    bool IsDaylightSavingsTime_ (const DateTime& d);
 
+#if qStroika_Platform_POSIX
     /**
      * Return the number of seconds which must be added to a LocalTime value to get GMT.
      */
     time_t GetLocaltimeToGMTOffset_ (bool applyDST);
-    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime);
+#endif
 }
+
+#if qStroika_Platform_Windows
+/*
+ ********************************************************************************
+ ***************************** GetWindowsLocalTime_ *****************************
+ ********************************************************************************
+ */
+namespace {
+    /*
+     *  Local time on Windows is Windows' own time zone - which GetLocalTime (so DateTime::Now ()) reads - and never TZ: no
+     *  Windows API reads TZ, only the C library's time functions, and those only in the old POSIX form (EST5EDT) - the IANA
+     *  names Cygwin sets (America/New_York) they read as UTC (as of UCRT 10.0.26100).
+     *
+     *  At a local date and time, by that year's rules: the bias from UTC, and whether daylight saving time is in effect.
+     */
+    struct WindowsLocalTime_ {
+        Timezone::BiasInMinutesFromUTCType fBiasInMinutesFromUTC;
+        bool                               fDaylightSavingsTime;
+    };
+    WindowsLocalTime_ GetWindowsLocalTime_ (const Date& date, const optional<TimeOfDay>& tod)
+    {
+        ::DYNAMIC_TIME_ZONE_INFORMATION zone{};
+        (void)::GetDynamicTimeZoneInformation (&zone);
+        int                     year = static_cast<int> (date.GetYear ());
+        ::TIME_ZONE_INFORMATION thatYears{};
+        if (1601 <= year and year <= 30827 and ::GetTimeZoneInformationForYear (static_cast<::USHORT> (year), &zone, &thatYears)) {
+            ::SYSTEMTIME local = DateTime{date, tod}.As<::SYSTEMTIME> ();
+            ::SYSTEMTIME utc{};
+            if (::TzSpecificLocalTimeToSystemTime (&thatYears, &local, &utc)) {
+                // both read as plain clock values - no time zone - so their difference is plain arithmetic
+                auto bias = static_cast<Timezone::BiasInMinutesFromUTCType> (
+                    (DateTime{local, Timezone::kUnknown} - DateTime{utc, Timezone::kUnknown}).count () / 60);
+                return {bias, bias != -(thatYears.Bias + thatYears.StandardBias)};
+            }
+        }
+        // a year Windows has no rules for (a SYSTEMTIME's are 1601-30827): standard time, by today's rules
+        return {static_cast<Timezone::BiasInMinutesFromUTCType> (-(zone.Bias + zone.StandardBias)), false};
+    }
+}
+#endif
 
 /*
  ********************************************************************************
@@ -162,7 +204,11 @@ Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTC (const Date
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
             return fBiasInMinutesFromUTC_;
         case TZ_::eLocalTime: {
+#if qStroika_Platform_POSIX
             auto result = static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)) / 60);
+#elif qStroika_Platform_Windows
+            auto result = GetWindowsLocalTime_ (date, tod).fBiasInMinutesFromUTC;
+#endif
             Ensure (kBiasInMinutesFromUTCTypeValidRange.Contains (result));
             return result;
         }
@@ -402,6 +448,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
 namespace {
     bool IsDaylightSavingsTime_ (const Date& date, const optional<TimeOfDay>& tod)
     {
+#if qStroika_Platform_POSIX
         struct tm asTM = Date2TM_ (date, tod);
         /*
          *  From http://pubs.opengroup.org/onlinepubs/7908799/xsh/mktime.html:
@@ -434,20 +481,13 @@ namespace {
         else {
             return asTM.tm_isdst >= 1;
         }
-    }
-
-    bool IsDaylightSavingsTime_ (const DateTime& d)
-    {
-        if (d.GetTimezone () == Timezone::kLocalTime) {
-            return IsDaylightSavingsTime_ (d.GetDate (), d.GetTimeOfDay ().has_value () ? *d.GetTimeOfDay () : TimeOfDay{0});
-        }
-        else {
-            AssertNotImplemented (); // maybe OK to just assume false given CURRENT (as of 2018-01-15) design of Timezone, but hope to expand soon!
-            return false;
-        }
+#elif qStroika_Platform_Windows
+        return GetWindowsLocalTime_ (date, tod).fDaylightSavingsTime;
+#endif
     }
 }
 
+#if qStroika_Platform_POSIX
 /*
  ********************************************************************************
  ************************** GetLocaltimeToGMTOffset_ ****************************
@@ -456,18 +496,6 @@ namespace {
 namespace {
     time_t GetLocaltimeToGMTOffset_ (bool applyDST)
     {
-#if 0
-    // WRONG - but COULD use this API - but not sure needed
-#if qStroika_Platform_Windows
-    TIME_ZONE_INFORMATION   tzInfo {};
-    (void)::GetTimeZoneInformation (&tzInfo);
-    int unsignedBias    =   abs (tzInfo.Bias);
-    int hrs =   unsignedBias / 60;
-    int mins = unsignedBias - hrs * 60;
-    tzBiasString = ::Format (L"%s%.2d:%.2d", (tzInfo.Bias >= 0 ? L"-" : L"+"), hrs, mins);
-#endif
-#endif
-
         /*
          * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
          * timezone global var???
@@ -476,7 +504,7 @@ namespace {
         aTm.tm_year = 70;
         aTm.tm_mon  = 0; // Jan
         aTm.tm_mday = 1;
-        constexpr bool kImplErrorUnderflow_{true}; // Only KNOWN to be needed on windows with TZ=America/New_York, but probably we should always do this
+        constexpr bool kImplErrorUnderflow_{true}; // Jan 2: east of UTC, local midnight Jan 1 1970 is before the epoch, which mktime may refuse
         if (kImplErrorUnderflow_) {
             ++aTm.tm_mday;
         }
@@ -489,9 +517,5 @@ namespace {
         Ensure (-60 * 60 * 24 <= result and result <= 60 * 60 * 24); // sanity check
         return result;
     }
-
-    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime)
-    {
-        return GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (forTime));
-    }
 }
+#endif
