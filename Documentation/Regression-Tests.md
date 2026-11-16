@@ -131,20 +131,6 @@ counted - its target keeps its earlier estimate (Ubuntu2404_x86_64 this time).
       ./Build/Scripts/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=Ubuntu2504_x86_64
-
-  (remote execute on machine medusa using docker and copy back results; takes about 3.5 h)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-    USE_TEST_BASENAME=Ubuntu2504_x86_64 \
-    BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
-    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests \
-    MACHINE=medusa.lan \
-    ./Build/Scripts/RunRemoteRegressionTests
-  ```
-
 - \$TEST_TARGET=Ubuntu2604_x86_64
 
   (remote execute on machine medusa using docker and copy back results; takes about 11 h)

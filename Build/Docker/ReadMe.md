@@ -126,7 +126,6 @@ docker frequently reports this as corruption and 500 errors and no other indicat
     - Ubuntu
       -  [Ubuntu2204-Small/Dockerfile](Ubuntu2204-Small/Dockerfile)
       -  [Ubuntu2404-Small/Dockerfile](Ubuntu2404-Small/Dockerfile)
-      -  [Ubuntu2504-Small/Dockerfile](Ubuntu2504-Small/Dockerfile)
       -  [Ubuntu2604-Small/Dockerfile](Ubuntu2604-Small/Dockerfile)
       -  [Ubuntu2610-Small/Dockerfile](Ubuntu2610-Small/Dockerfile)
     - Windows
@@ -139,7 +138,6 @@ docker frequently reports this as corruption and 500 errors and no other indicat
     - Ubuntu
       -  [Ubuntu2204-RegressionTests/Dockerfile](Ubuntu2204-RegressionTests/Dockerfile)
       -  [Ubuntu2404-RegressionTests/Dockerfile](Ubuntu2404-RegressionTests/Dockerfile)
-      -  [Ubuntu2504-RegressionTests/Dockerfile](Ubuntu2504-RegressionTests/Dockerfile)
       -  [Ubuntu2604-RegressionTests/Dockerfile](Ubuntu2604-RegressionTests/Dockerfile)
       -  [Ubuntu2610-RegressionTests/Dockerfile](Ubuntu2610-RegressionTests/Dockerfile)
    - Stroika-Dev

@@ -69,7 +69,7 @@ Which compiler is built against which standard library, and where each combinati
 | `g++-12` | libstdc++ | 22.04 **always** | 22.04, 24.04, 26.04 | [^f] |
 | `g++-13` | libstdc++ | 24.04 v3-Release, 26.04 v3-Release | 22.04, 24.04, 26.04 |  |
 | `g++-14` | libstdc++ | 24.04 **always**, 26.04 v3-Release | 24.04, 26.04 |  |
-| `g++-15` | libstdc++ | 25.04 v3-Release, 26.04 v3-Release | 26.04, 26.10 |  |
+| `g++-15` | libstdc++ | 26.04 v3-Release | 26.04, 26.10 |  |
 | `g++-16` | libstdc++ | 26.04 **always**, 26.10 v3-Release | 26.04, 26.10 |  |
 | `clang++-15` | libc++ | 22.04 v3-Release | 22.04 | [^f] [^j] |
 | `clang++-15` | libstdc++ | 22.04 v3-Release | 22.04 | [^f] |
@@ -79,9 +79,9 @@ Which compiler is built against which standard library, and where each combinati
 | `clang++-17` | libstdc++ | - | 24.04 |  |
 | `clang++-18` | libc++ | 24.04 v3-Release | 24.04, 26.04 (parked) | [^j] |
 | `clang++-18` | libstdc++ | - | 24.04, 26.04 (parked) |  |
-| `clang++-19` | libstdc++ | 25.04 parked, 26.04 v3-Release | 26.04 |  |
+| `clang++-19` | libstdc++ | 26.04 v3-Release | 26.04 |  |
 | `clang++-20` | libc++ | 26.04 v3-Release | - |  |
-| `clang++-20` | libstdc++ | 25.04 v3-Release | 26.04 |  |
+| `clang++-20` | libstdc++ | - | 26.04 |  |
 | `clang++-21` | libc++ | 26.04 v3-Release | - |  |
 | `clang++-21` | libstdc++ | - | 26.04, 26.10 |  |
 | `clang++-22` | libc++ | - | 26.04, 26.10 |  |
@@ -108,7 +108,6 @@ Run by hand for each release (see [Regression-Tests.md](Regression-Tests.md)); t
 - `Windows_VS2k26`
 - `Ubuntu2204_x86_64`
 - `Ubuntu2404_x86_64`
-- `Ubuntu2504_x86_64`
 - `Ubuntu2604_x86_64`
 - `Ubuntu2610_x86_64`
 - `Ubuntu2204-Cross-Compile2RaspberryPi`
