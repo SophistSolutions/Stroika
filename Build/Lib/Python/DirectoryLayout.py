@@ -12,6 +12,7 @@ read, and native Windows tools too.
 """
 
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -24,15 +25,24 @@ DIRECTORY_LAYOUT_FILE_NAME = "DirectoryLayout.mk"
 _MAKEFILE_FIRST_LINE = "# Written by Stroika's Build/Scripts/MakeBuildRoot"
 
 
+def _IsAbsolute(path):
+    """
+    os.path.isabs, but on Windows taking C:/... as absolute too - as the Cygwin and MSYS Pythons 3.12 do, but not Cygwin's
+    3.9 or MSYS's 3.14 (as of 3.14.10): their posixpath sees a relative path, which os.path.abspath puts under the
+    current directory
+    """
+    return os.path.isabs(path) or (sys.platform in ("cygwin", "msys") and re.match("[A-Za-z]:/", path) is not None)
+
+
 def _CheckDir(name, value):
-    if not (os.path.isabs(value) and value.endswith("/")):  # as SharedMakeVariables-Default.mk requires
+    if not (_IsAbsolute(value) and value.endswith("/")):  # as SharedMakeVariables-Default.mk requires
         sys.exit(name + " must be an absolute path ending in / (got \"" + value + "\")")
     return value
 
 
 def AbsoluteDir(path):
     """path as the build writes it: absolute, ending in /, and on Windows (Cygwin and MSYS python report "cygwin") C:/..."""
-    path = os.path.abspath(path)
+    path = os.path.normpath(path) if _IsAbsolute(path) else os.path.abspath(path)
     if sys.platform in ("cygwin", "msys"):
         path = subprocess.run(["cygpath", "--mixed", path], stdout=subprocess.PIPE, text=True, check=True).stdout.strip()
     return path.rstrip("/") + "/"
