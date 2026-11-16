@@ -17,19 +17,17 @@ RUN apt-get -qq install -y g++-12 g++-13 g++-14 g++-15 g++-16; \
 RUN apt-get -qq install -y rpm; \
     apt-get -qq clean -y;
 
-# For reasons which elude me, installing libc++-N removes all the other
-# https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
-#
-#install the latest (C++20 compat) clang compilers (and libs)
-#and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
-RUN apt-get update  # unclear why update needed but container build fails without
-RUN apt-get -qq install -y clang++-17 lld-17 && \
-    apt-get -qq install -y clang++-18 lld-18 && \
-    apt-get -qq install -y clang++-19 lld-19 && \
-    apt-get -qq install -y clang++-20 lld-20 && \
+#the clang compilers, each with libclang-rt-N-dev - the sanitizer runtimes the debug configurations link - named, as it is
+#only recommended, and apt skips a recommended package it cannot install without a word; libc++ for the newest only:
+#installing one libc++-N-dev removes the others
+RUN apt-get -qq update && \
+    apt-get -qq install -y clang-17 lld-17 libclang-rt-17-dev && \
+    apt-get -qq install -y clang-18 lld-18 libclang-rt-18-dev && \
+    apt-get -qq install -y clang-19 lld-19 libclang-rt-19-dev && \
+    apt-get -qq install -y clang-20 lld-20 libclang-rt-20-dev && \
+    apt-get -qq install -y clang-21 lld-21 libclang-rt-21-dev && \
+    apt-get -qq install -y clang-22 lld-22 libclang-rt-22-dev libc++-22-dev libc++abi-22-dev && \
     apt-get -qq clean -y
-RUN apt-get -qq install -y clang++-22 lld-22 && apt-get install -y libc++-22-dev libc++abi-22-dev; \
-    apt-get -qq clean -y;
 
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind; \
