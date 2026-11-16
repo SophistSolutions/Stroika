@@ -81,12 +81,17 @@ namespace Stroika::Foundation::Time {
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
     inline auto clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp) -> typename DESTINATION_CLOCK_T::time_point
     {
+        if constexpr (same_as<DESTINATION_CLOCK_T, SOURCE_CLOCK_T>) {
+            return chrono::time_point_cast<typename DESTINATION_CLOCK_T::duration> (tp); // exact - the estimate below reads now () twice
+        }
 #if __cpp_lib_chrono >= 201907L // C++20 chrono, complete (libc++ reports 201611L, as of clang 22)
-        if constexpr (Private_::kCanUseStdClockCnv_<DESTINATION_CLOCK_T, SOURCE_CLOCK_T, DURATION_T>) {
+        else if constexpr (Private_::kCanUseStdClockCnv_<DESTINATION_CLOCK_T, SOURCE_CLOCK_T, DURATION_T>) {
             return chrono::clock_cast<DESTINATION_CLOCK_T> (tp);
         }
 #endif
-        return Private_::clock_cast_2nd<typename DESTINATION_CLOCK_T::time_point> (tp); //return clock_cast_0th<DstTimePointT> (tp);
+        else {
+            return Private_::clock_cast_2nd<typename DESTINATION_CLOCK_T::time_point> (tp); //return clock_cast_0th<DstTimePointT> (tp);
+        }
     }
     template <typename DESTINATION_CLOCK_T, template <typename> typename RANGE, typename SOURCE_CLOCK_T, typename DURATION_T>
     RANGE<typename DESTINATION_CLOCK_T::time_point> clock_cast (RANGE<chrono::time_point<SOURCE_CLOCK_T, DURATION_T>> tpRange)

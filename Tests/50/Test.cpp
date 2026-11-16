@@ -1620,6 +1620,13 @@ namespace {
             [[maybe_unused]] Range<DisplayedRealtimeClock::time_point> taken = Time::clock_cast<DisplayedRealtimeClock> (Range{start, now});
 #endif
         }
+        {
+            // to the same clock: exact, every time - not an estimate off by nanoseconds either way
+            const chrono::system_clock::time_point tp{chrono::seconds{1768435200}};
+            for (int i = 0; i < 1000; ++i) {
+                ASSERT_EQ (Time::clock_cast<chrono::system_clock> (tp), tp);
+            }
+        }
     }
 
     /*
