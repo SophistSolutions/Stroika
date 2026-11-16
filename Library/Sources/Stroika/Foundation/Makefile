@@ -62,7 +62,7 @@ ifneq ($(MAKECMDGOALS),clobber)
 $(shell $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(CachedOBJSFile_)`" 1>&2)
 $(shell mkdir -p $(shell dirname $(CachedOBJSFile_)) )
 # REDIRECT to avoid: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.; not good solution cuz hides errors
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 $(file > $(CachedOBJSFile_),$(shell cygpath --mixed $(foreach dir, $(SubDirs), $(shell $(StroikaDirectoryLayoutEnv) $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))))
 else
 $(file > $(CachedOBJSFile_),$(foreach dir, $(SubDirs), $(shell $(StroikaDirectoryLayoutEnv) $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null)))

@@ -234,7 +234,7 @@ endif
 
 
 
-ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+ifeq ($(filter Windows,$(StroikaHostOSNames)),)
 # https://github.com/SophistSolutions/Stroika/issues/892
 ### On M1 Mac (even if running under rosetta) - really just one mac tested - 
 ### Get error:

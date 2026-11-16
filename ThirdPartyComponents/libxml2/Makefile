@@ -178,7 +178,7 @@ ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1
-else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+else ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 	@# Under docker, we get failure to extract slink to this file unless its there first - but this works around the issue --LGP 2023-12-18
 	@tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory $@ --strip-components=1 libxml2-${libxml2_VERSION_}/test/relaxng/tutorA.rng
 	@tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory $@ --strip-components=1

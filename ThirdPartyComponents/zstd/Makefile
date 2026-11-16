@@ -125,7 +125,7 @@ ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1
-else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+else ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 	@# MSYS=winsymlinks:lnk: by default MSYS2's tar makes a symlink by copying its target (as of msys2-runtime 3.6.9), so fails
 	@# on tests/cli-tests/bin/unzstd, which comes before its target zstd in the archive; Cygwin ignores the variable
 	@PWD=`pwd` MSYS=winsymlinks:lnk tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1

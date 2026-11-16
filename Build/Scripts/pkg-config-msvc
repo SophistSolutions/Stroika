@@ -9,8 +9,11 @@ import os
 import sys
 import subprocess
 
-def isWindowsSystem_() -> bool:
-    return sys.platform == 'msys' or sys.platform.startswith('cygwin')  # MSYS2's or Cygwin's python
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the import below
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Lib", "Python"))
+import HostOS  # noqa: E402
+
+IS_WINDOWS_HOST_ = HostOS.Matches("Windows")
 
 if __name__ == "__main__":
     args = sys.argv
@@ -18,7 +21,7 @@ if __name__ == "__main__":
     useEnv = os.environ
     useCWD = None
     useLibDir = None
-    if isWindowsSystem_():
+    if IS_WINDOWS_HOST_:
         # useEnv['MSYS2_ENV_CONV_EXCL'] = '*'
         # useEnv['MSYS2_PATH_CONV_EXCL'] = '*'
         # useEnv['MSYS2_ARG_CONV_EXCL'] = '*'
@@ -34,7 +37,7 @@ if __name__ == "__main__":
             useEnv['PKG_CONFIG_PATH'] = "."
     try:
         # print(f"useEnv=${useEnv}\n")
-        if isWindowsSystem_():
+        if IS_WINDOWS_HOST_:
             # because --msvc-syntax appears to throw away some options (like --nologo) - must not do msvc-syntax for that
             # part
             if "--libs" in args:

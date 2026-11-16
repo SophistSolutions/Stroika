@@ -102,7 +102,7 @@ if [ ! -e "$TARGET" ] ; then
 fi
 
 IsWindowsHost_ () {
-    [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]]
+    "${MY_PATH}/HostOSMatches" Windows
 }
 
 #

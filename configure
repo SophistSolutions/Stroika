@@ -35,12 +35,13 @@ LIBFEATUREFLAG_No_ = "no"
 
 if sys.platform == "win32":  # (run as python3 configure, say - the #! line names a POSIX one)
     sys.exit("configure needs a POSIX python3 - on Windows, MSYS2's (pacman -S python) or Cygwin's - not a native Windows one")
-sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the import below
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the imports below
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "Build", "Lib", "Python"))
 import DirectoryLayout  # noqa: E402
-IS_WINDOWS_HOST_ = sys.platform == "msys" or sys.platform.startswith("cygwin")  # MSYS2's or Cygwin's python
-IS_LINUX_HOST_ = sys.platform.startswith("linux")
-IS_MACOS_HOST_ = sys.platform == "darwin"
+import HostOS  # noqa: E402
+IS_WINDOWS_HOST_ = HostOS.Matches("Windows")
+IS_LINUX_HOST_ = HostOS.Matches("Linux")
+IS_MACOS_HOST_ = HostOS.Matches("Darwin")
 
 
 class ConfigureError_(Exception):
@@ -1957,9 +1958,9 @@ class Configure_:
     def Run(self):
         """Everything but write the file: the file's name and text, or (None, None) if skipped"""
         # Workaround MSYS compatibility issues with Microsoft Visual C++ tools - as make exports it (SharedMakeVariables-Default.mk),
-        # so configure run by hand finds what it finds under make. A MINGW64/UCRT64 shell is MSYS2 too (as Build/Scripts/DetectedHostOS).
+        # so configure run by hand finds what it finds under make.
         #   Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
-        if IS_WINDOWS_HOST_ and re.match(r"MSYS|MINGW", self.Backtick("uname -s")):
+        if HostOS.Matches("MSYS"):
             os.environ["MSYS2_ARG_CONV_EXCL"] = "*"
         self.ParseCommandLine_()
         # after --help, which needs none; with no build root, this exits saying how to make one
@@ -2147,7 +2148,7 @@ OPTIONS_ = [
             Set_("ARCH"), when=WITH_ARCH_),
     Option_("config-tag", "{TAG-NAME}", "Add TAG-NAME to the list of tags associated with this configuration. May be repeated",
             Configure_.OptionConfigTag_),
-    Option_("build-by-default", "never|always|{uname}", "Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT",
+    Option_("build-by-default", "never|always|{host}", "Mark configuration to be built by default always (DEFAULT), never, or only on a host Build/Scripts/HostOSMatches ARGUMENT (Windows, Unix, MSYS, Cygwin, Linux, Darwin ...)",
             Set_("BuildByDefault")),
     Option_("build-platform", "{PLATFORM}", "Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022, VisualStudio.Net-2026) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1)",
             Set_("BuildPlatform"), when=WITH_PLATFORM_),

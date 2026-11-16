@@ -1,0 +1,31 @@
+#!/usr/bin/python3
+#
+#   HostOSMatches NAME...   exits 0 if the host OS is any of the NAMEs (Windows, Unix, MSYS, Cygwin, Linux, Darwin ...), else 1
+#   HostOSMatches --list    prints the names the host matches: its own, then its group (eg "MSYS Windows", "Linux Unix")
+#
+#   Build/Lib/Python/HostOS.py says what each name means - Python scripts import it, rather than run this. So:
+#       if "${MY_DIR_}/HostOSMatches" Windows ; then ...
+#   and in make, SharedMakeVariables-Default.mk's StroikaHostOSNames (this --list, once):
+#       ifneq ($(filter Windows,$(StroikaHostOSNames)),)
+#
+import argparse
+import os
+import sys
+
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the import below
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Lib", "Python"))
+import HostOS  # noqa: E402
+
+parser = argparse.ArgumentParser(description="Does the host OS match any of NAMEs (Windows, Unix, MSYS, Cygwin, Linux, Darwin ...)? "
+                                 "Exit status 0 if so, else 1 (Build/Lib/Python/HostOS.py says what each name means).")
+parser.add_argument("--list", action="store_true", help="print the names the host matches, instead")
+parser.add_argument("names", nargs="*", metavar="NAME")
+args = parser.parse_args()
+if args.list:
+    if args.names:
+        parser.error("--list takes no NAME")
+    print(" ".join(HostOS.Names()))
+    sys.exit(0)
+if not args.names:
+    parser.error("no NAME given")
+sys.exit(0 if HostOS.Matches(*args.names) else 1)

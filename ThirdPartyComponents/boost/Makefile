@@ -99,7 +99,7 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
-else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+else ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
@@ -167,7 +167,7 @@ B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2${EXE_SUFF
 
 
 
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 CXX:= $(shell cygpath --mixed "$(CXX)")
 B2FullPath:= $(shell cygpath --mixed "$(B2FullPath)")
 endif
@@ -288,7 +288,7 @@ endif
 endif
 
 # use the user-config.jam file
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG=$(shell cygpath --mixed "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")/user-config.jam
 else
 B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG="${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/user-config.jam"
@@ -339,7 +339,7 @@ configureAndBuild_:
 	@#
 	@#  Empirically: 94 chars builds fine; 102 chars overran by 437, so warn from 95 up. Diagnostic
 	@#  only - the leading - keeps a missing cygpath/realpath from failing the build.
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 	-@MAXCHAR=95 && WINPATH=$$(cygpath -w "$$(realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))") && if [[ $${#WINPATH} -gt $$MAXCHAR ]] ; then $(ECHO) && $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#WINPATH} (> $$MAXCHAR): boost puts one -I per sublibrary on every command line, so a long build path can exceed the cmd.exe 8191 char limit. If the build fails, grep ConfigureAndBuild-OUT.txt for 'action contains a line that is too long' - if present, rebuild from a shorter root directory (https://github.com/SophistSolutions/Stroika/issues/769)" && $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@

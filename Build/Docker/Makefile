@@ -6,6 +6,8 @@ STROIKA_VERSION=$(shell dos2unix < ../../STROIKA_VERSION | xargs echo -n)
 STROIKA_VERSION_Final=$(shell ${StroikaSourceRoot}Build/Scripts/ExtractVersionInformation ../../STROIKA_VERSION FinalBuild)
 
 DETECTED_HOST_OS=$(shell ${StroikaSourceRoot}Build/Scripts/DetectedHostOS)
+# as SharedMakeVariables-Default.mk's, which this does not include
+StroikaHostOSNames:=$(shell ${StroikaSourceRoot}Build/Scripts/HostOSMatches --list)
 
 BUILD_DEV_IMAGES?=1
 
@@ -31,7 +33,7 @@ help:
 
 # Was originally mostly for https://github.com/SophistSolutions/Stroika/issues/876, but better workaround in ReadMe.md file.
 EXTRA_DOCKER_BUILD_ARGS=
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 #
 # to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
 # in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
@@ -63,7 +65,7 @@ IMAGES+= sophistsolutionsinc/stroika-dev-2610
 endif
 endif
 
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 IMAGES+= sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k26

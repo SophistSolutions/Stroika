@@ -153,13 +153,13 @@ The command-line used to generate the configuration is the first element of the 
 
 <Configuration>
     <!--Overall-->
-    <ConfigureCommandLine>configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default MSYS --arch x86_64 --apply-default-debug-flags</ConfigureCommandLine>
+    <ConfigureCommandLine>configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default Windows --arch x86_64 --apply-default-debug-flags</ConfigureCommandLine>
     <BuildPlatform>VisualStudio.Net-2022</BuildPlatform>
     <BuildToolsRoot>C:/Program Files/Microsoft Visual Studio/2022/Community</BuildToolsRoot>
     <TargetPlatforms>Windows</TargetPlatforms>
     <ARCH>x86_64</ARCH>
     <ConfigTags>Windows x86_64</ConfigTags>
-    <BuildByDefault>MSYS</BuildByDefault>
+    <BuildByDefault>Windows</BuildByDefault>
 
     <!--Tools-->
     <AS>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/ml64.exe</AS>

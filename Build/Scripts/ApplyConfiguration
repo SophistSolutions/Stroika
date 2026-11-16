@@ -23,6 +23,7 @@ sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the im
 sys.path.insert(0, os.path.join(THIS_DIR_, "..", "Lib", "Python"))
 import ConfigurationReader  # noqa: E402
 import DirectoryLayout  # noqa: E402
+import HostOS  # noqa: E402
 
 ENC_ = ConfigurationReader.ENCODING
 DEFAULT_BOOL_OPTIONS_ = -1
@@ -49,13 +50,10 @@ def Backtick_(args, env=None):
     return p.stdout.decode(ENC_), p.returncode
 
 
-IS_WINDOWS_HOST_ = sys.platform == "msys" or sys.platform.startswith("cygwin")  # MSYS2's or Cygwin's python
-IS_MACOS_HOST_ = sys.platform == "darwin"
+IS_WINDOWS_HOST_ = HostOS.Matches("Windows")
+IS_MACOS_HOST_ = HostOS.Matches("Darwin")
 PATH_SEPERATOR_ = ";" if IS_WINDOWS_HOST_ else ":"
-# MSYS2 rather than Cygwin. A MINGW64/MINGW32/UCRT64 shell (which is what MSYSTEM=MINGW64 gives you, and what VSCode terminal
-# profiles commonly set) says "MINGW64_NT-..." - still MSYS2. Build/Scripts/DetectedHostOS maps MINGW -> MSYS for exactly
-# this reason; keep the two in agreement or they disagree about what host this is.
-IS_MSYS_HOST_ = IS_WINDOWS_HOST_ and re.match(r"MSYS|MINGW", Backtick_(["uname", "-s"])[0].strip()) is not None
+IS_MSYS_HOST_ = HostOS.Matches("MSYS")  # MSYS2 rather than Cygwin - a MINGW64 or UCRT64 shell too
 
 
 def ConfigParam2BoolInt_(v):

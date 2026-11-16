@@ -17,14 +17,12 @@ import sys
 import argparse
 import xml.etree.ElementTree as ET
 
-sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the import below
+sys.dont_write_bytecode = True  # no __pycache__ in the source tree, from the imports below
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Lib", "Python"))
 import DirectoryLayout  # noqa: E402
+import HostOS  # noqa: E402
 
-def isWindowsSystem_() -> bool:
-    return sys.platform == 'msys' or sys.platform.startswith('cygwin')  # MSYS2's or Cygwin's python
-    
-pathSep =  ';' if isWindowsSystem_() else  ':'
+pathSep =  ';' if HostOS.Matches("Windows") else  ':'
 
 def getText_(element: ET.Element) -> str:
     if element is not None and element.text is not None:

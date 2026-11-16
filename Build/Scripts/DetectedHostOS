@@ -1,16 +1,24 @@
 #!/bin/bash
+#
+#   DetectedHostOS - prints the host's name, from uname, exactly as one of
+#       MSYS        MSYS2's shell, or its MINGW64/MINGW32/UCRT64 ones (uname says MINGW64_NT-...)
+#       Cygwin
+#       Linux
+#       Darwin      macOS
+#       uname's own answer on any other host; Unknown where there is no uname
+#   These are CMake's CMAKE_HOST_SYSTEM_NAME values, but MSYS for MINGW too, and Cygwin where CMake says CYGWIN.
+#
+#   make exports it as DETECTED_HOST_OS (Build/Lib/Make/SharedMakeVariables-Default.mk). Build/Lib/Python/HostOS.py's
+#   DetectedHostOS () gives the same name, as it runs this - unless DETECTED_HOST_OS is in its environment, as make, or a
+#   caller overriding the detection, sets it. HostOS.py adds the groups the build tests for: Windows (MSYS or Cygwin) and
+#   Unix (any other) - Build/Scripts/HostOSMatches.
+#
+#   This stays sh, rather than a call into HostOS.py, as it must work before python3 is known to be there: it is how
+#   Build/Scripts/CheckPrerequisiteTools, and GetMessageForMissingTool's hint for installing python3, know the host.
+#
 shopt -s nocasematch
 
-#
-# Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069
-#	Enumeration of common DETECTED_HOST_OS to check for if #if code
-#			Windows (not sure what this means, cuz not cygwin or msys and running make?)
-#			Cygwin
-#			MSYS
-#			Linux
-#			Darwin
-#
-DETECTED_HOST_OS=`uname 2>/dev/null` || echo Unknown
+DETECTED_HOST_OS=$(uname 2>/dev/null) || DETECTED_HOST_OS=Unknown
 
 if [[ $DETECTED_HOST_OS =~ "CYGWIN" ]] ; then DETECTED_HOST_OS="Cygwin"; fi;
 if [[ $DETECTED_HOST_OS =~ "MSYS" ]] ; then DETECTED_HOST_OS="MSYS"; fi;

@@ -90,17 +90,18 @@ if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
   	NEW_CONFIGS="$RAW_CONFIGS"
   fi
   if [ $ALLDEFAULT -eq 1 ]; then
-    UNAME=`$MY_PATH/DetectedHostOS`
-    if [ "$UNAME" == "" ]; then
-      UNAME=`uname`
-    fi
+    # BuildByDefault is always, never, or a HostOSMatches name: the names the host matches, asked once - not one python
+    # start per configuration - and compared ignoring case, as HostOSMatches does
+    HOST_OS_NAMES_=" $("$MY_PATH/HostOSMatches" --list) "
+    shopt -s nocasematch
     NEW_CONFIGS=""
     for c in $RAW_CONFIGS ; do
       BBD=`$MY_PATH/../Scripts/GetConfigurationParameter $c BuildByDefault`
-      if [ "$BBD" == 'always' ] || [ "$BBD" == "$UNAME" ]; then
+      if [[ "$BBD" == 'always' || ( "$BBD" != "" && "$HOST_OS_NAMES_" == *" $BBD "* ) ]]; then
         NEW_CONFIGS="$NEW_CONFIGS $c"
       fi
     done
+    shopt -u nocasematch
   fi
 else
 	NEW_CONFIGS=""

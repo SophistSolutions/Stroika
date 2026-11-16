@@ -172,6 +172,14 @@ endif
 #	exported so scripts invoked from recipes can just use it, instead of each re-running
 #	Build/Scripts/DetectedHostOS for itself (and so it can be overridden on a make command line)
 export DETECTED_HOST_OS	:=	$(shell $(StroikaSourceRoot)Build/Scripts/DetectedHostOS)
+#
+#	The names the host matches (Build/Lib/Python/HostOS.py says what each means): its DETECTED_HOST_OS, then its group -
+#	Windows (MSYS or Cygwin) or Unix. So either Windows shell is
+#		ifneq ($(filter Windows,$(StroikaHostOSNames)),)
+#	Asked once, by the first make, which exports it to the rest: a python start in every sub-make adds up on Windows.
+ifeq ($(origin StroikaHostOSNames),undefined)
+export StroikaHostOSNames	:=	$(shell DETECTED_HOST_OS=$(DETECTED_HOST_OS) $(StroikaSourceRoot)Build/Scripts/HostOSMatches --list)
+endif
 
 
 

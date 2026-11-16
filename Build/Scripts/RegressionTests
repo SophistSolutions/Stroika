@@ -62,7 +62,7 @@ if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
 fi
-if [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
+if Build/Scripts/HostOSMatches Windows ; then
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_${DETECTED_HOST_OS}_VS2k26"; fi
     echo "USING Visual Studio ($USE_TEST_BASENAME)..."
 fi
@@ -442,14 +442,14 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
 	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --run-directly --runFor 10")
 	SAMPLE_APPS_2_TEST+=("Samples-SQL/SQL")
-	if [[ "$EUID" -eq 0 || $DETECTED_HOST_OS == "Cygwin" || $DETECTED_HOST_OS == "MSYS" ]] ; then
+	if [[ "$EUID" -eq 0 ]] || Build/Scripts/HostOSMatches Windows ; then
 		# requires root access on UNIX else fails
 		SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient -l --quit-after 10")
 		SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient -s 'upnp:rootdevice' --quit-after 10")
 		SAMPLE_APPS_2_TEST+=("Samples-SSDPServer/SSDPServer --quit-after 10")
 	fi
 	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
-	if [[ "$EUID" -eq 0 || $DETECTED_HOST_OS == "Cygwin" || $DETECTED_HOST_OS == "MSYS" ]] ; then
+	if [[ "$EUID" -eq 0 ]] || Build/Scripts/HostOSMatches Windows ; then
 		# requires root access on UNIX else fails
 		SAMPLE_APPS_2_TEST+=("Samples-Traceroute/Traceroute www.sophists.com")
 	fi
@@ -543,7 +543,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		STAGE_STARTAT_INT=$(date +%s)
 		USE_SKEL_NAME=$USE_TEST_BASENAME-skel
 		# Workaround https://github.com/SophistSolutions/Stroika/issues/769
-		if [[  "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
+		if Build/Scripts/HostOSMatches Windows ; then
 			USE_SKEL_NAME="SKEL-TEST"
 		fi
 		# Build Stroika from THIS tree at THIS commit, not GitHub's tip of the same branch, so the skel app tests the code the

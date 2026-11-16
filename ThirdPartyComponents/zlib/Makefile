@@ -179,7 +179,7 @@ ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1
-else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+else ifneq ($(filter Windows,$(StroikaHostOSNames)),)
 	@PWD=`pwd` tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory $@ --strip-components=1

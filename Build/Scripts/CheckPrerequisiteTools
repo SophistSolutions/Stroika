@@ -19,6 +19,7 @@ MY_DIR_="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 LEVEL_=${1:-0}
 SUBLEVEL_=$((LEVEL_ + 1))
 
+# DetectedHostOS, not HostOSMatches (python): this checks for python3 itself
 DETECTED_HOST_OS_="$("${MY_DIR_}/DetectedHostOS")"
 
 #	Check one tool, and abort with an install hint if it is not usable.

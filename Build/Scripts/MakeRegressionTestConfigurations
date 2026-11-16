@@ -25,7 +25,8 @@ MY_DIR_="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 StroikaSourceRoot_="$(cd -P "${MY_DIR_}/../.." && pwd)"
 CONFIGURATION_FILES_DIR_="${StroikaIntermediateFilesRoot:-${TOP_ROOT:-${StroikaSourceRoot_}/}IntermediateFiles/}ConfigurationFiles/"   # always the build root's ConfigurationFiles/ (SharedMakeVariables-Default.mk)
 
-DETECTED_HOST_OS="${DETECTED_HOST_OS:-$("${MY_DIR_}/DetectedHostOS")}"
+# exported, so HostOSMatches and configure see an override too
+export DETECTED_HOST_OS="${DETECTED_HOST_OS:-$("${MY_DIR_}/DetectedHostOS")}"
 MAKE_INDENT_LEVEL="${MAKE_INDENT_LEVEL:-0}"
 
 #
@@ -299,17 +300,14 @@ case "${1:-}" in
 		rm -f "${CONFIGURATION_FILES_DIR_%/}"/*
 		# the configure lines below report at one level deeper than our own heading
 		export MAKE_INDENT_LEVEL=$((MAKE_INDENT_LEVEL + 1))
-		case "$DETECTED_HOST_OS" in
-			MSYS | Cygwin)
-				"${MY_DIR_}/MakeDefaultConfigurations"
-				;;
-			*)
-				# each in a subshell, so the MAKE_INDENT_LEVEL each bumps for its own
-				# configure lines does not leak into the next
-				(basicUnixTestConfigurations_)
-				(raspberryPiCrossCompileTestConfigurations_)
-				;;
-		esac
+		if "${MY_DIR_}/HostOSMatches" Windows ; then
+			"${MY_DIR_}/MakeDefaultConfigurations"
+		else
+			# each in a subshell, so the MAKE_INDENT_LEVEL each bumps for its own
+			# configure lines does not leak into the next
+			(basicUnixTestConfigurations_)
+			(raspberryPiCrossCompileTestConfigurations_)
+		fi
 		;;
 	--basic-unix-only)
 		basicUnixTestConfigurations_
