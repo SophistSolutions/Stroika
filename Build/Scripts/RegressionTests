@@ -554,11 +554,13 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		Build/Scripts/Skel --appRoot $USE_SKEL_NAME --stroikaGitRemote "$StroikaSourceRoot" >>$TEST_OUT_FILE 2>&1
 		echo "git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout $SKEL_STROIKA_COMMIT" >>$TEST_OUT_FILE 2>&1
 		git -C $USE_SKEL_NAME/ThirdPartyComponents/Stroika/StroikaRoot checkout --quiet $SKEL_STROIKA_COMMIT >>$TEST_OUT_FILE 2>&1
+		# the app is its own project, with its own build root in its top directory - so not this run's, which an out-of-tree
+		# run names in StroikaIntermediateFilesRoot
 		echo "cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root ." >>$TEST_OUT_FILE 2>&1
-		(cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .) >>$TEST_OUT_FILE 2>&1
+		(unset StroikaIntermediateFilesRoot TOP_ROOT; cd $USE_SKEL_NAME && ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot --top-root .) >>$TEST_OUT_FILE 2>&1
 		echo -n "cd $USE_SKEL_NAME && make CONFIGURATION=Debug ... " 2>&1
 		echo "cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
-		if ! (cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1 ; then
+		if ! (unset StroikaIntermediateFilesRoot TOP_ROOT; cd $USE_SKEL_NAME && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1 ; then
 			# a failure of its own, counted in the summary as a sample app's is - the build's output, above, says why
 			echo -n "**FAILED** "
 			echo "**FAILED**" >>$TEST_OUT_FILE

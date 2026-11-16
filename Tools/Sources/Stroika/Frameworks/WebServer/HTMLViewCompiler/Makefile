@@ -21,7 +21,7 @@ all:	$(ObjDir) $(TARGETEXE)
 
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
-	@echo "      Linking $(subst $(StroikaSourceRoot),\$$StroikaSourceRoot/, $@)..."
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $@`" "... "
 	@mkdir -p ${StroikaPlatformTargetBuildDir}bin
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-foundation)';\
