@@ -7,6 +7,9 @@ add_library (stroika-foundation STATIC)
 target_compile_definitions (stroika-foundation PUBLIC ${STROIKA_FOUNDATION_DEFINITIONS})
 target_compile_options (stroika-foundation PUBLIC ${STROIKA_FOUNDATION_COMPILE_OPTIONS})
 target_include_directories (stroika-foundation PUBLIC ${STROIKA_FOUNDATION_INCLUDE_DIRECTORIES} ${STROIKA_PLATFORM_INCLUDE_DIRECTORIES})
+# what links Foundation links with the configuration's link options and system libraries
+target_link_options (stroika-foundation INTERFACE ${STROIKA_LINK_OPTIONS})
+target_link_libraries (stroika-foundation INTERFACE ${STROIKA_LINK_LIBRARIES})
 
 #
 # The third-party components the configuration uses - by their own CMake packages, where they install one; curl, lzma and
@@ -43,6 +46,16 @@ if (NOT STROIKA_FEATURE_LibCurl STREQUAL "no")
     StroikaInstalledLibrary_ (curl curl)
     set_target_properties (Stroika::curl PROPERTIES INTERFACE_COMPILE_DEFINITIONS CURL_STATICLIB)
     target_link_libraries (Stroika::curl INTERFACE OpenSSL::SSL OpenSSL::Crypto zstd::libzstd_static ${zlib_})
+    # and whatever else curl's build found and used (on a Mac, Homebrew's libidn2 and brotli, and macOS frameworks): its
+    # libcurl.pc's static link requirements, as make's links take them
+    find_package (PkgConfig REQUIRED)
+    execute_process (
+        COMMAND "${CMAKE_COMMAND}" -E env "PKG_CONFIG_PATH=${STROIKA_BUILDS_DIR}lib/pkgconfig" "${PKG_CONFIG_EXECUTABLE}" --static --libs libcurl
+        OUTPUT_VARIABLE curlLibraries_ OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
+    )
+    separate_arguments (curlLibraries_ UNIX_COMMAND "${curlLibraries_}")
+    string (REPLACE "-framework;" "-framework " curlLibraries_ "${curlLibraries_}") # each -framework and its name: one item
+    target_link_libraries (Stroika::curl INTERFACE ${curlLibraries_})
     target_link_libraries (stroika-foundation PUBLIC Stroika::curl)
 endif ()
 if (NOT STROIKA_FEATURE_boost STREQUAL "no")
@@ -51,6 +64,11 @@ if (NOT STROIKA_FEATURE_boost STREQUAL "no")
     set (Boost_USE_STATIC_RUNTIME ON)
     find_package (Boost CONFIG REQUIRED COMPONENTS chrono filesystem json thread)
     target_link_libraries (stroika-foundation PUBLIC Boost::chrono Boost::filesystem Boost::json Boost::thread)
+    if (MSVC)
+        # Boost's headers also name the libraries they need, without a path (auto-linking) - so links search where they
+        # are, as make's links do
+        target_link_directories (stroika-foundation INTERFACE "${STROIKA_BUILDS_DIR}lib")
+    endif ()
 endif ()
 if (NOT STROIKA_FEATURE_fmtlib STREQUAL "no")
     find_package (fmt CONFIG REQUIRED)

@@ -15,6 +15,7 @@
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -257,6 +258,11 @@ def ToolchainText_(c):
         w("# the configuration's flags for the build type it builds (--config " + buildType + "), replacing cmake's for it\n")
         w("set(CMAKE_C_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS)) + ' CACHE STRING "")\n')
         w("set(CMAKE_CXX_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS)) + ' CACHE STRING "")\n')
+        w("# and /INCREMENTAL:NO for its links, in place of cmake's flags (Stroika's links take the configuration's own from\n")
+        w("# Stroika-Configuration.cmake): ASan, -LTCG and -OPT:REF each rule out linking incrementally, which a Visual Studio\n")
+        w("# generator asks for given -DEBUG - and each link would warn that it ignores /INCREMENTAL (LNK4300, LNK4075)\n")
+        for kind in ("EXE", "MODULE", "SHARED"):
+            w("set(CMAKE_" + kind + "_LINKER_FLAGS_" + buildType.upper() + ' "/INCREMENTAL:NO" CACHE STRING "")\n')
     else:
         which = lambda exe: Backtick_(["which", exe])[0].strip()  # noqa: E731 - as make's $(shell which ...): empty if not found
         w("set(CMAKE_C_COMPILER " + CMakeString_(which(c.G("CC"))) + ")\n")
@@ -317,6 +323,19 @@ def StroikaConfigurationText_(c):
     w("set(STROIKA_FOUNDATION_COMPILE_OPTIONS " + items(f for f in foundationFlags if not f.startswith("-D")) + ")\n")
     w("set(STROIKA_FOUNDATION_INCLUDE_DIRECTORIES " + items(path(p) for p in SplitList_(c.FOUNDATION_INCLUDES_PATH, PATH_SEPERATOR_)) + ")\n")
     w("set(STROIKA_PLATFORM_INCLUDE_DIRECTORIES " + items(path(p) for p in SplitList_(c.PLATFORM_INCLUDES_PATH, PATH_SEPERATOR_)) + ")\n")
+    w("\n")
+    w("# what links Foundation links with: the configuration's link options and system libraries (stroika-platform.pc's Libs)\n")
+    linkOptions = shlex.split(c.Platform_LinkerArgs_ExtraPrefix) + shlex.split(c.Platform_LinkerArgs_LibPath) + shlex.split(c.Platform_LinkerArgs_ExtraSuffix)
+    w("set(STROIKA_LINK_OPTIONS " + items(linkOptions) + ")\n")
+    w("set(STROIKA_LINK_LIBRARIES " + items(shlex.split(c.G("Platform_LinkerArgs_LibDependencies"))) + ")\n")
+    w("# the files each executable needs beside it (with MSVC's AddressSanitizer, its runtime DLL): LinkTime_CopyFilesToEXEDir\n")
+    w("set(STROIKA_COPY_FILES_TO_EXE_DIR " + items(path(f) for f in shlex.split(c.G("LinkTime_CopyFilesToEXEDir"))) + ")\n")
+    w("\n")
+    w("# how the regression tests run: the configuration's command prefix, and the bash that runs Tests/Scripts/RunTest (this\n")
+    w("# host's - on Windows, MSYS2's or Cygwin's, not a bash.exe that is WSL's)\n")
+    w("set(STROIKA_RUN_PREFIX " + CMakeString_(c.G("RunPrefix")) + ")\n")
+    bash = path(Backtick_(["which", "bash"])[0].strip())
+    w("set(STROIKA_BASH " + CMakeString_(bash + (".exe" if vs and not bash.endswith(".exe") else "")) + ")\n")
     return "".join(out)
 
 
