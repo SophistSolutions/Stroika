@@ -13,6 +13,11 @@
 // for error codes
 #include <curl/curl.h>
 #endif
+#if qStroika_HasComponent_WinHTTP
+// for error codes
+#include <Windows.h>
+#include <winhttp.h>
+#endif
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
@@ -101,6 +106,48 @@ namespace {
                     ReThrow ();
                 }
                 Execution::Sleep (1s * tries);
+            }
+        }
+    }
+
+    /*
+     *  The fetch failed because the server's certificate was refused (fFailConnectionIfSSLCertificateInvalid) - not for some
+     *  other reason, as the network's
+     */
+    bool IsCertificateError_ ([[maybe_unused]] const system_error& e)
+    {
+#if qStroika_HasComponent_libcurl
+        if (e.code () == error_code{CURLE_PEER_FAILED_VERIFICATION, LibCurl::error_category ()}) {
+            return true;
+        }
+#endif
+#if qStroika_HasComponent_WinHTTP
+        if (Execution::Platform::Windows::IsWin32Error (e.code (), ERROR_WINHTTP_SECURE_FAILURE)) {
+            return true;
+        }
+#endif
+        return false;
+    }
+
+    /*
+     *  badssl.com resets connections now and then - at times many in a row, to any client (curl's command line too) - which
+     *  says nothing of Stroika's HTTP client: so a fetch from it that fails for any reason but its certificate is tried again,
+     *  some seconds apart. Not one that timed out, though: a connect timeout alone takes minutes.
+     */
+    template <invocable F>
+    auto RetryIfNotCertificateError_ (F&& f)
+    {
+        constexpr unsigned int kMaxTries_{5};
+        for (unsigned int tries = 1;; ++tries) {
+            try {
+                return f ();
+            }
+            catch (const system_error& e) {
+                if (IsCertificateError_ (e) or Execution::IsA (e, errc::timed_out) or tries == kMaxTries_) {
+                    ReThrow ();
+                }
+                DbgTrace ("trying again, after: {}"_f, e);
+                Execution::Sleep (2s * tries);
             }
         }
     }
@@ -554,7 +601,7 @@ namespace {
         const URI kGoodSite_{"https://badssl.com/"}; // ironically this is a site with good SSL cert
         try {
             o.fFailConnectionIfSSLCertificateInvalid = true;
-            T1_get_ignore_SSLNotConfigured (o, kGoodSite_);
+            RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kGoodSite_); });
         }
         catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
@@ -570,7 +617,7 @@ namespace {
         }
         try {
             o.fFailConnectionIfSSLCertificateInvalid = false;
-            T1_get_ignore_SSLNotConfigured (o, kGoodSite_);
+            RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kGoodSite_); });
         }
         catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
@@ -591,15 +638,29 @@ namespace {
         {
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
-                T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
+                RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_); });
                 EXPECT_TRUE (false); // getting here means our check for invalid cert didn't work, so thats bad
+            }
+            catch (const system_error& e) {
+                // refused for its certificate, as it should be - any other failure (the network's) checks nothing
+                if (IsCertificateError_ (e)) {
+#if qStroika_HasComponent_libcurl
+                    // with curl's own account of why (OpenSSL's), not just its error code's generic text - and not merely the URL
+                    if (e.code ().category () == LibCurl::error_category ()) {
+                        EXPECT_TRUE (String::FromNarrowSDKString (e.what ()).Contains ("certificate has expired")) << e.what ();
+                    }
+#endif
+                }
+                else {
+                    Stroika::Frameworks::Test::WarnTestIssue ("expired.badssl.com failed, but not for its certificate: {}"_f(e));
+                }
             }
             catch (...) {
                 DbgTrace ("Good - this should fail"_f);
             }
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = false;
-                T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
+                RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_); });
                 // Getting here is fine - we should be able to ignore the invalid CERT
             }
             catch (const RequiredComponentMissingException&) {

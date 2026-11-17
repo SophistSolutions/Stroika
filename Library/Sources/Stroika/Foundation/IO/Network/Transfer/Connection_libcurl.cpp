@@ -320,6 +320,11 @@ namespace {
             // a callback that threw aborted the transfer itself, so its exception is the error - not whatever libcurl made of being aborted
             CURLcode performResult = ::curl_easy_perform (fCurlHandle_);
             ThrowIfCapturedCallbackException_ ();
+            if (performResult != CURLE_OK and fErrorBuffer_[0] != '\0') [[unlikely]] {
+                // curl's own account of what failed (OpenSSL's reason for a failed handshake, say) - the code's text is generic
+                error_code ec{performResult, Transfer::LibCurl::error_category ()};
+                ThrowError (ec, "{}: {}"_f(String::FromNarrowSDKString (ec.message ()), String::FromNarrowSDKString (fErrorBuffer_)));
+            }
             ThrowIfError (performResult);
 
             long resultCode = 0;
@@ -358,6 +363,7 @@ namespace {
                 /*
                  * Now setup COMMON options we ALWAYS set.
                  */
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_ERRORBUFFER, fErrorBuffer_)); // curl empties it before each transfer
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fURL_.As<string> ().c_str ()));
 
 #if USE_LIBCURL_VERBOSE_
@@ -525,6 +531,7 @@ namespace {
 
     private:
         void*                   fCurlHandle_{nullptr};
+        char                    fErrorBuffer_[CURL_ERROR_SIZE]{};
         URI                     fURL_;
         bool                    fDidCustomMethod_{false};
         vector<byte>            fUploadData_;
