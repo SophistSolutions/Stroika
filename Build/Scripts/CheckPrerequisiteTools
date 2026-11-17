@@ -46,6 +46,7 @@ CheckTool_ ()
 
 "${MY_DIR_}/PrintProgressLine" $LEVEL_ "Checking for installed tools:"
 
+#	Build/Docker/Windows-MSYS/Dockerfile checks its image for these too: keep the two lists in step.
 CheckTool_ sed
 CheckTool_ wget
 #	(no perl: only OpenSSL's build needs it, and ThirdPartyComponents/openssl checks for it)

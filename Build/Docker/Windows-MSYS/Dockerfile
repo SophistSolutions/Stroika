@@ -101,10 +101,16 @@ RUN  \
 # xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16) - weirdly in vim package
 # python is MSYS's own too - /usr/bin/python3, which Stroika's Python build scripts name in their #! line - not
 # mingw-w64-x86_64-python: a native Windows program, it cannot open the /c/... paths make runs them by.
+# Then check that each command the build needs is here - those Build/Scripts/CheckPrerequisiteTools checks, then make, git,
+# unzip, 7z (p7zip's), doxygen. msys () fails the RUN when pacman cannot install a package it is given, but a command that
+# comes only with another package goes when that package changes (base-devel dropped dos2unix 2026-11-13): then this fails
+# the image build, not every build in the image. No double quotes in the bash script: PowerShell 5.1 passes them to
+# bash.exe broken.
 RUN \
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; if ($LASTEXITCODE -ne 0) { throw ('msys failed, exit code ' + $LASTEXITCODE + ': ' + $Args) } } \
     msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen pkg-config vim python'; \
-    msys 'pacman --noconfirm -Syuu'
+    msys 'pacman --noconfirm -Syuu'; \
+    msys 'for c in sed wget python3 tar patch tr pkg-config realpath xxd make git unzip 7z doxygen; do command -v $c > /dev/null || { echo not installed: $c; exit 1; }; done'
 
 COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
 COPY Windows-MSYS/.bash_profile $MSYS_DIR/home/
