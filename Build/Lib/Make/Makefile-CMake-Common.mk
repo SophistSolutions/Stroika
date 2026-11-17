@@ -63,31 +63,26 @@ CMAKE_ARGS=
 CMAKE_ARGS+= -DCMAKE_VERBOSE_MAKEFILE=1
 
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
-ifeq (Unix,$(BuildPlatform))
-#for reasons I didn't investigate, CMAKE appears to require this to be a full path (CMAKE_C_COMPILER etc...) -- LGP 2019-01-04
-CMAKE_ARGS+= -DCMAKE_C_COMPILER='$(shell which $(CC))'
-CMAKE_ARGS+= -DCMAKE_CXX_COMPILER='$(shell which $(CXX))'
-CMAKE_ARGS+= -DCMAKE_AR='$(shell which $(AR))'
-CMAKE_ARGS+= -DCMAKE_RANLIB='$(shell which $(RANLIB))'
-else
-CMAKE_ARGS+= -DCMAKE_C_COMPILER='$(CC)'
-CMAKE_ARGS+= -DCMAKE_CXX_COMPILER='$(CXX)'
-endif
+
+#
+# The configuration's CMake toolchain file (ApplyConfiguration writes it): its compilers and archiver, and - with Visual
+# Studio - its C runtime and debug information format. Its flags too, but each component passes its own, below: the
+# configuration's, as the component's makefile changed them after including this file - and a -D on the command line wins
+# over the toolchain file's.
+#
+CMAKE_ARGS+= -DCMAKE_TOOLCHAIN_FILE=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Toolchain.cmake)
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifeq (x86_64,$(ARCH))
 CMAKE_ARGS+= -A x64
 else
 CMAKE_ARGS+= -A Win32
 endif
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 #
-#	Build the third-party component against the same C runtime as Stroika itself (-MT/-MTd by
-#	default - see VSVARS_MSVC_RUNTIME_LIBRARY in configure); a mismatch is an LNK2038
-#	"mismatch detected for 'RuntimeLibrary'" when something later links both.
+#	The toolchain file's C runtime - Stroika's own (-MT/-MTd by default - see VSVARS_MSVC_RUNTIME_LIBRARY in configure); a
+#	mismatch is an LNK2038 "mismatch detected for 'RuntimeLibrary'" when something later links both.
 #
-#	CMAKE_MSVC_RUNTIME_LIBRARY is only honored when CMP0091 is NEW, hence both args - exactly as
-#	with CMAKE_MSVC_DEBUG_INFORMATION_FORMAT/CMP0141 below. CMP0091 defaults to NEW only if the
+#	CMAKE_MSVC_RUNTIME_LIBRARY is only honored when CMP0091 is NEW - set here, as cmake reads it before the toolchain file;
+#	exactly as with CMAKE_MSVC_DEBUG_INFORMATION_FORMAT/CMP0141 below. CMP0091 defaults to NEW only if the
 #	project being built declares cmake_minimum_required(VERSION 3.15) or later; with an older
 #	declaration cmake silently ignores CMAKE_MSVC_RUNTIME_LIBRARY and puts its own choice of
 #	runtime flag in the *default* CMAKE_<LANG>_FLAGS_<CONFIG> instead. That default is usually
@@ -97,7 +92,6 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 #	property) gets that quietly dropped on the floor, and links against the wrong CRT.
 #
 CMAKE_ARGS+= -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=${VSVARS_MSVC_RUNTIME_LIBRARY}
 endif
 
 
@@ -132,7 +126,7 @@ CMAKE_BUILD_TYPE=Debug
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
 #
-#	Have cmake emit -Z7 (debug info embedded in each .obj) rather than its default -Zi (info in a
+#	The toolchain file has cmake emit -Z7 (debug info embedded in each .obj) rather than its default -Zi (info in a
 #	separate .pdb), which is what Stroika already does for its own code (see configure, and the
 #	comment on WinFlag_DebugProgramDatabase for why). With -Zi, each .obj in the resulting static
 #	library records a path to a .pdb, but cmake does not install compile .pdb files for static
@@ -147,15 +141,14 @@ CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CXXFLAG
 #	.pdb pathname recorded in it even with -Z7 - do not be alarmed by finding one. It is inert: the
 #	linker does not go looking for it, and does not warn, because the debug info is already in hand.
 #
-#	CMAKE_MSVC_DEBUG_INFORMATION_FORMAT is only honored when CMP0141 is NEW, hence both args.
-#	Mongodb does this same thing in their own CI - see, in the mongo-cxx-driver sources,
+#	CMAKE_MSVC_DEBUG_INFORMATION_FORMAT (Embedded) is only honored when CMP0141 is NEW - set here, as cmake reads it before
+#	the toolchain file. Mongodb does this same thing in their own CI - see, in the mongo-cxx-driver sources,
 #	.evergreen/scripts/install-c-driver.sh.
 #
 #	Only needed/wanted for the Debug case - for Release, CMAKE_BUILD_TYPE is Release, where cmake
 #	adds no debug-info flag of its own, and so whatever is in CFLAGS/CXXFLAGS already wins.
 #
 CMAKE_ARGS+= -DCMAKE_POLICY_DEFAULT_CMP0141=NEW
-CMAKE_ARGS+= -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
 else
 CMAKE_BUILD_TYPE=Release
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="$(PLATFORM_CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
@@ -165,11 +158,13 @@ else
 # UNIX:
 #
 #	CMAKE_BUILD_TYPE=None (Debian's packaging convention): every component is built with exactly the configuration's
-#	flags, and nothing else. There is no CMAKE_<LANG>_FLAGS_NONE, so cmake appends nothing - whereas with no build type
-#	at all, projects that pick Release for themselves (mongo-cxx-driver, zlib, zstd) got cmake's -O3 -DNDEBUG after our
-#	flags, overriding the configuration's -O, while the rest (GoogleTest, libxml2, Xerces, fmtlib) got neither. It also
-#	keeps mongo-c-driver's mlib honest: it treats a Release build type as a promise of optimization (a link-time
-#	inlining assertion), but with None it goes by __OPTIMIZE__ - i.e. by the flags actually used.
+#	flags, and nothing else. There is no CMAKE_<LANG>_FLAGS_NONE, so cmake appends nothing - whereas with no build type at
+#	all, projects that pick Release for themselves (fmtlib, mongo-cxx-driver, zlib, zstd) get cmake's -O3 -DNDEBUG after our
+#	flags, overriding the configuration's -O, while the rest (GoogleTest, libxml2, Xerces) get neither. It also keeps
+#	mongo-c-driver's mlib honest: it treats a Release build type as a promise of optimization (a link-time inlining
+#	assertion), but with None it goes by __OPTIMIZE__ - i.e. by the flags actually used.
+#
+#	On the command line, not in the toolchain file: fmtlib picks its build type before cmake reads that, at its project ().
 #
 #	-DNDEBUG iff the configuration has assertions off: one rule for every component, rather than NDEBUG exactly where a
 #	project happened to choose Release.

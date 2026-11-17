@@ -226,7 +226,7 @@ def CMakeString_(s):
 def ToolchainText_(c):
     """
     The configuration's CMake toolchain file: the compilers and flags with which a CMake build builds as this configuration -
-    what Build/Lib/Make/Makefile-CMake-Common.mk passes cmake, building the third-party components, on its command line.
+    what Build/Lib/Make/Makefile-CMake-Common.mk builds the third-party components with (each with its own flags).
     """
     flags = lambda *parts: " ".join(p.strip() for p in parts if p.strip())  # noqa: E731
     out = []
@@ -234,9 +234,11 @@ def ToolchainText_(c):
     w("# The CMake toolchain file for the Stroika configuration " + c.name + " - written by Build/Scripts/ApplyConfiguration from\n")
     w("# its ConfigurationFiles/" + c.name + ".xml: the compilers and flags with which a CMake build builds as that configuration.\n")
     w("#     cmake -DCMAKE_TOOLCHAIN_FILE=<this file> ...\n")
-    w("# The flags and build type are cache entries, as -D makes them, so a -D on the command line wins over them. Not here: the\n")
-    w("# generator, and a Visual Studio generator's platform (-A); and CMAKE_POLICY_DEFAULT_CMP0091 and CMP0141 (NEW, for the\n")
-    w("# MSVC settings below), which cmake reads before this file.\n")
+    w("# The flags are cache entries, as -D makes them, so a -D on the command line wins over them. Not here: the generator, and a\n")
+    w("# Visual Studio generator's platform (-A); CMAKE_POLICY_DEFAULT_CMP0091 and CMP0141 (NEW, for the MSVC settings below),\n")
+    w("# which cmake reads before this file; and the build type - a project can pick its own before cmake reads this file (fmtlib\n")
+    w("# picks Release, at its project ()), so a single-configuration generator's goes on the command line (None, below); a\n")
+    w("# Visual Studio generator needs none, and some projects react to one anyway (zstd 1.5.7 adds -DDEBUGLEVEL=1, given Debug).\n")
     w("\n")
     if IsVisualStudio_(c.BuildPlatform):
         debug = c.gAssertionsEnabled == 1
@@ -251,8 +253,7 @@ def ToolchainText_(c):
             w("# -Z7, as Stroika's own code: debug information in each object, so none missing from an installed library (needs CMP0141 NEW)\n")
             w("set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)\n")
         w("\n")
-        w("# the configuration's flags for the build type it builds (" + buildType + "), replacing cmake's for it\n")
-        w("set(CMAKE_BUILD_TYPE " + buildType + ' CACHE STRING "")\n')
+        w("# the configuration's flags for the build type it builds (--config " + buildType + "), replacing cmake's for it\n")
         w("set(CMAKE_C_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS)) + ' CACHE STRING "")\n')
         w("set(CMAKE_CXX_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS)) + ' CACHE STRING "")\n')
     else:
@@ -262,10 +263,9 @@ def ToolchainText_(c):
         w("set(CMAKE_AR " + CMakeString_(which(c.G("AR"))) + ' CACHE FILEPATH "")\n')
         w("set(CMAKE_RANLIB " + CMakeString_(which(c.G("RANLIB"))) + ' CACHE FILEPATH "")\n')
         w("\n")
-        w("# build type None (Debian's packaging convention): the configuration's flags, and nothing cmake adds for a build type;\n")
-        w("# -DNDEBUG exactly when the configuration has assertions off\n")
+        w("# the configuration's flags, all of them - with build type None (Debian's packaging convention), cmake adds none for\n")
+        w("# a build type; -DNDEBUG exactly when the configuration has assertions off\n")
         ndebug = "-DNDEBUG" if c.gAssertionsEnabled == 0 else ""
-        w('set(CMAKE_BUILD_TYPE None CACHE STRING "")\n')
         w("set(CMAKE_C_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS, ndebug)) + ' CACHE STRING "")\n')
         w("set(CMAKE_CXX_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS, ndebug)) + ' CACHE STRING "")\n')
     return "".join(out)
