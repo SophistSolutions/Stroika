@@ -442,14 +442,15 @@ apply-configurations-if-needed:
 ifneq ($(CONFIGURATION),)
 #
 # Re-runs configure when STROIKA_VERSION is newer than the configuration (each new version, it is a good idea to regenerate
-# the configuration files), then ApplyConfiguration when the configuration is newer than its Configuration.mk.
+# the configuration files), then ApplyConfiguration when the configuration is newer than its Configuration.mk, or its
+# Toolchain.cmake is missing.
 # Tested here, not written as rules making those files: SharedMakeVariables-Default.mk includes Configuration.mk, and make
 # first remakes an included makefile it has a rule for - with the recipe running this makefile again, which would do the same.
 #
 .PHONY: apply-configuration-if-stale_
 apply-configuration-if-stale_:
 	@if [ STROIKA_VERSION -nt "$(StroikaConfigurationFilesDir)$(CONFIGURATION).xml" ] ; then $(MAKE) reconfigure; fi
-	@if [ "$(StroikaConfigurationFilesDir)$(CONFIGURATION).xml" -nt "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Configuration.mk" ] ; then\
+	@if [ "$(StroikaConfigurationFilesDir)$(CONFIGURATION).xml" -nt "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Configuration.mk" ] || [ ! -f "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Toolchain.cmake" ] ; then\
 		$(MAKE) --no-print-directory apply-configuration;\
 	fi
 	

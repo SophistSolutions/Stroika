@@ -48,7 +48,8 @@
 #		StroikaIntermediateFilesRoot	(default $(TOP_ROOT)IntermediateFiles/)
 #			The build root - as CMake's -B names a build directory: the directory that says where everything else is.
 #			It holds the objects, generated files, third-party component builds, each configuration's Configuration.mk
-#			(which ApplyConfiguration writes from the configuration's .xml, and this file includes) - and what makes it a
+#			(which ApplyConfiguration writes from the configuration's .xml, and this file includes) and Toolchain.cmake
+#			(the same configuration as a CMake toolchain file, which ApplyConfiguration writes too) - and what makes it a
 #			build root:
 #				DirectoryLayout.mk		the directories below, each absolute (and the TOP_ROOT it builds, checked)
 #				ConfigurationFiles/		the named configurations

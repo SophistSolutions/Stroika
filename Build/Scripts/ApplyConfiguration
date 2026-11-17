@@ -2,8 +2,9 @@
 #
 #   ApplyConfiguration [OPTIONS] CONFIGURATION
 #
-#   From ConfigurationFiles/CONFIGURATION.xml, writes IntermediateFiles/CONFIGURATION/Configuration.mk - each wherever its
-#   variable puts it (the build root's DirectoryLayout.mk) - and runs CreatePackageConfigFiles, and updates that configuration's
+#   From ConfigurationFiles/CONFIGURATION.xml, writes IntermediateFiles/CONFIGURATION/Configuration.mk and its CMake toolchain
+#   file, Toolchain.cmake - each wherever its variable puts it (the build root's DirectoryLayout.mk) - and runs
+#   CreatePackageConfigFiles, and updates that configuration's
 #   entries in Workspaces/VisualStudio.Net's IntelliSense .props (Visual Studio configurations only) and
 #   .vscode/c_cpp_properties.json.
 #
@@ -214,6 +215,59 @@ def ConfigurationMkText_(c):
         w("\n")
     w("OUT_ARG_PREFIX_NATIVE := -OUT:\n" if IsVisualStudio_(c.BuildPlatform) else "OUT_ARG_PREFIX_NATIVE := -o \n")
     w("\n")
+    return "".join(out)
+
+
+def CMakeString_(s):
+    """s as a CMake quoted argument"""
+    return '"' + s.replace("\\", "\\\\").replace('"', '\\"').replace("$", "\\$") + '"'
+
+
+def ToolchainText_(c):
+    """
+    The configuration's CMake toolchain file: the compilers and flags with which a CMake build builds as this configuration -
+    what Build/Lib/Make/Makefile-CMake-Common.mk passes cmake, building the third-party components, on its command line.
+    """
+    flags = lambda *parts: " ".join(p.strip() for p in parts if p.strip())  # noqa: E731
+    out = []
+    w = out.append
+    w("# The CMake toolchain file for the Stroika configuration " + c.name + " - written by Build/Scripts/ApplyConfiguration from\n")
+    w("# its ConfigurationFiles/" + c.name + ".xml: the compilers and flags with which a CMake build builds as that configuration.\n")
+    w("#     cmake -DCMAKE_TOOLCHAIN_FILE=<this file> ...\n")
+    w("# The flags and build type are cache entries, as -D makes them, so a -D on the command line wins over them. Not here: the\n")
+    w("# generator, and a Visual Studio generator's platform (-A); and CMAKE_POLICY_DEFAULT_CMP0091 and CMP0141 (NEW, for the\n")
+    w("# MSVC settings below), which cmake reads before this file.\n")
+    w("\n")
+    if IsVisualStudio_(c.BuildPlatform):
+        debug = c.gAssertionsEnabled == 1
+        buildType = "Debug" if debug else "Release"
+        # a Visual Studio generator ignores these, using the compiler of the Visual Studio it builds with
+        w("set(CMAKE_C_COMPILER " + CMakeString_(c.G("CC")) + ")\n")
+        w("set(CMAKE_CXX_COMPILER " + CMakeString_(c.G("CXX")) + ")\n")
+        w("\n")
+        w("# the same C runtime as Stroika's own code - a mismatch is an LNK2038 when something links both (needs CMP0091 NEW)\n")
+        w("set(CMAKE_MSVC_RUNTIME_LIBRARY " + CMakeString_(c.G("VSVARS_MSVC_RUNTIME_LIBRARY")) + ")\n")
+        if debug:
+            w("# -Z7, as Stroika's own code: debug information in each object, so none missing from an installed library (needs CMP0141 NEW)\n")
+            w("set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)\n")
+        w("\n")
+        w("# the configuration's flags for the build type it builds (" + buildType + "), replacing cmake's for it\n")
+        w("set(CMAKE_BUILD_TYPE " + buildType + ' CACHE STRING "")\n')
+        w("set(CMAKE_C_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS)) + ' CACHE STRING "")\n')
+        w("set(CMAKE_CXX_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS)) + ' CACHE STRING "")\n')
+    else:
+        which = lambda exe: Backtick_(["which", exe])[0].strip()  # noqa: E731 - as make's $(shell which ...): empty if not found
+        w("set(CMAKE_C_COMPILER " + CMakeString_(which(c.G("CC"))) + ")\n")
+        w("set(CMAKE_CXX_COMPILER " + CMakeString_(which(c.G("CXX"))) + ")\n")
+        w("set(CMAKE_AR " + CMakeString_(which(c.G("AR"))) + ' CACHE FILEPATH "")\n')
+        w("set(CMAKE_RANLIB " + CMakeString_(which(c.G("RANLIB"))) + ' CACHE FILEPATH "")\n')
+        w("\n")
+        w("# build type None (Debian's packaging convention): the configuration's flags, and nothing cmake adds for a build type;\n")
+        w("# -DNDEBUG exactly when the configuration has assertions off\n")
+        ndebug = "-DNDEBUG" if c.gAssertionsEnabled == 0 else ""
+        w('set(CMAKE_BUILD_TYPE None CACHE STRING "")\n')
+        w("set(CMAKE_C_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS, ndebug)) + ' CACHE STRING "")\n')
+        w("set(CMAKE_CXX_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS, ndebug)) + ' CACHE STRING "")\n')
     return "".join(out)
 
 
@@ -501,6 +555,11 @@ def Main_(argv):
         sys.stdout.write(leader + 'Writing "' + DirectoryLayout.ForDisplay(configMk) + '" ... ')
         sys.stdout.flush()
         WriteBytes_(configMk, ConfigurationMkText_(c).encode(ENC_))
+        sys.stdout.write("done\n")
+        toolchain = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/Toolchain.cmake"
+        sys.stdout.write(leader + 'Writing "' + DirectoryLayout.ForDisplay(toolchain) + '" ... ')
+        sys.stdout.flush()
+        WriteBytes_(toolchain, ToolchainText_(c).encode(ENC_))
         sys.stdout.write("done\n")
         sys.stdout.write(leader)
         sys.stdout.flush()
