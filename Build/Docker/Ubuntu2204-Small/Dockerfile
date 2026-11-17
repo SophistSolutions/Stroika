@@ -26,7 +26,8 @@ RUN apt-get update && apt-get -qq install -y build-essential
 # wget:                         Used to fetch third party components to build them. Not strictly needed if you don't build any of those...
 # pkg-config:                   only needed for building third-party components, like libcurl, etc, but also used in Stroika makefiles to find
 #                               appropriate components
-#cmake:                         required to build Xerces
+#cmake:                         required to build the third-party components that use CMake (Xerces, libxml2, zlib, ...)
+#ninja-build:                   Ninja, for CMake's Ninja generator (cmake -G Ninja)
 #automake autoconf libtool-bin: required to build libcurl
 #doxygen:                       Not required, but if you want to generate docs
 #git:                           Not really a Stroika dependency, but its how we download/fetch stroika
@@ -38,6 +39,7 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y wget; \
     apt-get -qq install -y pkg-config; \
     apt-get -qq install -y cmake; \
+    apt-get -qq install -y ninja-build; \
     apt-get -qq install -y automake autoconf libtool-bin; \
     apt-get -qq install -y doxygen; \
     apt-get -qq install -y git; \
