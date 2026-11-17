@@ -834,7 +834,7 @@ But - even with just plain make, you need some sort of configure script to estab
 
   If you are trying to install required components in Cygwin, and cannot find them in the Cygwin setup GUI, try:
 
-  cygcheck -p dos2unix
+  cygcheck -p 7z
 
 - rm: cannot remove '.../boost/libs/beast/test/extern/zlib-1.2.11/contrib/dotzlib': Device or resource busy
 

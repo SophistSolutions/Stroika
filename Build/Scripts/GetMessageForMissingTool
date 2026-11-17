@@ -68,12 +68,6 @@ elif [ $TOOL == "clang-format" ] ; then
 	echo -n ": add export PATH=\"\$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/Llvm/x64/bin\" to ~/.bashrc"
 	echo -n " or try cygwin setup clang" && echo && exit 0
 	fi
-elif [ $TOOL == "unix2dos" ] ; then
-	if [ $DistroBasedOn == "Debian" ] ; then
-		echo -n ": try apt-get install -y dos2unix" && echo && exit 0
-	elif [ $DistroBasedOn == "cygwin" ] ; then
-		echo -n ": try cygwin setup, package name dos2unix" && echo && exit 0
-	fi
 elif [ $TOOL == "realpath" ] ; then
 	if [ $DistroBasedOn == "Darwin" ] ; then
 		echo -n ": try make install-realpath" && echo && exit 0

@@ -77,7 +77,6 @@ Building with Stroika requires
   - patch
   - pkg-config
   - automake
-  - dos2unix
   - unzip
   - python3
 
@@ -90,7 +89,7 @@ Building with Stroika requires
 
   ~~~
   choco install cygwin cyg-get
-  cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen python3
+  cyg-get default make git wget patch pkg-config automake unzip p7zip doxygen python3
   ~~~
 
 ### MSYS

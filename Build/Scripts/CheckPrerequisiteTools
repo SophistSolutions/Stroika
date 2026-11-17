@@ -64,10 +64,6 @@ CheckTool_ realpath realpath --canonicalize-missing .
 CheckTool_ xxd
 
 case "$DETECTED_HOST_OS_" in
-	Cygwin|MSYS)
-		CheckTool_ dos2unix
-		CheckTool_ unix2dos
-		;;
 	Darwin)
 		CheckTool_ gsed
 		;;

@@ -1,5 +1,5 @@
 #!/bin/sh
-VER=`dos2unix < STROIKA_VERSION | xargs echo -n`
+VER=$(tr -d '\r' < STROIKA_VERSION | xargs echo -n)
 echo "STROIKA_VERSION=$VER"
 echo "Checking out v2.1-Release"
 git checkout v2.1-Release

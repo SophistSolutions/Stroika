@@ -2,7 +2,7 @@ export StroikaSourceRoot	:=	$(abspath ../../)/
 
 DEFAULT_GOAL := help
 
-STROIKA_VERSION=$(shell dos2unix < ../../STROIKA_VERSION | xargs echo -n)
+STROIKA_VERSION=$(shell tr -d '\r' < ../../STROIKA_VERSION | xargs echo -n)
 STROIKA_VERSION_Final=$(shell ${StroikaSourceRoot}Build/Scripts/ExtractVersionInformation ../../STROIKA_VERSION FinalBuild)
 
 DETECTED_HOST_OS=$(shell ${StroikaSourceRoot}Build/Scripts/DetectedHostOS)

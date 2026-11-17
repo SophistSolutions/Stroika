@@ -57,10 +57,6 @@ jobs:
           df -h
           uname -a
           echo "DetectedHostOS: `./Build/Scripts/DetectedHostOS`"
-      - name: Install Tools
-        run: |
-          DEBIAN_FRONTEND=noninteractive sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install dos2unix
       - name: Build Linux Container Images
         run: |
           DEBIAN_FRONTEND=noninteractive make --directory Build/Docker --no-print-directory IMAGES="${{ matrix.container_images }}" build-images
