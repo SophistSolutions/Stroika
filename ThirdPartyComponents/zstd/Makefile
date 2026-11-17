@@ -111,9 +111,9 @@ endif
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build .  ${CMAKE_BUILD_AND_INSTALL_ARGS} ${CMAKE_BUILD_TYPE_EXTRA_ARG_}  > BUILD-OUT.txt 2>&1
 	@${StroikaSourceRoot}Build/Scripts/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
-	@# on windows, file named zstd_static.lib but referenced as zstd.lib in .pc file
+	@# on windows, the file is named zstd_static.lib - as zstd's CMake package names it - but the .pc file names zstd.lib: keep both
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@mv ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd_static${LIB_SUFFIX} ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd${LIB_SUFFIX}
+	@cp ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd_static${LIB_SUFFIX} ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd${LIB_SUFFIX}
 endif
 
 ${ZIPPED_SOURCES_FILE_}:

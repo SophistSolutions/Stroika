@@ -226,7 +226,8 @@ def CMakeString_(s):
 def ToolchainText_(c):
     """
     The configuration's CMake toolchain file: the compilers and flags with which a CMake build builds as this configuration -
-    what Build/Lib/Make/Makefile-CMake-Common.mk builds the third-party components with (each with its own flags).
+    Stroika's own (Library/CMakeLists.txt), and the third-party components Build/Lib/Make/Makefile-CMake-Common.mk builds
+    (each with its own flags).
     """
     flags = lambda *parts: " ".join(p.strip() for p in parts if p.strip())  # noqa: E731
     out = []
@@ -270,10 +271,45 @@ def ToolchainText_(c):
             w("set(CMAKE_OSX_ARCHITECTURES " + CMakeString_(arch) + ' CACHE STRING "")\n')
         w("\n")
         w("# the configuration's flags, all of them - with build type None (Debian's packaging convention), cmake adds none for\n")
-        w("# a build type; -DNDEBUG exactly when the configuration has assertions off\n")
-        ndebug = "-DNDEBUG" if c.gAssertionsEnabled == 0 else ""
-        w("set(CMAKE_C_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS, ndebug)) + ' CACHE STRING "")\n')
-        w("set(CMAKE_CXX_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS, ndebug)) + ' CACHE STRING "")\n')
+        w("# a build type\n")
+        w("set(CMAKE_C_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS)) + ' CACHE STRING "")\n')
+        w("set(CMAKE_CXX_FLAGS " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS)) + ' CACHE STRING "")\n')
+    return "".join(out)
+
+
+def StroikaConfigurationText_(c):
+    """
+    The configuration's Stroika settings, for Stroika's own CMake build (Library/CMakeLists.txt, which reads them from beside
+    the toolchain file it is given): its target platforms, each optional component's feature flag, where make installs the
+    third-party components, and Foundation's preprocessor definitions and include directories - what make takes from
+    Configuration.mk and stroika-foundation.pc.
+    """
+    vs = IsVisualStudio_(c.BuildPlatform)
+    path = lambda p: Backtick_(["cygpath", "--mixed", p])[0].strip() if vs else p  # noqa: E731 - cmake on Windows takes C:/...
+    items = lambda values: " ".join(CMakeString_(v) for v in values)  # noqa: E731
+    foundationFlags = c.G("FOUNDATION_CPPFLAGS_NOTINCLUDES").split()
+    out = []
+    w = out.append
+    w("# Stroika's own settings for the configuration " + c.name + " - written by Build/Scripts/ApplyConfiguration from its\n")
+    w("# ConfigurationFiles/" + c.name + ".xml, for Stroika's CMake build, which reads this file from beside the configuration's\n")
+    w("# Toolchain.cmake.\n")
+    w("\n")
+    w("set(STROIKA_CONFIGURATION " + CMakeString_(c.name) + ")\n")
+    w("set(STROIKA_TARGET_PLATFORMS " + items(c.TargetPlatforms.split()) + ")\n")
+    w("\n")
+    w("# where make installs the configuration's third-party components - their headers, libraries and CMake packages\n")
+    w("set(STROIKA_BUILDS_DIR " + CMakeString_(path(DirectoryLayout.BUILDS_ROOT + c.name) + "/") + ")\n")
+    w("\n")
+    w("# each optional component: use (Stroika builds it), use-system, or no - configure's --<component>\n")
+    for feature in ("ATLMFC", "boost", "fmtlib", "GoogleTest", "LibCurl", "LZMA", "mongocxxdriver", "OpenSSL", "sqlite", "WinHTTP",
+                    "Xerces", "libxml2", "ZLib", "zstd"):
+        w("set(STROIKA_FEATURE_" + feature + " " + CMakeString_(c.G("qFeatureFlag_" + feature)) + ")\n")
+    w("\n")
+    w("# Foundation's preprocessor definitions and include directories, and the platform's include directories\n")
+    w("set(STROIKA_FOUNDATION_DEFINITIONS " + items(f[2:] for f in foundationFlags if f.startswith("-D")) + ")\n")
+    w("set(STROIKA_FOUNDATION_COMPILE_OPTIONS " + items(f for f in foundationFlags if not f.startswith("-D")) + ")\n")
+    w("set(STROIKA_FOUNDATION_INCLUDE_DIRECTORIES " + items(path(p) for p in SplitList_(c.FOUNDATION_INCLUDES_PATH, PATH_SEPERATOR_)) + ")\n")
+    w("set(STROIKA_PLATFORM_INCLUDE_DIRECTORIES " + items(path(p) for p in SplitList_(c.PLATFORM_INCLUDES_PATH, PATH_SEPERATOR_)) + ")\n")
     return "".join(out)
 
 
@@ -566,6 +602,11 @@ def Main_(argv):
         sys.stdout.write(leader + 'Writing "' + DirectoryLayout.ForDisplay(toolchain) + '" ... ')
         sys.stdout.flush()
         WriteBytes_(toolchain, ToolchainText_(c).encode(ENC_))
+        sys.stdout.write("done\n")
+        stroikaConfiguration = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/Stroika-Configuration.cmake"
+        sys.stdout.write(leader + 'Writing "' + DirectoryLayout.ForDisplay(stroikaConfiguration) + '" ... ')
+        sys.stdout.flush()
+        WriteBytes_(stroikaConfiguration, StroikaConfigurationText_(c).encode(ENC_))
         sys.stdout.write("done\n")
         sys.stdout.write(leader)
         sys.stdout.flush()
