@@ -2725,6 +2725,11 @@ namespace {
      *  device back (for its max-age). A fake device - a socket on SSDP's port and group - catches the CachingListener's
      *  M-SEARCH, says ssdp:alive then ssdp:byebye, then answers that M-SEARCH. As in SSDP_Loopback_Notify_, anything that keeps
      *  the exchange from happening is a test issue.
+     *
+     *  All on one network interface: on a machine with two on one LAN (Ethernet and Wi-Fi, say), a NOTIFY sent out of one
+     *  reaches the other too, relayed by the access point - at times 100 ms or more later, so after the byebye that followed
+     *  it - and a CachingListener holds a device on each network on its own (@see SSDP_CachingListener_ByebyeOnOneNetwork_):
+     *  that late copy adds the device back there (@see https://github.com/SophistSolutions/Stroika/issues/1244).
      */
     GTEST_TEST (Frameworks_UPnP, SSDP_CachingListener_StaleSearchAnswer_)
     {
@@ -2756,16 +2761,30 @@ namespace {
             return done ();
         };
         try {
-            ConnectionlessSocket::Ptr device = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            // the one network interface it all happens on: the first SSDP would use, with IPv4
+            optional<Interface> on = SystemInterfacesMgr{}.GetAll ().First ([] (const Interface& i) {
+                return SSDP::DefaultInterfaceFilter (i) and i.fBindings.fAddresses.Any ([] (const InternetAddress& ia) {
+                    return ia.GetAddressFamily () == InternetAddress::AddressFamily::V4;
+                });
+            });
+            if (not on) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "SSDP_CachingListener_StaleSearchAnswer_ skipped - no network interface to join SSDP's group on");
+                return;
+            }
+            const SSDP::InterfaceFilter onlyOn = [id = on->fInterfaceID] (const Interface& i) { return i.fInterfaceID == id; };
+            ConnectionlessSocket::Ptr   device = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             device.Bind (SocketAddress{V4::kAddrAny, SSDP::V4::kSocketAddress.GetPort ()},
                          ConnectionlessSocket::BindFlags{.fShareWithCooperatingSockets = true});
             device.SetMulticastLoopMode (true); // so this process hears its NOTIFYs
+            device.SetMulticastInterface (*on); // and they go out where the CachingListener listens
             if (SSDP::Private_::JoinOnEveryInterface (Containers::Sequence<pair<ConnectionlessSocket::Ptr, InternetAddress>>{make_pair (
                                                           device, SSDP::V4::kSocketAddress.GetInternetAddress ())},
-                                                      SSDP::DefaultInterfaceFilter)
+                                                      onlyOn)
                     .empty ()) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "SSDP_CachingListener_StaleSearchAnswer_ skipped - no network interface to join SSDP's group on");
+                Stroika::Frameworks::Test::WarnTestIssue ("SSDP_CachingListener_StaleSearchAnswer_ skipped - could not join SSDP's group on {}"_f(on->fInterfaceID)
+                                                              .AsNarrowSDKString ()
+                                                              .c_str ());
                 return;
             }
             CachingListener cache{[&] (const SSDP::Advertisement& a) {
@@ -2773,7 +2792,8 @@ namespace {
                                           told.rwget ()->Append (a);
                                       }
                                   },
-                                  CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only}, .fSearchFor = deviceType},
+                                  CachingListener::Options{.fListenerOptions = {.fIPVersion = IPVersionSupport::eIPV4Only, .fInterfaces = onlyOn},
+                                                           .fSearchFor = deviceType},
                                   CachingListener::eAutoStart};
             auto            cached = [&] () {
                 return cache.GetAdvertisements ().Where ([&] (const SSDP::Advertisement& a) { return a.fUSN.Contains (deviceID); }).size ();
