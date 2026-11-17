@@ -301,7 +301,11 @@ def StroikaConfigurationText_(c):
     w("# Toolchain.cmake.\n")
     w("\n")
     w("set(STROIKA_CONFIGURATION " + CMakeString_(c.name) + ")\n")
+    w("set(STROIKA_BUILD_PLATFORM " + CMakeString_(c.BuildPlatform) + ")\n")
     w("set(STROIKA_TARGET_PLATFORMS " + items(c.TargetPlatforms.split()) + ")\n")
+    w("set(STROIKA_ARCH " + CMakeString_(c.G("ARCH").strip()) + ")\n")
+    w("set(STROIKA_OPENSSL_EXTRA_ARGS " + CMakeString_(c.G("qFeatureFlag_OpenSSL_ExtraArgs").strip()) + ")\n")
+    w("set(STROIKA_ASSERTIONS_ENABLED " + ("ON" if c.gAssertionsEnabled else "OFF") + ")\n")
     # the C++ standard the configuration's flags name (configure's --cppstd-version) - MSVC's c++latest is 23 to cmake
     standard = ""
     for f in c.CXXFLAGS.split():
@@ -310,7 +314,7 @@ def StroikaConfigurationText_(c):
             standard = {"latest": "23", "2a": "20", "2b": "23", "2c": "26"}.get(m.group(1), m.group(1))
     w("set(STROIKA_CXX_STANDARD " + CMakeString_(standard) + ")\n")
     w("\n")
-    w("# where make installs the configuration's third-party components - their headers, libraries and CMake packages\n")
+    w("# where the configuration's third-party components are installed - their headers, libraries and CMake packages\n")
     w("set(STROIKA_BUILDS_DIR " + CMakeString_(path(DirectoryLayout.BUILDS_ROOT + c.name) + "/") + ")\n")
     w("\n")
     w("# each optional component: use (Stroika builds it), use-system, or no - configure's --<component>\n")

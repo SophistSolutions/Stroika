@@ -3,7 +3,8 @@
 # configuration, given its toolchain file:
 #     cmake -S Library -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
 # It builds the Foundation and Frameworks libraries, the regression tests (which ctest runs) and the samples
-# (Samples/CMakeLists.txt says which), against the third-party components make built for the configuration.
+# (Samples/CMakeLists.txt says which), against the third-party components installed for the configuration - by make, or
+# by ThirdPartyComponents/CMakeLists.txt (Build/Superbuild builds those, then this).
 #
 cmake_minimum_required (VERSION 3.22)
 project (Stroika LANGUAGES C CXX)
@@ -23,7 +24,7 @@ if (STROIKA_CXX_STANDARD)
     set (CMAKE_CXX_EXTENSIONS OFF)
 endif ()
 
-# the third-party components make built for the configuration, ahead of any installed elsewhere
+# the third-party components installed for the configuration, ahead of any installed elsewhere
 list (PREPEND CMAKE_PREFIX_PATH "${STROIKA_BUILDS_DIR}")
 # and their include directories as -I, as make gives them, not -isystem: compilers search CPATH's directories ahead of
 # -isystem ones - so given CPATH=/opt/homebrew/include (a common Mac shell setting), Homebrew's OpenSSL headers would win

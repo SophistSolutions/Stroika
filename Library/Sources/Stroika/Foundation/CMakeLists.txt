@@ -15,7 +15,7 @@ target_link_libraries (stroika-foundation INTERFACE ${STROIKA_LINK_LIBRARIES})
 
 #
 # The third-party components the configuration uses - by their own CMake packages, where they install one; curl, lzma and
-# sqlite install none, so they are taken from where Stroika's makefiles install them (STROIKA_BUILDS_DIR).
+# sqlite install none, so they are taken from where they are installed (STROIKA_BUILDS_DIR).
 #
 function (StroikaInstalledLibrary_ name library)
     find_library (StroikaInstalledLibrary_${name}_ NAMES ${library} PATHS "${STROIKA_BUILDS_DIR}lib" NO_DEFAULT_PATH REQUIRED)
