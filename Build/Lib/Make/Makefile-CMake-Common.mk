@@ -65,10 +65,10 @@ CMAKE_ARGS+= -DCMAKE_VERBOSE_MAKEFILE=1
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
 
 #
-# The configuration's CMake toolchain file (ApplyConfiguration writes it): its compilers and archiver, and - with Visual
-# Studio - its C runtime and debug information format. Its flags too, but each component passes its own, below: the
-# configuration's, as the component's makefile changed them after including this file - and a -D on the command line wins
-# over the toolchain file's.
+# The configuration's CMake toolchain file (ApplyConfiguration writes it): its compilers and archiver, its architecture on a
+# Mac, and - with Visual Studio - its C runtime and debug information format. Its flags too, but each component passes its
+# own, below: the configuration's, as the component's makefile changed them after including this file - and a -D on the
+# command line wins over the toolchain file's.
 #
 CMAKE_ARGS+= -DCMAKE_TOOLCHAIN_FILE=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/Toolchain.cmake)
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))

@@ -262,6 +262,12 @@ def ToolchainText_(c):
         w("set(CMAKE_CXX_COMPILER " + CMakeString_(which(c.G("CXX"))) + ")\n")
         w("set(CMAKE_AR " + CMakeString_(which(c.G("AR"))) + ' CACHE FILEPATH "")\n')
         w("set(CMAKE_RANLIB " + CMakeString_(which(c.G("RANLIB"))) + ' CACHE FILEPATH "")\n')
+        arch = c.G("ARCH").strip()
+        if IS_MACOS_HOST_ and "clang++" in c.G("CXX") and arch != "":  # as configure, which then gives the flags -arch ARCH
+            w("\n")
+            w("# the configuration's architecture, as its flags' -arch: given none, cmake on an Apple Silicon Mac adds -arch for the\n")
+            w("# host's own - so a configuration for another (Release-x86_64) would build both\n")
+            w("set(CMAKE_OSX_ARCHITECTURES " + CMakeString_(arch) + ' CACHE STRING "")\n')
         w("\n")
         w("# the configuration's flags, all of them - with build type None (Debian's packaging convention), cmake adds none for\n")
         w("# a build type; -DNDEBUG exactly when the configuration has assertions off\n")
