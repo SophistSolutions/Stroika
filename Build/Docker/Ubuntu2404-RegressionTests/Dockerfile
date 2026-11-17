@@ -17,14 +17,15 @@ RUN apt-get -qq install -y g++-12 g++-13 g++-14; \
 RUN apt-get -qq install -y rpm; \
     apt-get -qq clean -y;
 
-#the clang compilers, each with libclang-rt-N-dev - the sanitizer runtimes the debug configurations link - named, as it is
-#only recommended, and apt skips a recommended package it cannot install without a word; libc++ for the newest only:
+#the clang compilers, each with libclang-rt-N-dev (the sanitizer runtimes the debug configurations link) and llvm-N
+#(llvm-ar-N and llvm-ranlib-N, a clang configuration's AR and RANLIB) - named, as clang-N only recommends them (llvm-N
+#through llvm-N-dev), and apt skips a recommended package it cannot install without a word; libc++ for the newest only:
 #installing one libc++-N-dev removes the others
 RUN apt-get -qq update && \
-    apt-get -qq install -y clang-15 lld-15 libclang-rt-15-dev && \
-    apt-get -qq install -y clang-16 lld-16 libclang-rt-16-dev && \
-    apt-get -qq install -y clang-17 lld-17 libclang-rt-17-dev && \
-    apt-get -qq install -y clang-18 lld-18 libclang-rt-18-dev libc++-18-dev libc++abi-18-dev && \
+    apt-get -qq install -y clang-15 lld-15 libclang-rt-15-dev llvm-15 && \
+    apt-get -qq install -y clang-16 lld-16 libclang-rt-16-dev llvm-16 && \
+    apt-get -qq install -y clang-17 lld-17 libclang-rt-17-dev llvm-17 && \
+    apt-get -qq install -y clang-18 lld-18 libclang-rt-18-dev llvm-18 libc++-18-dev libc++abi-18-dev && \
     apt-get -qq clean -y
 
 #Only needed to run with valgrind regtests

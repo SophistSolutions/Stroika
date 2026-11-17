@@ -20,12 +20,13 @@ RUN apt-get -qq install -y g++-15 g++-16 && \
 RUN apt-get -qq install -y rpm && \
     apt-get -qq clean -y
 
-#the newest clang compilers, each with libclang-rt-N-dev - the sanitizer runtimes the debug configurations link - named, as
-#it is only recommended, and apt skips a recommended package it cannot install without a word; libc++ for the newest only:
-#installing one libc++-N-dev removes the others
+#the newest clang compilers, each with libclang-rt-N-dev (the sanitizer runtimes the debug configurations link) and
+#llvm-N (llvm-ar-N and llvm-ranlib-N, a clang configuration's AR and RANLIB) - named, as clang-N only recommends them
+#(llvm-N through llvm-N-dev), and apt skips a recommended package it cannot install without a word; libc++ for the
+#newest only: installing one libc++-N-dev removes the others
 RUN apt-get -qq update && \
-    apt-get -qq install -y clang-21 lld-21 libclang-rt-21-dev && \
-    apt-get -qq install -y clang-22 lld-22 libclang-rt-22-dev libc++-22-dev libc++abi-22-dev && \
+    apt-get -qq install -y clang-21 lld-21 libclang-rt-21-dev llvm-21 && \
+    apt-get -qq install -y clang-22 lld-22 libclang-rt-22-dev llvm-22 libc++-22-dev libc++abi-22-dev && \
     apt-get -qq clean -y
 
 # Used for Samples/HTMLUI (not needed - autodetected - but good to test)
