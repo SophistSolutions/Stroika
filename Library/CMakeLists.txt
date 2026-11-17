@@ -25,6 +25,10 @@ endif ()
 
 # the third-party components make built for the configuration, ahead of any installed elsewhere
 list (PREPEND CMAKE_PREFIX_PATH "${STROIKA_BUILDS_DIR}")
+# and their include directories as -I, as make gives them, not -isystem: compilers search CPATH's directories ahead of
+# -isystem ones - so given CPATH=/opt/homebrew/include (a common Mac shell setting), Homebrew's OpenSSL headers would win
+# over the configuration's own
+set (CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../Build/Lib/CMake")
 include (StroikaCopyFilesToExeDir)
