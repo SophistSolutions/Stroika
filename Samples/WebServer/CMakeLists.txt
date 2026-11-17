@@ -1,0 +1,5 @@
+StroikaMakeVersionFile ("${CMAKE_CURRENT_SOURCE_DIR}/../../STROIKA_VERSION" "${CMAKE_CURRENT_BINARY_DIR}/AppVersion.h")
+add_executable (WebServer Sources/WebServer.cpp)
+target_include_directories (WebServer PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+target_link_libraries (WebServer PRIVATE stroika-frameworks)
+StroikaCopyFilesToExeDir (WebServer)

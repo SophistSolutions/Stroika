@@ -2,8 +2,8 @@
 # Stroika's libraries built with CMake - beside the make build, which this does not change (#1157). For one Stroika
 # configuration, given its toolchain file:
 #     cmake -S Library -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
-# It builds the Foundation and Frameworks libraries and the regression tests (which ctest runs), against the third-party
-# components make built for the configuration.
+# It builds the Foundation and Frameworks libraries, the regression tests (which ctest runs) and the samples
+# (Samples/CMakeLists.txt says which), against the third-party components make built for the configuration.
 #
 cmake_minimum_required (VERSION 3.22)
 project (Stroika LANGUAGES C CXX)
@@ -33,6 +33,7 @@ set (CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../Build/Lib/CMake")
 include (StroikaCopyFilesToExeDir)
 include (StroikaEmbedFiles)
+include (StroikaMakeVersionFile)
 
 add_subdirectory (Sources/Stroika/Foundation)
 add_subdirectory (Sources/Stroika/Frameworks)
@@ -40,3 +41,6 @@ add_subdirectory (Sources/Stroika/Frameworks)
 # the regression tests, Tests/NN
 enable_testing ()
 add_subdirectory (../Tests Tests)
+
+# the samples, Samples/<name>
+add_subdirectory (../Samples Samples)
