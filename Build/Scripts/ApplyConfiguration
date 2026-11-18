@@ -259,11 +259,12 @@ def ToolchainText_(c):
         w("# the configuration's flags for the build type it builds (--config " + buildType + "), replacing cmake's for it\n")
         w("set(CMAKE_C_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CFLAGS)) + ' CACHE STRING "")\n')
         w("set(CMAKE_CXX_FLAGS_" + buildType.upper() + " " + CMakeString_(flags(c.PLATFORM_CPPFLAGS_NOTINCLUDES, c.CXXFLAGS)) + ' CACHE STRING "")\n')
-        w("# and /INCREMENTAL:NO for its links, in place of cmake's flags (Stroika's links take the configuration's own from\n")
-        w("# Stroika-Configuration.cmake): ASan, -LTCG and -OPT:REF each rule out linking incrementally, which a Visual Studio\n")
+        w("# and for its links cmake's flags (/debug with Debug), but /INCREMENTAL:NO (Stroika's links take the configuration's own\n")
+        w("# from Stroika-Configuration.cmake): ASan, -LTCG and -OPT:REF each rule out linking incrementally, which a Visual Studio\n")
         w("# generator asks for given -DEBUG - and each link would warn that it ignores /INCREMENTAL (LNK4300, LNK4075)\n")
+        linkFlags = "/debug /INCREMENTAL:NO" if debug else "/INCREMENTAL:NO"
         for kind in ("EXE", "MODULE", "SHARED"):
-            w("set(CMAKE_" + kind + "_LINKER_FLAGS_" + buildType.upper() + ' "/INCREMENTAL:NO" CACHE STRING "")\n')
+            w("set(CMAKE_" + kind + "_LINKER_FLAGS_" + buildType.upper() + ' "' + linkFlags + '" CACHE STRING "")\n')
     else:
         which = lambda exe: Backtick_(["which", exe])[0].strip()  # noqa: E731 - as make's $(shell which ...): empty if not found
         w("set(CMAKE_C_COMPILER " + CMakeString_(which(c.G("CC"))) + ")\n")
