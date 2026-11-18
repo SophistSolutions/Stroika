@@ -67,5 +67,6 @@ fi
 
 %files
 /opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI
+/opt/Stroika-Sample-HTMLUI/html
 /usr/lib/systemd/system/stroika-sample-htmlui.service
 %config(noreplace) /var/opt/Stroika-Sample-HTMLUI/

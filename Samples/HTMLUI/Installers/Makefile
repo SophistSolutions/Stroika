@@ -96,7 +96,7 @@ endif
 DEB_WORKDIR:=$(shell mktemp -d)/
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build-Output.txt
-$(TARGET_OUT_INSTALLER_DEB): $(BUILT_SERVICE_EXE) Makefile
+$(TARGET_OUT_INSTALLER_DEB): $(BUILT_SERVICE_EXE) Makefile ${BUILT_HTML_DIR}
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building DEB installer: "
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(DEB_WORKDIR)`"; log:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(DEB_BUILD_OUT)`
 ifeq ($(CONFIGURATION),)
@@ -129,6 +129,8 @@ else
 	@install -m 755 --strip --strip-program=$(STRIP) $(BUILT_SERVICE_EXE) $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 endif
 	@install -m 644 $(BASIC_NAME_LC).service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
+	@#The web app, beside the backend - which serves it from html beside itself
+	@cp -r $(BUILT_HTML_DIR) $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/opt/$(BASIC_NAME)/html
 
 	@dpkg-deb --root-owner-group --build $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION) 2>&1 > $(DEB_BUILD_OUT)
 	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION).deb $(TARGET_OUT_INSTALLER_DEB)
@@ -140,7 +142,7 @@ endif
 RPM_WORKDIR=$(ObjDir)RPM_TMP/
 RPM_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 RPM_BUILD_OUT=$(ObjDir)RPM-Installer-Build-Output.txt
-$(TARGET_OUT_INSTALLER_RPM): $(BUILT_SERVICE_EXE) Makefile
+$(TARGET_OUT_INSTALLER_RPM): $(BUILT_SERVICE_EXE) Makefile ${BUILT_HTML_DIR}
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building RPM installer: "
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(RPM_WORKDIR)`"; log:" `$(StroikaSourceRoot)Build/Scripts/SubstituteBackVariables $(RPM_BUILD_OUT)` "..."
 ifeq ($(CONFIGURATION),)
@@ -159,6 +161,7 @@ else
 	@install -m 755 --strip --strip-program=$(STRIP) $(BUILT_SERVICE_EXE) $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 endif
 	@install -m 644 $(BASIC_NAME_LC).service $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
+	@cp -r $(BUILT_HTML_DIR) $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/html
 	
 	@cd $(RPM_WORKDIR) && tar -zcf $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/
 	@cd $(RPM_WORKDIR) && cp $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz SOURCES/
