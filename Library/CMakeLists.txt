@@ -18,13 +18,14 @@ get_filename_component (configurationDir_ "${CMAKE_TOOLCHAIN_FILE}" DIRECTORY)
 include ("${configurationDir_}/Stroika-Configuration.cmake")
 
 # a Visual Studio configuration's flags are its toolchain file's for one build type - Debug where its assertions are on,
-# else Release (CMAKE_CXX_FLAGS_DEBUG ...): so a single-configuration generator (Ninja) builds that one
+# else Release (CMAKE_CXX_FLAGS_DEBUG ...): so a single-configuration generator (Ninja) builds that one, whatever
+# CMAKE_BUILD_TYPE held - project() has set it already for MSVC, to Debug (Windows-MSVC.cmake's CMAKE_BUILD_TYPE_INIT)
 get_property (multiConfig_ GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio" AND NOT multiConfig_ AND NOT CMAKE_BUILD_TYPE)
+if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio" AND NOT multiConfig_)
     if (STROIKA_ASSERTIONS_ENABLED)
-        set (CMAKE_BUILD_TYPE Debug)
+        set (CMAKE_BUILD_TYPE Debug CACHE STRING "the configuration's build type" FORCE)
     else ()
-        set (CMAKE_BUILD_TYPE Release)
+        set (CMAKE_BUILD_TYPE Release CACHE STRING "the configuration's build type" FORCE)
     endif ()
 endif ()
 
