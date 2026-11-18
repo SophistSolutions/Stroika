@@ -8,6 +8,8 @@
 set (doxygenDir_ "${CMAKE_CURRENT_LIST_DIR}/Doxygen")
 file (REMOVE_RECURSE "${WORK_DIR}")
 file (MAKE_DIRECTORY "${WORK_DIR}")
+cmake_path (GET OUTPUT PARENT_PATH outputParent_)
+file (MAKE_DIRECTORY "${outputParent_}")
 file (READ "${doxygenDir_}/Stroika-Library.cfg" configuration_)
 string (REPLACE "@INCLUDE = \"PROJECT_NUMBER.cfg\"" "PROJECT_NUMBER = \"${VERSION}\"" configuration_ "${configuration_}")
 # OUTPUT_DIRECTORY relative to doxygen's working directory, where it can be (else, on another drive, as given): a doxygen

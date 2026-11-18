@@ -15,21 +15,13 @@ endif
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
-.PHONY:	tests documentation all check distclean clobber clobber-stroika libraries apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
+.PHONY:	all libraries tools tests samples documentation third-party-components run-tests clean clobber library-clobber distclean apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
 
 
 SHELL=/bin/bash
 
 # Only applies to run-tests
 export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
-
-# Only applies make all
-# Needed for Windows - especially MSYS - where builds can take many hours (possibly due to newer version of doxygen) --LGP 2025-02-11
-ifneq ($(filter Windows,$(StroikaHostOSNames)),)
-export ALL_INCLUDES_BUILDING_DOCUMENTATION?=0
-else
-export ALL_INCLUDES_BUILDING_DOCUMENTATION?=1
-endif
 
 #
 # Often useful in looking at builds to see how long things took
@@ -60,24 +52,23 @@ APPLY_CONFIGS=$(or \
 help:
 	@$(ECHO) "Help for making Stroika:"
 	@$(ECHO) "Targets:"
-	@$(ECHO) "    all:                         -    Builds everything"
-	@$(ECHO) "    check:                       -    Checks everything was built properly"
-	@$(ECHO) "    clean:"
-	@$(ECHO) "    clobber:"
-	@$(ECHO) "    clobber-stroika:			   -   	clean + destroy Stroika targets (libs etc) - so all of stroika will be rebuilt next make (but doesnt destroy third-party-components)"
+	@$(ECHO) "    all:                         -    Builds everything (with CMake: Stroika's CMakeLists.txt; make -f Makefile-Legacy for make's own build, until Stroika v3.0d26 ships)"
+	@$(ECHO) "    clean:                       -    Removes what was built but not installed (objects, the third-party components' sources and build trees) - not the libraries and programs"
+	@$(ECHO) "    clobber:                     -    Removes all that was built"
 	@$(ECHO) "    distclean:"
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
-	@$(ECHO) "    library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)"
+	@$(ECHO) "    library-clobber:             -    Stroika's own build afresh next time - its libraries, and all built on them - the third-party components kept"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-vs-code"
 	@$(ECHO) "    project-files-vs-code:       -    Builds project files for visual studio code"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
-	@$(ECHO) "    tests:"
+	@$(ECHO) "    tools:                       -    Builds the tools (HTMLViewCompiler)"
+	@$(ECHO) "    tests:                       -    Builds the regression tests"
 	@$(ECHO) "    format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards"
-	@$(ECHO) "    samples:"
-	@$(ECHO) "    documentation:"
-	@$(ECHO) "    third-party-components:"
-	@$(ECHO) "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost;"
+	@$(ECHO) "    samples:                     -    Builds the samples (and their installers)"
+	@$(ECHO) "    documentation:               -    Builds the documentation (doxygen's), if doxygen is installed - needing no configuration"
+	@$(ECHO) "    third-party-components:      -    Builds the configuration's third-party components"
+	@$(ECHO) "    run-tests:                   -    Builds the regression tests, then runs them (ctest, one at a time) [REMOTE=] - eg. REMOTE=lewis@localhost;"
 	@$(ECHO) "                                      [VALGRIND=memcheck, etc] to run with valgrind"
 	@$(ECHO) "                                      (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                      EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
@@ -94,10 +85,8 @@ help:
 	@$(ECHO) "    CONFIGURATION=XYZ            -    Causes only the configuration XYZ to have the targetted goal applied (e.g. make all CONFIGURATION=Debug)"
 	@$(ECHO) "    CONFIGURATION_TAGS=TAGS      -    Causes only the configurations with tags TAGS to have the targetted goal applied (e.g. make all CONFIGURATION_TAGS=Windows)"
 	@$(ECHO) "                                      NB: TAGS is a handy shortcut for CONFIGURAITON_TAGS, so you can say make all TAGS=\"Windows 64\""
-	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
-	@$(ECHO) "    WRITE_PREPROCESSOR_OUTPUT=1  -    Write next to each object file a corresponding .i (preprocessor output) file; useful to reproduce and narrow compiler bugs (for report especially)"
 	@$(ECHO) "    MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make"
-	@$(ECHO) "    QUICK_BUILD=1                -    Defaults=1, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; may skip detecting changes in libraries etc; used for some CI testing)"
+	@$(ECHO) "    ECHO_BUILD_LINES=1, WRITE_PREPROCESSOR_OUTPUT=1, QUICK_BUILD=1 - make's own build only (make -f Makefile-Legacy)"
 	@$(ECHO) "    TEST_FAILURES_CAUSE_FAILED_MAKE=0"
 	@$(ECHO) "                                      only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)"
 
@@ -105,8 +94,29 @@ help:
 
 
 
+#
+# The build is CMake's (#1157): Stroika's CMakeLists.txt, one build directory per configuration (CMake/, beside its
+# Configuration.mk), with the configuration's preset (CMakeUserPresets.json, written as it is applied) - and its generator,
+# printed as the build starts (configure's --cmake-generator: by default ninja with Visual Studio, else make). Each target
+# as make's own: all, or a part - libraries, tools, tests, samples, documentation, third-party-components - with what it
+# needs; -jN, N jobs at once (just -j, from make 3.81: one per processor). Without CONFIGURATION: each configuration make
+# builds by default (or each TAGS= names). Until Stroika v3.0d26 make built Stroika itself - as Makefile-Legacy still
+# does, until 3.0d26 ships.
+#
+BUILD_TARGETS_ = all libraries tools tests samples third-party-components
+
+# the configuration's cmake, and the ctest beside it: with Visual Studio, Visual Studio's own; else those on PATH
+FindCMake_ = cmake_="$$($(StroikaSourceRoot)Build/Scripts/GetConfigurationParameter $(CONFIGURATION) CMAKE)" &&\
+	case "$$cmake_" in [A-Za-z]:/*) cmake_="$$(cygpath --unix "$$cmake_")";; esac &&\
+	case "$$cmake_" in */*) ctest_="$$(dirname "$$cmake_")/ctest";; *) ctest_=ctest;; esac
+
+# the jobs make was given (-jN), for cmake's build - a build of its own, given them as CMAKE_BUILD_PARALLEL_LEVEL, which
+# its inner builds take too, under Ninja (CMakeLists.txt) - so not given this make's MAKEFLAGS: its jobserver, its -s and -k
+FindJobs_ = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
+	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
+
 ifeq ($(CONFIGURATION),)
-all:		$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
+$(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@#first run all checks so any errors for missing tools appear ASAP
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Checking Prerequisites for Stroika:"
 	@$(MAKE) --no-print-directory --silent apply-configurations-if-needed MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -114,35 +124,85 @@ all:		$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(Stroika
 		$(MAKE) --no-print-directory --silent $(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)$$i/TOOLS_CHECKED CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika all {$$i}:";\
-		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
-else
-ifeq ($(ALL_INCLUDES_BUILDING_DOCUMENTATION),1)
-all:		$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries tools samples tests documentation
-else
-all:		$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries tools samples tests
-endif
-endif
 
-
-check: $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-ifeq ($(CONFIGURATION),)
-ifeq ($(MAKECMDGOALS),check)
+run-tests:
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Check {$$i}:";\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
+
+clean clobber library-clobber:
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
+ifeq ($(CONFIGURATION_TAGS),)
+	@#clobber, of every configuration: also what make built before Stroika v3.0d26 (its components' CURRENT ...)
+	@if [ "$@" = "clobber" ] ; then \
+		rm -rf $(StroikaBuildsRoot)*;\
+		$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+	fi
 endif
+	@for i in $(APPLY_CONFIGS) ; do\
+		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+	done
 else
-	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)}:"
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Library --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tools --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tests --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Samples --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+$(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT apply-configuration-if-needed_ $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika $@ {$(CONFIGURATION)}:"
+	@# and its preset written if missing (the configuration applied by Stroika before v3.0d26, whose ApplyConfiguration wrote none)
+	@grep -qF '"name": "$(CONFIGURATION)"' $(StroikaSourceRoot)CMakeUserPresets.json 2>/dev/null || $(MAKE) --no-print-directory apply-configuration
+	@$(FindCMake_) && "$$cmake_" --preset $(CONFIGURATION)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "CMake generator: $$(sed -n 's/^CMAKE_GENERATOR:INTERNAL=//p' $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/CMakeCache.txt 2>/dev/null) (configure's --cmake-generator)"
+	@$(FindCMake_) && $(FindJobs_) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION) $(if $(filter-out all,$@),--target $@)
+ifeq (${ECHO_TIMESTAMPS},1)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "$(call FUNCTION_CAPITALIZE_WORD,$@)-Done: `date +%T`"
 endif
+
+run-tests:	tests
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika's tests {$(CONFIGURATION)}:"
+	@$(FindCMake_) &&\
+	if ! "$$ctest_" --preset $(CONFIGURATION); then\
+		if [ "$${TEST_FAILURES_CAUSE_FAILED_MAKE:-1}" -ne 0 ]; then exit 1; fi;\
+		echo "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
+	fi
+ifeq (${ECHO_TIMESTAMPS},1)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Run-Done: `date +%T`
+endif
+
+# library-clobber: Stroika's own build afresh next time - its libraries, and all built on them - the third-party
+# components kept; clean: that, and the components' sources and build trees too - not what each installed, nor its stamps
+# (so not built again: a component whose recipe then changes needs clobber), nor WIX's (its programs, which the
+# installers run). Each keeps the libraries and programs already built, until built again. clobber: all of it.
+clean library-clobber:
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
+	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Stroika $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Stroika-prefix
+	@if [ "$@" = "clean" ] ; then\
+		for stamp_ in $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/ThirdParty/*/stamp ; do\
+			component_="$${stamp_%/stamp}";\
+			if [ -d "$$stamp_" ] && [ "$${component_##*/}" != WIX ]; then rm -rf "$$component_/src" "$$component_/build"; fi;\
+		done;\
+	fi
+
+clobber:
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
+	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION) ${StroikaPlatformTargetBuildDir}
+endif
+
+# documentation: doxygen's, one for all configurations (Builds/Stroika-Doxygen-Help.tar.gz), as a configuration's all
+# builds it (Documentation/CMakeLists.txt) - here needing no configuration, nor its third-party components: cmake (the
+# configuration's, given CONFIGURATION; else the one on PATH) runs Documentation/BuildDocumentation.cmake, with doxygen from
+# PATH. A Windows cmake is given Windows paths (cygpath --mixed); one in /usr/bin - the POSIX layer's own - POSIX paths.
+documentation:
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika documentation:"
+	@$(if $(CONFIGURATION),$(FindCMake_),cmake_=cmake) && doxygen_="$$(command -v doxygen)";\
+	if [ -z "$$doxygen_" ]; then\
+		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Documentation: not built, as no doxygen is installed";\
+	else\
+		case "$$(command -v "$$cmake_")" in /usr/bin/*) Path_ () { echo "$$1"; };; *) Path_ () { cygpath --mixed "$$1" 2>/dev/null || echo "$$1"; };; esac;\
+		"$$cmake_" "-DDOXYGEN=$$(Path_ "$$doxygen_")" "-DVERSION=$$(head -1 $(StroikaSourceRoot)STROIKA_VERSION | tr -d '\r')"\
+			"-DWORK_DIR=$$(Path_ $(StroikaIntermediateFilesRoot)Doxygen)" "-DOUTPUT=$$(Path_ $(StroikaBuildsRoot)Stroika-Doxygen-Help.tar.gz)"\
+			-P "$$(Path_ $(StroikaSourceRoot)Documentation/BuildDocumentation.cmake)";\
+	fi
+
+
 
 distclean:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
@@ -153,104 +213,6 @@ endif
 	@$(MAKE) --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@# last: the makes above need the build root; ConfigurationFiles/ is where the configurations were before Stroika v3.0d26
 	@rm -rf $(patsubst %/,%,$(StroikaBuildsRoot) $(StroikaIntermediateFilesRoot)) $(TOP_ROOT)ConfigurationFiles
-
-library-clobber:
-ifeq ($(CONFIGURATION),)
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Library-Clobber {$$i}:";\
-		$(MAKE) --no-print-directory library-clobber CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
-	done
-else
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
-	@#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clean MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Library --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tools --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tests --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Samples --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-
-clean clobber:
-ifeq ($(CONFIGURATION),)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
-ifeq ($(CONFIGURATION_TAGS),)
-	@#for clobber, quickly delete all interesting stuff (if no args so unrestricted) and in third party deletes stuff like 'CURRENT' folders
-	@#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
-	@if [ "$@" = "clobber" ] ; then \
-		rm -rf $(StroikaBuildsRoot)*;\
-		$(StroikaClobberIntermediateFiles);\
-		$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	fi
-endif
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	done
-else
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
-	@#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
-	@if [ "$@" = "clobber" ] ; then \
-		rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION);\
-		rm -rf ${StroikaPlatformTargetBuildDir};\
-	fi
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Library --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tools --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tests --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Samples --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-
-
-documentation:
-	@$(MAKE) --directory Documentation --no-print-directory all
-
-
-ifeq ($(CONFIGURATION),)
-libraries:	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Libraries {$$i}:";\
-		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
-	done
-else
-ifeq ($(QUICK_BUILD), 1)
-libraries:
-	@#See if files already there, and if so skip all this, and else do non-quick build
-	@if [[ -f $(StroikaFoundationLib) && -f $(StroikaFrameworksLib) ]]; then \
-		$(MAKE) --no-print-directory --silent $(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED && \
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika-Foundation and Stroika-Frameworks libraries exist and QUICK_BUILD=1"; \
-	else\
-		$(MAKE) --no-print-directory --silent $(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED && \
-		$(MAKE) --no-print-directory third-party-components QUICK_BUILD=1 && \
-		$(MAKE) --directory Library --no-print-directory all && \
-		if [[ "${ECHO_TIMESTAMPS}" == "1" ]]; then $(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Libraries-Done: `date +%T`; fi; \
-	fi
-else
-libraries:	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED third-party-components
-	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --directory Library --no-print-directory all
-ifeq (${ECHO_TIMESTAMPS},1)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Libraries-Done: `date +%T`
-endif
-endif
-endif
-
-
-
-ifeq ($(CONFIGURATION),)
-third-party-components:	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Third-party-components {$$i}:";\
-		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
-	done
-else
-third-party-components:	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT apply-configuration-if-needed_ $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED
-	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all
-	@$(MAKE) --no-print-directory --silent .vscode/c_cpp_properties.json
-ifeq (${ECHO_TIMESTAMPS},1)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Third-party-components-Build-Done: `date +%T`
-endif
-endif
-
 
 project-files:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating (common) default project files:"
@@ -274,68 +236,6 @@ ifeq ($(DETECTED_HOST_OS),Darwin)
 else
 	@cp --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 endif
-
-ifeq ($(CONFIGURATION),)
-tools:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Tools {$$i}:";\
-		$(MAKE) tools --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
-	done
-else
-tools:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
-	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --directory Tools --no-print-directory all
-endif
-
-
-ifeq ($(CONFIGURATION),)
-tests:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Tests {$$i}:";\
-		$(MAKE) tests --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
-	done
-else
-tests:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
-	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --directory Tests --no-print-directory tests
-ifeq (${ECHO_TIMESTAMPS},1)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Tests-Done: `date +%T`
-endif
-endif
-
-
-ifeq ($(CONFIGURATION),)
-samples:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Samples {$$i}:";\
-		$(MAKE) samples --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
-	done
-else
-samples:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
-	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --directory Samples --no-print-directory samples
-ifeq (${ECHO_TIMESTAMPS},1)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Samples-Done: `date +%T`
-endif
-endif
-
-
-ifeq ($(CONFIGURATION),)
-run-tests:
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Run-All-Tests {$$i}:";\
-		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i || exit $$?;\
-	done
-else
-run-tests:	tests
-	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --directory Tests --no-print-directory run-tests
-endif
-ifeq (${ECHO_TIMESTAMPS},1)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Run-Done: `date +%T`
-endif
-
-
 
 format-code:
 	@$(ECHO) Formatting Code:

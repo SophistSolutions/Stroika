@@ -1,3 +1,4 @@
+# DEPRECATED: make's own build (run by Makefile-Legacy), kept until Stroika v3.0d26 ships - Stroika builds with CMake (CMakeLists.txt)
 ### MAKEFILE TODO
 ###		@todo 	based on WTF makefile - fix so works here
 ###		@todo	dont rebuild if not needed (so add dependencies)

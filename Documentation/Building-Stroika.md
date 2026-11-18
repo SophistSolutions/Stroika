@@ -438,10 +438,13 @@ StroikaBuildsRoot - are documented, with the other directories a build uses, at 
 - Give each source tree its own build root: make stops when a build root made for another tree is used.
 - On Windows, DirectoryLayout.mk writes the paths `C:/...`, which MSYS2, Cygwin and the native tools all read. Keep them
   short: boost's build puts one `-I` per sublibrary on each command line, so a long path can exceed cmd.exe's 8191
-  characters; its makefile warns when its build directory's Windows path passes 95 characters
+  characters - and a configuration's name is part of that path; make's own build (Makefile-Legacy) warns when its build
+  directory's Windows path passes 95 characters, the CMake build does not
   ([issue 769](https://github.com/SophistSolutions/Stroika/issues/769)).
-- Still written in the source tree: the third-party components' extracted sources (`ThirdPartyComponents/*/CURRENT`), and
-  the IDE files (`.vscode/`, `Workspaces/`), which also still assume the default directories.
+- Still written in the source tree: the third-party components' downloaded archives (`ThirdPartyComponents/Origs-Cache`),
+  the configurations' CMake presets (`CMakeUserPresets.json`), and the IDE files (`.vscode/`, `Workspaces/`), which also
+  still assume the default directories - and, by make's own build (Makefile-Legacy), the components' extracted sources
+  (`ThirdPartyComponents/*/CURRENT`).
 - An application made by `Skel` has its build root in its own top directory by default - IntermediateFiles/, with the
   products in Builds/ - shared by its output and Stroika's. In that directory:
   `ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot`
@@ -551,6 +554,8 @@ its new home - so existing application makefiles keep working. Don&#39;t referen
 
 On any platform, building Stroika, and all is demo applications and regression tests is as simple as cd&#39;ing to the top-level directory, and typing make
 
+make runs Stroika's CMake build (since Stroika v3.0d26: CMakeLists.txt), one build directory per configuration - `IntermediateFiles/<configuration>/CMake` - with the configuration's CMake preset (`CMakeUserPresets.json`, written as the configuration is applied). So `cmake --preset Debug` then `cmake --build --preset Debug -j8` builds as `make CONFIGURATION=Debug all -j8` does, and `ctest --preset Debug` runs its tests; VS Code's CMake Tools builds from the same presets. A configuration's CMake generator is configure's `--cmake-generator` (ninja, msbuild or make; by default ninja with Visual Studio, else make), which make prints as the build starts. Until Stroika v3.0d26 ships, `make -f Makefile-Legacy <target>` is make's own build of before, kept as a fallback.
+
 ### Special Targets
 
 - `make`
@@ -567,17 +572,21 @@ On any platform, building Stroika, and all is demo applications and regression t
 
 - `make libraries`
 
-  Builds just the Stroika libraries
+  Builds just the Stroika libraries (and the third-party components they need)
 
-- `make samples`
+- `make tools`, `make tests`, `make samples`, `make documentation`, `make third-party-components`
 
-  Builds the Stroika sample applications
+  Builds that part (and what it needs): the tools (HTMLViewCompiler), the regression tests, the sample applications (and their installers), the documentation (given doxygen), the configuration's third-party components
 
 - `make run-tests`
 - `make CONFIGURATION=zyx run-tests REMOTE='lewis@raspberrypi'`
 - `make CONFIGURATION=abc run-tests VALGRIND=memcheck`
 
-  Builds Stroika, and all the regression tests, and runs the regression tests. If REMOTE= is specified, the code is copied to the target machine with ssh, and the test run there (helpful for when cross-compiling). VALGRIND= is used to run memcheck, or leakcheck on the given configuration.
+  Builds the regression tests, and runs them, one at a time (ctest). If REMOTE= is specified, each test is copied to the target machine with ssh, and run there (helpful for when cross-compiling - which, without REMOTE=, skips them). VALGRIND= is used to run memcheck, or leakcheck on the given configuration.
+
+- `make clean`, `make library-clobber`, `make clobber`
+
+  clean removes what was built but not installed - Stroika's own build, and the third-party components' sources and build trees - but not the libraries and programs built, nor what the components installed (so they are not built again). library-clobber: Stroika's own build afresh next time, the components' build kept. clobber removes all that was built.
 
 - make `project-files`
 
@@ -622,7 +631,7 @@ This allows for building (or clobbering or whatever) a related family of configu
 
 ### Other Make variables that can be helpful
 
-- ECHO_BUILD_LINES=1 makes the output of make noisier, so you can run particular builds by hand, or debug the make process.
+- ECHO_BUILD_LINES=1 makes the output of make noisier, so you can run particular builds by hand, or debug the make process (make's own build: make -f Makefile-Legacy).
 - MAKE_INDENT_LEVEL=N, is useful when calling the stroika make process as part of another larger make process, to get its output indended.
 
 ### Cross-Compiling
@@ -794,10 +803,7 @@ Use './Build/Scripts/Skel --help' to see options
 
 ## Integrating with CMake
 
-CMake is gaining in popularity, and we will consider possibly moving the Stroika build system to be based on/better integrated with cmake in the future. For now, if you prefer using cmake, and want to use Stroika with cmake, see
-
-- https://stackoverflow.com/questions/3489056/compile-other-external-libraries-without-cmakelists-txt-with-cmake?rq=1
-- https://cmake.org/cmake/help/v3.0/module/ExternalProject.html?highlight=external%20project
+Stroika itself builds with CMake (since v3.0d26 - see Build Process, above). An application built on Stroika still builds as Skel sets it up: with make, against Stroika's libraries in its configuration's Builds directory, their flags from Stroika's .pc files (pkg-config).
 
 ---
 
@@ -807,7 +813,7 @@ CMake is gaining in popularity, and we will consider possibly moving the Stroika
 
 We seriously considered a number of build systems, including cmake, ant, perl scripts, qmake, etc. They all had substantial weaknesses, with ant possibly being the best alternative, except that it&#39;s heavily java oriented. Maybe for c++ cmake would have been the best?
 
-But just plain GNU make – appears to be a nearly universally available alternative, very standard and simple, so that&#39;s what we&#39;re doing.
+But just plain GNU make – appears to be a nearly universally available alternative, very standard and simple, so that&#39;s what we did, until Stroika v3.0d26 moved the build itself to CMake (keeping make's targets, and the configure script).
 
 But - even with just plain make, you need some sort of configure script to establish what compiler options will be defined. Again, lots of different alternatives here, but in the end I decided to just build custom scripts which build a very simple XML configuration declaration, and which drives the make process by #included 'config' makefile.
 

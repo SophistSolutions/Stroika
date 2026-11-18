@@ -189,45 +189,18 @@ jobs:
       - name: Copy Build Artifacts (third-party-components Log Data etc)
         if: always()
         run: |
-          mkdir -p ${ARTIFACTS_DIR_BUILDLOGS}
-          mkdir -p \
-            "${ARTIFACTS_DIR_BUILDLOGS}" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/sqlite/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/"
-          # NOTE - some of these copies may fail, if the item is not present, but not a problem (like if we dont build libxml2 the log files wont be there)
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/*-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/sqlite/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/sqlite/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/Xerces/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/Xerces/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
-          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
+          # each component's step logs - its configure, build and install (CMake's ExternalProject: in its stamp directory)
+          for stamp in IntermediateFiles/${{ matrix.config_name }}/CMake/ThirdParty/*/stamp; do
+            [ -d "$stamp" ] || continue
+            component="$(basename "$(dirname "$stamp")")"
+            mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/$component"
+            cp "$stamp"/*.log "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/$component/" 2>/dev/null || :
+          done
       - name: Save space (Safe)
         if: always()
         run: |
-          make --directory=ThirdPartyComponents --silent clean
-          # sometimes its useful to leave this around so when debugging you can still see source lines in debugger, but takes space and running out on github actions
-          du -hs ThirdPartyComponents/*/CURRENT || true
-          rm -rf ThirdPartyComponents/*/CURRENT
+          # the components' sources and build trees (make clean keeps what they installed)
+          make clean
           echo "After cleanup:" ; df -h
       - name: Make libraries and tools
         run: |
@@ -238,10 +211,8 @@ jobs:
           echo "*************Before save space*************:"
           df -h
           du -hs Builds/*/* IntermediateFiles/*/* ThirdPartyComponents/Origs-Cache/
-          make --directory Library --silent clean
-          make --directory ThirdPartyComponents --silent clean
-          make --directory Tools --silent clean
-          rm -f Builds/${{ matrix.config_name }}/ThirdPartyComponents/bin/* ThirdPartyComponents/Origs-Cache/*
+          # (not Stroika's objects: without them, CMake builds the libraries again for the tests)
+          rm -f ThirdPartyComponents/Origs-Cache/*
           echo ""*************After cleanups"*************:"
           df -h
           du -hs Builds/*/* IntermediateFiles/*/* ThirdPartyComponents/*
@@ -258,7 +229,8 @@ jobs:
           echo "*************Before save space*************:"
           df -h
           du -hs Builds/*/* IntermediateFiles/*/*
-          make --directory Tests --no-print-directory clobber
+          # the test programs, run (the samples need none of them)
+          rm -rf Builds/${{ matrix.config_name }}/Tests
           echo ""*************After cleanups"*************:"
           df -h
       - name: Make samples
@@ -274,7 +246,7 @@ jobs:
           mkdir -p \
             "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/"
           # NOTE - some of these copies may fail, if the item is not present, but not a problem (like if we dont build libxml2 the log files wont be there)
-          cp IntermediateFiles/"${{ matrix.config_name }}"/Samples-HTMLUI/html/*.txt "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
+          cp IntermediateFiles/"${{ matrix.config_name }}"/CMake/Stroika/HTMLUI-html/*.txt "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
       - name: Archive Samples Results
         uses: actions/upload-artifact@v7
         with:
@@ -382,17 +354,8 @@ jobs:
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/LOGS-ARCHIVE
-            IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/*-Installer-Build-Output.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-CONF-TOOLS-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/CMake/Stroika/Samples/**/*-Installer-Build-Output.txt
+            IntermediateFiles/${{ matrix.config_name }}/CMake/ThirdParty/*/stamp/*.log
       - name: Archive Sample Results
         uses: actions/upload-artifact@v7
         with:
@@ -537,37 +500,17 @@ jobs:
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
           COPY_FROM_ROOT_="${NORMALIZED_WORKSPACE_DIR_}/IntermediateFiles/${{ matrix.config_name }}/"
           COPY_TO_ROOT_="${ARTIFACTS_DIR}/BUILD_LOGS/"
-          mkdir -p \
-            "${COPY_TO_ROOT_}" \
-            "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/GoogleTest/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/zlib/"
-          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
-          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
-          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/WIX-Installer-Build-Output.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/GoogleTest/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/mongo-cxx-driver/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/sqlite/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/Xerces/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/Xerces/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/zlib/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/zlib/" || :
-          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/zlib/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/zlib/" || :
+          mkdir -p "${COPY_TO_ROOT_}/Samples-HTMLUI/html/"
+          cp "${COPY_FROM_ROOT_}/CMake/Stroika/HTMLUI-html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}/CMake/Stroika/HTMLUI-html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}/CMake/Stroika/Samples/HTMLUI/WIX-Installer-Build-Output.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/" || :
+          # each component's step logs - its configure, build and install (CMake's ExternalProject: in its stamp directory)
+          for stamp in "${COPY_FROM_ROOT_}"/CMake/ThirdParty/*/stamp; do
+            [ -d "$stamp" ] || continue
+            component="$(basename "$(dirname "$stamp")")"
+            mkdir -p "${COPY_TO_ROOT_}/ThirdPartyComponents/$component"
+            cp "$stamp"/*.log "${COPY_TO_ROOT_}/ThirdPartyComponents/$component/" 2>/dev/null || :
+          done
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v7
@@ -642,8 +585,8 @@ jobs:
         name: Log Data (codeql-analyze)
         if-no-files-found: warn
         path: |
-          IntermediateFiles/Release/Samples-HTMLUI/*-Installer-Build-Output.txt
-          IntermediateFiles/Release/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
+          IntermediateFiles/Release/CMake/Stroika/Samples/**/*-Installer-Build-Output.txt
+          IntermediateFiles/Release/CMake/ThirdParty/curl/stamp/*.log
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
 

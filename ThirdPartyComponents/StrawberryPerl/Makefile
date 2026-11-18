@@ -1,3 +1,5 @@
+# DEPRECATED: make's own build (run by Makefile-Legacy), kept until Stroika v3.0d26 ships - Stroika builds with CMake (CMakeLists.txt)
+# (its check-prerequisite-tools, clean and clobber still serve ThirdPartyComponents/Makefile's)
 #
 #	This is only used for building openssl, because the perl that comes with msys/cygwin somehow doesn't
 #	work for building openssl. Tried ActivePerl for a while but too buggy/PITA to install

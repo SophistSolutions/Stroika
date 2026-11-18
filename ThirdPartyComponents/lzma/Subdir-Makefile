@@ -1,3 +1,4 @@
+# DEPRECATED: make's own build (run by Makefile-Legacy), kept until Stroika v3.0d26 ships - Stroika builds with CMake (CMakeLists.txt)
 #
 # The LZMA SDK's C 7z decoder, as one library - the objects of its own C/Util/7z/makefile.gcc, less that sample program
 # (7zMain, 7zFile, 7zAlloc). It is all Stroika uses (DataExchange::Archive::_7z::Reader).

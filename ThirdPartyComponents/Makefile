@@ -1,3 +1,5 @@
+# DEPRECATED: make's own build (run by Makefile-Legacy), kept until Stroika v3.0d26 ships - Stroika builds with CMake (CMakeLists.txt)
+# (its check-prerequisite-tools, clobber and distclean still serve the top Makefile's, and its clean a Skel application's)
 StroikaSourceRoot	:=	$(abspath ../)/
 
 include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk

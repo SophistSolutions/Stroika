@@ -34,8 +34,10 @@ this file too, whenever it reads Stroika's sources. There:
 
 ## Build system
 
-Stroika uses a hand-rolled GNU Make + custom `configure` script build (not CMake/autotools). It is
-**slow** — a full build of one configuration takes 10-20 minutes, so always pass `-j`.
+Stroika builds with CMake (since v3.0d26: #1157) - each configuration described by Stroika's own `configure` script, and
+the build run by `make`'s targets (the top `Makefile`). It is **slow** — a full build of one configuration takes 10-20
+minutes, so always pass `-j`. Until 3.0d26 ships, `make -f Makefile-Legacy <target>` is make's own build of before, as a
+fallback.
 
 ### One-time setup
 ```bash
@@ -63,19 +65,26 @@ says where (an out-of-source build: `Documentation/Building-Stroika.md`, "Reloca
 use `$(StroikaBuildsRoot)`, `$(StroikaIntermediateFilesRoot)`, `$(StroikaConfigurationFilesDir)` - never
 `$(StroikaSourceRoot)Builds/` and the like.
 
+Each configuration builds in `IntermediateFiles/{CONFIGURATION}/CMake`, with its CMake preset (`CMakeUserPresets.json`,
+written as the configuration is applied): `cmake --preset Debug` then `cmake --build --preset Debug -j8` builds as
+`make CONFIGURATION=Debug all -j8` does, and VS Code's CMake Tools can build from the presets. Its generator is
+configure's `--cmake-generator` - `ninja`, `msbuild` or `make`; by default ninja with Visual Studio, else make - and a
+change starts that configuration's build afresh; `make` prints it as the build starts. CMake tracks header dependencies:
+a header edit recompiles what includes it.
+
 ### Testing
 ```bash
 make CONFIGURATION=Debug run-tests -j8                 # build + run all regression tests for one config
 make run-tests                                         # all configurations
 VALGRIND=memcheck make CONFIGURATION=Release run-tests # under valgrind - a Release build; Debug takes hours (Documentation/Debugging.md)
 ```
-Regression tests live under `Tests/<NN>/` (numbered directories, each a single `Test.cpp` +
-thin `Makefile` including `Tests/Makefile-Test-Template.mk`). Each test file's purpose is documented
+Regression tests live under `Tests/<NN>/` (numbered directories, each a single `Test.cpp`, built by
+`Tests/CMakeLists.txt`). Each test file's purpose is documented
 in a `//  TEST    <Namespace::Path>` comment near the top (e.g. `Tests/01/Test.cpp` is
-`Foundation::Caching`). To build/run **one test in isolation**:
+`Foundation::Caching`). To build/run **one test in isolation** (once the configuration has built):
 ```bash
-make CONFIGURATION=Debug -C Tests/07 all -j8
-./Builds/Debug/Tests/Test07
+cmake --build IntermediateFiles/Debug/CMake/Stroika --target Test07 -j8   # with msbuild, add --config Debug (or Release)
+./Builds/Debug/Tests/Test07                                                # or, as run-tests runs it: ctest --preset Debug -R '^Test07$'
 ```
 (substitute the test number). `TEST_FAILURES_CAUSE_FAILED_MAKE=0` lets `run-tests` continue past
 failures like `make -k`.
@@ -84,11 +93,6 @@ Tests are numbered in their areas' order (`Tests/Tests-Description.txt`). A new 
 order, for a small diff - then a follow-up commit, before the release, renumbers them back into order
 (`Tests/Scripts/RenumberRegressionTests`; then delete `IntermediateFiles/*/Tests/<NN>` for each number moved, as objects are
 kept by number and a move keeps the sources' timestamps).
-
-Note that a header edit alone will NOT rebuild a test object (see the header-dependency note below),
-so to recompile one test against a changed header, delete its object first:
-`rm IntermediateFiles/Debug/Tests/07/Test.obj`. This is the cheap way to compile-check a header change
-without the ~12 minute `library-clobber` cycle.
 
 **Bug fixes: test-first is good practice, not a rule**: write the regression test and watch it FAIL on the unchanged
 code, then fix - a test written after the fix only proves the fixed code does what it does. Skip it for good reason, and
@@ -107,8 +111,9 @@ Reading results:
   `[  PASSED  ]` and exits 0, having run nothing. For a quicker scratch configuration drop the slow components instead
   (`--mongo-cxx-driver no`, perhaps `--OpenSSL no`), or add `--googletest use` back.
 - To chase a failure in one named configuration, first run that build tree's existing `Builds/<CONFIG>/Tests/TestNN`
-  binaries, then compile a one-file probe with its exact flags (`make -n -B` in `Tests/NN` shows the recipe; pkg-config
-  under `Builds/<CONFIG>/lib/pkgconfig` gives the flags) - rather than rebuilding Stroika.
+  binaries, then compile a one-file probe with its exact flags (building `--target TestNN --verbose`, as above, after
+  touching its `Test.cpp`, shows the commands; pkg-config under `Builds/<CONFIG>/lib/pkgconfig` gives the flags) - rather
+  than rebuilding Stroika.
 
 ### Continuous integration
 `.github/workflows/build-N-test.yml` builds and runs the regression suite on push, across Linux
@@ -245,45 +250,9 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
   the drive letter every task shell spawns into a nonexistent directory and exits instantly - no
   output, no error anywhere in the UI. Interactive terminals fall back on a bad cwd and work fine,
   so **"terminals work but tasks do nothing" means suspect the cwd.**
-- **A HEADER CHANGE NEVER TRIGGERS A REBUILD. After editing any `.h`/`.inl`, you must
-  `make CONFIGURATION=X library-clobber` before the build means anything.** There is no header
-  dependency tracking: the build generates no `.d` files, and the compile rule is
-  `$(ObjDir)%.obj : %.cpp` — an object depends on its source and nothing else. So editing a header
-  leaves every library object looking up-to-date, `make libraries` returns 0 in seconds having
-  rebuilt nothing, and the tests then link fresh test objects against a library built from the OLD
-  headers. That passes, and proves nothing. Since Stroika is mostly header templates, this affects
-  most changes to it.
-  `QUICK_BUILD=0` does NOT help here, despite sounding like it should: it forces make to *check*
-  staleness rather than skip the check, but staleness is computed only against the `.cpp`, so a
-  header edit is invisible either way. (`QUICK_BUILD=1` is the default for
-  `make CONFIGURATION=X libraries`, and skips even that check when the library files already exist;
-  `make run-tests` inherits the same shortcut.)
-  `library-clobber` deletes everything except the third-party products, which are slow to rebuild
-  and aren't part of Stroika anyway — so it is the cheap way to get a *trustworthy* rebuild.
-  There IS a fast path when you know exactly which `.cpp` instantiates the template you edited, and
-  it needs all THREE parts — deleting the object alone is not enough, because `QUICK_BUILD=1` skips even
-  looking, and the library archive goes too:
-  ```bash
-  find IntermediateFiles/$CONFIG -name 'TheOne.o' -delete   # TheOne.obj on Windows
-  rm -f Builds/$CONFIG/lib/libstroika-foundation.a          # Windows: stroika-foundation.lib; Frameworks: -frameworks
-  QUICK_BUILD=0 make CONFIGURATION=$CONFIG libraries        # without QUICK_BUILD=0: "libraries exist", builds nothing
-  ```
-  The archive's rule does not always see an object the same make just compiled (the `@todo` above it in Foundation's
-  and Frameworks' Makefiles, left for the move to CMake), so it can keep the OLD object - after ANY library rebuild, a
-  `.cpp` edit too, delete the archive, or check it is newer than the objects. Verify it did something — `grep -c
-  Compiling` on the output. A rebuild that compiled 0 files after a header edit means you are still testing the old code.
-- **`cached-list-objs` will lie to you, in both directions.** It is a generated list of the objects
-  that go into the library archive, at
-  `IntermediateFiles/$(CONFIGURATION)/Library/Foundation/cached-list-objs`:
-    - **Adding a new Foundation `.cpp` requires deleting it.** Otherwise the new file compiles happily
-      but never enters the archive, and the failure shows up as an unresolved external when some
-      *test* links — nowhere near the library build that actually went wrong.
-    - **After `library-clobber` it makes the next build print a convincing FALSE failure.** Early in
-      the log you get `Makefile:74: *** open: .../cached-list-objs: No such file or directory. Stop.`
-      followed by `make: *** [Makefile:216: libraries] Error 2`. Clobber deleted the file and
-      something reads it before it is regenerated; make then regenerates it and the build completes
-      normally. Trust the exit status and the built artifacts, not the `Error 2` — reading the log
-      text alone says the build failed when it did not.
+- **`make -f Makefile-Legacy` (make's own build, until 3.0d26 ships) has none of CMake's header dependencies:** after a
+  header edit it rebuilds nothing until `make -f Makefile-Legacy CONFIGURATION=X library-clobber`, and a new Foundation
+  `.cpp` reaches its library only once `IntermediateFiles/<CONFIGURATION>/Library/Foundation/cached-list-objs` is deleted.
 - **Debugging an optimized build: do not trust a debugger's variable values.** In `Release` (`-O2`,
   and LTO on the Linux configs) gdb will cheerfully print a stale register or the wrong stack slot for
   a local, with no indication it is guessing — it sent a real investigation down three dead ends in
@@ -297,9 +266,10 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
 - Third-party components (boost, curl, openssl, lzma, sqlite, xerces, zlib, mongo-cxx-driver, ...)
   live under `ThirdPartyComponents/` and are fetched/built automatically, or can be pointed at
   system-installed versions via configure flags/feature flags.
-- **One `make` per tree at a time.** Two configurations built at once in one tree race on the shared
-  `ThirdPartyComponents/<name>/CURRENT` (lzma and sqlite re-extract every build): one run fails, or builds from a
-  half-extracted source. `-jN` within one build is fine; for configurations in parallel, use separate trees.
+- **One `make` per tree at a time.** Two configurations built at once in one tree race on what they share - applying a
+  configuration rewrites the tree's `CMakeUserPresets.json`, and a third-party archive is downloaded into the shared
+  `ThirdPartyComponents/Origs-Cache` (make's own build also raced on `ThirdPartyComponents/<name>/CURRENT`). `-jN` within
+  one build is fine; for configurations in parallel, use separate trees.
 - **Windows shells.** Git Bash has no `make`; MSYS2 and Cygwin both do, and `~` is a different directory in each. A build
   run through `bash.exe -lc` from another shell starts with `PATHEXT` empty, so Stroika's `FindExecutableInPath` finds no
   `.exe` and Tests/38 fails: `export PATHEXT=".COM;.EXE;.BAT;.CMD"` first. A fresh `./configure` also needs `COMSPEC` and
