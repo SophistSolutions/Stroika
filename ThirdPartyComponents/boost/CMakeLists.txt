@@ -5,17 +5,25 @@
 set (version_ 1_92_0)
 string (REPLACE "_" "." versionWithDots_ "${version_}")
 
-# the compiler, and the configuration's flags as make gives them (no preprocessor definitions; no link flags: it defines
-# none), as its Makefile writes them into user-config.jam
+# The compiler and the configuration's flags, written into user-config.jam as its Makefile writes them (no link flags: it
+# defines none) - but on UNIX with the platform's preprocessor definitions too, which its Makefile leaves out, as every
+# other C++ component and Stroika's own code get them: with assertions, -D_GLIBCXX_DEBUG, which changes the standard
+# library's types. With Visual Studio, as its Makefile's (without -DUNICODE ...).
 if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
     set (toolset_ msvc)
-elseif (CMAKE_HOST_APPLE)
-    set (toolset_ clang-darwin)
+    set (cFlags_ "${STROIKA_PLATFORM_C_FLAGS}")
+    set (cxxFlags_ "${STROIKA_PLATFORM_CXX_FLAGS}")
 else ()
-    set (toolset_ gcc)
+    if (CMAKE_HOST_APPLE)
+        set (toolset_ clang-darwin)
+    else ()
+        set (toolset_ gcc)
+    endif ()
+    set (cFlags_ "${CMAKE_C_FLAGS}")
+    set (cxxFlags_ "${CMAKE_CXX_FLAGS}")
 endif ()
-file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/user-config.jam"
-    "using ${toolset_} : : \"${CMAKE_CXX_COMPILER}\" : <cflags>\"${STROIKA_PLATFORM_C_FLAGS}\" <cxxflags>\"${STROIKA_PLATFORM_CXX_FLAGS}\" <linkflags>\"\" ;\n")
+file (CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/user-config.jam" @ONLY
+    CONTENT "using ${toolset_} : : \"${CMAKE_CXX_COMPILER}\" : <cflags>\"${cFlags_}\" <cxxflags>\"${cxxFlags_}\" <linkflags>\"\" ;\n")
 
 # --hash: b2 names its build directories by a hash, not by their properties - else too long for Windows
 set (b2Args_ toolset=${toolset_} link=static runtime-link=static threading=multi --layout=system
@@ -51,13 +59,13 @@ if (toolset_ STREQUAL "msvc")
 call bootstrap.bat
 if not exist ..\\..\\b2.exe copy src\\engine\\b2.exe ..\\..\\b2.exe
 .\\b2 install --prefix=${STROIKA_BUILDS_DIR}")
-    StroikaVisualStudioCommand (build_ build ".\\b2 ${b2Args_} install")
+    StroikaVisualStudioCommand (build_ build "if exist bin.v2 rmdir /s /q bin.v2\n.\\b2 ${b2Args_} install")
     set (pc_ boost-msvc.pc)
 else ()
     # b2 takes no job slots from make (it is no jobserver client): the jobs to give it
     set (STROIKA_BOOST_JOBS 8 CACHE STRING "boost's b2 -j: how many compiles at once")
     set (configure_ ./bootstrap.sh "--prefix=${STROIKA_BUILDS_DIR}")
-    set (build_ ./b2 ${b2Args_} -j${STROIKA_BOOST_JOBS} install)
+    set (build_ "${CMAKE_COMMAND}" -E rm -rf bin.v2 COMMAND ./b2 ${b2Args_} -j${STROIKA_BOOST_JOBS} install)
     set (pc_ boost.pc)
 endif ()
 # Stroika's boost.pc, and BOOST_AUTO_LINK_SYSTEM in boost/config/user.hpp: it is built with --layout=system
@@ -74,3 +82,6 @@ StroikaThirdPartyComponent (boost
     INSTALL_COMMAND ${afterInstall_}
     DEPENDS zlib zstd
 )
+# Built again when its flags change - in user-config.jam, not its build's command line, which ExternalProject compares - and
+# from the start (its build first removes b2's, bin.v2): b2 takes no object as out of date for flags changed there.
+ExternalProject_Add_StepDependencies (boost build "${CMAKE_CURRENT_BINARY_DIR}/user-config.jam")
