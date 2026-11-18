@@ -31,7 +31,6 @@ StroikaThirdPartyComponent (Xerces
          http://apache.cs.utah.edu//xerces/c/3/sources/xerces-c-${version_}.tar.gz
          http://www.apache.org/dist/xerces/c/3/sources/xerces-c-${version_}.tar.gz
          http://www-us.apache.org/dist/xerces/c/3/sources/xerces-c-${version_}.tar.gz
-    # (not its Makefile's two SilenceSanitizerWarningAboutMemcpyNullPtr patches: 3.3.0 has their fix, so neither applies)
     PATCH_COMMAND "${STROIKA_PATCH}" -p0 <SOURCE_DIR>/tests/src/Char16Test/Char16Test.cpp "${patches_}/Char16Test_IOSTREAMCHANGE.PATCH"
           COMMAND "${STROIKA_PATCH}" -p0 <SOURCE_DIR>/src/xercesc/util/XMLString.hpp "${patches_}/AvoidMemMoveOfZero.patch"
     CMAKE_ARGS ${args_}

@@ -201,9 +201,7 @@ endif
 	# Char16Test_IOSTREAMCHANGE for compatability with Visual Studio .Net 2022 17.1.0 compiler --LGP 2022-02-16
 	@if [ "$@" != "ORIGs" ] ; then \
 		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Xerces ${VERSION} - Patching ... ";\
-		patch -p0 $@/src/xercesc/internal/ElemStack.cpp Patches/SilenceSanitizerWarningAboutMemcpyNullPtr.PATCH >> $@/PATCHING.OUT;\
 		patch -p0 $@/tests/src/Char16Test/Char16Test.cpp Patches/Char16Test_IOSTREAMCHANGE.PATCH >> $@/PATCHING.OUT;\
-		patch -p0 $@/src/xercesc/validators/schema/NamespaceScope.cpp Patches/SilenceSanitizerWarningAboutMemcpyNullPtr2.PATCH >> $@/PATCHING.OUT;\
 		patch -p0 $@/src/xercesc/util/XMLString.hpp Patches/AvoidMemMoveOfZero.patch >> $@/PATCHING.OUT;\
 	fi
 
