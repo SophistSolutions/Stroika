@@ -4,9 +4,10 @@
 # configuration's toolchain file, built, and installed into the configuration's Builds directory (STROIKA_BUILDS_DIR) -
 # where Stroika's own CMake build (Library/CMakeLists.txt) finds it. For one configuration:
 #     cmake -S ThirdPartyComponents -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
-#     cmake --build <build directory> -j8
-# With a Makefiles generator, the components' own builds share that -j's job slots, as under make. curl builds here on UNIX
-# only, as Stroika uses it only there.
+#     CMAKE_BUILD_PARALLEL_LEVEL=8 cmake --build <build directory>
+# The jobs: with a Makefiles generator, the components' own builds share make's job slots, as under make; with Ninja, they
+# build one at a time, each with CMAKE_BUILD_PARALLEL_LEVEL's (make's -jN sets it). curl builds here on UNIX only, as
+# Stroika uses it only there.
 #
 cmake_minimum_required (VERSION 3.22)
 project (StroikaThirdPartyComponents LANGUAGES NONE)
@@ -189,9 +190,13 @@ function (StroikaThirdPartyComponent name)
     else ()
         set (install_ "${CMAKE_COMMAND}" --install <BINARY_DIR> --config ${STROIKA_THIRD_PARTY_BUILD_TYPE})
     endif ()
+    # Its build step in the terminal (USES_TERMINAL_BUILD): under Ninja, in its console pool - so one component builds at a
+    # time, with the build's jobs (CMAKE_BUILD_PARALLEL_LEVEL), not several at once, each with Ninja's default (a job per
+    # processor and two more)
     ExternalProject_Add (${name} URL "${archive_}" ${configure_}
         BUILD_COMMAND ${build_}
         INSTALL_COMMAND ${install_}
+        USES_TERMINAL_BUILD ON
         LOG_DOWNLOAD ON LOG_CONFIGURE ON LOG_BUILD ON LOG_INSTALL ON LOG_OUTPUT_ON_FAILURE ON
         ${passOn_}
     )

@@ -7,9 +7,12 @@
 # Each configuration has a preset of its name (CMakeUserPresets.json, which ApplyConfiguration writes), giving its
 # toolchain file, generator and build directory (IntermediateFiles/<configuration>/CMake):
 #     cmake --preset <configuration>
-#     cmake --build --preset <configuration> -j8
+#     CMAKE_BUILD_PARALLEL_LEVEL=8 cmake --build --preset <configuration>
 #     ctest --preset <configuration> -j8
-# With a Makefiles generator, the inner builds share that -j's job slots, as under make.
+# The jobs (make's -jN sets CMAKE_BUILD_PARALLEL_LEVEL): with a Makefiles generator, the inner builds share make's job
+# slots, as under make; with Ninja, each inner build - one at a time - takes CMAKE_BUILD_PARALLEL_LEVEL's (a -j would
+# reach only this build: each inner one would take Ninja's default, a job per processor and two more); with msbuild, as
+# many as the machine has processors (below).
 #
 cmake_minimum_required (VERSION 3.22)
 project (Stroika LANGUAGES NONE)
@@ -22,9 +25,10 @@ include (ExternalProject)
 # OFF: Stroika built against the components installed already (by make, or an earlier build)
 option (STROIKA_BUILD_THIRD_PARTY_COMPONENTS "build the configuration's third-party components (else use those installed)" ON)
 
-# Each step built every time, as make visits each directory: the project's own build decides what is out of date. Under a
-# Visual Studio generator, with as many jobs as the machine has processors (msbuild -m): msbuild has no job slots to share,
-# so a -j given this build reaches no step's
+# Each step built every time, as make visits each directory: the project's own build decides what is out of date. In the
+# terminal (USES_TERMINAL_BUILD): its output as it comes - under Ninja, not all at its end. Under a Visual Studio
+# generator, with as many jobs as the machine has processors (msbuild -m): msbuild has no job slots to share, so a -j
+# given this build reaches no step's
 if (CMAKE_GENERATOR MATCHES "^Visual Studio")
     set (buildCommand_ BUILD_COMMAND "${CMAKE_COMMAND}" --build <BINARY_DIR> --config $<CONFIG> --parallel)
 endif ()
@@ -38,6 +42,7 @@ if (STROIKA_BUILD_THIRD_PARTY_COMPONENTS)
         ${buildCommand_}
         INSTALL_COMMAND ""
         BUILD_ALWAYS ON
+        USES_TERMINAL_BUILD ON
     )
     set (dependsOn_ DEPENDS ThirdPartyComponents)
 endif ()
@@ -48,6 +53,7 @@ ExternalProject_Add (Stroika
     ${buildCommand_}
     INSTALL_COMMAND ""
     BUILD_ALWAYS ON
+    USES_TERMINAL_BUILD ON
     ${dependsOn_}
 )
 

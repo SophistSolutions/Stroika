@@ -16,6 +16,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -363,6 +364,24 @@ def StroikaConfigurationText_(c):
     return "".join(out)
 
 
+def CMakeGenerator_(c):
+    """
+    (generator, platform): the configuration's CMake generator - configure's --cmake-generator: ninja, msbuild or make;
+    by default ninja with Visual Studio (msbuild compiles a project's files mostly one at a time), else make (CMake's
+    Makefiles share make's job slots with the steps' own builds: CMakeLists.txt) - as cmake names it, and the platform
+    (-A) a Visual Studio generator takes, as make's CMake builds give it (else None)
+    """
+    vs = IsVisualStudio_(c.BuildPlatform)
+    choice = c.G("CMakeGenerator").strip() or ("ninja" if vs else "make")
+    if choice == "msbuild":
+        m = re.match(r"VisualStudio\.Net-(\d+)$", c.BuildPlatform)
+        version = {"2022": "17", "2026": "18"}.get(m.group(1)) if m else None
+        if version is None:
+            Die_("Configuration " + c.name + ": --cmake-generator msbuild, but its BuildPlatform is " + c.BuildPlatform)
+        return ("Visual Studio " + version + " " + m.group(1), "x64" if c.G("ARCH").strip() == "x86_64" else "Win32")
+    return ("Ninja" if choice == "ninja" else "Unix Makefiles", None)
+
+
 def CMakePresetsText_(c, existingText):
     """
     The new CMakeUserPresets.json, given the old (None if there is none) - in the old one's line ending: the configuration's
@@ -371,24 +390,31 @@ def CMakePresetsText_(c, existingText):
     """
     vs = IsVisualStudio_(c.BuildPlatform)
     configurationDir = DirectoryLayout.AbsoluteDir(DirectoryLayout.INTERMEDIATE_FILES_ROOT) + c.name + "/"
-    configure = {"name": c.name}
-    if vs:
-        # the configuration's Visual Studio (its version: VisualStudio.Net-<year>), and the -A make's CMake builds give
-        m = re.match(r"VisualStudio\.Net-(\d+)$", c.BuildPlatform)
-        version = {"2022": "17", "2026": "18"}.get(m.group(1)) if m else None
-        if version is not None:
-            configure["generator"] = "Visual Studio " + version + " " + m.group(1)
-        configure["architecture"] = "x64" if c.G("ARCH").strip() == "x86_64" else "Win32"
-    else:
-        configure["generator"] = "Unix Makefiles"  # so its steps' own builds share the build's job slots (CMakeLists.txt)
+    generator, platform = CMakeGenerator_(c)
+    configure = {"name": c.name, "generator": generator}
+    if platform is not None:
+        configure["architecture"] = platform
     configure["binaryDir"] = configurationDir + "CMake"
     configure["toolchainFile"] = configurationDir + "Toolchain.cmake"
     if vs:
         configure["cmakeExecutable"] = c.G("CMAKE")  # Visual Studio's, which knows its generator - for an IDE: cmake ignores it
+    if vs and generator == "Ninja":
+        # Ninja runs cl, link and rc itself: so in Visual Studio's environment - vcvarsall's INCLUDE, LIB and PATH, as
+        # configure found them - and with Visual Studio's ninja; no Visual Studio developer shell needed
+        libPath = [a[len("-LIBPATH:"):] for a in shlex.split(c.G("Platform_LinkerArgs_LibPath")) if a.startswith("-LIBPATH:")]
+        configure["environment"] = {
+            "INCLUDE": c.G("VSVARS_PLATFORM_INCLUDES_PATH"),
+            "LIB": ";".join(libPath),
+            "PATH": c.G("TOOLS_PATH_ADDITIONS") + ";$penv{PATH}",
+        }
+        configure["cacheVariables"] = {
+            "CMAKE_MAKE_PROGRAM": c.G("VSVARS_VSINSTALLDIR") + "/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+        }
     build = {"name": c.name, "configurePreset": c.name}
     test = {"name": c.name, "configurePreset": c.name, "output": {"outputOnFailure": True}}
-    if vs:
-        # the build type, as make's CMake builds give it (Makefile-CMake-Common.mk): Debug where assertions are on
+    if platform is not None:
+        # a Visual Studio generator's build type, as make's CMake builds give it (Makefile-CMake-Common.mk): Debug where
+        # assertions are on
         build["configuration"] = test["configuration"] = "Debug" if c.gAssertionsEnabled == 1 else "Release"
 
     try:
@@ -703,6 +729,19 @@ def Main_(argv):
         sys.stdout.flush()
         WriteBytes_(stroikaConfiguration, StroikaConfigurationText_(c).encode(ENC_))
         sys.stdout.write("done\n")
+        # its CMake build directory, if another generator (or platform) made it, removed: cmake builds there only with the
+        # generator it was first configured with - so the next build starts afresh
+        buildDir = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/CMake"
+        cache = ReadText_(buildDir + "/CMakeCache.txt", "utf-8")
+        if cache is not None:
+            generator, platform = CMakeGenerator_(c)
+            built = re.search(r"^CMAKE_GENERATOR:INTERNAL=(.*)$", cache, re.M)
+            builtPlatform = re.search(r"^CMAKE_GENERATOR_PLATFORM:INTERNAL=(.*)$", cache, re.M)
+            if built is not None and (built.group(1).strip(), builtPlatform.group(1).strip() if builtPlatform else "") != (generator, platform or ""):
+                sys.stdout.write(leader + 'Removing "' + DirectoryLayout.ForDisplay(buildDir) + '", built with ' + built.group(1).strip() + ", not " + generator + " ... ")
+                sys.stdout.flush()
+                shutil.rmtree(buildDir)
+                sys.stdout.write("done\n")
         sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + DirectoryLayout.ForDisplay(CMAKE_PRESETS_FILE_) + '" ... ')
         sys.stdout.flush()
         WriteBytes_(CMAKE_PRESETS_FILE_, CMakePresetsText_(c, ReadText_(CMAKE_PRESETS_FILE_, "utf-8")).encode("utf-8"))

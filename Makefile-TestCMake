@@ -4,10 +4,12 @@
 # (after Build/Scripts/MakeBuildRoot, nothing else: as make's all does, it first makes the default configurations, if there
 # are none). all: the configuration built with its CMake presets (CMakeUserPresets.json, written as it is applied) -
 # its third-party components, then Stroika's libraries, tests and samples, into Builds/<configuration>, where make puts
-# them - running make's -j jobs at once (just -j, from make 3.81: one per processor). Where the CMake build leaves the
-# components to make (STROIKA_BUILD_THIRD_PARTY_COMPONENTS OFF in its cache), make builds them first. run-tests: all, then
-# the tests, run by ctest one at a time, as make runs them. Without CONFIGURATION, each configuration make builds by
-# default (or each TAGS= names). Any other target is the Makefile's: clobber, distclean, default-configurations ...
+# them - running make's -j jobs at once (just -j, from make 3.81: one per processor) - with the CMake generator it
+# prints as it starts (configure's --cmake-generator: by default ninja with Visual Studio, else make). Where the CMake
+# build leaves the components to make (STROIKA_BUILD_THIRD_PARTY_COMPONENTS OFF in its cache), make builds them first.
+# run-tests: all, then the tests, run by ctest one at a time, as make runs them. Without CONFIGURATION, each
+# configuration make builds by default (or each TAGS= names). Any other target is the Makefile's: clobber, distclean,
+# default-configurations ...
 #
 export MAKE_INDENT_LEVEL ?= $(MAKELEVEL)
 CONFIGURATION_TAGS ?= $(TAGS)
@@ -31,8 +33,8 @@ FindCMake_ = cmake_="$$(Build/Scripts/GetConfigurationParameter $(CONFIGURATION)
 	case "$$cmake_" in [A-Za-z]:/*) cmake_="$$(cygpath --unix "$$cmake_")";; esac &&\
 	case "$$cmake_" in */*) ctest_="$$(dirname "$$cmake_")/ctest";; *) ctest_=ctest;; esac
 
-# the jobs make was given (-jN), for cmake's build - a make of its own, with that many jobs (so not given this make's
-# MAKEFLAGS: its jobserver, its -s and -k)
+# the jobs make was given (-jN), for cmake's build - a build of its own, given them as CMAKE_BUILD_PARALLEL_LEVEL, which
+# its inner builds take too, under Ninja (CMakeLists.txt) - so not given this make's MAKEFLAGS: its jobserver, its -s and -k
 FindJobs_ = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
 	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
 
@@ -55,11 +57,12 @@ all:
 	@# and applied again if its preset is missing (applied by Stroika before v3.0d26, whose ApplyConfiguration wrote none)
 	@grep -qF '"name": "$(CONFIGURATION)"' CMakeUserPresets.json 2>/dev/null || $(MAKE) --no-print-directory -f Makefile apply-configuration
 	@$(FindCMake_) && "$$cmake_" --preset $(CONFIGURATION)
+	@Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "CMake generator: $$(sed -n 's/^CMAKE_GENERATOR:INTERNAL=//p' IntermediateFiles/$(CONFIGURATION)/CMake/CMakeCache.txt 2>/dev/null) (configure's --cmake-generator)"
 	@$(FindCMake_) &&\
 	if "$$cmake_" --preset $(CONFIGURATION) -N -L 2>/dev/null | grep -q '^STROIKA_BUILD_THIRD_PARTY_COMPONENTS:BOOL=OFF'; then\
 		$(MAKE) --no-print-directory -f Makefile third-party-components MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	fi
-	@$(FindCMake_) && $(FindJobs_) && env -u MAKEFLAGS -u MFLAGS "$$cmake_" --build --preset $(CONFIGURATION) $${jobs_:+--parallel $$jobs_}
+	@$(FindCMake_) && $(FindJobs_) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION)
 
 run-tests: all
 	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika CMake Run-Tests {$(CONFIGURATION)}:"

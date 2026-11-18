@@ -198,6 +198,7 @@ class Configure_:
         self.AS = None
         self.AR = None
         self.CMAKE = None
+        self.CMakeGenerator = None  # --cmake-generator's (ninja, msbuild or make); None: ApplyConfiguration's default
         self.LIBTOOL = None  # Windows format LIB tool
         self.RANLIB = None
         self.LINKER = None
@@ -1107,6 +1108,10 @@ class Configure_:
             Die_("Unrecognized --build-platform argument: valid ones include: " + ",".join(validProjectPlatfromSubDirs))
         if self.TargetPlatforms == "":
             Die_("Cannot identify TargetPlatforms")
+        if self.CMakeGenerator == "msbuild" and not re.match(r"VisualStudio.Net", self.BuildPlatform):
+            Die_("--cmake-generator msbuild is for a Visual Studio configuration only (this one's BuildPlatform is " + self.BuildPlatform + ")")
+        if self.CMakeGenerator == "make" and re.match(r"VisualStudio.Net", self.BuildPlatform):
+            Die_("--cmake-generator make (CMake's Unix Makefiles) is not for a Visual Studio configuration: ninja or msbuild")
         self.CHECK_FEATURE_OPTION(self.FEATUREFLAG_LIBCURL)
 
     def ApplyCompilerBugWorkarounds_(self):
@@ -1854,6 +1859,8 @@ class Configure_:
         w(Element("CC", self.COMPILER_DRIVER_C))
         w(Element("CXX", self.COMPILER_DRIVER_CPlusPlus))
         w(Element("CMAKE", self.CMAKE if self.CMAKE is not None else "cmake"))
+        if self.CMakeGenerator is not None:
+            w(Element("CMakeGenerator", self.CMakeGenerator))
         if self.LIBTOOL is not None:
             w(Element("LIBTOOL", self.LIBTOOL))
         w(Element("LINKER", self.LINKER))
@@ -2152,6 +2159,9 @@ OPTIONS_ = [
             Set_("BuildByDefault")),
     Option_("build-platform", "{PLATFORM}", "Specifies the BuildPlatform (currently supported: Unix (even on macos), VisualStudio.Net-2022, VisualStudio.Net-2026) - usually auto-detected (was ProjectPlatformSubDir in Stroika v2.1)",
             Set_("BuildPlatform"), when=WITH_PLATFORM_),
+    Option_("cmake-generator", {"ninja": "ninja", "msbuild": "msbuild", "make": "make", "default": None},
+            "The CMake build's generator (its build directory's: changing it starts the build afresh): ninja; msbuild, a Visual Studio configuration's; or make, CMake's Unix Makefiles. By default ninja with Visual Studio, else make",
+            Set_("CMakeGenerator")),
     Option_("target-platforms", "{TargetPlatforms}", "Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected",
             Set_("TargetPlatforms")),
     Option_("build-tools-root", "{BuildToolsRoot}", "Specifies the BuildToolsRoot (makefile variable) - initially just for visual studio - usually auto-detected",
