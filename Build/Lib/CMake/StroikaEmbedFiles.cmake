@@ -21,9 +21,16 @@ function (StroikaEmbedFiles target)
         list (APPEND outputs_ "${output_}")
     endforeach ()
     # a custom command's outputs drive only targets of its own directory: so this directory's own target, which the target
-    # (from another directory) depends on
-    file (RELATIVE_PATH directory_ "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+    # (from another directory) depends on - named for the directory's last part only, as a Visual Studio generator puts the
+    # name twice in the path of each such project's build state file, under this binary directory: one longer than 260
+    # characters (Windows' MAX_PATH) fails the next build (MSB3501)
+    get_filename_component (directory_ "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
     string (MAKE_C_IDENTIFIER "${target}-embed-${directory_}" embedTarget_)
+    set (n_ 2)
+    while (TARGET "${embedTarget_}")
+        string (MAKE_C_IDENTIFIER "${target}-embed-${directory_}-${n_}" embedTarget_)
+        math (EXPR n_ "${n_} + 1")
+    endwhile ()
     add_custom_target ("${embedTarget_}" DEPENDS ${outputs_})
     add_dependencies ("${target}" "${embedTarget_}")
     target_include_directories ("${target}" PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")

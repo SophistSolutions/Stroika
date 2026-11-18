@@ -12,7 +12,8 @@ function (StroikaCopyFilesToExeDir target)
     endif ()
     get_directory_property (copyTarget_ StroikaCopyFilesToExeDir_)
     if (NOT copyTarget_)
-        set (copyTarget_ "${target}-CopyFilesToExeDir")
+        # its name kept short, as StroikaEmbedFiles' (Windows' MAX_PATH)
+        set (copyTarget_ "${target}-copy")
         add_custom_target ("${copyTarget_}"
             COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:${target}>"
             COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${STROIKA_COPY_FILES_TO_EXE_DIR} "$<TARGET_FILE_DIR:${target}>"
