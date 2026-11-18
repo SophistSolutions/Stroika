@@ -1,0 +1,68 @@
+#
+# Stroika built with CMake (#1157), by make's own targets - to try the CMake build the way make is run:
+#     make -f Makefile-TestCMake CONFIGURATION=Debug all run-tests -j8
+# all: the configuration built with its CMake presets (CMakeUserPresets.json, written as the configuration is applied) -
+# its third-party components, then Stroika's libraries, tests and samples, into Builds/<configuration>, where make puts
+# them. Where the CMake build leaves the components to make (by default, with Visual Studio), make builds them first.
+# run-tests: all, then the tests, run by ctest. Each runs make's -j jobs at once (just -j, from make 3.81: one per
+# processor); without CONFIGURATION, for each configuration make builds by default (or each TAGS= names). Any other target
+# is the Makefile's: clobber, distclean, default-configurations ...
+#
+export MAKE_INDENT_LEVEL ?= $(MAKELEVEL)
+CONFIGURATION_TAGS ?= $(TAGS)
+
+.PHONY: help all run-tests
+.DEFAULT_GOAL := help
+
+# any other target: the Makefile's (this file has a rule, so make never asks .DEFAULT to remake it)
+Makefile-TestCMake: ;
+.DEFAULT:
+	@$(MAKE) --no-print-directory -f Makefile $@
+
+help:
+	@echo "Makefile-TestCMake: make's targets all and run-tests, built with CMake - any other target is the Makefile's:"
+	@echo "    make -f Makefile-TestCMake CONFIGURATION=Debug all run-tests -j8"
+	@echo
+	@$(MAKE) --no-print-directory -f Makefile help
+
+# the configuration's cmake, and the ctest beside it: with Visual Studio, Visual Studio's own; else those on PATH
+FindCMake_ = cmake_="$$(Build/Scripts/GetConfigurationParameter $(CONFIGURATION) CMAKE)" &&\
+	case "$$cmake_" in [A-Za-z]:/*) cmake_="$$(cygpath --unix "$$cmake_")";; esac &&\
+	case "$$cmake_" in */*) ctest_="$$(dirname "$$cmake_")/ctest";; *) ctest_=ctest;; esac
+
+# the jobs make was given (-jN), for cmake and ctest - whose builds run a make of their own, with that many jobs (so not
+# given this make's MAKEFLAGS: its jobserver, its -s and -k)
+FindJobs_ = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
+	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
+
+ifeq ($(CONFIGURATION),)
+all run-tests:
+	@configurations_="$$(Build/Scripts/GetConfigurations --quiet $(if $(CONFIGURATION_TAGS),--config-tags "$(CONFIGURATION_TAGS)",--all-default))" &&\
+	for i in $$configurations_ ; do\
+		$(MAKE) --no-print-directory -f Makefile-TestCMake $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+	done
+else
+all:
+	@Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
+	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika CMake Build {$(CONFIGURATION)}:"
+	@# the configuration applied, as make applies it before building - and again if its preset is missing
+	@if grep -qF '"name": "$(CONFIGURATION)"' CMakeUserPresets.json 2>/dev/null; then\
+		$(MAKE) --no-print-directory --silent -f Makefile apply-configuration-if-needed_;\
+	else\
+		$(MAKE) --no-print-directory -f Makefile apply-configuration;\
+	fi
+	@$(FindCMake_) && "$$cmake_" --preset $(CONFIGURATION)
+	@$(FindCMake_) &&\
+	if "$$cmake_" --preset $(CONFIGURATION) -N -L 2>/dev/null | grep -q '^STROIKA_BUILD_THIRD_PARTY_COMPONENTS:BOOL=OFF'; then\
+		$(MAKE) --no-print-directory -f Makefile third-party-components MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+	fi
+	@$(FindCMake_) && $(FindJobs_) && env -u MAKEFLAGS -u MFLAGS "$$cmake_" --build --preset $(CONFIGURATION) $${jobs_:+--parallel $$jobs_}
+
+run-tests: all
+	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika CMake Run-Tests {$(CONFIGURATION)}:"
+	@$(FindCMake_) && $(FindJobs_) &&\
+	if ! "$$ctest_" --preset $(CONFIGURATION) $${jobs_:+--parallel $$jobs_}; then\
+		if [ "$${TEST_FAILURES_CAUSE_FAILED_MAKE:-1}" -ne 0 ]; then exit 1; fi;\
+		echo "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
+	fi
+endif
