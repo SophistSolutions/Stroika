@@ -35,6 +35,7 @@ set (CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../Build/Lib/CMake")
 include (StroikaCopyFilesToExeDir)
 include (StroikaEmbedFiles)
+include (StroikaInstallers)
 include (StroikaMakeVersionFile)
 
 # the libraries where make puts them, in the configuration's Builds directory (the tests and samples: their CMakeLists.txt) -

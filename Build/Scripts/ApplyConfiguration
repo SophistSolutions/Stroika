@@ -271,6 +271,8 @@ def ToolchainText_(c):
         w("set(CMAKE_CXX_COMPILER " + CMakeString_(which(c.G("CXX"))) + ")\n")
         w("set(CMAKE_AR " + CMakeString_(which(c.G("AR"))) + ' CACHE FILEPATH "")\n')
         w("set(CMAKE_RANLIB " + CMakeString_(which(c.G("RANLIB"))) + ' CACHE FILEPATH "")\n')
+        if c.G("STRIP").strip() != "":
+            w("set(CMAKE_STRIP " + CMakeString_(which(c.G("STRIP"))) + ' CACHE FILEPATH "")\n')
         arch = c.G("ARCH").strip()
         if IS_MACOS_HOST_ and "clang++" in c.G("CXX") and arch != "":  # as configure, which then gives the flags -arch ARCH
             w("\n")
@@ -329,7 +331,7 @@ def StroikaConfigurationText_(c):
     w("\n")
     w("# each optional component: use (Stroika builds it), use-system, or no - configure's --<component>\n")
     for feature in ("ATLMFC", "boost", "fmtlib", "GoogleTest", "LibCurl", "LZMA", "mongocxxdriver", "OpenSSL", "sqlite", "StrawberryPerl",
-                    "WinHTTP", "Xerces", "libxml2", "ZLib", "zstd"):
+                    "WinHTTP", "WIX", "Xerces", "libxml2", "ZLib", "zstd"):
         w("set(STROIKA_FEATURE_" + feature + " " + CMakeString_(c.G("qFeatureFlag_" + feature)) + ")\n")
     w("\n")
     w("# Foundation's preprocessor definitions and include directories, and the platform's include directories\n")
@@ -344,6 +346,8 @@ def StroikaConfigurationText_(c):
     w("set(STROIKA_LINK_LIBRARIES " + items(shlex.split(c.G("Platform_LinkerArgs_LibDependencies"))) + ")\n")
     w("# the files each executable needs beside it (with MSVC's AddressSanitizer, its runtime DLL): LinkTime_CopyFilesToEXEDir\n")
     w("set(STROIKA_COPY_FILES_TO_EXE_DIR " + items(path(f) for f in shlex.split(c.G("LinkTime_CopyFilesToEXEDir"))) + ")\n")
+    w("# whether an installer keeps a program's debug symbols - else it strips them, with the toolchain file's CMAKE_STRIP\n")
+    w("set(STROIKA_INCLUDE_DEBUG_SYMBOLS_IN_EXECUTABLES " + ("ON" if c.IncludeDebugSymbolsInExecutables == "1" else "OFF") + ")\n")
     w("\n")
     w("# how the regression tests run: the configuration's command prefix, and the bash that runs Tests/Scripts/RunTest (this\n")
     w("# host's - on Windows, MSYS2's or Cygwin's, not a bash.exe that is WSL's)\n")

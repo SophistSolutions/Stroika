@@ -1,6 +1,7 @@
 #
 # HTMLUI's web app, as its Makefile builds it (BuildWebApp.cmake), into Samples-HTMLUI/html - again whenever its sources
-# change - given node 22 or later, npm and quasar; else, as HTMLUI's Makefile, a warning, and html left empty.
+# change - given node 22 or later, npm and quasar; else, as HTMLUI's Makefile, a warning, and html left empty. Its build
+# touches a stamp file, which the calling directory gets as webAppStamp_ (HTMLUI's .msi holds the web app).
 #
 set (html_ "${STROIKA_BUILDS_DIR}Samples-HTMLUI/html")
 find_program (STROIKA_NODE NAMES node)
@@ -22,7 +23,16 @@ else ()
 endif ()
 if (missing_)
     message (WARNING "Samples/HTMLUI: skipping its web app (html), as ${missing_}")
-    add_custom_target (HTMLUI-html ALL COMMAND "${CMAKE_COMMAND}" -E make_directory "${html_}" VERBATIM)
+    # a stamp of another name than the web app's: so once node is there, the web app is built, though its sources are older
+    set (stamp_ "${CMAKE_CURRENT_BINARY_DIR}/no-web-app.stamp")
+    add_custom_command (
+        OUTPUT "${stamp_}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${html_}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${stamp_}"
+        VERBATIM
+    )
+    add_custom_target (HTMLUI-html ALL DEPENDS "${stamp_}")
+    set (webAppStamp_ "${stamp_}" PARENT_SCOPE)
     return ()
 endif ()
 
@@ -42,3 +52,4 @@ add_custom_command (
     VERBATIM
 )
 add_custom_target (HTMLUI-html ALL DEPENDS "${stamp_}")
+set (webAppStamp_ "${stamp_}" PARENT_SCOPE)

@@ -1,8 +1,8 @@
 #
 # The samples, each built as its Makefile builds it: a program named for its directory, from its Sources/, in
 # Samples-<name> in the configuration's Builds directory - the ones Samples/Makefile builds for the configuration: LedIt
-# and LedLineIt given MFC (ATLMFC), SimpleLedTest with Visual Studio. HTMLUI is its backend and the web app it serves (its
-# CMakeLists.txt says how). Not here (make builds them): HTMLUI's and Service's installers.
+# and LedLineIt given MFC (ATLMFC), SimpleLedTest with Visual Studio. HTMLUI is its backend and the web app it serves, and
+# HTMLUI and Service build installers too (their CMakeLists.txt say how).
 #
 set (samples_ AppSettings ArchiveUtility Containers DocumentDB HTMLUI)
 if (STROIKA_FEATURE_ATLMFC STREQUAL "use-system")

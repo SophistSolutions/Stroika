@@ -6,47 +6,23 @@
 #     AppCPlusPlusVersion (the default): <namespace>::kVersion, a Stroika::Foundation::Common::Version - the namespace
 #         defaults to the output file's name less its .h ('-' and '.' made '_');
 #     StroikaLibVersion: the qStroika_Version_ macros, Stroika's own Stroika/Current-Version.h.
-# The version file holds one version, as STROIKA_VERSION does: major.minor, a stage (a, b, d or r; none or '.' for a
-# release) and its number, then x unless it is a final build - 3.0d26x. Written when cmake configures, and again when the
-# version file changes.
+# The version file holds one version, as STROIKA_VERSION does (StroikaVersion.cmake) - 3.0d26x. Written when cmake
+# configures, and again when the version file changes.
 #
+include (StroikaVersion)
+
 function (StroikaMakeVersionFile versionFile outputFile)
     cmake_parse_arguments (PARSE_ARGV 2 arg "" "TYPE;NAMESPACE" "")
-    # cmake runs again when the version file changes - listed once, normalized: a file Ninja sees twice, under two spellings
-    # (a/../b and b), fails a Ninja build ("defined as an output multiple times")
-    cmake_path (ABSOLUTE_PATH versionFile NORMALIZE)
-    get_property (configureDepends_ DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY CMAKE_CONFIGURE_DEPENDS)
-    if (NOT versionFile IN_LIST configureDepends_)
-        set_property (DIRECTORY "${CMAKE_SOURCE_DIR}" APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${versionFile}")
-    endif ()
-    file (READ "${versionFile}" version_)
-    string (STRIP "${version_}" version_)
-    if (NOT version_ MATCHES "^([0-9]+)\\.([0-9]+)([abdr.]?)([0-9]*)(x?)$")
-        message (FATAL_ERROR "${versionFile}: not a version: ${version_}")
-    endif ()
-    set (major_ "${CMAKE_MATCH_1}")
-    set (minor_ "${CMAKE_MATCH_2}")
-    set (stage_ "${CMAKE_MATCH_3}")
-    set (subStage_ "${CMAKE_MATCH_4}")
-    set (final_ true)
-    set (finalBuild_ 1)
-    if (CMAKE_MATCH_5 STREQUAL "x")
-        set (final_ false)
-        set (finalBuild_ 0)
-    endif ()
-    if (stage_ STREQUAL "a")
-        set (stage_ Alpha)
-    elseif (stage_ STREQUAL "b")
-        set (stage_ Beta)
-    elseif (stage_ STREQUAL "d")
-        set (stage_ Dev)
-    elseif (stage_ STREQUAL "r")
-        set (stage_ ReleaseCandidate)
-    else ()
-        set (stage_ Release)
-    endif ()
-    if (subStage_ STREQUAL "")
-        set (subStage_ 0)
+    StroikaReadVersion ("${versionFile}" v_)
+    set (version_ "${v_}")
+    set (major_ "${v__MAJOR}")
+    set (minor_ "${v__MINOR}")
+    set (stage_ "${v__STAGE}")
+    set (subStage_ "${v__SUB_STAGE}")
+    set (final_ "${v__FINAL}")
+    set (finalBuild_ 0)
+    if (final_)
+        set (finalBuild_ 1)
     endif ()
     if (NOT arg_TYPE OR arg_TYPE STREQUAL "AppCPlusPlusVersion")
         if (arg_NAMESPACE)
