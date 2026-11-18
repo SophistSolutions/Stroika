@@ -3,10 +3,10 @@
 #   ApplyConfiguration [OPTIONS] CONFIGURATION
 #
 #   From ConfigurationFiles/CONFIGURATION.xml, writes IntermediateFiles/CONFIGURATION/Configuration.mk and its CMake toolchain
-#   file, Toolchain.cmake - each wherever its variable puts it (the build root's DirectoryLayout.mk) - and runs
-#   CreatePackageConfigFiles, and updates that configuration's
-#   entries in Workspaces/VisualStudio.Net's IntelliSense .props (Visual Studio configurations only) and
-#   .vscode/c_cpp_properties.json.
+#   file, Toolchain.cmake, with its Stroika settings, Stroika-Configuration.cmake - each wherever its variable puts it (the
+#   build root's DirectoryLayout.mk) - and runs CreatePackageConfigFiles, and updates that configuration's
+#   entries in CMakeUserPresets.json, Workspaces/VisualStudio.Net's IntelliSense .props (Visual Studio configurations only)
+#   and .vscode/c_cpp_properties.json.
 #
 #   A port of ApplyConfiguration.pl (through Stroika v3.0d25).
 #
@@ -31,6 +31,7 @@ ENC_ = ConfigurationReader.ENCODING
 DEFAULT_BOOL_OPTIONS_ = -1
 VS_INTELLISENSE_FILE_ = "Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props"
 VSCODE_CPP_FILE_ = ".vscode/c_cpp_properties.json"
+CMAKE_PRESETS_FILE_ = DirectoryLayout.STROIKA_SOURCE_ROOT + "CMakeUserPresets.json"  # beside Stroika's top CMakeLists.txt
 
 
 def Die_(msg, status=255):
@@ -343,6 +344,50 @@ def StroikaConfigurationText_(c):
     return "".join(out)
 
 
+def CMakePresetsText_(c, existingText):
+    """
+    The new CMakeUserPresets.json, given the old (None if there is none) - in the old one's line ending: the configuration's
+    configure, build and test presets, each named for it, building it with Stroika's CMake build (CMakeLists.txt) - its
+    generator, its toolchain file, and its build directory, CMake/ beside its Configuration.mk. Other presets are kept.
+    """
+    vs = IsVisualStudio_(c.BuildPlatform)
+    configurationDir = DirectoryLayout.AbsoluteDir(DirectoryLayout.INTERMEDIATE_FILES_ROOT) + c.name + "/"
+    configure = {"name": c.name}
+    if vs:
+        # the configuration's Visual Studio (its version: VisualStudio.Net-<year>), and the -A make's CMake builds give
+        m = re.match(r"VisualStudio\.Net-(\d+)$", c.BuildPlatform)
+        version = {"2022": "17", "2026": "18"}.get(m.group(1)) if m else None
+        if version is not None:
+            configure["generator"] = "Visual Studio " + version + " " + m.group(1)
+        configure["architecture"] = "x64" if c.G("ARCH").strip() == "x86_64" else "Win32"
+    else:
+        configure["generator"] = "Unix Makefiles"  # so its steps' own builds share the build's job slots (CMakeLists.txt)
+    configure["binaryDir"] = configurationDir + "CMake"
+    configure["toolchainFile"] = configurationDir + "Toolchain.cmake"
+    if vs:
+        configure["cmakeExecutable"] = c.G("CMAKE")  # Visual Studio's, which knows its generator - for an IDE: cmake ignores it
+    build = {"name": c.name, "configurePreset": c.name}
+    test = {"name": c.name, "configurePreset": c.name, "output": {"outputOnFailure": True}}
+    if vs:
+        # the build type, as make's CMake builds give it (Makefile-CMake-Common.mk): Debug where assertions are on
+        build["configuration"] = test["configuration"] = "Debug" if c.gAssertionsEnabled == 1 else "Release"
+
+    try:
+        doc = json.loads(existingText) if existingText is not None else {}
+        if not isinstance(doc, dict):
+            raise ValueError
+    except ValueError:  # not JSON, or not an object: start afresh
+        doc = {}
+    version = doc.get("version")
+    doc["version"] = version if isinstance(version, int) and version > 3 else 3  # 3: CMake 3.21, the first with toolchainFile
+    for key, preset in (("configurePresets", configure), ("buildPresets", build), ("testPresets", test)):
+        presets = doc.get(key) if isinstance(doc.get(key), list) else []
+        presets = [p for p in presets if not (isinstance(p, dict) and p.get("name") == c.name)] + [preset]
+        doc[key] = sorted(presets, key=NameSortKey_)
+    newline = "\r\n" if existingText is not None and "\r\n" in existingText else "\n"
+    return (json.dumps(doc, indent=2, ensure_ascii=False) + "\n").replace("\n", newline)
+
+
 def PkgConfigWords_(c, which):
     """
     The words of pkg-config WHICH (--cflags-only-I / --cflags-only-other) for the configuration's Foundation packages - those
@@ -573,14 +618,15 @@ def VSCodeText_(c, existingText):
         configs.append(newCfg)
     else:
         configs[index] = newCfg
-    doc["configurations"] = configs
-    # sorted by name, ignoring ASCII case only; an entry with no name first
-    def SortKey(e):
-        name = e.get("name") if isinstance(e, dict) else None
-        return name.translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")) if isinstance(name, str) else ""
-    doc["configurations"] = sorted(configs, key=SortKey)
+    doc["configurations"] = sorted(configs, key=NameSortKey_)
     newline = "\r\n" if existingText is not None and "\r\n" in existingText else "\n"
     return (json.dumps(doc, indent=2, ensure_ascii=False) + "\n").replace("\n", newline)
+
+
+def NameSortKey_(e):
+    """The sort key for a JSON array's entries: by name, ignoring ASCII case only; an entry with no name first"""
+    name = e.get("name") if isinstance(e, dict) else None
+    return name.translate(str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")) if isinstance(name, str) else ""
 
 
 def ReadText_(path, encoding):
@@ -637,6 +683,10 @@ def Main_(argv):
         sys.stdout.write(leader + 'Writing "' + DirectoryLayout.ForDisplay(stroikaConfiguration) + '" ... ')
         sys.stdout.flush()
         WriteBytes_(stroikaConfiguration, StroikaConfigurationText_(c).encode(ENC_))
+        sys.stdout.write("done\n")
+        sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + DirectoryLayout.ForDisplay(CMAKE_PRESETS_FILE_) + '" ... ')
+        sys.stdout.flush()
+        WriteBytes_(CMAKE_PRESETS_FILE_, CMakePresetsText_(c, ReadText_(CMAKE_PRESETS_FILE_, "utf-8")).encode("utf-8"))
         sys.stdout.write("done\n")
         sys.stdout.write(leader)
         sys.stdout.flush()

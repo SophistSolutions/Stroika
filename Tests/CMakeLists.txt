@@ -9,10 +9,13 @@ if (NOT STROIKA_FEATURE_GoogleTest STREQUAL "no")
     find_package (GTest CONFIG REQUIRED) # its targets are visible only below where it is found
 endif ()
 
+# each test where make puts it, Tests/ in the configuration's Builds directory (for $<0:>: Library/CMakeLists.txt)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${STROIKA_BUILDS_DIR}Tests$<0:>")
+
 # RunTest's environment, as make run-tests gives it: the configuration's command prefix, where Stroika's sources are, and
-# where a PerformanceDump.txt that a test writes goes (the build directory)
+# where a PerformanceDump.txt that a test writes goes (the configuration's Builds directory)
 cmake_path (GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH sourceRoot_)
-set (environment_ "RunPrefix=${STROIKA_RUN_PREFIX}" "StroikaSourceRoot=${sourceRoot_}/" "StroikaPlatformTargetBuildDir=${CMAKE_BINARY_DIR}/")
+set (environment_ "RunPrefix=${STROIKA_RUN_PREFIX}" "StroikaSourceRoot=${sourceRoot_}/" "StroikaPlatformTargetBuildDir=${STROIKA_BUILDS_DIR}")
 if (WIN32)
     # and the tools RunTest uses (sed, tr ...), beside its bash: on PATH in an MSYS2 or Cygwin shell, not in PowerShell's
     cmake_path (GET STROIKA_BASH PARENT_PATH bashDirectory_)

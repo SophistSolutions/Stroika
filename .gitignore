@@ -1,5 +1,7 @@
 Builds
 IntermediateFiles
+# CMake's presets for the build root's configurations, which Build/Scripts/ApplyConfiguration writes
+CMakeUserPresets.json
 .config.json
 *.opendb
 *.suo
