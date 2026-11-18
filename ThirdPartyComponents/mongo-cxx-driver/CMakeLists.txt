@@ -3,11 +3,10 @@
 #
 set (version_ r4.6.1)
 
-# Its build version - one it must be given when built from a release archive - is python's, as its Makefile gives it
-find_program (python_ NAMES python python3 REQUIRED)
-execute_process (COMMAND "${python_}" --version OUTPUT_VARIABLE pythonVersion_ ERROR_VARIABLE pythonVersion_ OUTPUT_STRIP_TRAILING_WHITESPACE)
-string (REGEX REPLACE "^Python ([^ \n]+).*" "\\1" pythonVersion_ "${pythonVersion_}")
-set (args_ "-DBUILD_VERSION=${pythonVersion_}" -DBUILD_SHARED_LIBS:BOOL=OFF -DENABLE_SHARED:BOOL=OFF)
+# Its version (r4.6.1 is 4.6.1), which it must be given: GitHub's tag archive has no build/VERSION_CURRENT, so it would
+# otherwise compute one from git history it does not have
+string (REGEX REPLACE "^r" "" buildVersion_ "${version_}")
+set (args_ "-DBUILD_VERSION=${buildVersion_}" -DBUILD_SHARED_LIBS:BOOL=OFF -DENABLE_SHARED:BOOL=OFF)
 if (STROIKA_FEATURE_OpenSSL STREQUAL "no")
     list (APPEND args_ -DENABLE_SSL=OFF)
 endif ()
