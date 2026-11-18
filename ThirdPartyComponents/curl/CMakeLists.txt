@@ -61,6 +61,17 @@ check_library_exists (brotlidec BrotliDecoderCreateInstance "${libraryPath_}" ST
 if (NOT STROIKA_CURL_BROTLICOMMON OR NOT STROIKA_CURL_BROTLIDEC)
     list (APPEND configure_ --without-brotli)
 endif ()
+# cross-compiled (the toolchain file says so: configure's --cross-compiling), as its Makefile builds it: configure told the
+# target (--host) - else it runs what it builds, and stops - and, with OpenSSL, the CA certificates of a Linux target,
+# where native configure finds them on Debian and Ubuntu (configure looks for the system's only building natively, and
+# else libcurl trusts none: every verified HTTPS connection fails, error 60)
+if (CMAKE_CROSSCOMPILING)
+    execute_process (COMMAND "${CMAKE_C_COMPILER}" -dumpmachine OUTPUT_VARIABLE target_ OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
+    list (APPEND configure_ --host ${target_})
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT STROIKA_FEATURE_OpenSSL STREQUAL "no")
+        list (APPEND configure_ --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt --with-ca-path=/etc/ssl/certs)
+    endif ()
+endif ()
 if (CMAKE_HOST_APPLE)
     list (APPEND configure_ "LIBS=-framework Foundation -framework SystemConfiguration")
 endif ()

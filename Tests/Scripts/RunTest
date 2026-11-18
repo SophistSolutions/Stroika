@@ -32,8 +32,10 @@
 #								match the BUILD host rather than whatever REMOTE's own OS happens to be
 #		REMOTE_DOCKER_ARGS		extra 'docker run' arguments - e.g. --platform=linux/arm64 --security-opt=seccomp=unconfined,
 #								which an arm64 image needs under an armhf docker daemon
-#		SSH_REMOTE_WARNINGS_OFF	options passed to ssh
+#		SSH_REMOTE_WARNINGS_OFF	options passed to ssh (if unset, -o StrictHostKeyChecking=no, as Tests/Makefile sets it)
 #		StroikaPlatformTargetBuildDir	where a PerformanceDump.txt written by the test is moved to
+#		CrossCompiling			true: the test is built for another system - run on REMOTE, or (with none) not at all,
+#								exiting 77, which ctest reports as skipped (make's run-tests skips the tests itself)
 #
 if [ $# -lt 2 ] ; then
 	echo "Usage: RunTest NN EXE [TEST-ARGS...]" >&2
@@ -74,6 +76,12 @@ report_ () {
 	# echo unquoted, to collapse the gaps an empty RunPrefix/VALGRIND leaves
 	echo "${PREFIX_} [${NN_}] ${TESTNAME_} - $(echo $1)"
 }
+
+if [ "$CrossCompiling" = "true" ] && [ -z "$REMOTE" ] ; then
+	report_ "SKIPPED: $SHOWN_EXE_ is built for another system, and no REMOTE= names one to run it on"
+	exit 77
+fi
+SSH_REMOTE_WARNINGS_OFF=${SSH_REMOTE_WARNINGS_OFF--o StrictHostKeyChecking=no}
 
 if [ -z "$REMOTE" ] ; then
 	if [ -n "$REMOTE_DOCKER_IMAGE" ] ; then

@@ -279,6 +279,12 @@ def ToolchainText_(c):
             w("# the configuration's architecture, as its flags' -arch: given none, cmake on an Apple Silicon Mac adds -arch for the\n")
             w("# host's own - so a configuration for another (Release-x86_64) would build both\n")
             w("set(CMAKE_OSX_ARCHITECTURES " + CMakeString_(arch) + ' CACHE STRING "")\n')
+        if c.G("CrossCompiling").strip() == "true" and "Linux" in c.G("TargetPlatforms").split():
+            w("\n")
+            w("# cross-compiled (configure's --cross-compiling), for Linux: so cmake builds for that system (CMAKE_CROSSCOMPILING),\n")
+            w("# running none of what it builds - with the processor a build there would see (uname -m)\n")
+            w("set(CMAKE_SYSTEM_NAME Linux)\n")
+            w("set(CMAKE_SYSTEM_PROCESSOR " + CMakeString_({"armhf": "armv7l"}.get(arch, arch)) + ")\n")
         w("\n")
         w("# the configuration's flags, all of them - with build type None (Debian's packaging convention), cmake adds none for\n")
         w("# a build type\n")
