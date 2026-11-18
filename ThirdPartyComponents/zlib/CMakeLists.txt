@@ -34,7 +34,7 @@ if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
         set (d_ d)
     endif ()
     ExternalProject_Add_Step (zlib windowsFixes DEPENDEES install
-        COMMAND "${CMAKE_COMMAND}" "-DFROM=<BINARY_DIR>/${STROIKA_THIRD_PARTY_BUILD_TYPE}" "-DLIB_DIR=${STROIKA_BUILDS_DIR}lib" "-DD=${d_}"
+        COMMAND "${CMAKE_COMMAND}" "-DFROM=${STROIKA_THIRD_PARTY_OUTPUT_DIR}" "-DLIB_DIR=${STROIKA_BUILDS_DIR}lib" "-DD=${d_}"
                 -P "${CMAKE_CURRENT_SOURCE_DIR}/WindowsFixes.cmake"
     )
 endif ()

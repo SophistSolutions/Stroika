@@ -38,6 +38,16 @@ if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
     else ()
         set (STROIKA_THIRD_PARTY_BUILD_TYPE Release)
     endif ()
+    # STROIKA_THIRD_PARTY_OUTPUT_DIR: where a component's build leaves what it builds - with msbuild, in a subdirectory for
+    # the build type; with a single-configuration generator (Ninja), which is given the build type (zstd then adds its own
+    # debug checks, DEBUGLEVEL=1), in its build directory
+    get_property (multiConfig_ GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if (multiConfig_)
+        set (STROIKA_THIRD_PARTY_OUTPUT_DIR "<BINARY_DIR>/${STROIKA_THIRD_PARTY_BUILD_TYPE}")
+    else ()
+        set (STROIKA_THIRD_PARTY_OUTPUT_DIR "<BINARY_DIR>")
+        list (APPEND STROIKA_THIRD_PARTY_CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${STROIKA_THIRD_PARTY_BUILD_TYPE}")
+    endif ()
 else ()
     set (STROIKA_THIRD_PARTY_BUILD_TYPE None)
     set (STROIKA_THIRD_PARTY_C_FLAGS "${CMAKE_C_FLAGS}")

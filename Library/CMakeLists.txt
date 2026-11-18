@@ -17,6 +17,17 @@ endif ()
 get_filename_component (configurationDir_ "${CMAKE_TOOLCHAIN_FILE}" DIRECTORY)
 include ("${configurationDir_}/Stroika-Configuration.cmake")
 
+# a Visual Studio configuration's flags are its toolchain file's for one build type - Debug where its assertions are on,
+# else Release (CMAKE_CXX_FLAGS_DEBUG ...): so a single-configuration generator (Ninja) builds that one
+get_property (multiConfig_ GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio" AND NOT multiConfig_ AND NOT CMAKE_BUILD_TYPE)
+    if (STROIKA_ASSERTIONS_ENABLED)
+        set (CMAKE_BUILD_TYPE Debug)
+    else ()
+        set (CMAKE_BUILD_TYPE Release)
+    endif ()
+endif ()
+
 # the configuration's C++ standard, which its flags name too: else a package asking for a lower one (googletest) makes
 # cmake add that standard's flag after the configuration's - overriding it where the compiler's default is lower (MSVC)
 if (STROIKA_CXX_STANDARD)
