@@ -37,12 +37,13 @@ FindJobs_ = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/
 	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
 
 # first, as make's all does: the default configurations made if there are none; then, given CONFIGURATION, it checked, and
-# applied if its configuration file changed
+# applied if its configuration file changed. Each use is marked + (as running make): make sees that only in $(MAKE) itself,
+# not in a variable holding it - and else warns that its make has no jobserver
 ApplyConfigurationIfNeeded_ = $(MAKE) --no-print-directory --silent -f Makefile apply-configuration-if-needed_
 
 ifeq ($(CONFIGURATION),)
 all run-tests:
-	@$(ApplyConfigurationIfNeeded_)
+	@+$(ApplyConfigurationIfNeeded_)
 	@configurations_="$$(Build/Scripts/GetConfigurations --quiet $(if $(CONFIGURATION_TAGS),--config-tags "$(CONFIGURATION_TAGS)",--all-default))" &&\
 	for i in $$configurations_ ; do\
 		$(MAKE) --no-print-directory -f Makefile-TestCMake $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
@@ -50,7 +51,7 @@ all run-tests:
 else
 all:
 	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika CMake Build {$(CONFIGURATION)}:"
-	@$(ApplyConfigurationIfNeeded_)
+	@+$(ApplyConfigurationIfNeeded_)
 	@# and applied again if its preset is missing (applied by Stroika before v3.0d26, whose ApplyConfiguration wrote none)
 	@grep -qF '"name": "$(CONFIGURATION)"' CMakeUserPresets.json 2>/dev/null || $(MAKE) --no-print-directory -f Makefile apply-configuration
 	@$(FindCMake_) && "$$cmake_" --preset $(CONFIGURATION)
