@@ -4,8 +4,8 @@
 # (after Build/Scripts/MakeBuildRoot, nothing else: as make's all does, it first makes the default configurations, if there
 # are none). all: the configuration built with its CMake presets (CMakeUserPresets.json, written as it is applied) -
 # its third-party components, then Stroika's libraries, tests and samples, into Builds/<configuration>, where make puts
-# them. Where the CMake build leaves the components to make (by default, with Visual Studio), make builds them first.
-# run-tests: all, then the tests, run by ctest. Each runs make's -j jobs at once (just -j, from make 3.81: one per
+# them. Where the CMake build leaves the components to make (STROIKA_BUILD_THIRD_PARTY_COMPONENTS OFF in its cache), make
+# builds them first. run-tests: all, then the tests, run by ctest. Each runs make's -j jobs at once (just -j, from make 3.81: one per
 # processor); without CONFIGURATION, for each configuration make builds by default (or each TAGS= names). Any other target
 # is the Makefile's: clobber, distclean, default-configurations ...
 #

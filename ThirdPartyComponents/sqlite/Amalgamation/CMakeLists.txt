@@ -28,5 +28,8 @@ target_link_options (sqlite-shell PRIVATE ${STROIKA_LINK_OPTIONS})
 
 install (TARGETS sqlite ARCHIVE DESTINATION lib)
 install (TARGETS sqlite-shell RUNTIME DESTINATION bin)
+if (MSVC)
+    install (FILES $<TARGET_PDB_FILE:sqlite-shell> DESTINATION bin OPTIONAL) # beside it, where make links it
+endif ()
 install (FILES sqlite3.h DESTINATION include/sqlite)
 install (FILES "${SQLITE_PC}" DESTINATION lib/pkgconfig)

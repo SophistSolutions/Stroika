@@ -5,9 +5,8 @@
 # where Stroika's own CMake build (Library/CMakeLists.txt) finds it. For one configuration:
 #     cmake -S ThirdPartyComponents -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
 #     cmake --build <build directory> -j8
-# With a Makefiles generator, the components' own builds share that -j's job slots, as under make. OpenSSL, boost and
-# mongo-cxx-driver build here on UNIX only - with Visual Studio, their Makefiles build them - as does curl, which Stroika
-# uses only on UNIX.
+# With a Makefiles generator, the components' own builds share that -j's job slots, as under make. curl builds here on UNIX
+# only, as Stroika uses it only there.
 #
 cmake_minimum_required (VERSION 3.22)
 project (StroikaThirdPartyComponents LANGUAGES NONE)
@@ -18,6 +17,9 @@ if (NOT CMAKE_TOOLCHAIN_FILE)
 endif ()
 get_filename_component (configurationDir_ "${CMAKE_TOOLCHAIN_FILE}" DIRECTORY)
 include ("${configurationDir_}/Stroika-Configuration.cmake")
+if (NOT DEFINED STROIKA_PLATFORM_C_FLAGS)
+    message (FATAL_ERROR "${configurationDir_}/Stroika-Configuration.cmake was written by an older Stroika: apply the configuration again - make CONFIGURATION=${STROIKA_CONFIGURATION} apply-configuration")
+endif ()
 
 if (POLICY CMP0135)
     cmake_policy (SET CMP0135 NEW) # files extracted from an archive get the time of extraction
@@ -64,6 +66,32 @@ cmake_path (GET STROIKA_BASH PARENT_PATH bashDirectory_)
 find_program (STROIKA_PATCH patch HINTS "${bashDirectory_}" REQUIRED)
 
 #
+# StroikaVisualStudioCommand (<variable> <name> <script>)
+#
+# With Visual Studio: <script> - its lines separated by \n - run in the configuration's Visual Studio environment, as make's
+# Build/Scripts/RunArgumentsWithCommonBuildVars runs a command, for a component built by tools of its own (nmake, b2): it
+# writes <name>.bat in the calling directory's binary directory - vcvarsall.bat for the configuration's architecture, then
+# each line, stopping at the first that fails - and sets <variable> to the command that runs it. One string, not a list:
+# a line may hold a ; (set "PATH=...;%PATH%").
+#
+function (StroikaVisualStudioCommand variable name script)
+    if (STROIKA_ARCH STREQUAL "x86")
+        set (arch_ x64_x86)
+    else ()
+        set (arch_ x64)
+    endif ()
+    file (TO_NATIVE_PATH "${STROIKA_BUILD_TOOLS_ROOT}/VC/Auxiliary/Build/vcvarsall.bat" vcvarsall_)
+    string (REPLACE "\n" "\nif errorlevel 1 exit /b 1\n" script_ "${script}")
+    # NoDefaultCurrentDirectoryInExePath unset: else cmd runs nothing in the current directory by its bare name, as
+    # vcvarsall.bat runs vswhere.exe, and boost's bootstrap.bat its own scripts. pushd/popd: vcvarsall.bat cd's to
+    # %VSCMD_START_DIR% if that is set (and older Visual Studios to %USERPROFILE%\Source)
+    file (CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${name}.bat" @ONLY NEWLINE_STYLE CRLF
+        CONTENT "@echo off\nset NoDefaultCurrentDirectoryInExePath=\npushd %TEMP%\ncall \"${vcvarsall_}\" ${arch_} > nul\npopd\n${script_}\nif errorlevel 1 exit /b 1\n")
+    # its path with /, not \: a step's log script (LOG_CONFIGURE ...) holds the command in a CMake string, unescaped
+    set (${variable} cmd /E:ON /C "${CMAKE_CURRENT_BINARY_DIR}/${name}.bat" PARENT_SCOPE)
+endfunction ()
+
+#
 # StroikaThirdPartyComponent (<name> ARCHIVE <file> URLS <url>... [SOURCE_SUBDIR <directory>] [PATCH_COMMAND <command>...]
 #                             [CMAKE_ARGS <arg>...] [BUILD_TARGETS <target>...] [DEPENDS <component>...]
 #                             [BUILD_IN_SOURCE] [CONFIGURE_COMMAND <command>...] [BUILD_COMMAND <command>...]
@@ -91,8 +119,17 @@ function (StroikaThirdPartyComponent name)
     if (arg_PATCH_COMMAND)
         list (APPEND passOn_ PATCH_COMMAND ${arg_PATCH_COMMAND})
     endif ()
+    # Its directories, short, in the calling directory's binary directory - src, build, stamp, tmp, not ExternalProject's
+    # <name>-prefix/src/<name>-build and so on: with Visual Studio, boost's b2 puts its 62 include directories, absolute, on
+    # one rc command line, which cmd.exe cuts at 8191 characters (#769) - so its sources' path may be no longer than under
+    # make (IntermediateFiles/<configuration>/CMake/ThirdParty/boost/src, beside make's .../ThirdPartyComponents/boost); and
+    # mongo-c-driver's deepest files come near Windows' MAX_PATH.
+    list (APPEND passOn_ PREFIX "${CMAKE_CURRENT_BINARY_DIR}" SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/src"
+        STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/stamp" TMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/tmp")
     if (arg_BUILD_IN_SOURCE)
         list (APPEND passOn_ BUILD_IN_SOURCE ON)
+    else ()
+        list (APPEND passOn_ BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/build")
     endif ()
     # its archive, downloaded into Origs-Cache when missing - here, not by its download step, which is so the same whether or
     # not the archive was there: a step defined differently from the last build runs again, and every step after it
@@ -156,6 +193,9 @@ if (STROIKA_FEATURE_ZLib STREQUAL "use")
 endif ()
 if (STROIKA_FEATURE_zstd STREQUAL "use")
     add_subdirectory (zstd)
+endif ()
+if (STROIKA_FEATURE_StrawberryPerl STREQUAL "use")
+    add_subdirectory (StrawberryPerl)
 endif ()
 if (STROIKA_FEATURE_OpenSSL STREQUAL "use")
     add_subdirectory (openssl)

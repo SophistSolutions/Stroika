@@ -316,12 +316,20 @@ def StroikaConfigurationText_(c):
             standard = {"latest": "23", "2a": "20", "2b": "23", "2c": "26"}.get(m.group(1), m.group(1))
     w("set(STROIKA_CXX_STANDARD " + CMakeString_(standard) + ")\n")
     w("\n")
+    w("# the configuration's compiler flags without its platform's preprocessor definitions (PLATFORM_CFLAGS, PLATFORM_CXXFLAGS) -\n")
+    w("# what make gives a third-party component that takes its flags from the environment (OpenSSL)\n")
+    w("set(STROIKA_PLATFORM_C_FLAGS " + CMakeString_(c.CFLAGS) + ")\n")
+    w("set(STROIKA_PLATFORM_CXX_FLAGS " + CMakeString_(c.CXXFLAGS) + ")\n")
+    if vs:
+        w("# the Visual Studio it builds with - whose VC/Auxiliary/Build/vcvarsall.bat sets up a command's environment for it\n")
+        w("set(STROIKA_BUILD_TOOLS_ROOT " + CMakeString_(path(c.BuildToolsRoot)) + ")\n")
+    w("\n")
     w("# where the configuration's third-party components are installed - their headers, libraries and CMake packages\n")
     w("set(STROIKA_BUILDS_DIR " + CMakeString_(path(DirectoryLayout.BUILDS_ROOT + c.name) + "/") + ")\n")
     w("\n")
     w("# each optional component: use (Stroika builds it), use-system, or no - configure's --<component>\n")
-    for feature in ("ATLMFC", "boost", "fmtlib", "GoogleTest", "LibCurl", "LZMA", "mongocxxdriver", "OpenSSL", "sqlite", "WinHTTP",
-                    "Xerces", "libxml2", "ZLib", "zstd"):
+    for feature in ("ATLMFC", "boost", "fmtlib", "GoogleTest", "LibCurl", "LZMA", "mongocxxdriver", "OpenSSL", "sqlite", "StrawberryPerl",
+                    "WinHTTP", "Xerces", "libxml2", "ZLib", "zstd"):
         w("set(STROIKA_FEATURE_" + feature + " " + CMakeString_(c.G("qFeatureFlag_" + feature)) + ")\n")
     w("\n")
     w("# Foundation's preprocessor definitions and include directories, and the platform's include directories\n")
