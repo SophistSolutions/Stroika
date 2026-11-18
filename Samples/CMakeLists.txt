@@ -17,3 +17,17 @@ foreach (name_ IN LISTS samples_)
     set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${STROIKA_BUILDS_DIR}Samples-${name_}$<0:>") # $<0:>: Library/CMakeLists.txt
     add_subdirectory (${name_})
 endforeach ()
+
+# make's target samples: every target the samples' directories make - their programs, HTMLUI's web app, the installers
+add_custom_target (samples)
+set (directories_ ${CMAKE_CURRENT_SOURCE_DIR})
+while (directories_)
+    list (POP_FRONT directories_ directory_)
+    get_property (targets_ DIRECTORY "${directory_}" PROPERTY BUILDSYSTEM_TARGETS)
+    list (REMOVE_ITEM targets_ samples)
+    if (targets_)
+        add_dependencies (samples ${targets_})
+    endif ()
+    get_property (subdirectories_ DIRECTORY "${directory_}" PROPERTY SUBDIRECTORIES)
+    list (APPEND directories_ ${subdirectories_})
+endwhile ()

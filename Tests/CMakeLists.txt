@@ -26,8 +26,10 @@ if (WIN32)
 endif ()
 
 file (GLOB tests_ RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/[0-9][0-9]")
+add_custom_target (tests) # make's target tests: them all
 foreach (n_ IN LISTS tests_)
     add_executable (Test${n_} ${n_}/Test.cpp)
+    add_dependencies (tests Test${n_})
     target_link_libraries (Test${n_} PRIVATE stroika-frameworks)
     if (NOT STROIKA_FEATURE_GoogleTest STREQUAL "no")
         target_link_libraries (Test${n_} PRIVATE GTest::gtest_main)

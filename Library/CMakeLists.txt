@@ -61,6 +61,9 @@ endif ()
 
 add_subdirectory (Sources/Stroika/Foundation)
 add_subdirectory (Sources/Stroika/Frameworks)
+# make's target libraries (the top CMakeLists.txt's, as tools, tests, samples and documentation, each where its parts are)
+add_custom_target (libraries)
+add_dependencies (libraries stroika-foundation stroika-frameworks)
 
 # the tools, Tools/
 add_subdirectory (../Tools Tools)

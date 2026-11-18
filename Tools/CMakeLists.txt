@@ -6,3 +6,7 @@ add_executable (HTMLViewCompiler Sources/Stroika/Frameworks/WebServer/HTMLViewCo
 target_link_libraries (HTMLViewCompiler PRIVATE stroika-foundation)
 set_target_properties (HTMLViewCompiler PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${STROIKA_BUILDS_DIR}bin$<0:>") # $<0:>: Library/CMakeLists.txt
 StroikaCopyFilesToExeDir (HTMLViewCompiler)
+
+# make's target tools
+add_custom_target (tools)
+add_dependencies (tools HTMLViewCompiler)

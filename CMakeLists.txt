@@ -7,7 +7,7 @@
 # Each configuration has a preset of its name (CMakeUserPresets.json, which ApplyConfiguration writes), giving its
 # toolchain file, generator and build directory (IntermediateFiles/<configuration>/CMake):
 #     cmake --preset <configuration>
-#     CMAKE_BUILD_PARALLEL_LEVEL=8 cmake --build --preset <configuration>
+#     CMAKE_BUILD_PARALLEL_LEVEL=8 cmake --build --preset <configuration> [--target libraries|tools|tests|samples|documentation|third-party-components]
 #     ctest --preset <configuration> -j8
 # The jobs (make's -jN sets CMAKE_BUILD_PARALLEL_LEVEL): with a Makefiles generator, the inner builds share make's job
 # slots, as under make; with Ninja, each inner build - one at a time - takes CMAKE_BUILD_PARALLEL_LEVEL's (a -j would
@@ -55,7 +55,27 @@ ExternalProject_Add (Stroika
     BUILD_ALWAYS ON
     USES_TERMINAL_BUILD ON
     ${dependsOn_}
+    STEP_TARGETS configure
 )
+
+# make's targets that build part of it, each by its name: third-party-components, and the Stroika project's own targets
+# libraries, tools, tests, samples and documentation - each built after that project's configure step (so after the
+# components), with the outer build's job slots under make (its $(MAKE), as ExternalProject's own steps)
+add_custom_target (third-party-components)
+if (STROIKA_BUILD_THIRD_PARTY_COMPONENTS)
+    add_dependencies (third-party-components ThirdPartyComponents)
+endif ()
+if (CMAKE_GENERATOR MATCHES "Makefiles")
+    set (buildTarget_ "$(MAKE)" -C "${CMAKE_BINARY_DIR}/Stroika")
+elseif (CMAKE_GENERATOR MATCHES "^Visual Studio")
+    set (buildTarget_ "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}/Stroika" --config $<CONFIG> --parallel --target)
+else ()
+    set (buildTarget_ "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}/Stroika" --target)
+endif ()
+foreach (target_ libraries tools tests samples documentation)
+    add_custom_target (${target_} COMMAND ${buildTarget_} ${target_} USES_TERMINAL)
+    add_dependencies (${target_} Stroika-configure)
+endforeach ()
 
 # ctest here runs Stroika's regression tests, which its own build directory lists
 enable_testing ()

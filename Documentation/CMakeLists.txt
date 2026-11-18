@@ -7,6 +7,7 @@
 find_program (STROIKA_DOXYGEN doxygen)
 if (NOT STROIKA_DOXYGEN)
     message (STATUS "Documentation: not built, as no doxygen is installed")
+    add_custom_target (documentation COMMAND "${CMAKE_COMMAND}" -E echo "Documentation: not built, as no doxygen is installed" VERBATIM)
     return ()
 endif ()
 StroikaReadVersion ("${PROJECT_SOURCE_DIR}/../STROIKA_VERSION" version_)
