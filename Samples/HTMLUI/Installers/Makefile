@@ -213,7 +213,7 @@ doBld_:
 	mkdir -p $(WIX_WORKDIR)dlls
 	/bin/find $(TARGET_OUT_DIR)Backend -name "*.dll" -exec cp '{}' $(WIX_WORKDIR)/dlls \;
 	cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
-	if [ -z "$(ls -A ${WIX_WORKDIR}html)" ]; then\
+	if [ -z "$$(ls -A ${WIX_WORKDIR}html)" ]; then\
 		# if no files - make some file so build doesn't fail\
 		echo "<html><body>empty</body></html>" > ${WIX_WORKDIR}html/index.html;\
 	fi
