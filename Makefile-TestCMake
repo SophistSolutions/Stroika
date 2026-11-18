@@ -4,10 +4,10 @@
 # (after Build/Scripts/MakeBuildRoot, nothing else: as make's all does, it first makes the default configurations, if there
 # are none). all: the configuration built with its CMake presets (CMakeUserPresets.json, written as it is applied) -
 # its third-party components, then Stroika's libraries, tests and samples, into Builds/<configuration>, where make puts
-# them. Where the CMake build leaves the components to make (STROIKA_BUILD_THIRD_PARTY_COMPONENTS OFF in its cache), make
-# builds them first. run-tests: all, then the tests, run by ctest. Each runs make's -j jobs at once (just -j, from make 3.81: one per
-# processor); without CONFIGURATION, for each configuration make builds by default (or each TAGS= names). Any other target
-# is the Makefile's: clobber, distclean, default-configurations ...
+# them - running make's -j jobs at once (just -j, from make 3.81: one per processor). Where the CMake build leaves the
+# components to make (STROIKA_BUILD_THIRD_PARTY_COMPONENTS OFF in its cache), make builds them first. run-tests: all, then
+# the tests, run by ctest one at a time, as make runs them. Without CONFIGURATION, each configuration make builds by
+# default (or each TAGS= names). Any other target is the Makefile's: clobber, distclean, default-configurations ...
 #
 export MAKE_INDENT_LEVEL ?= $(MAKELEVEL)
 CONFIGURATION_TAGS ?= $(TAGS)
@@ -31,8 +31,8 @@ FindCMake_ = cmake_="$$(Build/Scripts/GetConfigurationParameter $(CONFIGURATION)
 	case "$$cmake_" in [A-Za-z]:/*) cmake_="$$(cygpath --unix "$$cmake_")";; esac &&\
 	case "$$cmake_" in */*) ctest_="$$(dirname "$$cmake_")/ctest";; *) ctest_=ctest;; esac
 
-# the jobs make was given (-jN), for cmake and ctest - cmake's build runs a make of its own, with that many jobs (so not
-# given this make's MAKEFLAGS: its jobserver, its -s and -k)
+# the jobs make was given (-jN), for cmake's build - a make of its own, with that many jobs (so not given this make's
+# MAKEFLAGS: its jobserver, its -s and -k)
 FindJobs_ = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
 	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
 
@@ -62,8 +62,8 @@ all:
 
 run-tests: all
 	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika CMake Run-Tests {$(CONFIGURATION)}:"
-	@$(FindCMake_) && $(FindJobs_) &&\
-	if ! "$$ctest_" --preset $(CONFIGURATION) $${jobs_:+--parallel $$jobs_}; then\
+	@$(FindCMake_) &&\
+	if ! "$$ctest_" --preset $(CONFIGURATION); then\
 		if [ "$${TEST_FAILURES_CAUSE_FAILED_MAKE:-1}" -ne 0 ]; then exit 1; fi;\
 		echo "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
 	fi
