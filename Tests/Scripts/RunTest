@@ -16,11 +16,14 @@
 #	is captured with its stdout: the test harness reports each failure there ("FAILED: ...", see
 #	Frameworks/Test/TestHarness.h), and the check at the end must see it.
 #
-#	Environment - normally exported by Tests/Makefile; all optional:
+#	Environment - normally exported by Tests/Makefile, or given by ctest (Tests/CMakeLists.txt); all optional:
 #		PREFIX_					indentation leader for the report lines
 #		RunPrefix				per-configuration command prefix for the test (from the configuration file)
-#		VALGRIND				if non-empty, run under valgrind with VALGRIND_OPTIONS; remotely, the *.supp
-#								suppression files are copied alongside
+#		VALGRIND				if non-empty, run under valgrind with VALGRIND_OPTIONS - by default, for memcheck,
+#								its full leak check with origins tracked, the suppression files VALGRIND_SUPPRESSIONS
+#								names (in Tests/; by default Valgrind-MemCheck-Common.supp), then EXTRA_VALGRIND_OPTIONS.
+#								Remotely, those suppression files - and any *.supp in the current directory - are
+#								copied alongside
 #		REMOTE					user@host: copy EXE there and run it over ssh
 #		REMOTE_DIR				parent directory on REMOTE (default /tmp). Each test gets its own subdirectory,
 #								used as its working directory and REMOVED afterwards - so a small RAM-backed /tmp
@@ -45,9 +48,26 @@ MY_DIR_="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TESTNAME_=$("${MY_DIR_}/PrintTestName" "$NN_")
 SHOWN_EXE_=$("${StroikaSourceRoot}Build/Scripts/SubstituteBackVariables" "$EXE_")
 
+# valgrind's command prefix: locally (VALPREFIX_), the default suppression files where they are; on REMOTE
+# (VALREMOTEPREFIX_), beside the test
 VALPREFIX_=
+VALREMOTEPREFIX_=
+VALSUPPRESSIONS_=
 if [ -n "$VALGRIND" ] ; then
-	VALPREFIX_="valgrind $VALGRIND_OPTIONS"
+	if [ -n "$VALGRIND_OPTIONS" ] || [ "$VALGRIND" != "memcheck" ] ; then
+		VALPREFIX_="valgrind $VALGRIND_OPTIONS"
+		VALREMOTEPREFIX_=$VALPREFIX_
+	else
+		VALPREFIX_="valgrind -q --track-origins=yes --tool=memcheck --gen-suppressions=all --leak-check=full"
+		VALREMOTEPREFIX_=$VALPREFIX_
+		for s_ in ${VALGRIND_SUPPRESSIONS:-Valgrind-MemCheck-Common.supp} ; do
+			VALSUPPRESSIONS_="$VALSUPPRESSIONS_ $(dirname "$MY_DIR_")/$s_"
+			VALPREFIX_="$VALPREFIX_ --suppressions=$(dirname "$MY_DIR_")/$s_"
+			VALREMOTEPREFIX_="$VALREMOTEPREFIX_ --suppressions=$s_"
+		done
+		VALPREFIX_="$VALPREFIX_ $EXTRA_VALGRIND_OPTIONS"
+		VALREMOTEPREFIX_="$VALREMOTEPREFIX_ $EXTRA_VALGRIND_OPTIONS"
+	fi
 fi
 
 report_ () {
@@ -76,14 +96,17 @@ else
 		$SSH_ "$REMOTE" "rm -rf '$DIR_'" > /dev/null 2>&1
 		exit 1
 	fi
-	if [ -n "$VALGRIND" ] && ls ./*.supp > /dev/null 2>&1 ; then
-		scp $SSH_REMOTE_WARNINGS_OFF -q ./*.supp "$REMOTE:$DIR_/"
+	if [ -n "$VALGRIND" ] ; then
+		SUPPS_="$VALSUPPRESSIONS_ $(ls ./*.supp 2> /dev/null)"
+		if [ -n "$(echo $SUPPS_)" ] ; then
+			scp $SSH_REMOTE_WARNINGS_OFF -q $SUPPS_ "$REMOTE:$DIR_/"
+		fi
 	fi
 
 	# TMPDIR too: a test's temp files go in an app temp dir named after the executable (see AppTmpFileManager),
 	# which would otherwise be left behind as /tmp/TestNN - where an older harness, one that copies the test
 	# binary to exactly /tmp/TestNN, then collides with it ("Is a directory").
-	CMD_="$RunPrefix $VALPREFIX_ ./$BASE_ $ARGS_"
+	CMD_="$RunPrefix $VALREMOTEPREFIX_ ./$BASE_ $ARGS_"
 	if [ -n "$REMOTE_DOCKER_IMAGE" ] ; then
 		# Same path inside the container, so ./$BASE_, the .supp files and PerformanceDump.txt all line up.
 		# --user: as REMOTE's own user, like a native run - as root, a test that checks permissions behaves

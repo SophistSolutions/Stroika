@@ -1,7 +1,7 @@
 #
 # The regression tests: Tests/NN, each its Test.cpp built as TestNN, linked with the Frameworks library (and googletest's
-# main). ctest runs each through Tests/Scripts/RunTest, as make run-tests does - so RunTest's REMOTE=, VALGRIND= and so on
-# work the same way:
+# main). ctest runs each through Tests/Scripts/RunTest, as make run-tests does (given --gtest_brief too) - so RunTest's
+# REMOTE=, VALGRIND= and so on work the same way:
 #     ctest --test-dir <build directory> -j8 --output-on-failure
 # (with a Visual Studio generator, -C and the configuration's build type too: -C Debug, or -C Release).
 #
@@ -29,7 +29,7 @@ foreach (n_ IN LISTS tests_)
         target_link_libraries (Test${n_} PRIVATE GTest::gtest_main)
     endif ()
     StroikaCopyFilesToExeDir (Test${n_})
-    add_test (NAME Test${n_} COMMAND "${STROIKA_BASH}" "${CMAKE_CURRENT_SOURCE_DIR}/Scripts/RunTest" ${n_} $<TARGET_FILE:Test${n_}>)
+    add_test (NAME Test${n_} COMMAND "${STROIKA_BASH}" "${CMAKE_CURRENT_SOURCE_DIR}/Scripts/RunTest" ${n_} $<TARGET_FILE:Test${n_}> --gtest_brief)
     # and one at a time, even under ctest -j, as make run-tests runs them: run together, some upset each other
     set_tests_properties (Test${n_} PROPERTIES ENVIRONMENT "${environment_}" RUN_SERIAL ON)
     if (WIN32)

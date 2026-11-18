@@ -23,25 +23,10 @@ export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
 
-ifeq (memcheck,$(VALGRIND))
-DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-MemCheck-Common.supp
-ifneq (,$(wildcard Valgrind-MemCheck-Common-$(ARCH).supp))
-DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-Common-$(ARCH).supp
-endif
-VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
-endif
-
-ifeq (memcheck,$(VALGRIND))
-EXTRA_VALGRIND_OPTIONS=
-VALGRIND_EXPANDED_SUPPRESSIONS:= $(foreach vs,$(VALGRIND_SUPPRESSIONS),--suppressions=$(vs))
-VALGRIND_OPTIONS=-q --track-origins=yes --tool=memcheck --gen-suppressions=all --leak-check=full $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
-endif
-
-
-
 # Each test is run by Scripts/RunTest - locally, on REMOTE over ssh, or in a docker container there - which
-# takes its settings from these (see the top of that script for what each one means).
-export REMOTE REMOTE_DIR REMOTE_DOCKER_IMAGE REMOTE_DOCKER_ARGS RunPrefix VALGRIND VALGRIND_OPTIONS SSH_REMOTE_WARNINGS_OFF StroikaPlatformTargetBuildDir PREFIX_
+# takes its settings from these (see the top of that script for what each one means; VALGRIND=memcheck's default
+# options are there too, for ctest's runs as well as these).
+export REMOTE REMOTE_DIR REMOTE_DOCKER_IMAGE REMOTE_DOCKER_ARGS RunPrefix VALGRIND VALGRIND_OPTIONS VALGRIND_SUPPRESSIONS EXTRA_VALGRIND_OPTIONS SSH_REMOTE_WARNINGS_OFF StroikaPlatformTargetBuildDir PREFIX_
 
 
 
