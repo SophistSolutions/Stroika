@@ -1,10 +1,10 @@
 #
-# Stroika's whole CMake build of one configuration, as make builds it - compiling nothing itself, it runs three builds in
+# Stroika's whole CMake build of one configuration, as make builds it - compiling nothing itself, it runs these builds in
 # turn: the third-party components the configuration uses (ThirdPartyComponents/CMakeLists.txt, each installed into the
-# configuration's Builds directory), then Stroika's libraries, tools and tests (Library/CMakeLists.txt, which puts them
-# there too, as make does, with Stroika's CMake package), then - once the libraries are built - the samples
-# (Samples/CMakeLists.txt, built on that package, as a program using Stroika builds). Each is a CMake project of its own,
-# with its own build directory inside this one.
+# configuration's Builds directory), then Stroika's libraries and tools (Library/CMakeLists.txt, which puts them there
+# too, as make does, with Stroika's CMake package), then - once the libraries are built - the regression tests and the
+# samples (Tests/CMakeLists.txt and Samples/CMakeLists.txt, each built on that package, as a program using Stroika builds).
+# Each is a CMake project of its own, with its own build directory inside this one.
 #
 # Each configuration has a preset of its name (CMakeUserPresets.json, which ApplyConfiguration writes), giving its
 # toolchain file, generator and build directory (IntermediateFiles/<configuration>/CMake):
@@ -95,7 +95,7 @@ else ()
     set (buildTarget_ "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}/Stroika" --target)
 endif ()
 
-# Its libraries first, a step of their own (Stroika-libraries), which the samples need - not all of it
+# Its libraries first, a step of their own (Stroika-libraries), which the tests and samples need - not all of it
 ExternalProject_Add_Step (Stroika libraries
     COMMAND ${buildTarget_} libraries
     DEPENDEES configure
@@ -105,32 +105,37 @@ ExternalProject_Add_Step (Stroika libraries
 )
 ExternalProject_Add_StepTargets (Stroika libraries)
 
-# The samples, a project built on Stroika's package, which finds it in the configuration's Builds directory (as a program
-# using Stroika would) - make's target samples
-ExternalProject_Add (samples
-    SOURCE_DIR "${CMAKE_SOURCE_DIR}/Samples"
-    BINARY_DIR "${CMAKE_BINARY_DIR}/Samples"
-    CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}" "-DCMAKE_PREFIX_PATH=${STROIKA_BUILDS_DIR}"
-    ${buildCommand_}
-    INSTALL_COMMAND ""
-    BUILD_ALWAYS ON
-    USES_TERMINAL_BUILD ON
-    DEPENDS Stroika-libraries
-)
+# The regression tests and the samples, each a project built on Stroika's package, which finds it in the configuration's
+# Builds directory (as a program using Stroika would) - make's targets tests and samples
+foreach (directory_ Tests Samples)
+    string (TOLOWER "${directory_}" target_)
+    ExternalProject_Add (${target_}
+        SOURCE_DIR "${CMAKE_SOURCE_DIR}/${directory_}"
+        BINARY_DIR "${CMAKE_BINARY_DIR}/${directory_}"
+        CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}" "-DCMAKE_PREFIX_PATH=${STROIKA_BUILDS_DIR}"
+        ${buildCommand_}
+        INSTALL_COMMAND ""
+        BUILD_ALWAYS ON
+        USES_TERMINAL_BUILD ON
+        DEPENDS Stroika-libraries
+    )
+endforeach ()
 
-# make's targets that build part of it, each by its name: third-party-components, libraries, samples (above), and the
-# Stroika project's own targets tools, tests and documentation
+# make's targets that build part of it, each by its name: third-party-components, libraries, tests and samples (above),
+# and the Stroika project's own targets tools and documentation
 add_custom_target (third-party-components)
 if (STROIKA_BUILD_THIRD_PARTY_COMPONENTS)
     add_dependencies (third-party-components ThirdPartyComponents)
 endif ()
 add_custom_target (libraries)
 add_dependencies (libraries Stroika-libraries)
-foreach (target_ tools tests documentation)
+foreach (target_ tools documentation)
     add_custom_target (${target_} COMMAND ${buildTarget_} ${target_} USES_TERMINAL)
     add_dependencies (${target_} Stroika-configure)
 endforeach ()
 
-# ctest here runs Stroika's regression tests, which its own build directory lists
+# ctest here runs Stroika's regression tests, which their own build directory lists - once that is configured (make tests,
+# or all): before, ctest finds none, rather than stopping at the missing list
 enable_testing ()
-set_property (DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_BINARY_DIR}/Stroika/Tests/CTestTestfile.cmake")
+file (CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/StroikaTests.cmake" CONTENT "include (\"${CMAKE_BINARY_DIR}/Tests/CTestTestfile.cmake\" OPTIONAL)\n")
+set_property (DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_BINARY_DIR}/StroikaTests.cmake")

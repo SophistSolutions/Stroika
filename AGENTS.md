@@ -85,7 +85,7 @@ Regression tests live under `Tests/<NN>/` (numbered directories, each a single `
 in a `//  TEST    <Namespace::Path>` comment near the top (e.g. `Tests/01/Test.cpp` is
 `Foundation::Caching`). To build/run **one test in isolation** (once the configuration has built):
 ```bash
-cmake --build IntermediateFiles/Debug/CMake/Stroika --target Test07 -j8   # with msbuild, add --config Debug (or Release)
+cmake --build IntermediateFiles/Debug/CMake/Tests --target Test07 -j8     # with msbuild, add --config Debug (or Release)
 ./Builds/Debug/Tests/Test07                                                # or, as run-tests runs it: ctest --preset Debug -R '^Test07$'
 ```
 (substitute the test number). `TEST_FAILURES_CAUSE_FAILED_MAKE=0` lets `run-tests` continue past

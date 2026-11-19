@@ -176,6 +176,7 @@ endif
 clean library-clobber:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Stroika $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Stroika-prefix\
+		$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Tests $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/tests-prefix\
 		$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Samples $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/samples-prefix
 	@if [ "$@" = "clean" ] ; then\
 		for stamp_ in $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/ThirdParty/*/stamp ; do\

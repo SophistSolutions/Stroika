@@ -1,15 +1,31 @@
 #
-# The regression tests: Tests/NN, each its Test.cpp built as TestNN, linked with the Frameworks library (and googletest's
-# main). ctest runs each through Tests/Scripts/RunTest, as make run-tests does (given --gtest_brief too) - so RunTest's
-# REMOTE=, VALGRIND= and so on work the same way:
+# Stroika's regression tests: Tests/NN, each its Test.cpp built as TestNN, linked with the Frameworks library (and
+# googletest's main) - a CMake project of its own, built on Stroika's package as the samples are (Samples/CMakeLists.txt):
+# the top CMakeLists.txt builds it once Stroika's libraries are built, as its target tests. For one configuration:
+#     cmake -S Tests -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
+#           -DCMAKE_PREFIX_PATH=<the configuration's Builds directory>
+# ctest runs each through Tests/Scripts/RunTest, as make run-tests does (given --gtest_brief too) - so RunTest's REMOTE=,
+# VALGRIND= and so on work the same way:
 #     ctest --test-dir <build directory> -j8 --output-on-failure
 # (with a Visual Studio generator, -C and the configuration's build type too: -C Debug, or -C Release).
 #
+cmake_minimum_required (VERSION 3.22)
+project (StroikaTests LANGUAGES C CXX)
+
+find_package (Stroika REQUIRED)
 if (NOT STROIKA_FEATURE_GoogleTest STREQUAL "no")
-    find_package (GTest CONFIG REQUIRED) # its targets are visible only below where it is found
+    find_package (GTest CONFIG REQUIRED) # googletest's main, for each test
 endif ()
 
-# each test where make puts it, Tests/ in the configuration's Builds directory (for $<0:>: Library/CMakeLists.txt)
+# with a Visual Studio generator, a project's files compiled at once (Library/CMakeLists.txt says why)
+if (CMAKE_GENERATOR MATCHES "^Visual Studio")
+    set (CMAKE_VS_GLOBALS "UseMultiToolTask=true" "EnforceProcessCountAcrossBuilds=true")
+endif ()
+
+enable_testing ()
+
+# each test where make puts it, Tests/ in the configuration's Builds directory - a generator expression, though empty,
+# keeps a Visual Studio generator from adding a directory for the build type
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${STROIKA_BUILDS_DIR}Tests$<0:>")
 
 # RunTest's environment, as make run-tests gives it: the configuration's command prefix, where Stroika's sources are, and
@@ -26,11 +42,9 @@ if (WIN32)
 endif ()
 
 file (GLOB tests_ RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/[0-9][0-9]")
-add_custom_target (tests) # make's target tests: them all
 foreach (n_ IN LISTS tests_)
     add_executable (Test${n_} ${n_}/Test.cpp)
-    add_dependencies (tests Test${n_})
-    target_link_libraries (Test${n_} PRIVATE stroika-frameworks)
+    target_link_libraries (Test${n_} PRIVATE Stroika::Frameworks)
     if (NOT STROIKA_FEATURE_GoogleTest STREQUAL "no")
         target_link_libraries (Test${n_} PRIVATE GTest::gtest_main)
     endif ()

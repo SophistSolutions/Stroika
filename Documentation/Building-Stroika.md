@@ -819,7 +819,7 @@ configured with the configuration's toolchain file - Stroika's compilers and fla
 
 `Stroika::Stroika` is both of Stroika's libraries - `Stroika::Foundation`, and `Stroika::Frameworks`, which brings Foundation with it - with the third-party libraries they use. `Stroika::HTMLViewCompiler` compiles a .swsp file to C++, and the package defines Stroika's CMake functions (Build/Lib/CMake): `StroikaMakeVersionFile`, `StroikaCopyFilesToExeDir`, `StroikaInstallers` and `StroikaEmbedFiles`.
 
-Stroika's samples build so: `Samples/CMakeLists.txt` is a project of its own, which Stroika's build runs once its libraries are built - each sample links `Stroika::Foundation` or `Stroika::Frameworks`.
+Stroika's regression tests and samples build so: `Tests/CMakeLists.txt` and `Samples/CMakeLists.txt` are projects of their own, which Stroika's build runs once its libraries are built - each test links `Stroika::Frameworks`, each sample `Stroika::Foundation` or `Stroika::Frameworks`.
 
 An application Skel makes still builds with make, against Stroika's libraries in its configuration's Builds directory, their flags from Stroika's .pc files (pkg-config).
 
