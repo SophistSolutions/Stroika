@@ -5,11 +5,9 @@
 add_library (stroika-frameworks STATIC)
 target_link_libraries (stroika-frameworks PUBLIC stroika-foundation)
 
-# googletest - Frameworks/Test, which Stroika's regression tests are built on, uses it
-if (NOT STROIKA_FEATURE_GoogleTest STREQUAL "no")
-    find_package (GTest CONFIG REQUIRED)
-    target_link_libraries (stroika-frameworks PUBLIC GTest::gtest)
-endif ()
+# and googletest, which Frameworks/Test - Stroika's regression tests are built on it - uses (StroikaDependencies:
+# Library/CMakeLists.txt)
+target_link_libraries (stroika-frameworks PUBLIC ${STROIKA_FRAMEWORKS_DEPENDENCIES})
 
 add_subdirectory (Auth)
 add_subdirectory (Led)

@@ -49,6 +49,10 @@ include (StroikaCopyFilesToExeDir)
 include (StroikaEmbedFiles)
 include (StroikaInstallers)
 include (StroikaMakeVersionFile)
+include (StroikaVersion)
+
+# the third-party libraries the configuration uses, for Foundation and Frameworks (and for Stroika's package, below)
+include (StroikaDependencies)
 
 # the libraries where make puts them, in the configuration's Builds directory (the tests and samples: their CMakeLists.txt) -
 # a generator expression, though empty, keeps a Visual Studio generator from adding a directory for the build type
@@ -78,3 +82,22 @@ add_subdirectory (../Samples Samples)
 
 # the documentation, Documentation/
 add_subdirectory (../Documentation Documentation)
+
+# Stroika's CMake package, for a program built on Stroika - find_package (Stroika): the libraries as Stroika::Foundation and
+# Stroika::Frameworks, both as Stroika::Stroika (all of Stroika, one name for it, as packages commonly give: fmt::fmt), the
+# tool Stroika::HTMLViewCompiler, and the functions in Build/Lib/CMake (StroikaConfig.cmake.in) - in the configuration's
+# Builds directory, beside its third-party libraries' packages. It names the libraries and the tool where this build makes
+# them, and the headers in the source tree.
+add_library (stroika INTERFACE)
+target_link_libraries (stroika INTERFACE stroika-frameworks) # and so Foundation
+set_target_properties (stroika-foundation PROPERTIES EXPORT_NAME Foundation)
+set_target_properties (stroika-frameworks PROPERTIES EXPORT_NAME Frameworks)
+set_target_properties (stroika PROPERTIES EXPORT_NAME Stroika)
+set (packageDirectory_ "${STROIKA_BUILDS_DIR}lib/cmake/Stroika")
+export (TARGETS stroika-foundation stroika-frameworks stroika HTMLViewCompiler NAMESPACE Stroika:: FILE "${packageDirectory_}/StroikaTargets.cmake")
+cmake_path (GET PROJECT_SOURCE_DIR PARENT_PATH sourceRoot_)
+string (APPEND sourceRoot_ "/")
+configure_file (StroikaConfig.cmake.in "${packageDirectory_}/StroikaConfig.cmake" @ONLY)
+include (CMakePackageConfigHelpers)
+StroikaReadVersion ("${PROJECT_SOURCE_DIR}/../STROIKA_VERSION" version_)
+write_basic_package_version_file ("${packageDirectory_}/StroikaConfigVersion.cmake" VERSION "${version__WIN32_FOUR_DOT}" COMPATIBILITY SameMinorVersion)

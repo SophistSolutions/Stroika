@@ -803,7 +803,23 @@ Use './Build/Scripts/Skel --help' to see options
 
 ## Integrating with CMake
 
-Stroika itself builds with CMake (since v3.0d26 - see Build Process, above). An application built on Stroika still builds as Skel sets it up: with make, against Stroika's libraries in its configuration's Builds directory, their flags from Stroika's .pc files (pkg-config).
+Stroika itself builds with CMake (since v3.0d26 - see Build Process, above), and writes a CMake package for each configuration (`lib/cmake/Stroika` in its Builds directory), for a program built on Stroika with CMake:
+
+  ~~~cmake
+  find_package (Stroika REQUIRED)
+  add_executable (MyApp Sources/Main.cpp)
+  target_link_libraries (MyApp PRIVATE Stroika::Stroika)
+  ~~~
+
+configured with the configuration's toolchain file - Stroika's compilers and flags, which a program linking Stroika must share - and its Builds directory where CMake looks for packages:
+
+  ~~~bash
+  cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=<Stroika>/IntermediateFiles/Debug/Toolchain.cmake -DCMAKE_PREFIX_PATH=<Stroika>/Builds/Debug
+  ~~~
+
+`Stroika::Stroika` is both of Stroika's libraries - `Stroika::Foundation`, and `Stroika::Frameworks`, which brings Foundation with it - with the third-party libraries they use. `Stroika::HTMLViewCompiler` compiles a .swsp file to C++, and the package defines Stroika's CMake functions (Build/Lib/CMake): `StroikaMakeVersionFile`, `StroikaCopyFilesToExeDir`, `StroikaInstallers` and `StroikaEmbedFiles`.
+
+An application Skel makes still builds with make, against Stroika's libraries in its configuration's Builds directory, their flags from Stroika's .pc files (pkg-config).
 
 ---
 

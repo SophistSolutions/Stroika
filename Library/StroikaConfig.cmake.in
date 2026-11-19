@@ -1,0 +1,37 @@
+#
+# Stroika's CMake package, for the configuration @STROIKA_CONFIGURATION@ - written by its build (Library/CMakeLists.txt). For
+# a program built on Stroika, with this configuration's toolchain file (its compilers and flags, which must be Stroika's)
+# and its Builds directory in CMAKE_PREFIX_PATH:
+#     find_package (Stroika REQUIRED)
+#     target_link_libraries (MyApp PRIVATE Stroika::Stroika)
+# Stroika::Stroika is all of Stroika: Stroika::Frameworks, which brings Stroika::Foundation with it (either alone is there
+# too); Stroika::HTMLViewCompiler compiles a .swsp file to C++; and Stroika's CMake functions (Build/Lib/CMake) are defined -
+# StroikaMakeVersionFile, StroikaCopyFilesToExeDir, StroikaInstallers and StroikaEmbedFiles. The libraries are where
+# Stroika's build made them, the headers in its source tree.
+#
+
+# the configuration's settings (STROIKA_*), which Stroika's functions and the finding of its third-party libraries use
+include ("@configurationDir_@/Stroika-Configuration.cmake")
+# its third-party libraries, those installed for the configuration ahead of any installed elsewhere
+list (PREPEND CMAKE_PREFIX_PATH "${STROIKA_BUILDS_DIR}")
+# and their include directories as -I, as Stroika's build gives them, not -isystem (Library/CMakeLists.txt says why)
+set (CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
+# the configuration's C++ standard, which its flags name too, as Stroika's build sets it: else a package asking for a lower
+# one (googletest, through Stroika::Frameworks) makes cmake add that standard's flag after the configuration's - overriding
+# it where the compiler's default is lower (MSVC)
+if (STROIKA_CXX_STANDARD)
+    set (CMAKE_CXX_STANDARD ${STROIKA_CXX_STANDARD})
+    set (CMAKE_CXX_STANDARD_REQUIRED ON)
+    set (CMAKE_CXX_EXTENSIONS OFF)
+endif ()
+list (APPEND CMAKE_MODULE_PATH "@sourceRoot_@Build/Lib/CMake")
+
+if (TARGET Stroika::Foundation) # found already, here
+    return ()
+endif ()
+include (StroikaDependencies)
+include ("${CMAKE_CURRENT_LIST_DIR}/StroikaTargets.cmake")
+include (StroikaCopyFilesToExeDir)
+include (StroikaEmbedFiles)
+include (StroikaInstallers)
+include (StroikaMakeVersionFile)
