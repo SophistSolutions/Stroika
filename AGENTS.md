@@ -276,8 +276,8 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
   run through `bash.exe -lc` from another shell starts with `PATHEXT` empty, so Stroika's `FindExecutableInPath` finds no
   `.exe` and Tests/38 fails: `export PATHEXT=".COM;.EXE;.BAT;.CMD"` first. A fresh `./configure` also needs `COMSPEC` and
   `ProgramFiles(x86)` set, or vcvarsall silently runs nothing; the second is not a valid shell name, so pass it with
-  `env "ProgramFiles(x86)=C:\Program Files (x86)" ./configure ...`. Python is installed even when `python3` says it is
-  not (that is the Microsoft Store alias): use `py`.
+  `env "ProgramFiles(x86)=C:\Program Files (x86)" ./configure ...`. Python is `python3`: in MSYS2 and Cygwin their own
+  `/usr/bin/python3`, which Stroika's Python scripts run (`Documentation/Installing-Required-Tools.md`).
 - **A hung test inside a release regression container** cannot be attached from inside (no `CAP_SYS_PTRACE`). Attach
   from a sibling container in its PID namespace: `docker run --rm -i --pid=container:<regtest> --cap-add=SYS_PTRACE
   --security-opt seccomp=unconfined --user root -v /Sandbox:/Sandbox <same image> gdb -batch -ex "set sysroot
