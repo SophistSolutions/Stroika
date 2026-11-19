@@ -42,6 +42,11 @@ option (STROIKA_BUILD_THIRD_PARTY_COMPONENTS "build the configuration's third-pa
 if (CMAKE_GENERATOR MATCHES "^Visual Studio")
     set (buildCommand_ BUILD_COMMAND "${CMAKE_COMMAND}" --build <BINARY_DIR> --config $<CONFIG> --parallel)
 endif ()
+
+# Stroika's own project, and the tests' and the samples', configured saying only notices, warnings and errors - not each
+# compiler check and package found (cmake --log-level=STATUS in its build directory shows those)
+set (quietConfigure_ "--log-level=NOTICE")
+
 set (dependsOn_)
 if (STROIKA_BUILD_THIRD_PARTY_COMPONENTS)
     ExternalProject_Add (ThirdPartyComponents
@@ -59,7 +64,7 @@ endif ()
 ExternalProject_Add (Stroika
     SOURCE_DIR "${CMAKE_SOURCE_DIR}/Library"
     BINARY_DIR "${CMAKE_BINARY_DIR}/Stroika"
-    CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+    CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}" ${quietConfigure_}
     ${buildCommand_}
     INSTALL_COMMAND ""
     BUILD_ALWAYS ON
@@ -95,7 +100,7 @@ foreach (directory_ Tests Samples)
     ExternalProject_Add (${target_}
         SOURCE_DIR "${CMAKE_SOURCE_DIR}/${directory_}"
         BINARY_DIR "${CMAKE_BINARY_DIR}/${directory_}"
-        CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}" "-DCMAKE_PREFIX_PATH=${STROIKA_BUILDS_DIR}"
+        CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}" "-DCMAKE_PREFIX_PATH=${STROIKA_BUILDS_DIR}" ${quietConfigure_}
         ${buildCommand_}
         INSTALL_COMMAND ""
         BUILD_ALWAYS ON
