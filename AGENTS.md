@@ -66,8 +66,10 @@ use `$(StroikaBuildsRoot)`, `$(StroikaIntermediateFilesRoot)`, `$(StroikaConfigu
 `$(StroikaSourceRoot)Builds/` and the like.
 
 Each configuration builds in `IntermediateFiles/{CONFIGURATION}/CMake`, with its CMake preset (`CMakeUserPresets.json`,
-written as the configuration is applied): `cmake --preset Debug` then `cmake --build --preset Debug -j8` builds as
-`make CONFIGURATION=Debug all -j8` does, and VS Code's CMake Tools can build from the presets. Its generator is
+written as the configuration is applied - by any make target for it, or `make apply-configurations`): `cmake --preset
+Debug` then `cmake --build --preset Debug -j8` builds as `make CONFIGURATION=Debug all -j8` does, and VS Code's CMake
+Tools can build from the presets. Without make, a build stops while its configuration has changed since it was applied,
+saying how to apply it again (CMakeLists.txt). Its generator is
 configure's `--cmake-generator` - `ninja`, `msbuild` or `make`; by default ninja with Visual Studio, else make - and a
 change starts that configuration's build afresh; `make` prints it as the build starts. CMake tracks header dependencies:
 a header edit recompiles what includes it.

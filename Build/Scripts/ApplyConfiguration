@@ -299,7 +299,7 @@ def StroikaConfigurationText_(c):
     The configuration's Stroika settings, for Stroika's own CMake build (Library/CMakeLists.txt, which reads them from beside
     the toolchain file it is given): its target platforms, each optional component's feature flag, where make installs the
     third-party components, and Foundation's preprocessor definitions and include directories - what make takes from
-    Configuration.mk and stroika-foundation.pc.
+    Configuration.mk and stroika-foundation.pc - and the configuration file they come from.
     """
     vs = IsVisualStudio_(c.BuildPlatform)
     path = lambda p: Backtick_(["cygpath", "--mixed", p])[0].strip() if vs else p  # noqa: E731 - cmake on Windows takes C:/...
@@ -324,6 +324,8 @@ def StroikaConfigurationText_(c):
         if m:
             standard = {"latest": "23", "2a": "20", "2b": "23", "2c": "26"}.get(m.group(1), m.group(1))
     w("set(STROIKA_CXX_STANDARD " + CMakeString_(standard) + ")\n")
+    w("# the configuration file this was applied from: Stroika's CMake build stops while that is newer (CMakeLists.txt)\n")
+    w("set(STROIKA_CONFIGURATION_FILE " + CMakeString_(DirectoryLayout.AbsoluteDir(DirectoryLayout.CONFIGURATION_FILES_DIR) + c.name + ".xml") + ")\n")
     w("\n")
     w("# the configuration's compiler flags without its platform's preprocessor definitions (PLATFORM_CFLAGS, PLATFORM_CXXFLAGS) -\n")
     w("# what make gives a third-party component that takes its flags from the environment (OpenSSL)\n")
