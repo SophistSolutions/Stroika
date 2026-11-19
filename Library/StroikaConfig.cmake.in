@@ -13,6 +13,9 @@
 # the configuration's settings (STROIKA_*), which Stroika's functions and the finding of its third-party libraries use
 include ("@configurationDir_@/Stroika-Configuration.cmake")
 list (APPEND CMAKE_MODULE_PATH "@sourceRoot_@Build/Lib/CMake")
+# that configuration as applied current, as Stroika's libraries were built with it: else the build stops, saying how
+include (StroikaCheckConfiguration)
+StroikaCheckConfiguration ("@configurationDir_@/Toolchain.cmake")
 # and its build type, C++ standard and third-party components, as Stroika's own build takes them
 include (StroikaBuildSettings)
 

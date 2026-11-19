@@ -23,29 +23,12 @@ if (NOT CMAKE_TOOLCHAIN_FILE)
     message (FATAL_ERROR "No configuration: use its preset (cmake --preset <configuration>), or give its toolchain file, -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake")
 endif ()
 
-# The configuration as applied (Build/Scripts/ApplyConfiguration) - its toolchain file and its Stroika settings beside it -
-# must be current: no older than its configuration file, or than ApplyConfiguration, and that configuration made by this
-# Stroika (STROIKA_VERSION no newer). make sees to that before it runs cmake, as its target apply-configuration-if-stale_
-# does; without make (cmake --preset, an IDE), the build stops, saying how. Each of those files is a configure dependency,
-# so a build after one changes stops too. (A IS_NEWER_THAN B holds for files of the same time too: so each test asks
-# whether the later one is NOT newer than the earlier.)
+# The configuration as applied must be current: else the build stops, saying how (StroikaCheckConfiguration)
 get_filename_component (configurationDir_ "${CMAKE_TOOLCHAIN_FILE}" DIRECTORY)
 include ("${configurationDir_}/Stroika-Configuration.cmake")
-if (NOT DEFINED STROIKA_CONFIGURATION_FILE)
-    message (FATAL_ERROR "Configuration ${STROIKA_CONFIGURATION} was applied by an older Stroika: apply it again - make CONFIGURATION=${STROIKA_CONFIGURATION} apply-configuration")
-endif ()
-set (applyConfiguration_ "${CMAKE_SOURCE_DIR}/Build/Scripts/ApplyConfiguration")
-set (stroikaVersion_ "${CMAKE_SOURCE_DIR}/STROIKA_VERSION")
-set_property (DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${STROIKA_CONFIGURATION_FILE}" "${applyConfiguration_}" "${stroikaVersion_}")
-if (NOT EXISTS "${STROIKA_CONFIGURATION_FILE}")
-    message (FATAL_ERROR "Configuration ${STROIKA_CONFIGURATION} is gone: there is no ${STROIKA_CONFIGURATION_FILE}")
-elseif (NOT "${STROIKA_CONFIGURATION_FILE}" IS_NEWER_THAN "${stroikaVersion_}")
-    message (FATAL_ERROR "Configuration ${STROIKA_CONFIGURATION} was made by an older Stroika (STROIKA_VERSION is newer than its ${STROIKA_CONFIGURATION_FILE}): make it again, then apply it - make CONFIGURATION=${STROIKA_CONFIGURATION} reconfigure, then make CONFIGURATION=${STROIKA_CONFIGURATION} apply-configuration")
-elseif (NOT "${CMAKE_TOOLCHAIN_FILE}" IS_NEWER_THAN "${STROIKA_CONFIGURATION_FILE}")
-    message (FATAL_ERROR "Configuration ${STROIKA_CONFIGURATION} has changed since it was applied (its ${STROIKA_CONFIGURATION_FILE} is newer than ${CMAKE_TOOLCHAIN_FILE}): apply it again - make CONFIGURATION=${STROIKA_CONFIGURATION} apply-configuration")
-elseif (NOT "${CMAKE_TOOLCHAIN_FILE}" IS_NEWER_THAN "${applyConfiguration_}")
-    message (FATAL_ERROR "Build/Scripts/ApplyConfiguration has changed since configuration ${STROIKA_CONFIGURATION} was applied: apply it again - make CONFIGURATION=${STROIKA_CONFIGURATION} apply-configuration")
-endif ()
+list (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Build/Lib/CMake")
+include (StroikaCheckConfiguration)
+StroikaCheckConfiguration ("${CMAKE_TOOLCHAIN_FILE}")
 
 include (ExternalProject)
 
