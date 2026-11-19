@@ -33,3 +33,9 @@ list (PREPEND CMAKE_PREFIX_PATH "${STROIKA_BUILDS_DIR}")
 # -isystem ones - so given CPATH=/opt/homebrew/include (a common Mac shell setting), Homebrew's OpenSSL headers would win
 # over the configuration's own
 set (CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
+
+# each file's compile command, in compile_commands.json in the build directory, for IntelliSense: VS Code's C/C++
+# extension reads it, as each configuration's entry in .vscode/c_cpp_properties.json says (ApplyConfiguration) - so it
+# finds what the build gives each file (a generated AppVersion.h's directory, say). CMake writes it with the Ninja and
+# Makefile generators only.
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)

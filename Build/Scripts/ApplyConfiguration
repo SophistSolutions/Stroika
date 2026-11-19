@@ -384,6 +384,17 @@ def CMakeGenerator_(c):
     return ("Ninja" if choice == "ninja" else "Unix Makefiles", None)
 
 
+def ApplicationRoot_():
+    """
+    The root of the application the build root builds, if it builds one on Stroika (TOP_ROOT, as Skel makes one: its
+    CMakeLists.txt there), not Stroika itself - absolute, ending in /; else None
+    """
+    root = DirectoryLayout.AbsoluteDir(DirectoryLayout.TOP_ROOT)
+    if root != DirectoryLayout.AbsoluteDir(DirectoryLayout.STROIKA_SOURCE_ROOT) and os.path.exists(root + "CMakeLists.txt"):
+        return root
+    return None
+
+
 def CMakePresetsText_(c, existingText, forApplication=False):
     """
     The new CMakeUserPresets.json, given the old (None if there is none) - in the old one's line ending: the configuration's
@@ -668,6 +679,13 @@ def VSCodeText_(c, existingText):
         "compilerPath": ToFullPathEXE_(c.COMPILER_DRIVER_CPlusPlus),
         "intelliSenseMode": IntelliSenseModeFor_(c, c.COMPILER_DRIVER_CPlusPlus),
     }
+    if not CMakeGenerator_(c)[0].startswith("Visual Studio"):  # whose builds write no compile_commands.json
+        # each build's compile_commands.json (StroikaBuildSettings.cmake): each source file's flags, as its build compiles
+        # it - an application's and its Stroika's, or Stroika's own, its tests' and its samples'. A file none lists (or any,
+        # before the first build) takes includePath and defines.
+        buildsDir = DirectoryLayout.AbsoluteDir(DirectoryLayout.INTERMEDIATE_FILES_ROOT) + c.name + "/CMake/"
+        builds = ["App", "Stroika"] if ApplicationRoot_() is not None else ["Stroika", "Tests", "Samples"]
+        newCfg["compileCommands"] = [buildsDir + b + "/compile_commands.json" for b in builds]
     if index == len(configs):
         configs.append(newCfg)
     else:
@@ -772,10 +790,9 @@ def Main_(argv):
         sys.stdout.flush()
         WriteBytes_(CMAKE_PRESETS_FILE_, CMakePresetsText_(c, ReadText_(CMAKE_PRESETS_FILE_, "utf-8")).encode("utf-8"))
         sys.stdout.write("done\n")
-        # and an application's, built on Stroika (TOP_ROOT, the project its build root builds - as Skel makes one): its own
-        # presets, beside its top CMakeLists.txt
-        applicationRoot = DirectoryLayout.AbsoluteDir(DirectoryLayout.TOP_ROOT)
-        if applicationRoot != DirectoryLayout.AbsoluteDir(DirectoryLayout.STROIKA_SOURCE_ROOT) and os.path.exists(applicationRoot + "CMakeLists.txt"):
+        # and an application's: its own presets, beside its top CMakeLists.txt
+        applicationRoot = ApplicationRoot_()
+        if applicationRoot is not None:
             presets = applicationRoot + "CMakeUserPresets.json"
             sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + DirectoryLayout.ForDisplay(presets) + '" ... ')
             sys.stdout.flush()
