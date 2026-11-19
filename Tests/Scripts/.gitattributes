@@ -2,6 +2,7 @@
 * text=auto
 
 
+FilterCTestOutput text eol=lf
 PrintTestName text eol=lf
 PrintTestsList text eol=lf
 RunTest text eol=lf

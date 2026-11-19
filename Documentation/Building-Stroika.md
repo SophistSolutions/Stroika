@@ -582,7 +582,7 @@ make runs Stroika's CMake build (since Stroika v3.0d26: CMakeLists.txt), one bui
 - `make CONFIGURATION=zyx run-tests REMOTE='lewis@raspberrypi'`
 - `make CONFIGURATION=abc run-tests VALGRIND=memcheck`
 
-  Builds the regression tests, and runs them, one at a time (ctest). If REMOTE= is specified, each test is copied to the target machine with ssh, and run there (helpful for when cross-compiling - which, without REMOTE=, skips them). VALGRIND= is used to run memcheck, or leakcheck on the given configuration.
+  Builds the regression tests, and runs them, one at a time (ctest), showing each test's whole output. If REMOTE= is specified, each test is copied to the target machine with ssh, and run there (helpful for when cross-compiling - which, without REMOTE=, skips them). VALGRIND= is used to run memcheck, or leakcheck on the given configuration.
 
 - `make clean`, `make library-clobber`, `make clobber`
 

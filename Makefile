@@ -158,8 +158,10 @@ endif
 
 run-tests:	tests
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika's tests {$(CONFIGURATION)}:"
-	@$(FindCMake_) &&\
-	if ! "$$ctest_" --preset $(CONFIGURATION); then\
+	@# each test's whole output, as RunTest reports it, a level in (PREFIX_) - which the regression runs' summaries count
+	@# (Build/Scripts/RegressionTests): ctest's verbose output, less what ctest adds (Tests/Scripts/FilterCTestOutput)
+	@set -o pipefail; $(FindCMake_) &&\
+	if ! PREFIX_="$$($(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)))" "$$ctest_" --preset $(CONFIGURATION) --verbose | $(StroikaSourceRoot)Tests/Scripts/FilterCTestOutput; then\
 		if [ "$${TEST_FAILURES_CAUSE_FAILED_MAKE:-1}" -ne 0 ]; then exit 1; fi;\
 		echo "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
 	fi

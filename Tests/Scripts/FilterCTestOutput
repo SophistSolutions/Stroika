@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+#
+#   ctest --verbose ... | FilterCTestOutput
+#
+#   The tests' output as make run-tests shows it - each test's RunTest report, its [NN] line then the test's own output
+#   line for line - from ctest's verbose output. That prefixes each line of a test's output with the test's number ("12: "),
+#   and adds before it the test's command, working directory, environment and timeout: those are dropped, and the prefix,
+#   and ctest's own preamble; its progress and summary lines ("12/58 Test #12: Test12 ... Passed") are kept. Any other line
+#   ctest prints is kept as it is. Line by line, as each comes, so a long run shows its progress.
+#
+#   A test that does not pass, ctest shows again after its result line, unprefixed (--output-on-failure, which the test
+#   presets give, and which ctest has no option to turn off): dropped, so each line - each failure - is counted once.
+#
+#   Bytes in, bytes out: a test's output need not be in any one encoding.
+#
+import re
+import sys
+
+CTEST_PREAMBLE_ = re.compile(
+    rb"^(UpdateCTestConfiguration  from |Parse Config file:|Constructing a list of tests$|Done constructing a list of tests$|"
+    rb"Updating test list for fixtures$|Added \d+ tests? to meet fixture requirements$|Checking test dependency graph|"
+    rb"test \d+$| +Start +\d+: )"
+)
+TEST_PREAMBLE_ = re.compile(rb"^\d+: (Test command|Working Directory|Test timeout computed to be): ")
+ENVIRONMENT_ = re.compile(rb"^(\d+): Environment variables: *$")  # then its variables, a line each
+ENVIRONMENT_VARIABLE_ = re.compile(rb"^(\d+):  [^ =]+=")
+TEST_OUTPUT_ = re.compile(rb"^\d+: ?")
+RESULT_ = rb" *\d+/\d+ Test +#\d+: "  # a test's result line - its count right-aligned (" 1/58 Test  #1: ")
+NOT_PASSED_ = re.compile(rb"^" + RESULT_ + rb".*\*\*\*")  # ***Failed, ***Timeout, ***Exception ...
+END_OF_REPEAT_ = re.compile(rb"^($|\d+: |test \d+$| +Start +\d+: |" + RESULT_ + rb"|\d+% tests passed)")
+
+environmentOf = None  # the test whose environment ctest is listing
+repeating = False  # ctest is showing a test's output again
+for line in sys.stdin.buffer:
+    line = line.rstrip(b"\r\n")  # ctest's own lines may end in CR LF on Windows
+    if repeating:
+        if not END_OF_REPEAT_.match(line):
+            continue
+        repeating = False
+    if environmentOf is not None:
+        m = ENVIRONMENT_VARIABLE_.match(line)
+        if m and m.group(1) == environmentOf:
+            continue
+        environmentOf = None
+    m = ENVIRONMENT_.match(line)
+    if m:
+        environmentOf = m.group(1)
+    elif line and not CTEST_PREAMBLE_.match(line) and not TEST_PREAMBLE_.match(line):
+        sys.stdout.buffer.write(TEST_OUTPUT_.sub(b"", line, count=1) + b"\n")
+        sys.stdout.buffer.flush()
+        repeating = NOT_PASSED_.match(line) is not None
