@@ -49,12 +49,12 @@
     <Import Project="$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props" Condition="exists('$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props')" Label="User-Editable-Properties" />
   </ImportGroup>
   <PropertyGroup>
-    <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
+    <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>if exist "$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\CMake\App" rmdir /s /q "$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\CMake\App"</NMakeCleanCommandLine>
     <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\${APP_NAME}\</OutDir>
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\${APP_NAME}\</IntDir>
     <ExecutablePath>$(StroikaBuildToolsExtraPath);$(CommonExecutablePath)</ExecutablePath>
-    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\IntermediateFiles\$(Configuration)\${APP_NAME}\;$(ProjectDir)\..\..\..\ThirdPartyComponents\Stroika\StroikaRoot\Library\Sources\</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\IntermediateFiles\$(Configuration)\CMake\App\${APP_NAME}\;$(ProjectDir)\..\..\..\ThirdPartyComponents\Stroika\StroikaRoot\Library\Sources\</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
   <ItemGroup>

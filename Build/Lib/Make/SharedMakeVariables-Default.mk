@@ -134,6 +134,20 @@ endif
 # Makefile and its configurations (make clobber; make distclean deletes those too)
 StroikaClobberIntermediateFiles	=	/usr/bin/find $(StroikaIntermediateFilesRoot) -mindepth 1 -maxdepth 1 -not -name ConfigurationFiles -not -name DirectoryLayout.mk -not -name Makefile -exec rm -rf {} +
 
+# A recipe's start, setting cmake_ to the configuration's cmake, and ctest_ to the ctest beside it: with Visual Studio,
+# Visual Studio's own; else those on PATH -
+#     @$(StroikaFindCMake) && "$$cmake_" --preset $(CONFIGURATION)
+StroikaFindCMake = cmake_="$$($(StroikaSourceRoot)Build/Scripts/GetConfigurationParameter $(CONFIGURATION) CMAKE)" &&\
+	case "$$cmake_" in [A-Za-z]:/*) cmake_="$$(cygpath --unix "$$cmake_")";; esac &&\
+	case "$$cmake_" in */*) ctest_="$$(dirname "$$cmake_")/ctest";; *) ctest_=ctest;; esac
+
+# And jobs_ to the jobs make was given (-jN), for cmake's build - a build of its own, given them as
+# CMAKE_BUILD_PARALLEL_LEVEL, which its inner builds take too, under Ninja (Stroika's CMakeLists.txt) - so not given this
+# make's MAKEFLAGS: its jobserver, its -s and -k -
+#     @$(StroikaFindCMake) && $(StroikaFindJobs) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION)
+StroikaFindJobs = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
+	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
+
 # Put before the command of every $(shell ...) that runs a script, or a make, reading these directories:
 #     $(shell $(StroikaDirectoryLayoutEnv) $(StroikaSourceRoot)Build/Scripts/GetConfigurations --quiet)
 # GNU make passes its exported variables to a $(shell ...) only from version 4.4; before that, a $(shell ...) gets just

@@ -105,11 +105,16 @@ def _Layout():
 
 
 def __getattr__(name):
-    """BUILDS_ROOT and CONFIGURATION_FILES_DIR, read from the build root only when first used - so importing this reads nothing"""
+    """
+    BUILDS_ROOT, CONFIGURATION_FILES_DIR and TOP_ROOT (the project the build root builds), read from the build root only when
+    first used - so importing this reads nothing
+    """
     if name == "BUILDS_ROOT":
         return _Layout()["StroikaBuildsRoot"]
     if name == "CONFIGURATION_FILES_DIR":
         return _Layout()["StroikaConfigurationFilesDir"]
+    if name == "TOP_ROOT":
+        return _Layout()["StroikaDirectoryLayoutTopRoot"]
     raise AttributeError(name)
 
 

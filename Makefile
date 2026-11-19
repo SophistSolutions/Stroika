@@ -105,16 +105,6 @@ help:
 #
 BUILD_TARGETS_ = all libraries tools tests samples third-party-components
 
-# the configuration's cmake, and the ctest beside it: with Visual Studio, Visual Studio's own; else those on PATH
-FindCMake_ = cmake_="$$($(StroikaSourceRoot)Build/Scripts/GetConfigurationParameter $(CONFIGURATION) CMAKE)" &&\
-	case "$$cmake_" in [A-Za-z]:/*) cmake_="$$(cygpath --unix "$$cmake_")";; esac &&\
-	case "$$cmake_" in */*) ctest_="$$(dirname "$$cmake_")/ctest";; *) ctest_=ctest;; esac
-
-# the jobs make was given (-jN), for cmake's build - a build of its own, given them as CMAKE_BUILD_PARALLEL_LEVEL, which
-# its inner builds take too, under Ninja (CMakeLists.txt) - so not given this make's MAKEFLAGS: its jobserver, its -s and -k
-FindJobs_ = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
-	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
-
 ifeq ($(CONFIGURATION),)
 $(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@#first run all checks so any errors for missing tools appear ASAP
@@ -149,9 +139,9 @@ $(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COM
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika $@ {$(CONFIGURATION)}:"
 	@# and its preset written if missing (the configuration applied by Stroika before v3.0d26, whose ApplyConfiguration wrote none)
 	@grep -qF '"name": "$(CONFIGURATION)"' $(StroikaSourceRoot)CMakeUserPresets.json 2>/dev/null || $(MAKE) --no-print-directory apply-configuration
-	@$(FindCMake_) && "$$cmake_" --preset $(CONFIGURATION)
+	@$(StroikaFindCMake) && "$$cmake_" --preset $(CONFIGURATION)
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "CMake generator: $$(sed -n 's/^CMAKE_GENERATOR:INTERNAL=//p' $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/CMakeCache.txt 2>/dev/null) (configure's --cmake-generator)"
-	@$(FindCMake_) && $(FindJobs_) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION) $(if $(filter-out all,$@),--target $@)
+	@$(StroikaFindCMake) && $(StroikaFindJobs) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION) $(if $(filter-out all,$@),--target $@)
 ifeq (${ECHO_TIMESTAMPS},1)
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "$(call FUNCTION_CAPITALIZE_WORD,$@)-Done: `date +%T`"
 endif
@@ -160,7 +150,7 @@ run-tests:	tests
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika's tests {$(CONFIGURATION)}:"
 	@# each test's whole output, as RunTest reports it, a level in (PREFIX_) - which the regression runs' summaries count
 	@# (Build/Scripts/RegressionTests): ctest's verbose output, less what ctest adds (Tests/Scripts/FilterCTestOutput)
-	@set -o pipefail; $(FindCMake_) &&\
+	@set -o pipefail; $(StroikaFindCMake) &&\
 	if ! PREFIX_="$$($(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)))" "$$ctest_" --preset $(CONFIGURATION) --verbose | $(StroikaSourceRoot)Tests/Scripts/FilterCTestOutput; then\
 		if [ "$${TEST_FAILURES_CAUSE_FAILED_MAKE:-1}" -ne 0 ]; then exit 1; fi;\
 		echo "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
@@ -196,7 +186,7 @@ endif
 # PATH. A Windows cmake is given Windows paths (cygpath --mixed); one in /usr/bin - the POSIX layer's own - POSIX paths.
 documentation:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika documentation:"
-	@$(if $(CONFIGURATION),$(FindCMake_),cmake_=cmake) && doxygen_="$$(command -v doxygen)";\
+	@$(if $(CONFIGURATION),$(StroikaFindCMake),cmake_=cmake) && doxygen_="$$(command -v doxygen)";\
 	if [ -z "$$doxygen_" ]; then\
 		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Documentation: not built, as no doxygen is installed";\
 	else\

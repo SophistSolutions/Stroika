@@ -16,6 +16,15 @@ or for a quicker build
 make CONFIGURATION=Debug all -j10
 ~~~
 
+which builds Stroika's libraries for the configuration, then this project - with CMake (CMakeLists.txt), on Stroika's CMake
+package, by the configuration's preset (CMakeUserPresets.json, which applying the configuration writes here). So, once
+Stroika's libraries are built, an IDE that reads CMake presets (VS Code's CMake Tools) builds it too:
+
+~~~
+cmake --preset Debug
+cmake --build --preset Debug
+~~~
+
 ## IDES
 
 Stroika's Skel utility directly supports Visual Studio.Net 2019, and 2022, as well as Visual Studio Code.

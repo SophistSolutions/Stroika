@@ -384,11 +384,13 @@ def CMakeGenerator_(c):
     return ("Ninja" if choice == "ninja" else "Unix Makefiles", None)
 
 
-def CMakePresetsText_(c, existingText):
+def CMakePresetsText_(c, existingText, forApplication=False):
     """
     The new CMakeUserPresets.json, given the old (None if there is none) - in the old one's line ending: the configuration's
     configure, build and test presets, each named for it, building it with Stroika's CMake build (CMakeLists.txt) - its
     generator, its toolchain file, and its build directory, CMake/ beside its Configuration.mk. Other presets are kept.
+    forApplication: an application's instead (its CMakeLists.txt, built on Stroika's package - as Skel makes one), building
+    in CMake/App, the configuration's Builds directory where CMake looks for packages.
     """
     vs = IsVisualStudio_(c.BuildPlatform)
     configurationDir = DirectoryLayout.AbsoluteDir(DirectoryLayout.INTERMEDIATE_FILES_ROOT) + c.name + "/"
@@ -396,8 +398,13 @@ def CMakePresetsText_(c, existingText):
     configure = {"name": c.name, "generator": generator}
     if platform is not None:
         configure["architecture"] = platform
-    configure["binaryDir"] = configurationDir + "CMake"
+    # inside CMake/, the application's build too: so it starts afresh with Stroika's when the configuration's settings
+    # change (Main_)
+    configure["binaryDir"] = configurationDir + ("CMake/App" if forApplication else "CMake")
     configure["toolchainFile"] = configurationDir + "Toolchain.cmake"
+    cacheVariables = {}
+    if forApplication:
+        cacheVariables["CMAKE_PREFIX_PATH"] = DirectoryLayout.AbsoluteDir(DirectoryLayout.BUILDS_ROOT) + c.name + "/"
     if vs:
         configure["cmakeExecutable"] = c.G("CMAKE")  # Visual Studio's, which knows its generator - for an IDE: cmake ignores it
     if vs and generator == "Ninja":
@@ -409,9 +416,9 @@ def CMakePresetsText_(c, existingText):
             "LIB": ";".join(libPath),
             "PATH": c.G("TOOLS_PATH_ADDITIONS") + ";$penv{PATH}",
         }
-        configure["cacheVariables"] = {
-            "CMAKE_MAKE_PROGRAM": c.G("VSVARS_VSINSTALLDIR") + "/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
-        }
+        cacheVariables["CMAKE_MAKE_PROGRAM"] = c.G("VSVARS_VSINSTALLDIR") + "/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+    if cacheVariables:
+        configure["cacheVariables"] = cacheVariables
     build = {"name": c.name, "configurePreset": c.name}
     test = {"name": c.name, "configurePreset": c.name, "output": {"outputOnFailure": True}}
     if platform is not None:
@@ -765,6 +772,15 @@ def Main_(argv):
         sys.stdout.flush()
         WriteBytes_(CMAKE_PRESETS_FILE_, CMakePresetsText_(c, ReadText_(CMAKE_PRESETS_FILE_, "utf-8")).encode("utf-8"))
         sys.stdout.write("done\n")
+        # and an application's, built on Stroika (TOP_ROOT, the project its build root builds - as Skel makes one): its own
+        # presets, beside its top CMakeLists.txt
+        applicationRoot = DirectoryLayout.AbsoluteDir(DirectoryLayout.TOP_ROOT)
+        if applicationRoot != DirectoryLayout.AbsoluteDir(DirectoryLayout.STROIKA_SOURCE_ROOT) and os.path.exists(applicationRoot + "CMakeLists.txt"):
+            presets = applicationRoot + "CMakeUserPresets.json"
+            sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + DirectoryLayout.ForDisplay(presets) + '" ... ')
+            sys.stdout.flush()
+            WriteBytes_(presets, CMakePresetsText_(c, ReadText_(presets, "utf-8"), forApplication=True).encode("utf-8"))
+            sys.stdout.write("done\n")
         sys.stdout.write(leader)
         sys.stdout.flush()
         # THIS_DIR_ is in the path form sys.executable takes (a POSIX python3 takes a C:/... path as relative)

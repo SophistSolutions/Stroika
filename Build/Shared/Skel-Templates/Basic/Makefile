@@ -37,9 +37,13 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory --silent all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
+	@# Stroika's libraries for the configuration - which applies it, writing its preset here (CMakeUserPresets.json) - then
+	@# ${APP_NAME}, by that preset (CMakeLists.txt)
 	@$(MAKE) --directory=ThirdPartyComponents --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(StroikaSourceRoot)/Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --directory=${APP_NAME} --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) all
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Building ${APP_NAME} {$(CONFIGURATION)}:"
+	@$(StroikaFindCMake) && "$$cmake_" --preset $(CONFIGURATION)
+	@$(StroikaFindCMake) && $(StroikaFindJobs) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION)
 endif
 
 
@@ -115,10 +119,8 @@ ifeq ($(CONFIGURATION_TAGS),)
 		$(StroikaClobberIntermediateFiles); rm -rf $(StroikaBuildsRoot)*;\
 	fi
 	@if [ "$@" = "clean" ] ; then \
-		rm -rf $(StroikaIntermediateFilesRoot)*/${APP_NAME}*;\
+		rm -rf $(StroikaIntermediateFilesRoot)*/CMake/App;\
 	fi
-	@# with no config specified, ${APP_NAME} NYI make clean/clobber (and not needed)
-	@#$(MAKE) --silent --directory ${APP_NAME} $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));
 	@$(MAKE) --silent --directory ThirdPartyComponents $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));
 else
 	@for i in $(APPLY_CONFIGS) ; do\
@@ -127,7 +129,8 @@ else
 endif
 else
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
-	@$(MAKE) --directory ${APP_NAME} --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@# ${APP_NAME}'s CMake build (its preset's build directory), then Stroika's
+	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/App
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
@@ -150,4 +153,4 @@ latest-submodules:
 	@(cd $(StroikaSourceRoot) && git checkout $(STROIKA_COMMIT) --quiet && git pull --quiet)
 
 format-code:
-	@$(MAKE) --directory=${APP_NAME} --no-print-directory format-code
+	@$(StroikaSourceRoot)Build/Scripts/FormatCode ${APP_NAME}/Sources '*.h' '*.inl' '*.cpp'
