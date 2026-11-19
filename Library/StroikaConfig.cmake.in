@@ -12,19 +12,9 @@
 
 # the configuration's settings (STROIKA_*), which Stroika's functions and the finding of its third-party libraries use
 include ("@configurationDir_@/Stroika-Configuration.cmake")
-# its third-party libraries, those installed for the configuration ahead of any installed elsewhere
-list (PREPEND CMAKE_PREFIX_PATH "${STROIKA_BUILDS_DIR}")
-# and their include directories as -I, as Stroika's build gives them, not -isystem (Library/CMakeLists.txt says why)
-set (CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
-# the configuration's C++ standard, which its flags name too, as Stroika's build sets it: else a package asking for a lower
-# one (googletest, through Stroika::Frameworks) makes cmake add that standard's flag after the configuration's - overriding
-# it where the compiler's default is lower (MSVC)
-if (STROIKA_CXX_STANDARD)
-    set (CMAKE_CXX_STANDARD ${STROIKA_CXX_STANDARD})
-    set (CMAKE_CXX_STANDARD_REQUIRED ON)
-    set (CMAKE_CXX_EXTENSIONS OFF)
-endif ()
 list (APPEND CMAKE_MODULE_PATH "@sourceRoot_@Build/Lib/CMake")
+# and its build type, C++ standard and third-party components, as Stroika's own build takes them
+include (StroikaBuildSettings)
 
 if (TARGET Stroika::Foundation) # found already, here
     return ()

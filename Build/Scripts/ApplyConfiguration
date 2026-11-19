@@ -743,7 +743,7 @@ def Main_(argv):
         sys.stdout.write("done\n")
         # its CMake build directory removed, so the next build starts afresh: if another generator (or platform) made it -
         # cmake builds there only with the generator it was first configured with; or if its toolchain's settings changed -
-        # each CMake build there (and each inner one, ThirdPartyComponents' and Stroika's) keeps the compilers and flags it
+        # each CMake build there (the outer one, and each inner one) keeps the compilers and flags it
         # was first configured with, as the toolchain file's flags are cache entries, which a later configure leaves alone
         buildDir = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/CMake"
         cache = ReadText_(buildDir + "/CMakeCache.txt", "utf-8")

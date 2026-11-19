@@ -8,7 +8,7 @@ add_executable (HTMLUI
     Sources/Service.cpp Sources/WebServer.cpp Sources/WSImpl.cpp
 )
 target_include_directories (HTMLUI PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries (HTMLUI PRIVATE stroika-frameworks)
-set_target_properties (HTMLUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${STROIKA_BUILDS_DIR}Samples-HTMLUI/Backend$<0:>") # $<0:>: Library/CMakeLists.txt
+target_link_libraries (HTMLUI PRIVATE Stroika::Frameworks)
+set_target_properties (HTMLUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${STROIKA_BUILDS_DIR}Samples-HTMLUI/Backend$<0:>") # $<0:>: Samples/CMakeLists.txt
 StroikaEmbedFiles (HTMLUI RELATIVE_TO ../OpenAPI api.json)
 StroikaCopyFilesToExeDir (HTMLUI)

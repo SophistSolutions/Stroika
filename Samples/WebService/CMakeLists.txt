@@ -1,5 +1,5 @@
 StroikaMakeVersionFile ("${CMAKE_CURRENT_SOURCE_DIR}/../../STROIKA_VERSION" "${CMAKE_CURRENT_BINARY_DIR}/AppVersion.h")
 add_executable (WebService Sources/IWSAPI.cpp Sources/Main.cpp Sources/Model.cpp Sources/WebServer.cpp Sources/WSImpl.cpp)
 target_include_directories (WebService PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries (WebService PRIVATE stroika-frameworks)
+target_link_libraries (WebService PRIVATE Stroika::Frameworks)
 StroikaCopyFilesToExeDir (WebService)

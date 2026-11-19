@@ -10,6 +10,6 @@ add_executable (LedLineIt WIN32
 )
 target_compile_definitions (LedLineIt PRIVATE $<$<COMPILE_LANGUAGE:CXX>:_WIN32_WINNT=0x0A00> $<$<COMPILE_LANGUAGE:CXX>:STRICT>)
 set_source_files_properties (Sources/LedLineIt.rc PROPERTIES COMPILE_OPTIONS /l0x0409) # one argument: LedIt's CMakeLists.txt says why
-target_link_libraries (LedLineIt PRIVATE stroika-frameworks)
+target_link_libraries (LedLineIt PRIVATE Stroika::Frameworks)
 target_link_options (LedLineIt PRIVATE -ENTRY:wWinMainCRTStartup)
 StroikaCopyFilesToExeDir (LedLineIt)

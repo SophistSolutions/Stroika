@@ -1,8 +1,10 @@
 #
-# Stroika's whole CMake build of one configuration, as make builds it - compiling nothing itself, it runs two builds in
+# Stroika's whole CMake build of one configuration, as make builds it - compiling nothing itself, it runs three builds in
 # turn: the third-party components the configuration uses (ThirdPartyComponents/CMakeLists.txt, each installed into the
-# configuration's Builds directory), then Stroika's libraries, tests and samples (Library/CMakeLists.txt, which puts them
-# there too, as make does). Each is a CMake project of its own, with its own build directory inside this one.
+# configuration's Builds directory), then Stroika's libraries, tools and tests (Library/CMakeLists.txt, which puts them
+# there too, as make does, with Stroika's CMake package), then - once the libraries are built - the samples
+# (Samples/CMakeLists.txt, built on that package, as a program using Stroika builds). Each is a CMake project of its own,
+# with its own build directory inside this one.
 #
 # Each configuration has a preset of its name (CMakeUserPresets.json, which ApplyConfiguration writes), giving its
 # toolchain file, generator and build directory (IntermediateFiles/<configuration>/CMake):
@@ -83,13 +85,8 @@ ExternalProject_Add (Stroika
     STEP_TARGETS configure
 )
 
-# make's targets that build part of it, each by its name: third-party-components, and the Stroika project's own targets
-# libraries, tools, tests, samples and documentation - each built after that project's configure step (so after the
-# components), with the outer build's job slots under make (its $(MAKE), as ExternalProject's own steps)
-add_custom_target (third-party-components)
-if (STROIKA_BUILD_THIRD_PARTY_COMPONENTS)
-    add_dependencies (third-party-components ThirdPartyComponents)
-endif ()
+# A target of the Stroika project's built by itself, after its configure step (so after the components) - with the outer
+# build's job slots under make (its $(MAKE), as ExternalProject's own steps)
 if (CMAKE_GENERATOR MATCHES "Makefiles")
     set (buildTarget_ "$(MAKE)" -C "${CMAKE_BINARY_DIR}/Stroika")
 elseif (CMAKE_GENERATOR MATCHES "^Visual Studio")
@@ -97,7 +94,39 @@ elseif (CMAKE_GENERATOR MATCHES "^Visual Studio")
 else ()
     set (buildTarget_ "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}/Stroika" --target)
 endif ()
-foreach (target_ libraries tools tests samples documentation)
+
+# Its libraries first, a step of their own (Stroika-libraries), which the samples need - not all of it
+ExternalProject_Add_Step (Stroika libraries
+    COMMAND ${buildTarget_} libraries
+    DEPENDEES configure
+    DEPENDERS build
+    ALWAYS ON
+    USES_TERMINAL ON
+)
+ExternalProject_Add_StepTargets (Stroika libraries)
+
+# The samples, a project built on Stroika's package, which finds it in the configuration's Builds directory (as a program
+# using Stroika would) - make's target samples
+ExternalProject_Add (samples
+    SOURCE_DIR "${CMAKE_SOURCE_DIR}/Samples"
+    BINARY_DIR "${CMAKE_BINARY_DIR}/Samples"
+    CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}" "-DCMAKE_PREFIX_PATH=${STROIKA_BUILDS_DIR}"
+    ${buildCommand_}
+    INSTALL_COMMAND ""
+    BUILD_ALWAYS ON
+    USES_TERMINAL_BUILD ON
+    DEPENDS Stroika-libraries
+)
+
+# make's targets that build part of it, each by its name: third-party-components, libraries, samples (above), and the
+# Stroika project's own targets tools, tests and documentation
+add_custom_target (third-party-components)
+if (STROIKA_BUILD_THIRD_PARTY_COMPONENTS)
+    add_dependencies (third-party-components ThirdPartyComponents)
+endif ()
+add_custom_target (libraries)
+add_dependencies (libraries Stroika-libraries)
+foreach (target_ tools tests documentation)
     add_custom_target (${target_} COMMAND ${buildTarget_} ${target_} USES_TERMINAL)
     add_dependencies (${target_} Stroika-configure)
 endforeach ()

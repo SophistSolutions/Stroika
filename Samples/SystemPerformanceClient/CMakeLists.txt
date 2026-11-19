@@ -1,3 +1,3 @@
 add_executable (SystemPerformanceClient Sources/SystemPerformanceClient.cpp)
-target_link_libraries (SystemPerformanceClient PRIVATE stroika-frameworks)
+target_link_libraries (SystemPerformanceClient PRIVATE Stroika::Frameworks)
 StroikaCopyFilesToExeDir (SystemPerformanceClient)
