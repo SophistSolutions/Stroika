@@ -682,6 +682,14 @@ def ReadText_(path, encoding):
         return None
 
 
+def ToolchainSettings_(text):
+    """
+    A toolchain file's settings: its lines but its comments and blank ones - so a newer ApplyConfiguration that only words
+    a comment differently starts no build afresh
+    """
+    return [line.strip() for line in text.splitlines() if line.strip() and not line.lstrip().startswith("#")]
+
+
 def WriteBytes_(path, data):
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "wb") as f:
@@ -720,25 +728,34 @@ def Main_(argv):
         WriteBytes_(configMk, ConfigurationMkText_(c).encode(ENC_))
         sys.stdout.write("done\n")
         toolchain = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/Toolchain.cmake"
+        oldToolchainText = ReadText_(toolchain, ENC_)
+        toolchainText = ToolchainText_(c)
         sys.stdout.write(leader + 'Writing "' + DirectoryLayout.ForDisplay(toolchain) + '" ... ')
         sys.stdout.flush()
-        WriteBytes_(toolchain, ToolchainText_(c).encode(ENC_))
+        WriteBytes_(toolchain, toolchainText.encode(ENC_))
         sys.stdout.write("done\n")
         stroikaConfiguration = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/Stroika-Configuration.cmake"
         sys.stdout.write(leader + 'Writing "' + DirectoryLayout.ForDisplay(stroikaConfiguration) + '" ... ')
         sys.stdout.flush()
         WriteBytes_(stroikaConfiguration, StroikaConfigurationText_(c).encode(ENC_))
         sys.stdout.write("done\n")
-        # its CMake build directory, if another generator (or platform) made it, removed: cmake builds there only with the
-        # generator it was first configured with - so the next build starts afresh
+        # its CMake build directory removed, so the next build starts afresh: if another generator (or platform) made it -
+        # cmake builds there only with the generator it was first configured with; or if its toolchain's settings changed -
+        # each CMake build there (and each inner one, ThirdPartyComponents' and Stroika's) keeps the compilers and flags it
+        # was first configured with, as the toolchain file's flags are cache entries, which a later configure leaves alone
         buildDir = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/CMake"
         cache = ReadText_(buildDir + "/CMakeCache.txt", "utf-8")
         if cache is not None:
             generator, platform = CMakeGenerator_(c)
             built = re.search(r"^CMAKE_GENERATOR:INTERNAL=(.*)$", cache, re.M)
             builtPlatform = re.search(r"^CMAKE_GENERATOR_PLATFORM:INTERNAL=(.*)$", cache, re.M)
+            why = None
             if built is not None and (built.group(1).strip(), builtPlatform.group(1).strip() if builtPlatform else "") != (generator, platform or ""):
-                sys.stdout.write(leader + 'Removing "' + DirectoryLayout.ForDisplay(buildDir) + '", built with ' + built.group(1).strip() + ", not " + generator + " ... ")
+                why = "built with " + built.group(1).strip() + ", not " + generator
+            elif oldToolchainText is not None and ToolchainSettings_(oldToolchainText) != ToolchainSettings_(toolchainText):
+                why = "built with other compilers or flags (Toolchain.cmake)"
+            if why is not None:
+                sys.stdout.write(leader + 'Removing "' + DirectoryLayout.ForDisplay(buildDir) + '", ' + why + " ... ")
                 sys.stdout.flush()
                 shutil.rmtree(buildDir)
                 sys.stdout.write("done\n")
