@@ -14,7 +14,8 @@ sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/$TEMPLAT
 # The sample's CMakeLists.txt, the application's: its version the application's own (VERSION)
 sed 's|/\.\./\.\./STROIKA_VERSION"|/VERSION"|' < $oldStroikaDir/Samples/HTMLUI/CMakeLists.txt > $APP_ROOT/CMakeLists.txt
 
-# Patch HTMLUI => {APP_NAME} in various source files
+# Patch HTMLUI => {APP_NAME} in various source files: each of the sample's names to a placeholder, and only then the
+# placeholders to the application's names - so a name with HTMLUI in it is not renamed again, within itself
 echo "Patching for HTMLUI Template::Sources..."
 for i in ${APP_ROOT}/CMakeLists.txt ${APP_ROOT}/{Backend,Installers,QuasarBasedHTMLApp}/*.cmake ${APP_ROOT}/{Backend,QuasarBasedHTMLApp}/CMakeLists.txt \
          ${APP_ROOT}/Installers/*.wix ${APP_ROOT}/Installers/*.wxl ${APP_ROOT}/Installers/stroika-sample-htmlui.* \
@@ -22,17 +23,16 @@ for i in ${APP_ROOT}/CMakeLists.txt ${APP_ROOT}/{Backend,Installers,QuasarBasedH
          ${APP_ROOT}/QuasarBasedHTMLApp/src/{pages,layouts}/*.vue \
          ${APP_ROOT}/Backend/Sources/*.{h,inl,cpp};
 do
-    #echo PATCHING HTMLUI NAME in: $i
-    cat $i |
-    sed "s/Samples-HTMLUI/${APP_NAME}/g" | \
-    sed "s/Samples\/HTMLUI/${APP_NAME}/g" | \
-    sed "s/stroika-sample-htmlui/${LC_APP_NAME}/g" | \
-    sed "s/Stroika-Sample-HTMLUI/${APP_NAME}/g" | \
-    sed "s/Stroika Sample HTMLUI/${APP_NAME}/g" | \
-    sed "s/Sample HTMLUI/${APP_NAME}/g" | \
-    sed "s/Samples-HTMLUI/${APP_NAME}/g" | \
-    sed "s/HTMLUI/${APP_NAME}/g" | \
-    sed "s/htmlui/${LC_APP_NAME}/g" > $i.tmp
+    sed -e "s/Samples-HTMLUI/SKEL_APP_NAME_/g" \
+        -e "s/Samples\/HTMLUI/SKEL_APP_NAME_/g" \
+        -e "s/stroika-sample-htmlui/SKEL_LC_APP_NAME_/g" \
+        -e "s/Stroika-Sample-HTMLUI/SKEL_APP_NAME_/g" \
+        -e "s/Stroika Sample HTMLUI/SKEL_APP_NAME_/g" \
+        -e "s/Sample HTMLUI/SKEL_APP_NAME_/g" \
+        -e "s/HTMLUI/SKEL_APP_NAME_/g" \
+        -e "s/htmlui/SKEL_LC_APP_NAME_/g" \
+        -e "s/SKEL_APP_NAME_/${APP_NAME}/g" \
+        -e "s/SKEL_LC_APP_NAME_/${LC_APP_NAME}/g" < $i > $i.tmp
     mv  $i.tmp $i
 done
 
