@@ -7,6 +7,8 @@ Building your application with Stroika
 - **run docker container** to build
 - checkout/clone Stroika
 - **Skel** to create your app shell/outline
+- **MakeBuildRoot** - once, in the tree you build (your app's, or Stroika's): where the build goes; every make but
+  `make help` needs it
 - **make** - to build it all
 - run/test
 
@@ -55,15 +57,24 @@ git add .
 git commit -m "my first stroika-based app"
 ~~~
 
+Make its build root, once - where its build goes: IntermediateFiles/ and Builds/, in the app's directory (without one,
+make stops, saying to run this):
+~~~
+ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot
+~~~
+
 now build and run the app
 ~~~
-make CONFIGURATION=Debug samples -j10
+make CONFIGURATION=Debug all -j10
 ./Builds/Debug/myStarterApp/myStarterApp
 ~~~
 
+(To build Stroika itself - its tests and samples - it is the same in Stroika's own directory: `Build/Scripts/MakeBuildRoot`,
+then `make all -j10`.)
+
 ### Using an IDE
 
-Before opening Stroika's tree, or your application's, in an IDE, run once:
+Before opening Stroika's tree, or your application's, in an IDE, run once (after MakeBuildRoot, above):
 
 ~~~
 make apply-configurations
@@ -97,5 +108,6 @@ git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
 ./Build/Scripts/Skel --appRoot ../myHTMLGUIApp --template HTMLUI
 cd ../myHTMLGUIApp
-make CONFIGURATION=Debug samples -j10
+ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot
+make CONFIGURATION=Debug all -j10
 ~~~
