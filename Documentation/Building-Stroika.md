@@ -47,13 +47,7 @@ If you have a relatively standard POSIX like c++ build environement, you maybe d
 
 ### Build with IDE
 
-Some project files are pre-checked in. For example, look in 
- [Workspaces/VisualStudio.Net-2022/](../Workspaces/VisualStudio.Net-2022/) or [Workspaces/VisualStudio.Net-2026/](../Workspaces/VisualStudio.Net-2026/) or [Workspaces/VSCode/](../Workspaces/VSCode/). But some files/configuration/defaults maybe needed by some of these tools so perhaps run:
-
-```bash
-make project-files
-```
-to build some of them (note, if you do a make all, as suggested above, then this will be taken care of automatically).
+Visual Studio opens Stroika's top directory (File > Open > Folder) and builds it with CMake, from each configuration's preset - see [Using Visual Studio](#using-visual-studio). VS Code has a workspace, [Workspaces/VSCode/](../Workspaces/VSCode/), whose settings `make project-files` writes (`make all`, as suggested above, does that too).
 
 ### Build with Docker
 
@@ -254,9 +248,8 @@ Targets:
     reconfigure:                 -    Rebuild configuration files from the command-lines that built them before
     libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)
     library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)
-    project-files:               -    Alias for project-files-visual-studio project-files-vs-code
+    project-files:               -    Alias for project-files-vs-code
     project-files-vs-code:       -    Builds project files for visual studio code
-    project-files-visual-studio: -    Builds project files for visual studio.net
     tests:
     format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards
     samples:
@@ -523,9 +516,6 @@ just forwards to `SharedMakeVariables-Default.mk`).
 ### Build/Shared
 
 Currently `Skel-Templates/` - the application skeletons `Skel` copies out and substitutes into.
-These are kept version independent where practical: the Visual Studio project templates live in a
-single `VisualStudio.Net/` folder, with the per-version bits (`PlatformToolset`, `.sln` version stamp)
-substituted in, rather than duplicated per VS release.
 
 ### Build/Tools/Src - versus the top-level Tools/
 
@@ -591,7 +581,7 @@ make runs Stroika's CMake build (since Stroika v3.0d26: CMakeLists.txt), one bui
 
 - make `project-files`
 
-  Builds project files which can be used for things like visual studio (not needed)
+  Writes VS Code's settings for each configuration (`.vscode/c_cpp_properties.json`) - `make all` does too
 
 - `make check-prerequisite-tools`
 
@@ -729,29 +719,11 @@ If something depending on dotfiles, `known_hosts` or keys mysteriously cannot se
 
 ## Integration with IDEs
 
-### Using Visual Studio.net
+### Using Visual Studio
 
-Visual Studio.net project and solution files are available for the Stroika demos, top-level project files, and regression tests. Once you have built your configuration files (see above), you can use the project files to build, test, extend and develop Stroika.
+Open Stroika's top directory (File > Open > Folder). Visual Studio reads each configuration's CMake preset (`CMakeUserPresets.json`, written as the configuration is applied - by `make all`, or `make apply-configurations`) and lists the configurations; each one's CMake project holds every source file, test and sample, to build, run, debug and browse. Its debugger shows Stroika's types through `Library/Sources/Stroika/Foundation/Debug/Stroika-Foundation.natvis`, which each program's link puts in its .pdb.
 
-Stroika's build process automatically populates a property file
-
-~~~
-Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
-~~~
-
-This contains lots of interesting stuff (used to drive intellisense etc) and is automatically included by the provided Stroika projects.
-And it includes two important macros (set reasonably by default, but that you may want to override):
-
-~~~
-<StroikaBuildToolsExtraPath>c:\msys64\usr\bin;c:\cygwin64\bin</StroikaBuildToolsExtraPath>
-<JOBS_FLAG>-j 8</JOBS_FLAG>
-~~~
-
-Note users can provide their own overrides to these values in 
-
-~~~
-Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props
-~~~
+An application built on Stroika opens the same way - its own CMakeLists.txt and preset, as Skel makes them.
 
 
 ### Using Visual Studio Code
@@ -872,27 +844,6 @@ But - even with just plain make, you need some sort of configure script to estab
 
   This appears to be some weird issue with visual studio code. Quit vs code, and try again.
 
-- VisualStudio.Net project fails to load
-  ~~~
-  C:\Sandbox\Stroika\appFoo\appFoo\Projects\VisualStudio.Net-2022\appFoo.vcxproj : error  : The imported project file "C:\Sandbox\Stroika\appFoo\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props" could not be loaded. Could not find file 'C:\Sandbox\Stroika\appFoo\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props'.
-  ~~~
-
-  You probably just never built, and so must run 
-  ~~~
-  make project-files
-  ~~~
-
-  See also [STK-943](https://github.com/SophistSolutions/Stroika/issues/1075)
-
-- ThirdParty components not automatically rebuilt from Visual Studio project files
-    ~~~
-    1>C:\Sandbox\Stroika\appTest\ThirdPartyComponents\Stroika\StroikaRoot\Library\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp(7): fatal error C1083: Cannot open include file: 'openssl/evp.h': No such file or directory
-    ~~~
-
-    Due to performance reasons, and weaknesses with the Stroika makefiles, we don't automatically rebuild third party components from the project files when you say 'build'. This almost never matters. But occasionally it can cause confusion - especially getting started.
-
-    The simplest rule to remember is - build from the command line if building from the project file produces errors that sound like missing files.
-  
 - On raspberry pi
 
   > /tmp/Test43: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.28' not found (required by /tmp/Test43)

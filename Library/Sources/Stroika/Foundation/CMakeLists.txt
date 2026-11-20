@@ -20,6 +20,17 @@ if (MSVC AND NOT STROIKA_FEATURE_boost STREQUAL "no")
     # as make's links do
     target_link_directories (stroika-foundation INTERFACE "${STROIKA_BUILDS_DIR}lib")
 endif ()
+if (MSVC)
+    # Visual Studio's debugger's views of Stroika's types (Debug/Visualizations.h says what they need), in the .pdb of each
+    # program that links Foundation: a Visual Studio generator links a .natvis source (an MSBuild Natvis item - its link
+    # ignores a /NATVIS option), the others give the linker /NATVIS
+    set (natvis_ "${CMAKE_CURRENT_SOURCE_DIR}/Debug/Stroika-Foundation.natvis")
+    if (CMAKE_GENERATOR MATCHES "^Visual Studio")
+        target_sources (stroika-foundation INTERFACE "${natvis_}")
+    else ()
+        target_link_options (stroika-foundation INTERFACE "/NATVIS:${natvis_}")
+    endif ()
+endif ()
 
 add_subdirectory (Cache)
 add_subdirectory (Characters)

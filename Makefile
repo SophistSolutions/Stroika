@@ -59,9 +59,8 @@ help:
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    library-clobber:             -    Stroika's own build afresh next time - its libraries, and all built on them - the third-party components kept"
-	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-vs-code"
+	@$(ECHO) "    project-files:               -    Alias for project-files-vs-code"
 	@$(ECHO) "    project-files-vs-code:       -    Builds project files for visual studio code"
-	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
 	@$(ECHO) "    tools:                       -    Builds the tools (HTMLViewCompiler)"
 	@$(ECHO) "    tests:                       -    Builds the regression tests"
 	@$(ECHO) "    format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards"
@@ -108,7 +107,7 @@ help:
 BUILD_TARGETS_ = all libraries tools tests samples third-party-components
 
 ifeq ($(CONFIGURATION),)
-$(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
+$(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@#first run all checks so any errors for missing tools appear ASAP
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Checking Prerequisites for Stroika:"
 	@$(MAKE) --no-print-directory --silent apply-configurations-if-needed MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -138,7 +137,7 @@ endif
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-$(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT apply-configuration-if-needed_ $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED
+$(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT apply-configuration-if-needed_ $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika $@ {$(CONFIGURATION)}:"
 	@# and its preset written if missing (the configuration applied by Stroika before v3.0d26, whose ApplyConfiguration wrote none)
 	@grep -qF '"name": "$(CONFIGURATION)"' $(StroikaSourceRoot)CMakeUserPresets.json 2>/dev/null || $(MAKE) --no-print-directory apply-configuration
@@ -231,8 +230,7 @@ endif
 	@rm -rf $(patsubst %/,%,$(StroikaBuildsRoot) $(StroikaIntermediateFilesRoot)) $(TOP_ROOT)ConfigurationFiles
 
 project-files:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating (common) default project files:"
-	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files-visual-studio project-files-vs-code
+	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) project-files-vs-code
 
 project-files-vs-code:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio-code configuration files:"
@@ -243,21 +241,6 @@ else
 endif
 	@$(MAKE) --silent apply-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
-project-files-visual-studio:
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio project files:"
-	@mkdir -p Workspaces/VisualStudio.Net
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Creating default visual-studio Tests project files:"
-	@for d in $(StroikaSourceRoot)Tests/Projects/VisualStudio.Net-*/ ; do\
-		d="$${d%/}";\
-		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) -n "Building $${d##*/} project files...";\
-		(cd "$$d" && ./BuildProjectsFiles) || exit $$?;\
-		$(ECHO) done;\
-	done
-ifeq ($(DETECTED_HOST_OS),Darwin)
-	@rsync --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
-else
-	@cp --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
-endif
 
 format-code:
 	@$(ECHO) Formatting Code:
@@ -318,10 +301,6 @@ $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED:
 	@#Check BOTH the check-prerequisite-tools-common (redundantly) and check-prerequisite-tools-current-configuration
 	@#because we could be using different versions of make (eg. cygwin vs. WSL) for different configurations
 	@$(MAKE) --silent $(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COMMON check-prerequisite-tools-current-configuration --no-print-directory
-
-$(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT:
-	@$(MAKE) --no-print-directory --silent $(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@mkdir -p $(StroikaIntermediateFilesRoot); touch $(StroikaIntermediateFilesRoot)DEFAULT_PROJECT_FILES_BUILT
 
 
 # DONT actually defaults if any configurations have already been created (but still mark as created)

@@ -93,7 +93,7 @@
                 "moduleLoad": false,
                 "trace": true
             },
-            "visualizerFile": "${workspaceFolder}/Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Foundation-Debugger-Template.natvis"
+            "visualizerFile": "${workspaceFolder}/Library/Sources/Stroika/Foundation/Debug/Stroika-Foundation.natvis"
         },
         {
             "name": "gdbserver remote Launch(not sure helpful right now)",

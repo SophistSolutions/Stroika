@@ -161,7 +161,6 @@
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
 			"**/target": true
-		},
-		"dotnet.defaultSolution": "Workspaces/VisualStudio.Net-2022/Stroika.sln"
+		}
 	}
 }

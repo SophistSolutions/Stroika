@@ -244,9 +244,9 @@ gitignored, so they surface as untracked files and `git add -A` will happily com
   `set -o pipefail; make ... 2>&1 | tee build.txt`. `make check-prerequisite-tools` warns on an
   affected runtime; 3.6.9-2 is the last good one. Do NOT spend time bisecting Stroika for this.
   @see https://github.com/SophistSolutions/Stroika/issues/1169
-- `make project-files` regenerates IDE project files (Visual Studio, VS Code); needed after
-  installing a new compiler/IDE version, or run `make reconfigure` if a configuration's absolute
-  compiler paths go stale.
+- `make project-files` regenerates VS Code's settings; needed after installing a new compiler/IDE version, or run
+  `make reconfigure` if a configuration's absolute compiler paths go stale. Visual Studio has no project files: it opens
+  the folder (File > Open > Folder) and builds from each configuration's CMake preset.
 - **VS Code over Remote-SSH to a Windows host: open the folder with its drive letter**
   (`/c:/Sandbox/Stroika/DevRoot`, not `/Sandbox/Stroika/DevRoot`). The Recent list can hold both and
   they look nearly identical. VS Code passes the workspace folder as each task’s `cwd`, so without

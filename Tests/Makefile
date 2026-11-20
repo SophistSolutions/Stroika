@@ -38,7 +38,6 @@ help:
 	@$(ECHO) "    check:                  -    checks everything built properly"
 	@$(ECHO) "    clean:"
 	@$(ECHO) "    clobber:"
-	@$(ECHO) "    project-files:          -    builds project files for things like visual studio.net etc"
 	@$(ECHO) "    tests:"
 	@$(ECHO) "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost;"
 	@$(ECHO) "                                 [VALGRIND=memcheck, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
@@ -79,14 +78,6 @@ else
 endif
 
 
-project-files:
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio Tests project files:"
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
-	@cd Projects/VisualStudio.Net-2022 && ./BuildProjectsFiles
-	@$(ECHO) done
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2026 project files..."
-	@cd Projects/VisualStudio.Net-2026 && ./BuildProjectsFiles
-	@$(ECHO) done
 
 
 tests:
@@ -97,9 +88,6 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaSourceRoot)Build/Scripts/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Tests {$(CONFIGURATION)}:"
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-	@(cd Projects/$(BuildPlatform) && ./BuildProjectsFiles)
-endif
 	@$(MAKE) --no-print-directory $(TESTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 

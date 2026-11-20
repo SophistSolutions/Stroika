@@ -1,6 +1,6 @@
 """The regression tests Tests/Tests-Description.txt lists, one a line - "[NN]<TAB>its name" - in its order.
 
-Imported by PrintTestsList, PrintTestName and the Visual Studio projects' BuildProjectsFiles; not run directly.
+Imported by PrintTestsList and PrintTestName; not run directly.
 """
 
 import os

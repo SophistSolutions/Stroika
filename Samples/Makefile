@@ -46,7 +46,6 @@ help:
 	@echo "    check:                  -    checks everything built properly"
 	@echo "    clean:"
 	@echo "    clobber:"
-	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    samples:"
 	@echo "    skel:                   -    INCOMPLETE-PRELIM - BUT IDEA IS MAKE CLONE OF SAMPLE TO NEW PROJECT"
 

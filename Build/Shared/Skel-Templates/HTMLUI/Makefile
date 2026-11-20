@@ -78,9 +78,6 @@ else
 	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
 	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaSourceRoot) && ./configure Release-Logging --config-tag Unix --only-if-has-compiler --trace2file enable $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
 endif
-ifneq ($(filter Windows,$(StroikaHostOSNames)),)
-	@$(MAKE) --silent $(StroikaBuildsRoot)__AUTOMATIC_MAKE_PROJECT_FILES__
-endif
 	@$(StroikaSourceRoot)Build/Scripts/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
 	@for i in `$(StroikaSourceRoot)Build/Scripts/GetConfigurations --all` ; do\
 		$(StroikaSourceRoot)Build/Scripts/ApplyConfiguration --only-vscode $$i;\
@@ -94,12 +91,6 @@ apply-configurations-to-vscode:
 
 list-configurations list-configuration-tags apply-configurations apply-configuration apply-configurations-if-needed reconfigure:
 	@$(MAKE) --directory $(StroikaSourceRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
-
-project-files:
-	@$(MAKE) --directory $(StroikaSourceRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
-	@#Workaround https://github.com/SophistSolutions/Stroika/issues/1075
-	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.ConfigurationBased.props; $(StroikaSourceRoot)/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
-	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.user.props; $(StroikaSourceRoot)/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 
 distclean:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@):"
@@ -132,16 +123,6 @@ else
 	@# ${APP_NAME}'s CMake build (its preset's build directory), then Stroika's
 	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/App
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-
-ifneq ($(filter Windows,$(StroikaHostOSNames)),)
-# This mechanism isn't strictly necessary, and slows builds slightly on windows. BUT, it can be very confusing the
-# errors you get out of the box with visual studio projects without doing a make project-files, so include
-# this to make the out of box experience installing Stroika a little more seemless.
-# SEE https://github.com/SophistSolutions/Stroika/issues/1072
-$(StroikaBuildsRoot)__AUTOMATIC_MAKE_PROJECT_FILES__:
-	@$(MAKE) project-files
-	@touch $(StroikaBuildsRoot)__AUTOMATIC_MAKE_PROJECT_FILES__
 endif
 
 update-submodules:

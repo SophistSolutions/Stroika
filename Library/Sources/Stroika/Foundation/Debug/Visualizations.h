@@ -15,7 +15,7 @@
  *          into the debugger.
  * 
  *  The purpose of the module is to provide single function entrypoints callable by the Microsoft debugger (visual studio and visual studio code on windows)
- *  to evaluate / example objects (see .natvis file).
+ *  to evaluate / example objects (see Stroika-Foundation.natvis, beside this file).
  * 
  *  A mechanism akin to this might be used going forward for gdb/lldb?
  * 

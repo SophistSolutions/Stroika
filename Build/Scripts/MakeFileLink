@@ -51,17 +51,15 @@
 #   Which of those you WANT is genuinely situational. The reason it matters in practice is that
 #   "replace" is the normal way to save a file on Windows: saving ATOMICALLY means write a temp file
 #   then rename it over the original (ReplaceFile/MoveFileEx). git does it when checking out a new
-#   version, and so do editors and IDEs - including Visual Studio's property-page editor writing a
-#   .props file, which is one of the very files aliased this way. Writing IN PLACE
+#   version, and so do editors and IDEs. Writing IN PLACE
 #   (open/truncate/write) keeps one inode and so keeps a hard link together; that is what Stroika's
 #   own generators happen to do, but what an external tool does is not ours to choose.
 #
-#   Practical upshot: re-run this after anything that could have replaced EITHER name. An
-#   application's `make project-files` does exactly that for the Stroika .props files.
+#   Practical upshot: re-run this after anything that could have replaced EITHER name.
 #   @see https://github.com/SophistSolutions/Stroika/issues/1075
 #
 # EXAMPLES:
-#       ${StroikaSourceRoot}Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+#       ${StroikaSourceRoot}Build/Scripts/MakeFileLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format
 #       ${StroikaSourceRoot}Build/Scripts/MakeFileLink "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
 #
 

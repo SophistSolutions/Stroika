@@ -27,9 +27,8 @@ cmake --build --preset Debug
 
 ## IDES
 
-Stroika's Skel utility directly supports Visual Studio.Net 2019, and 2022, as well as Visual Studio Code.
-
-To get the full benefit of these project files, you may need do to an initial build of Stroika
-for each configuration you wish to use from a project file (see above).
+Visual Studio opens this directory (File > Open > Folder) and builds from each configuration's CMake preset
+(CMakeUserPresets.json); VS Code has a workspace, in Workspaces/VSCode. A configuration's preset is written as it is
+applied - by its first build (see above).
 
 
