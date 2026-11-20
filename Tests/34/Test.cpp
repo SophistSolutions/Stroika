@@ -1775,14 +1775,14 @@ namespace {
      */
     GTEST_TEST (Foundation_DataExchange_XML, Schema_ResolverSuppliesAnImport_)
     {
-        constexpr string_view kA_ = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:b="urn:stroika-test:b">
+        static constexpr string_view kA_ = R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:b="urn:stroika-test:b">
   <xs:import namespace="urn:stroika-test:b" schemaLocation="b.xsd"/>
   <xs:element name="a"><xs:complexType><xs:sequence><xs:element ref="b:n"/></xs:sequence></xs:complexType></xs:element>
 </xs:schema>)";
-        constexpr string_view kB_ =
+        static constexpr string_view kB_ =
             R"(<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:stroika-test:b"><xs:element name="n" type="xs:int"/></xs:schema>)";
-        constexpr string_view            kValid_   = R"(<a><n xmlns="urn:stroika-test:b">3</n></a>)";
-        constexpr string_view            kInvalid_ = R"(<a><n xmlns="urn:stroika-test:b">three</n></a>)";
+        static constexpr string_view     kValid_   = R"(<a><n xmlns="urn:stroika-test:b">3</n></a>)";
+        static constexpr string_view     kInvalid_ = R"(<a><n xmlns="urn:stroika-test:b">three</n></a>)";
         auto                             blob      = [] (string_view s) { return Memory::BLOB{as_bytes (span{s.data (), s.size ()})}; };
         const XML::Resource::ResolverPtr resolver  = XML::Resource::MemoryResolver::New (Sequence<XML::Resource::Definition>{
             {.fName = {.fNamespace = IO::Network::URI{"urn:stroika-test:b"sv}, .fSystemID = String{"b.xsd"sv}}, .fData = blob (kB_)}});

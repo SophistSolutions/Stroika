@@ -145,18 +145,21 @@
 // "C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/HostX64/x64/cl.exe" -v
 //              Microsoft (R) C/C++ Optimizing Compiler Version 19.51.36244 for x64
 #define _MSC_VER_v145_1951_ 1951
+// "C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.52.37025/bin/HostX64/x64/cl.exe" -v
+//              Microsoft (R) C/C++ Optimizing Compiler Version 19.52.37029 for x64
+#define _MSC_VER_v145_1952_ 1952
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #if _MSC_VER < _MSC_VER_2k22_17Pt14_
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 does not support versions prior to Microsoft Visual Studio.net 2022 17.14 (update Visual Studio 2022; Stroika "   \
     "v2.1 supports older versions)"
-#elif _MSC_VER <= _MSC_VER_v145_1951_
+#elif _MSC_VER <= _MSC_VER_v145_1952_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (newer than Visual Studio 2026 "      \
-    "/ _MSC_VER 1951) of Microsoft Visual "                                                                                                \
+    "/ _MSC_VER 1952) of Microsoft Visual "                                                                                                \
     "Studio.net / Visual C++ - USING "                                                                                                     \
     "PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -1291,6 +1294,10 @@ C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\
             _T2=Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>
         ]
 C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp(199): note: see reference to function template instantiation 'OUTER_OBJECT *Stroika::Foundation::Memory::GetObjectOwningField<_T1,Stroika::Frameworks::WebServer::ConnectionManager,Stroika::Foundation::Common::Property<Stroika::Foundation::Containers::Sequence<Stroika::Frameworks::WebServer::Interceptor>>>(APPARENT_MEMBER_TYPE *,AGGREGATED_OBJECT_TYPE Stroika::Frameworks::WebServer::ConnectionManager::* )' being compiled
+
+        As of _MSC_VER_v145_1952_, the same (IO/Network/HTTP/Request.cpp, Response.cpp, WebServer's Connection, ConnectionManager, Message, Request, Response):
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\Common.inl(396): error C7752: call stack overflow due to excessive template instantiation
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\IO\Network\HTTP\Request.cpp(44): note: while compiling class template member function 'Stroika::Foundation::Common::Property<Stroika::Foundation::Characters::String>::Property(G,S)'
 */
 #ifndef qCompilerAndStdLib_function_dependency_too_complex_Buggy
 
@@ -1300,8 +1307,9 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\Connecti
 // seen broken in _MSC_VER_2k22_17Pt13_
 // seen broken in _MSC_VER_2k22_17Pt14_
 // seen broken in _MSC_VER_v145_1951_
+// seen broken in _MSC_VER_v145_1952_
 #define qCompilerAndStdLib_function_dependency_too_complex_Buggy                                                                           \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1952_)
 #else
 #define qCompilerAndStdLib_function_dependency_too_complex_Buggy 0
 #endif
@@ -2178,11 +2186,29 @@ C:\Sandbox\Stroika\DevRoot\Samples\SystemPerformanceClient\Sources\SystemPerform
 // still broken in _MSC_VER_2k22_17Pt13_
 // still broken in _MSC_VER_2k22_17Pt14_
 // still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_template_template_auto_deduced_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
+// still broken in _MSC_VER_v145_1952_
+#define qCompilerAndStdLib_template_template_auto_deduced_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1952_)
 #else
 #define qCompilerAndStdLib_template_template_auto_deduced_Buggy 0
 #endif
 
+#endif
+
+/*
+ * qCompilerAndStdLib_typeid_makes_dependent_Buggy: a member template of a non-dependent object - Lookup_ (typeid (T)), a
+ * TypeMappingDetails whatever T is (a typeid expression is never type-dependent) - called without the template keyword,
+ * which it does not need, warns, as if the object's type depended on T
+ *
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.inl(309): warning C4864: expected 'template' keyword before dependent template name
+ */
+#ifndef qCompilerAndStdLib_typeid_makes_dependent_Buggy
+#if defined(_MSC_VER)
+// first seen broken in _MSC_VER_v145_1952_ (not in _MSC_VER_2k22_17Pt14_ or _MSC_VER_v145_1951_)
+#define qCompilerAndStdLib_typeid_makes_dependent_Buggy                                                                                    \
+    (_MSC_VER_v145_1952_ <= _MSC_VER and CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1952_))
+#else
+#define qCompilerAndStdLib_typeid_makes_dependent_Buggy 0
+#endif
 #endif
 
 /*
@@ -2422,8 +2448,9 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 // verified broken in _MSC_VER_2k22_17Pt13_
 // verified broken in _MSC_VER_2k22_17Pt14_
 // verified broken in _MSC_VER_v145_1951_
+// verified broken in _MSC_VER_v145_1952_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1952_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -2485,6 +2512,7 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 // verified still broken in _MSC_VER_2k22_17Pt13_
 // verified still broken in _MSC_VER_2k22_17Pt14_
 // appears fixed in _MSC_VER_v145_1951_
+// appears fixed in _MSC_VER_v145_1952_
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy                                                       \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
 #else
@@ -2532,7 +2560,8 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k22_17Pt14_
 // still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
+// still broken in _MSC_VER_v145_1952_
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1952_)
 #else
 #define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy 0
 #endif
@@ -2574,7 +2603,8 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 // verified still broken in _MSC_VER_2k22_17Pt13_
 // verified still broken in _MSC_VER_2k22_17Pt14_
 // verified still broken in _MSC_VER_v145_1951_
-#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1951_)
+// verified still broken in _MSC_VER_v145_1952_
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1952_)
 #else
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
 #endif

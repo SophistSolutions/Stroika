@@ -306,12 +306,20 @@ namespace Stroika::Foundation::DataExchange {
     inline auto ObjectVariantMapper::ToObjectMapper () const -> ToObjectMapperType<T>
     {
         Require (Lookup_ (typeid (T)).GetGenericToObjectMapper ());
+#if qCompilerAndStdLib_typeid_makes_dependent_Buggy
+        return Lookup_ (typeid (T)).template ToObjectMapper<T> ();
+#else
         return Lookup_ (typeid (T)).ToObjectMapper<T> ();
+#endif
     }
     template <typename T>
     inline auto ObjectVariantMapper::FromObjectMapper () const -> FromObjectMapperType<T>
     {
+#if qCompilerAndStdLib_typeid_makes_dependent_Buggy
+        return Lookup_ (typeid (T)).template FromObjectMapper<T> ();
+#else
         return Lookup_ (typeid (T)).FromObjectMapper<T> ();
+#endif
     }
     template <typename T>
     inline void ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
