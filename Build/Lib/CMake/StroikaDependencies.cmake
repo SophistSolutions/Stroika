@@ -7,18 +7,18 @@
 #     STROIKA_FOUNDATION_DEPENDENCIES     what Foundation links with (PUBLIC)
 #     STROIKA_FRAMEWORKS_DEPENDENCIES     what Frameworks links with besides Foundation (PUBLIC): googletest, for Frameworks/Test
 # Each by its own CMake package, where it installs one; curl, lzma and sqlite install none, so they are taken from where
-# they are installed (STROIKA_BUILDS_DIR), as Stroika::curl, Stroika::lzma and Stroika::sqlite. Needs the configuration's
-# settings (Stroika-Configuration.cmake), and its Builds directory in CMAKE_PREFIX_PATH.
+# they are installed (STROIKA_THIRD_PARTY_INSTALL_DIR), as Stroika::curl, Stroika::lzma and Stroika::sqlite. Needs the
+# configuration's settings (Stroika-Configuration.cmake), then StroikaBuildSettings.
 #
 function (StroikaInstalledLibrary_ name library)
     if (TARGET Stroika::${name}) # found already: the package found twice
         return ()
     endif ()
-    find_library (StroikaInstalledLibrary_${name}_ NAMES ${library} PATHS "${STROIKA_BUILDS_DIR}lib" NO_DEFAULT_PATH REQUIRED)
+    find_library (StroikaInstalledLibrary_${name}_ NAMES ${library} PATHS "${STROIKA_THIRD_PARTY_INSTALL_DIR}lib" NO_DEFAULT_PATH REQUIRED)
     add_library (Stroika::${name} STATIC IMPORTED GLOBAL)
     set_target_properties (Stroika::${name} PROPERTIES
         IMPORTED_LOCATION "${StroikaInstalledLibrary_${name}_}"
-        INTERFACE_INCLUDE_DIRECTORIES "${STROIKA_BUILDS_DIR}include"
+        INTERFACE_INCLUDE_DIRECTORIES "${STROIKA_THIRD_PARTY_INSTALL_DIR}include"
     )
 endfunction ()
 
@@ -47,10 +47,11 @@ if (NOT STROIKA_FEATURE_LibCurl STREQUAL "no" AND NOT TARGET Stroika::curl)
     set_target_properties (Stroika::curl PROPERTIES INTERFACE_COMPILE_DEFINITIONS CURL_STATICLIB)
     target_link_libraries (Stroika::curl INTERFACE OpenSSL::SSL OpenSSL::Crypto zstd::libzstd_static ${StroikaDependencies_zlib_})
     # and whatever else curl's build found and used (on a Mac, Homebrew's libidn2 and brotli, and macOS frameworks): its
-    # libcurl.pc's static link requirements, as make's links take them
+    # libcurl.pc's static link requirements, as make's links take them - each .pc file's prefix where it is now
+    # (--define-prefix), as each names where it was installed first, and Stroika's installation may be elsewhere
     find_package (PkgConfig REQUIRED)
     execute_process (
-        COMMAND "${CMAKE_COMMAND}" -E env "PKG_CONFIG_PATH=${STROIKA_BUILDS_DIR}lib/pkgconfig" "${PKG_CONFIG_EXECUTABLE}" --static --libs libcurl
+        COMMAND "${CMAKE_COMMAND}" -E env "PKG_CONFIG_PATH=${STROIKA_THIRD_PARTY_INSTALL_DIR}lib/pkgconfig" "${PKG_CONFIG_EXECUTABLE}" --define-prefix --static --libs libcurl
         OUTPUT_VARIABLE StroikaDependencies_curl_ OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
     )
     separate_arguments (StroikaDependencies_curl_ UNIX_COMMAND "${StroikaDependencies_curl_}")

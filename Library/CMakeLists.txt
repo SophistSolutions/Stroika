@@ -2,7 +2,8 @@
 # Stroika's libraries, as make builds them - part of Stroika's build (the top CMakeLists.txt, which has found the
 # configuration's settings and third-party libraries). It builds the Foundation and Frameworks libraries, the tools
 # (Tools/CMakeLists.txt) and the documentation (Documentation/CMakeLists.txt), and puts each where make puts it, in the
-# configuration's Builds directory, with Stroika's CMake package, which a program built on Stroika uses.
+# configuration's Builds directory, with Stroika's CMake package, which a program built on Stroika uses - and says what
+# an installation of Stroika holds (cmake --install).
 #
 
 # the libraries where make puts them, in the configuration's Builds directory (the tests and samples: their CMakeLists.txt) -
@@ -31,7 +32,7 @@ add_subdirectory (../Documentation Documentation)
 # Stroika::Frameworks, both as Stroika::Stroika (all of Stroika, one name for it, as packages commonly give: fmt::fmt), the
 # tool Stroika::HTMLViewCompiler, and the functions in Build/Lib/CMake (StroikaConfig.cmake.in) - in the configuration's
 # Builds directory, beside its third-party libraries' packages. It names the libraries and the tool where this build makes
-# them, and the headers in the source tree.
+# them, and the headers in the source tree (installed, below: all in the installation).
 add_library (stroika INTERFACE)
 target_link_libraries (stroika INTERFACE stroika-frameworks) # and so Foundation
 set_target_properties (stroika-foundation PROPERTIES EXPORT_NAME Foundation)
@@ -48,3 +49,27 @@ configure_file (StroikaConfig.cmake.in "${packageDirectory_}/StroikaConfig.cmake
 include (CMakePackageConfigHelpers)
 StroikaReadVersion ("${CMAKE_SOURCE_DIR}/STROIKA_VERSION" version_)
 write_basic_package_version_file ("${packageDirectory_}/StroikaConfigVersion.cmake" VERSION "${version__WIN32_FOUR_DOT}" COMPATIBILITY SameMinorVersion)
+
+# Stroika installed (cmake --install; make install, in the top Makefile), for a program built on Stroika with neither its
+# source tree nor its build: what the configuration's Builds directory holds - the third-party components, each as it
+# installed itself there (the top CMakeLists.txt), Stroika's libraries in lib/, its tools in bin/ with what they need
+# beside them - but not its own package and pkg-config files there, which name the source tree (lib/cmake/Stroika,
+# lib/pkgconfig/stroika-*.pc); and Stroika's headers in include/, with the package as installed in lib/cmake/Stroika
+# (StroikaConfig-Installed.cmake): the configuration's settings and toolchain file, and Stroika's CMake functions. Each
+# file installed unlisted: they are thousands (boost's headers)
+set (CMAKE_INSTALL_MESSAGE NEVER)
+install (TARGETS stroika-foundation stroika-frameworks stroika HTMLViewCompiler EXPORT StroikaTargets ARCHIVE DESTINATION lib RUNTIME DESTINATION bin)
+foreach (dir_ bin include lib share)
+    if (EXISTS "${STROIKA_BUILDS_DIR}${dir_}")
+        install (DIRECTORY "${STROIKA_BUILDS_DIR}${dir_}/" DESTINATION ${dir_} USE_SOURCE_PERMISSIONS PATTERN "Stroika" EXCLUDE PATTERN "*stroika-*" EXCLUDE)
+    endif ()
+endforeach ()
+install (CODE "set (StroikaBuildsDir_ \"${STROIKA_BUILDS_DIR}\")")
+install (SCRIPT RelocateThirdPartyPackages.cmake)
+install (DIRECTORY Sources/Stroika DESTINATION include FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" PATTERN "*.natvis")
+install (FILES "${CMAKE_CURRENT_BINARY_DIR}/Sources/Stroika/Foundation/include/Stroika/Current-Version.h" DESTINATION include/Stroika)
+install (EXPORT StroikaTargets NAMESPACE Stroika:: DESTINATION lib/cmake/Stroika)
+install (FILES StroikaConfig-Installed.cmake DESTINATION lib/cmake/Stroika RENAME StroikaConfig.cmake)
+install (FILES "${packageDirectory_}/StroikaConfigVersion.cmake" "${configurationDir_}/Stroika-Configuration.cmake" "${configurationDir_}/Toolchain.cmake"
+         DESTINATION lib/cmake/Stroika)
+install (DIRECTORY "${CMAKE_SOURCE_DIR}/Build/Lib/CMake/" DESTINATION lib/cmake/Stroika PATTERN "StroikaCheckConfiguration.cmake" EXCLUDE)

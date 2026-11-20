@@ -27,8 +27,12 @@ if (STROIKA_CXX_STANDARD)
     set (CMAKE_CXX_EXTENSIONS OFF)
 endif ()
 
-# the third-party components installed for the configuration, ahead of any installed elsewhere
-list (PREPEND CMAKE_PREFIX_PATH "${STROIKA_BUILDS_DIR}")
+# where the configuration's third-party components are installed - its Builds directory, or Stroika's installation
+# (StroikaConfig-Installed.cmake sets it) - and found there, ahead of any installed elsewhere
+if (NOT DEFINED STROIKA_THIRD_PARTY_INSTALL_DIR)
+    set (STROIKA_THIRD_PARTY_INSTALL_DIR "${STROIKA_BUILDS_DIR}")
+endif ()
+list (PREPEND CMAKE_PREFIX_PATH "${STROIKA_THIRD_PARTY_INSTALL_DIR}")
 # and their include directories as -I, as make gives them, not -isystem: compilers search CPATH's directories ahead of
 # -isystem ones - so given CPATH=/opt/homebrew/include (a common Mac shell setting), Homebrew's OpenSSL headers would win
 # over the configuration's own

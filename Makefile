@@ -15,7 +15,7 @@ endif
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
-.PHONY:	all libraries tools tests samples documentation third-party-components run-tests skel-test clean clobber library-clobber distclean apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
+.PHONY:	all libraries tools tests samples documentation third-party-components run-tests skel-test install clean clobber library-clobber distclean apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
 
 
 SHELL=/bin/bash
@@ -70,6 +70,8 @@ help:
 	@$(ECHO) "                                      (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                      EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
 	@$(ECHO) "    skel-test:                   -    Builds the libraries, then a new Skel application on them - as a package manager's Stroika - and runs it"
+	@$(ECHO) "    install:                     -    Installs one configuration (CONFIGURATION=) in PREFIX=: its libraries, tools, headers and
+	@$(ECHO) "                                      CMake package, with its third-party components - needing neither the source tree nor the build"
 	@$(ECHO) "    apply-configurations:        -    Writes what each configuration implies - its toolchain file, its CMake preset (which"
 	@$(ECHO) "                                      Visual Studio's File > Open > Folder lists) and VS Code's settings - making the default"
 	@$(ECHO) "                                      configurations first, if there are none. Run it before opening an IDE"
@@ -121,6 +123,9 @@ run-tests skel-test:
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
+
+install:
+	@echo "make install: say which configuration, CONFIGURATION=<name> - an installation holds one"; exit 1
 
 clean clobber library-clobber:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
@@ -176,6 +181,24 @@ ifneq ($(CrossCompiling),true)
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Running $(StroikaBuildsRoot)$(CONFIGURATION)/SkelApp/SkelApp"
 	@"$(StroikaBuildsRoot)$(CONFIGURATION)/SkelApp/SkelApp"
 endif
+
+# The configuration installed in PREFIX (cmake --install; Library/CMakeLists.txt says what): an installation needing neither
+# this source tree nor its build, as a package manager installs Stroika. A Visual Studio generator's build installs the
+# build type its preset builds (ApplyConfiguration): Debug where assertions are on. A Windows cmake is given Windows paths.
+install:	install-prefix-given_ libraries tools
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Installing Stroika {$(CONFIGURATION)} in $(PREFIX):"
+	@$(StroikaFindCMake) &&\
+	case "$$(command -v "$$cmake_")" in /usr/bin/*) Path_ () { echo "$$1"; };; *) Path_ () { cygpath --mixed "$$1" 2>/dev/null || echo "$$1"; };; esac &&\
+	case "$(PREFIX)" in /*|[A-Za-z]:*) prefix_="$(PREFIX)";; *) prefix_="$$PWD/$(PREFIX)";; esac &&\
+	config_= &&\
+	if grep -q '^CMAKE_CONFIGURATION_TYPES:' "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/CMakeCache.txt"; then\
+		case "$$($(StroikaSourceRoot)Build/Scripts/GetConfigurationParameter $(CONFIGURATION) AssertionsEnabled)" in 1|true) config_=Debug;; *) config_=Release;; esac;\
+	fi &&\
+	"$$cmake_" --install "$$(Path_ "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake")" --prefix "$$(Path_ "$$prefix_")" $${config_:+--config $$config_}
+
+# before building anything
+install-prefix-given_:
+	@if [ -z "$(PREFIX)" ] ; then echo "make install: say where, PREFIX=<directory>"; exit 1; fi
 
 # library-clobber: Stroika's own build afresh next time - its libraries, and all built on them (an application's too) -
 # the third-party components' build kept; clean: that, and the components' sources and build trees too - not what each

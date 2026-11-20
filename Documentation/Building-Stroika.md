@@ -798,6 +798,22 @@ An application Skel makes builds so too, on the Stroika in its `ThirdPartyCompon
 
 `make skel-test` does that with a new application, and runs it - what CI checks the package with.
 
+### Installing Stroika
+
+The package above names Stroika's source tree (its headers) and its build. To build on Stroika with neither, install one configuration in a directory of its own - as a package manager installs Stroika:
+
+  ~~~bash
+  make CONFIGURATION=Debug install PREFIX=/opt/Stroika-Debug
+  ~~~
+
+which builds its libraries and tools if need be, then installs (`cmake --install`): Stroika's headers in `include/`, its libraries in `lib/`, `HTMLViewCompiler` in `bin/`, the configuration's third-party components each where it installed itself, and the package in `lib/cmake/Stroika` - with the configuration's toolchain file, for a program built on it:
+
+  ~~~bash
+  cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=/opt/Stroika-Debug/lib/cmake/Stroika/Toolchain.cmake -DCMAKE_PREFIX_PATH=/opt/Stroika-Debug
+  ~~~
+
+The installation can be moved (all it names is relative to where it is), but not to another machine unless its compilers are where they were (the toolchain file names them). On Windows, configure the program from a Visual Studio developer prompt (vcvarsall's INCLUDE, LIB and PATH), as for any CMake build with Visual Studio's compiler. Where Skel's application puts its program, the configuration's Builds directory, is - built on an installation - its own build directory.
+
 ---
 
 ## But Why? Build / Configuration Design
