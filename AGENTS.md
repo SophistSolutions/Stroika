@@ -67,9 +67,10 @@ use `$(StroikaBuildsRoot)`, `$(StroikaIntermediateFilesRoot)`, `$(StroikaConfigu
 
 Each configuration builds in `IntermediateFiles/{CONFIGURATION}/CMake`, with its CMake preset (`CMakeUserPresets.json`,
 written as the configuration is applied - by any make target for it, or `make apply-configurations`): `cmake --preset
-Debug` then `cmake --build --preset Debug -j8` builds as `make CONFIGURATION=Debug all -j8` does, and VS Code's CMake
-Tools can build from the presets. Without make, a build stops while its configuration has changed since it was applied,
-saying how to apply it again (CMakeLists.txt). Its generator is
+Debug` then `cmake --build --preset Debug -j8` builds as `make CONFIGURATION=Debug all -j8` does. It is one CMake
+project - its configure step builds the third-party components first - so an IDE reading the presets (Visual Studio's
+File > Open > Folder, VS Code's CMake Tools) sees every source file, test and sample. Without make, a build stops while
+its configuration has changed since it was applied, saying how to apply it again (CMakeLists.txt). Its generator is
 configure's `--cmake-generator` - `ninja`, `msbuild` or `make`; by default ninja with Visual Studio, else make - and a
 change starts that configuration's build afresh; `make` prints it as the build starts. CMake tracks header dependencies:
 a header edit recompiles what includes it.
@@ -85,8 +86,8 @@ Regression tests live under `Tests/<NN>/` (numbered directories, each a single `
 in a `//  TEST    <Namespace::Path>` comment near the top (e.g. `Tests/01/Test.cpp` is
 `Foundation::Caching`). To build/run **one test in isolation** (once the configuration has built):
 ```bash
-cmake --build IntermediateFiles/Debug/CMake/Tests --target Test07 -j8     # with msbuild, add --config Debug (or Release)
-./Builds/Debug/Tests/Test07                                                # or, as run-tests runs it: ctest --preset Debug -R '^Test07$'
+cmake --build --preset Debug --target Test07 -j8     # a sample or tool by its name too: Containers, HTMLViewCompiler
+./Builds/Debug/Tests/Test07                          # or, as run-tests runs it: ctest --preset Debug -R '^Test07$'
 ```
 (substitute the test number). `TEST_FAILURES_CAUSE_FAILED_MAKE=0` lets `run-tests` continue past
 failures like `make -k`.

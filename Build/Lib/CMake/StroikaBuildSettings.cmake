@@ -1,14 +1,14 @@
 #
 # include (StroikaBuildSettings)
 #
-# What a CMake project built with a Stroika configuration takes from it, after its project (): Stroika's own build
-# (Library/CMakeLists.txt) and a program using Stroika's package (StroikaConfig.cmake) alike. Needs the configuration's
-# settings (Stroika-Configuration.cmake).
+# What a CMake project built with a Stroika configuration takes from it, once its languages are enabled: Stroika's own
+# build (the top CMakeLists.txt) and a program using Stroika's package (StroikaConfig.cmake) alike. Needs the
+# configuration's settings (Stroika-Configuration.cmake).
 #
 
 # a Visual Studio configuration's flags are its toolchain file's for one build type - Debug where its assertions are on,
 # else Release (CMAKE_CXX_FLAGS_DEBUG ...): so a single-configuration generator (Ninja) builds that one, whatever
-# CMAKE_BUILD_TYPE held - project () has set it already for MSVC, to Debug (Windows-MSVC.cmake's CMAKE_BUILD_TYPE_INIT)
+# CMAKE_BUILD_TYPE held - enabling C++ set it already for MSVC: Debug (Windows-MSVC.cmake's CMAKE_BUILD_TYPE_INIT)
 get_property (StroikaBuildSettings_multiConfig_ GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio" AND NOT StroikaBuildSettings_multiConfig_)
     if (STROIKA_ASSERTIONS_ENABLED)

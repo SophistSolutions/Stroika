@@ -6,7 +6,7 @@ add_library (stroika-frameworks STATIC)
 target_link_libraries (stroika-frameworks PUBLIC stroika-foundation)
 
 # and googletest, which Frameworks/Test - Stroika's regression tests are built on it - uses (StroikaDependencies:
-# Library/CMakeLists.txt)
+# the top CMakeLists.txt)
 target_link_libraries (stroika-frameworks PUBLIC ${STROIKA_FRAMEWORKS_DEPENDENCIES})
 
 add_subdirectory (Auth)

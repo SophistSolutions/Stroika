@@ -229,7 +229,7 @@ def CMakeString_(s):
 def ToolchainText_(c):
     """
     The configuration's CMake toolchain file: the compilers and flags with which a CMake build builds as this configuration -
-    Stroika's own (Library/CMakeLists.txt), and the third-party components Build/Lib/Make/Makefile-CMake-Common.mk builds
+    Stroika's own (CMakeLists.txt), and the third-party components Build/Lib/Make/Makefile-CMake-Common.mk builds
     (each with its own flags).
     """
     flags = lambda *parts: " ".join(p.strip() for p in parts if p.strip())  # noqa: E731
@@ -296,7 +296,7 @@ def ToolchainText_(c):
 
 def StroikaConfigurationText_(c):
     """
-    The configuration's Stroika settings, for Stroika's own CMake build (Library/CMakeLists.txt, which reads them from beside
+    The configuration's Stroika settings, for Stroika's own CMake build (CMakeLists.txt, which reads them from beside
     the toolchain file it is given): its target platforms, each optional component's feature flag, where make installs the
     third-party components, and Foundation's preprocessor definitions and include directories - what make takes from
     Configuration.mk and stroika-foundation.pc - and the configuration file they come from.
@@ -400,8 +400,9 @@ def CMakePresetsText_(c, existingText, forApplication=False):
     The new CMakeUserPresets.json, given the old (None if there is none) - in the old one's line ending: the configuration's
     configure, build and test presets, each named for it, building it with Stroika's CMake build (CMakeLists.txt) - its
     generator, its toolchain file, and its build directory, CMake/ beside its Configuration.mk. Other presets are kept.
-    forApplication: an application's instead (its CMakeLists.txt, built on Stroika's package - as Skel makes one), building
-    in CMake/App, the configuration's Builds directory where CMake looks for packages.
+    forApplication: an application's instead (its CMakeLists.txt, built on Stroika's package - as Skel makes one),
+    building in CMake/App, the configuration's Builds directory where CMake looks for packages. Stroika's own, in an
+    application's tree, builds its libraries only - not its tests and samples.
     """
     vs = IsVisualStudio_(c.BuildPlatform)
     configurationDir = DirectoryLayout.AbsoluteDir(DirectoryLayout.INTERMEDIATE_FILES_ROOT) + c.name + "/"
@@ -416,6 +417,9 @@ def CMakePresetsText_(c, existingText, forApplication=False):
     cacheVariables = {}
     if forApplication:
         cacheVariables["CMAKE_PREFIX_PATH"] = DirectoryLayout.AbsoluteDir(DirectoryLayout.BUILDS_ROOT) + c.name + "/"
+    elif ApplicationRoot_() is not None:
+        cacheVariables["STROIKA_BUILD_TESTS"] = "OFF"
+        cacheVariables["STROIKA_BUILD_SAMPLES"] = "OFF"
     if vs:
         configure["cmakeExecutable"] = c.G("CMAKE")  # Visual Studio's, which knows its generator - for an IDE: cmake ignores it
     if vs and generator == "Ninja":
@@ -681,12 +685,12 @@ def VSCodeText_(c, existingText):
         "intelliSenseMode": IntelliSenseModeFor_(c, c.COMPILER_DRIVER_CPlusPlus),
     }
     if not CMakeGenerator_(c)[0].startswith("Visual Studio"):  # whose builds write no compile_commands.json
-        # each build's compile_commands.json (StroikaBuildSettings.cmake): each source file's flags, as its build compiles
-        # it - an application's and its Stroika's, or Stroika's own, its tests' and its samples'. A file none lists (or any,
-        # before the first build) takes includePath and defines.
+        # each build's compile_commands.json (StroikaBuildSettings.cmake): each source file's flags, as its build
+        # compiles it - an application's and its Stroika's, or Stroika's own (with its tests and samples). A file none
+        # lists (or any, before the first build) takes includePath and defines.
         buildsDir = DirectoryLayout.AbsoluteDir(DirectoryLayout.INTERMEDIATE_FILES_ROOT) + c.name + "/CMake/"
-        builds = ["App", "Stroika"] if ApplicationRoot_() is not None else ["Stroika", "Tests", "Samples"]
-        newCfg["compileCommands"] = [buildsDir + b + "/compile_commands.json" for b in builds]
+        builds = ["App/", ""] if ApplicationRoot_() is not None else [""]
+        newCfg["compileCommands"] = [buildsDir + b + "compile_commands.json" for b in builds]
     if index == len(configs):
         configs.append(newCfg)
     else:
@@ -767,10 +771,11 @@ def Main_(argv):
         sys.stdout.flush()
         WriteBytes_(stroikaConfiguration, StroikaConfigurationText_(c).encode(ENC_))
         sys.stdout.write("done\n")
-        # its CMake build directory removed, so the next build starts afresh: if another generator (or platform) made it -
-        # cmake builds there only with the generator it was first configured with; or if its toolchain's settings changed -
-        # each CMake build there (the outer one, and each inner one) keeps the compilers and flags it
-        # was first configured with, as the toolchain file's flags are cache entries, which a later configure leaves alone
+        # its CMake build directory removed, so the next build starts afresh: if another generator (or platform) made it
+        # - cmake builds there only with the generator it was first configured with; or if its toolchain's settings
+        # changed - each CMake build there (Stroika's, its third-party components', an application's) keeps the
+        # compilers and flags it was first configured with, as the toolchain file's flags are cache entries, which a
+        # later configure leaves alone
         buildDir = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/CMake"
         cache = ReadText_(buildDir + "/CMakeCache.txt", "utf-8")
         if cache is not None:

@@ -96,12 +96,13 @@ help:
 
 #
 # The build is CMake's (#1157): Stroika's CMakeLists.txt, one build directory per configuration (CMake/, beside its
-# Configuration.mk), with the configuration's preset (CMakeUserPresets.json, written as it is applied) - and its generator,
-# printed as the build starts (configure's --cmake-generator: by default ninja with Visual Studio, else make). Each target
-# as make's own: all, or a part - libraries, tools, tests, samples, documentation, third-party-components - with what it
-# needs; -jN, N jobs at once (just -j, from make 3.81: one per processor). Without CONFIGURATION: each configuration make
-# builds by default (or each TAGS= names). Until Stroika v3.0d26 make built Stroika itself - as Makefile-Legacy still
-# does, until 3.0d26 ships.
+# Configuration.mk), with the configuration's preset (CMakeUserPresets.json, written as it is applied) - and its
+# generator, printed as the build starts (configure's --cmake-generator: by default ninja with Visual Studio, else
+# make). Configured each time, which builds the third-party components first. Each target as make's own: all, or a part
+# (libraries, tools, tests, samples, documentation, third-party-components) with what it needs; -jN, N jobs at once
+# (just -j, from make 3.81: one per processor), the third-party components' builds too. Without CONFIGURATION: each
+# configuration make builds by default (or each TAGS= names). Until Stroika v3.0d26 make built Stroika itself - as
+# Makefile-Legacy still does, until 3.0d26 ships.
 #
 BUILD_TARGETS_ = all libraries tools tests samples third-party-components
 
@@ -140,7 +141,7 @@ $(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COM
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika $@ {$(CONFIGURATION)}:"
 	@# and its preset written if missing (the configuration applied by Stroika before v3.0d26, whose ApplyConfiguration wrote none)
 	@grep -qF '"name": "$(CONFIGURATION)"' $(StroikaSourceRoot)CMakeUserPresets.json 2>/dev/null || $(MAKE) --no-print-directory apply-configuration
-	@$(StroikaFindCMake) && "$$cmake_" --preset $(CONFIGURATION)
+	@$(StroikaFindCMake) && $(StroikaFindJobs) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --preset $(CONFIGURATION) --log-level=NOTICE
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "CMake generator: $$(sed -n 's/^CMAKE_GENERATOR:INTERNAL=//p' $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/CMakeCache.txt 2>/dev/null) (configure's --cmake-generator)"
 	@$(StroikaFindCMake) && $(StroikaFindJobs) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION) $(if $(filter-out all,$@),--target $@)
 ifeq (${ECHO_TIMESTAMPS},1)
@@ -160,15 +161,16 @@ ifeq (${ECHO_TIMESTAMPS},1)
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Run-Done: `date +%T`
 endif
 
-# library-clobber: Stroika's own build afresh next time - its libraries, and all built on them - the third-party
-# components kept; clean: that, and the components' sources and build trees too - not what each installed, nor its stamps
-# (so not built again: a component whose recipe then changes needs clobber), nor WIX's (its programs, which the
-# installers run). Each keeps the libraries and programs already built, until built again. clobber: all of it.
+# library-clobber: Stroika's own build afresh next time - its libraries, and all built on them (an application's too) -
+# the third-party components' build kept; clean: that, and the components' sources and build trees too - not what each
+# installed, nor its stamps (so not built again: a component whose recipe then changes needs clobber), nor WIX's (its
+# programs, which the installers run). Each keeps the libraries and programs already built, until built again. clobber:
+# all of it.
 clean library-clobber:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
-	@rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Stroika $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Stroika-prefix\
-		$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Tests $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/tests-prefix\
-		$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/Samples $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/samples-prefix
+	@if [ -d $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake ]; then\
+		find $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake -mindepth 1 -maxdepth 1 ! -name ThirdParty -exec rm -rf {} +;\
+	fi
 	@if [ "$@" = "clean" ] ; then\
 		for stamp_ in $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/ThirdParty/*/stamp ; do\
 			component_="$${stamp_%/stamp}";\

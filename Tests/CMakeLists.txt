@@ -1,7 +1,7 @@
 #
 # Stroika's regression tests: Tests/NN, each its Test.cpp built as TestNN, linked with the Frameworks library (and
-# googletest's main) - a CMake project of its own, built on Stroika's package as the samples are (Samples/CMakeLists.txt):
-# the top CMakeLists.txt builds it once Stroika's libraries are built, as its target tests. For one configuration:
+# googletest's main) - part of Stroika's build (the top CMakeLists.txt; make's target tests), or a project by itself,
+# built on Stroika's package as a program using Stroika is, once the configuration's libraries are built:
 #     cmake -S Tests -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
 #           -DCMAKE_PREFIX_PATH=<the configuration's Builds directory>
 # ctest runs each through Tests/Scripts/RunTest, as make run-tests does (given --gtest_brief too) - so RunTest's REMOTE=,
@@ -9,10 +9,11 @@
 #     ctest --test-dir <build directory> -j8 --output-on-failure
 # (with a Visual Studio generator, -C and the configuration's build type too: -C Debug, or -C Release).
 #
-cmake_minimum_required (VERSION 3.22)
-project (StroikaTests LANGUAGES C CXX)
-
-find_package (Stroika REQUIRED)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    cmake_minimum_required (VERSION 3.22)
+    project (StroikaTests LANGUAGES C CXX)
+    find_package (Stroika REQUIRED)
+endif ()
 if (NOT STROIKA_FEATURE_GoogleTest STREQUAL "no")
     find_package (GTest CONFIG REQUIRED) # googletest's main, for each test
 endif ()
@@ -56,6 +57,11 @@ foreach (n_ IN LISTS tests_)
         set_tests_properties (Test${n_} PROPERTIES ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:${bashDirectory_}")
     endif ()
 endforeach ()
+
+# make's target tests: all of them
+list (TRANSFORM tests_ PREPEND Test OUTPUT_VARIABLE testTargets_)
+add_custom_target (tests)
+add_dependencies (tests ${testTargets_})
 
 # the test files Test34 embeds
 add_subdirectory (34)

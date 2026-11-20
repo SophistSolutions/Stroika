@@ -1,8 +1,9 @@
 #
-# The configuration's third-party components, built with CMake beside make (#1157). Each <name>/CMakeLists.txt builds one
-# as its Makefile does: its source archive from Origs-Cache (downloaded there when missing), configured with the
+# The configuration's third-party components, built with CMake beside make (#1157). Each <name>/CMakeLists.txt builds
+# one as its Makefile does: its source archive from Origs-Cache (downloaded there when missing), configured with the
 # configuration's toolchain file, built, and installed into the configuration's Builds directory (STROIKA_BUILDS_DIR) -
-# where Stroika's own CMake build (Library/CMakeLists.txt) finds it. For one configuration:
+# where Stroika's own CMake build finds it (the top CMakeLists.txt, which builds this as it is configured). For one
+# configuration:
 #     cmake -S ThirdPartyComponents -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
 #     CMAKE_BUILD_PARALLEL_LEVEL=8 cmake --build <build directory>
 # The jobs: with a Makefiles generator, the components' own builds share make's job slots, as under make; with Ninja, they

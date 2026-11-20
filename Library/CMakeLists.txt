@@ -1,34 +1,9 @@
 #
-# Stroika's libraries built with CMake, as make builds them (#1157). For one Stroika configuration, given its toolchain file:
-#     cmake -S Library -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
-# (or the top CMakeLists.txt, by the configuration's preset: its third-party components, then this, then the tests and
-# samples). It builds the Foundation and Frameworks libraries, the tools (Tools/CMakeLists.txt) and the documentation
-# (Documentation/CMakeLists.txt), against the third-party components installed for the configuration - by make, or by
-# ThirdPartyComponents/CMakeLists.txt - and puts each where make puts it, in the configuration's Builds directory, with
-# Stroika's CMake package, which the regression tests (Tests/CMakeLists.txt) and the samples (Samples/CMakeLists.txt) build
-# with.
+# Stroika's libraries, as make builds them - part of Stroika's build (the top CMakeLists.txt, which has found the
+# configuration's settings and third-party libraries). It builds the Foundation and Frameworks libraries, the tools
+# (Tools/CMakeLists.txt) and the documentation (Documentation/CMakeLists.txt), and puts each where make puts it, in the
+# configuration's Builds directory, with Stroika's CMake package, which a program built on Stroika uses.
 #
-cmake_minimum_required (VERSION 3.22)
-project (Stroika LANGUAGES C CXX)
-
-# the configuration's Stroika settings, which ApplyConfiguration writes beside its toolchain file
-if (NOT CMAKE_TOOLCHAIN_FILE)
-    message (FATAL_ERROR "No configuration: give its toolchain file, -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake")
-endif ()
-get_filename_component (configurationDir_ "${CMAKE_TOOLCHAIN_FILE}" DIRECTORY)
-include ("${configurationDir_}/Stroika-Configuration.cmake")
-
-list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../Build/Lib/CMake")
-# the configuration's build type, C++ standard and third-party components, as a program using Stroika's package takes them
-include (StroikaBuildSettings)
-include (StroikaCopyFilesToExeDir)
-include (StroikaEmbedFiles)
-include (StroikaInstallers)
-include (StroikaMakeVersionFile)
-include (StroikaVersion)
-
-# the third-party libraries the configuration uses, for Foundation and Frameworks (and for Stroika's package, below)
-include (StroikaDependencies)
 
 # the libraries where make puts them, in the configuration's Builds directory (the tests and samples: their CMakeLists.txt) -
 # a generator expression, though empty, keeps a Visual Studio generator from adding a directory for the build type
@@ -42,7 +17,7 @@ endif ()
 
 add_subdirectory (Sources/Stroika/Foundation)
 add_subdirectory (Sources/Stroika/Frameworks)
-# make's target libraries (the top CMakeLists.txt's, as tools and documentation, each where its parts are)
+# make's target libraries (as tools, documentation, tests and samples: each where its parts are)
 add_custom_target (libraries)
 add_dependencies (libraries stroika-foundation stroika-frameworks)
 
@@ -62,11 +37,14 @@ target_link_libraries (stroika INTERFACE stroika-frameworks) # and so Foundation
 set_target_properties (stroika-foundation PROPERTIES EXPORT_NAME Foundation)
 set_target_properties (stroika-frameworks PROPERTIES EXPORT_NAME Frameworks)
 set_target_properties (stroika PROPERTIES EXPORT_NAME Stroika)
+# and here by the package's names, for the tests and samples built in this build (their find_package skipped)
+add_library (Stroika::Foundation ALIAS stroika-foundation)
+add_library (Stroika::Frameworks ALIAS stroika-frameworks)
+add_library (Stroika::Stroika ALIAS stroika)
 set (packageDirectory_ "${STROIKA_BUILDS_DIR}lib/cmake/Stroika")
 export (TARGETS stroika-foundation stroika-frameworks stroika HTMLViewCompiler NAMESPACE Stroika:: FILE "${packageDirectory_}/StroikaTargets.cmake")
-cmake_path (GET PROJECT_SOURCE_DIR PARENT_PATH sourceRoot_)
-string (APPEND sourceRoot_ "/")
+set (sourceRoot_ "${CMAKE_SOURCE_DIR}/")
 configure_file (StroikaConfig.cmake.in "${packageDirectory_}/StroikaConfig.cmake" @ONLY)
 include (CMakePackageConfigHelpers)
-StroikaReadVersion ("${PROJECT_SOURCE_DIR}/../STROIKA_VERSION" version_)
+StroikaReadVersion ("${CMAKE_SOURCE_DIR}/STROIKA_VERSION" version_)
 write_basic_package_version_file ("${packageDirectory_}/StroikaConfigVersion.cmake" VERSION "${version__WIN32_FOUR_DOT}" COMPATIBILITY SameMinorVersion)

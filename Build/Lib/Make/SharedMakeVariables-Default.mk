@@ -142,8 +142,8 @@ StroikaFindCMake = cmake_="$$($(StroikaSourceRoot)Build/Scripts/GetConfiguration
 	case "$$cmake_" in */*) ctest_="$$(dirname "$$cmake_")/ctest";; *) ctest_=ctest;; esac
 
 # And jobs_ to the jobs make was given (-jN), for cmake's build - a build of its own, given them as
-# CMAKE_BUILD_PARALLEL_LEVEL, which its inner builds take too, under Ninja (Stroika's CMakeLists.txt) - so not given this
-# make's MAKEFLAGS: its jobserver, its -s and -k -
+# CMAKE_BUILD_PARALLEL_LEVEL, which the third-party components' build takes too (Stroika's CMakeLists.txt) - so not
+# given this make's MAKEFLAGS: its jobserver, its -s and -k -
 #     @$(StroikaFindCMake) && $(StroikaFindJobs) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION)
 StroikaFindJobs = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
 	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
