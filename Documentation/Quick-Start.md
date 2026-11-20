@@ -61,6 +61,24 @@ make CONFIGURATION=Debug samples -j10
 ./Builds/Debug/myStarterApp/myStarterApp
 ~~~
 
+### Using an IDE
+
+Before opening Stroika's tree, or your application's, in an IDE, run once:
+
+~~~
+make apply-configurations
+~~~
+
+It makes the default configurations (if there are none) and writes each one's CMake preset (`CMakeUserPresets.json`) -
+without it, Visual Studio lists no configurations. Then:
+
+- Visual Studio: File > Open > Folder, and pick a configuration in the toolbar's configure-preset box. The first
+  configure of a configuration builds its third-party components, which takes a while.
+- VS Code: open `Workspaces/VSCode/<name>.code-workspace`.
+
+A configuration you add later (`./configure ...`) appears once it is applied: `make CONFIGURATION=<name> apply-configuration`,
+or a build of it.
+
 
 ### More complex examples
 

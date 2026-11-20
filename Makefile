@@ -59,9 +59,6 @@ help:
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    library-clobber:             -    Stroika's own build afresh next time - its libraries, and all built on them - the third-party components kept"
-	@$(ECHO) "    project-files:               -    Writes each configuration's IDE settings - its CMake preset (Visual Studio's Open Folder"
-	@$(ECHO) "                                      reads it) and VS Code's - making the default configurations first, if there are none"
-	@$(ECHO) "    project-files-vs-code:       -    Builds project files for visual studio code"
 	@$(ECHO) "    tools:                       -    Builds the tools (HTMLViewCompiler)"
 	@$(ECHO) "    tests:                       -    Builds the regression tests"
 	@$(ECHO) "    format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards"
@@ -73,8 +70,9 @@ help:
 	@$(ECHO) "                                      (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                      EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
 	@$(ECHO) "    skel-test:                   -    Builds the libraries, then a new Skel application on them - as a package manager's Stroika - and runs it"
-	@$(ECHO) "    apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations"
-	@$(ECHO) "                                      folder (not needed, automatic)"
+	@$(ECHO) "    apply-configurations:        -    Writes what each configuration implies - its toolchain file, its CMake preset (which"
+	@$(ECHO) "                                      Visual Studio's File > Open > Folder lists) and VS Code's settings - making the default"
+	@$(ECHO) "                                      configurations first, if there are none. Run it before opening an IDE"
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; see ./configure -help for environment variables"
 	@$(ECHO) "                                      e.g. EXTRA_CONFIGURE_ARGS='--openssl-extraargs purify --block-allocation disable' make default-configurations"
 	@$(ECHO) "                                      OR EXTRA_CONFIGURE_ARGS='--build-platform VisualStudio.Net-2022' make default-configurations"
@@ -230,17 +228,10 @@ endif
 	@# last: the makes above need the build root; ConfigurationFiles/ is where the configurations were before Stroika v3.0d26
 	@rm -rf $(patsubst %/,%,$(StroikaBuildsRoot) $(StroikaIntermediateFilesRoot)) $(TOP_ROOT)ConfigurationFiles
 
-project-files:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) project-files-vs-code
-
-project-files-vs-code:
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio-code configuration files:"
-ifeq ($(DETECTED_HOST_OS),Darwin)
-	@rsync --update .config-default.json .config.json
-else
-	@cp --update .config-default.json .config.json
-endif
-	@$(MAKE) --silent apply-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+# DEPRECATED (Stroika v3.0d26): make apply-configurations
+project-files project-files-vs-code:
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "make $@ is DEPRECATED (Stroika v3.0d26) - make apply-configurations:"
+	@$(MAKE) --no-print-directory apply-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 format-code:
@@ -336,7 +327,20 @@ endif
 
 
 
-apply-configurations:
+# Each configuration applied - the default ones made first, if there are none: what it implies written - its
+# Configuration.mk, toolchain file and CMake preset (CMakeUserPresets.json, which an IDE reads: Visual Studio's
+# File > Open > Folder lists the configurations it holds), and VS Code's settings (.config.json too, from
+# .config-default.json if newer)
+apply-configurations:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
+ifeq ($(DETECTED_HOST_OS),Darwin)
+	@rsync --update $(StroikaSourceRoot).config-default.json $(StroikaSourceRoot).config.json
+else
+	@cp --update $(StroikaSourceRoot).config-default.json $(StroikaSourceRoot).config.json
+endif
+	@# a make of its own, so the configurations it applies include any made just now
+	@$(MAKE) --no-print-directory apply-configurations-each_
+
+apply-configurations-each_:
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i;\
 	done

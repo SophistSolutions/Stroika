@@ -47,7 +47,7 @@ If you have a relatively standard POSIX like c++ build environement, you maybe d
 
 ### Build with IDE
 
-Run `make project-files` first (`make all`, as suggested above, does it too): it makes the default configurations, if there are none, and writes each one's IDE settings - without them an IDE lists no configurations. Visual Studio then opens Stroika's top directory (File > Open > Folder) and builds it with CMake, from each configuration's preset - see [Using Visual Studio](#using-visual-studio). VS Code has a workspace, [Workspaces/VSCode/](../Workspaces/VSCode/).
+Run `make apply-configurations` first (`make all`, as suggested above, does it too): it makes the default configurations, if there are none, and writes what each one implies - its CMake preset among them - without which an IDE lists no configurations.  Visual Studio then opens Stroika's top directory (File > Open > Folder) and builds it with CMake, from each configuration's preset - see [Using Visual Studio](#using-visual-studio). VS Code has a workspace, [Workspaces/VSCode/](../Workspaces/VSCode/).
 
 ### Build with Docker
 
@@ -248,9 +248,6 @@ Targets:
     reconfigure:                 -    Rebuild configuration files from the command-lines that built them before
     libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)
     library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)
-    project-files:               -    Writes each configuration's IDE settings - its CMake preset (Visual Studio's Open Folder
-                                      reads it) and VS Code's - making the default configurations first, if there are none
-    project-files-vs-code:       -    Builds project files for visual studio code
     tests:
     format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards
     samples:
@@ -261,8 +258,9 @@ Targets:
                                       (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)
                                       EG: VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp" make VALGRIND=memcheck run-tests
     skel-test:                   -    Builds the libraries, then a new Skel application on them - as a package manager's Stroika - and runs it
-    apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations
-                                      folder (not needed, automatic)
+    apply-configurations:        -    Writes what each configuration implies - its toolchain file, its CMake preset (which
+                                      Visual Studio's File > Open > Folder lists) and VS Code's settings - making the default
+                                      configurations first, if there are none. Run it before opening an IDE
     default-configurations:      -    Creates the default configurations in Configurations folder; see ./configure -help for environment variables
                                       e.g. EXTRA_CONFIGURE_ARGS='--openssl-extraargs purify --block-allocation disable' make default-configurations
                                       OR EXTRA_CONFIGURE_ARGS='--build-platform VisualStudio.Net-2022' make default-configurations
@@ -580,17 +578,13 @@ make runs Stroika's CMake build (since Stroika v3.0d26: CMakeLists.txt), one bui
 
   clean removes what was built but not installed - Stroika's own build, and the third-party components' sources and build trees - but not the libraries and programs built, nor what the components installed (so they are not built again). library-clobber: Stroika's own build afresh next time, the components' build kept. clobber removes all that was built.
 
-- make `project-files`
-
-  Writes each configuration's IDE settings - its CMake preset (`CMakeUserPresets.json`, which Visual Studio's Open Folder reads) and VS Code's (`.vscode/c_cpp_properties.json`) - making the default configurations first, if there are none. `make all` does it too.
-
 - `make check-prerequisite-tools`
 
   Checks if the tools needed to build Stroika are installed and in your path. This is done automatically, and generally not needed explicitly.
 
 - `make apply-configurations`
 
-  To generate all the directories and files dependent on the defined configurations. Note – this is generally not necessary, and called automatically.
+  Writes what each configuration implies - its `Configuration.mk`, toolchain file and CMake preset (`CMakeUserPresets.json`, which an IDE reads), and VS Code's settings (`.vscode/c_cpp_properties.json`) - making the default configurations first, if there are none. Every build of a configuration applies it too, if it has changed; run it yourself before opening an IDE. (Before Stroika v3.0d26: `make project-files`, now deprecated.)
 
 ### CONFIGURATION arguments to make
 
@@ -722,9 +716,9 @@ If something depending on dotfiles, `known_hosts` or keys mysteriously cannot se
 
 ### Using Visual Studio
 
-First run `make project-files` (or `make all`): it makes the default configurations, if there are none, and writes each one's CMake preset (`CMakeUserPresets.json`) - without the presets Visual Studio lists no configurations. Then open Stroika's top directory (File > Open > Folder) and pick a configuration in the toolbar's configure-preset box. Each configuration's CMake project holds every source file, test and sample, to build, run, debug and browse; its first configure builds its third-party components, which takes a while (View > Output, CMake). The debugger shows Stroika's types through `Library/Sources/Stroika/Foundation/Debug/Stroika-Foundation.natvis`, which each program's link puts in its .pdb.
+First run `make apply-configurations` (or `make all`): it makes the default configurations, if there are none, and writes each one's CMake preset (`CMakeUserPresets.json`) - without the presets Visual Studio lists no configurations. A configuration you add later (`./configure ...`) appears once it is applied: `make CONFIGURATION=<name> apply-configuration`, or a build of it. Then open Stroika's top directory (File > Open > Folder) and pick a configuration in the toolbar's configure-preset box. Each configuration's CMake project holds every source file, test and sample, to build, run, debug and browse; its first configure builds its third-party components, which takes a while (View > Output, CMake). The debugger shows Stroika's types through `Library/Sources/Stroika/Foundation/Debug/Stroika-Foundation.natvis`, which each program's link puts in its .pdb.
 
-An application built on Stroika opens the same way - `make project-files` in it first, then its folder - with its own CMakeLists.txt and preset, as Skel makes them.
+An application built on Stroika opens the same way - `make apply-configurations` in it first, then its folder - with its own CMakeLists.txt and preset, as Skel makes them.
 
 
 ### Using Visual Studio Code
@@ -945,5 +939,5 @@ But - even with just plain make, you need some sort of configure script to estab
     - fix with
 
       ~~~bash
-      make project-files
+      make apply-configurations
       ~~~
