@@ -125,10 +125,11 @@ run-tests:
 clean clobber library-clobber:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifeq ($(CONFIGURATION_TAGS),)
-	@#clobber, of every configuration: also what make built before Stroika v3.0d26 (its components' CURRENT ...)
+	@#clobber, of every configuration: also what make's own build (Makefile-Legacy; before Stroika v3.0d26, make) left -
+	@#its components' build trees, and their sources, extracted into the source tree (CURRENT, ORIGS; a part-done extraction)
 	@if [ "$@" = "clobber" ] ; then \
-		rm -rf $(StroikaBuildsRoot)*;\
-		$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+		rm -rf $(StroikaBuildsRoot)* $(StroikaIntermediateFilesRoot)*/ThirdPartyComponents;\
+		cd $(StroikaSourceRoot)ThirdPartyComponents && rm -rf */CURRENT */ORIGS */ORIGs Xerces/xerces-c-* sqlite/sqlite-amalgamation-*;\
 	fi
 endif
 	@for i in $(APPLY_CONFIGS) ; do\
@@ -203,7 +204,8 @@ distclean:
 ifneq ($(CONFIGURATION),)
 	$(error "make distclean applies to all configurations - and deletes all configurations")
 endif
-	@$(MAKE) --no-print-directory --directory=ThirdPartyComponents distclean
+	@# the components' downloaded archives too - not those in git
+	@cd $(StroikaSourceRoot)ThirdPartyComponents/Origs-Cache && find . -type f ! -name .gitignore ! -name 'doxygen-1.8.2-setup.exe' ! -name 'doxygen-1.8.2-Windows-Installed.tar.gz' -exec rm -f {} +
 	@$(MAKE) --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@# last: the makes above need the build root; ConfigurationFiles/ is where the configurations were before Stroika v3.0d26
 	@rm -rf $(patsubst %/,%,$(StroikaBuildsRoot) $(StroikaIntermediateFilesRoot)) $(TOP_ROOT)ConfigurationFiles
@@ -224,7 +226,13 @@ endif
 project-files-visual-studio:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio project files:"
 	@mkdir -p Workspaces/VisualStudio.Net
-	@$(MAKE) --directory Tests --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Creating default visual-studio Tests project files:"
+	@for d in $(StroikaSourceRoot)Tests/Projects/VisualStudio.Net-*/ ; do\
+		d="$${d%/}";\
+		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+2)) -n "Building $${d##*/} project files...";\
+		(cd "$$d" && ./BuildProjectsFiles) || exit $$?;\
+		$(ECHO) done;\
+	done
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@rsync --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 else
@@ -274,7 +282,12 @@ ifeq ($(CONFIGURATION),)
 	$(error Cannot call check-prerequisite-tools-current-configuration without a configuration argument)
 endif
 	@$(MAKE) --no-print-directory apply-configuration-if-needed_
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools
+	@# the configuration's cmake, which builds it - and whose configure steps find the rest, or say what is missing
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Check-Prerequisite-Tools {$(CONFIGURATION)}: cmake ... "
+	@$(StroikaFindCMake) && if ! type "$$cmake_" > /dev/null 2>&1; then\
+		echo; $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool cmake; echo "    (the configuration's: $$cmake_)"; exit 1;\
+	fi
+	@$(ECHO) done
 	@mkdir -p $(StroikaIntermediateFilesRoot)$(CONFIGURATION); touch $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED
 
 
