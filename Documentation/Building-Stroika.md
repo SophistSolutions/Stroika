@@ -266,6 +266,7 @@ Targets:
                                       [VALGRIND=memcheck, etc] to run with valgrind
                                       (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)
                                       EG: VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp" make VALGRIND=memcheck run-tests
+    skel-test:                   -    Builds the libraries, then a new Skel application on them - as a package manager's Stroika - and runs it
     apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations
                                       folder (not needed, automatic)
     default-configurations:      -    Creates the default configurations in Configurations folder; see ./configure -help for environment variables
@@ -819,9 +820,16 @@ configured with the configuration's toolchain file - Stroika's compilers and fla
 
 `Stroika::Stroika` is both of Stroika's libraries - `Stroika::Foundation`, and `Stroika::Frameworks`, which brings Foundation with it - with the third-party libraries they use. `Stroika::HTMLViewCompiler` compiles a .swsp file to C++, and the package defines Stroika's CMake functions (Build/Lib/CMake): `StroikaMakeVersionFile`, `StroikaCopyFilesToExeDir`, `StroikaInstallers` and `StroikaEmbedFiles`.
 
-Stroika's regression tests and samples build so: `Tests/CMakeLists.txt` and `Samples/CMakeLists.txt` are projects of their own, which Stroika's build runs once its libraries are built - each test links `Stroika::Frameworks`, each sample `Stroika::Foundation` or `Stroika::Frameworks`.
+Stroika's regression tests and samples are part of Stroika's own build, linking its libraries there (each test `Stroika::Frameworks`, each sample `Stroika::Foundation` or `Stroika::Frameworks`); `Tests/CMakeLists.txt` and `Samples/CMakeLists.txt` can each also build by themselves, on the package.
 
-An application Skel makes still builds with make, against Stroika's libraries in its configuration's Builds directory, their flags from Stroika's .pc files (pkg-config).
+An application Skel makes builds so too, on the Stroika in its `ThirdPartyComponents/Stroika/StroikaRoot` (a git submodule), whose build writes the application's preset (`CMakeUserPresets.json`). Made with `Skel --stroikaSource none`, it has no Stroika of its own - it builds on one built elsewhere, as a package manager would supply one - and that Stroika writes its preset:
+
+  ~~~bash
+  <Stroika>/Build/Scripts/ApplyConfiguration --application-root ../myApp Debug
+  cd ../myApp && cmake --preset Debug && cmake --build --preset Debug
+  ~~~
+
+`make skel-test` does that with a new application, and runs it - what CI checks the package with.
 
 ---
 

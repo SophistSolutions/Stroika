@@ -8,6 +8,12 @@
 #   entries in CMakeUserPresets.json, Workspaces/VisualStudio.Net's IntelliSense .props (Visual Studio configurations only)
 #   and .vscode/c_cpp_properties.json.
 #
+#   ApplyConfiguration --application-root DIR CONFIGURATION
+#
+#   Only writes DIR/CMakeUserPresets.json's preset for CONFIGURATION, applied and built here: an application in DIR with
+#   no Stroika of its own (Skel --stroikaSource none), built on this Stroika's package - as a package manager would write
+#   a project's presets for the packages it supplies.
+#
 #   A port of ApplyConfiguration.pl (through Stroika v3.0d25).
 #
 #   @todo write to temporary file and only update if actually changed
@@ -731,16 +737,25 @@ def WriteBytes_(path, data):
 def Main_(argv):
     genVSCode = genConfigMake = genVSIntellisense = True
     activeConfiguration = None
-    for var in argv:
+    applicationRoot = None
+    args = list(argv)
+    while args:
+        var = args.pop(0)
         if var.lower() in ("-help", "--help", "-?"):
             print("Usage:")
             print("\tApplyConfiguration [OPTIONS] CONFIGURATION")
             print("\t  where options can be:")
-            print("\t    --help              /* print this help */")
-            print("\t    --only-vscode       /* only update .vscode/cpp stuff */")
+            print("\t    --help                   /* print this help */")
+            print("\t    --only-vscode            /* only update .vscode/cpp stuff */")
+            print("\t    --application-root DIR   /* only write DIR's CMakeUserPresets.json: an application with no Stroika of its own,")
+            print("\t                                built on this one's (Skel --stroikaSource none) */")
             sys.exit(0)
         elif var.lower() == "--only-vscode":
             genConfigMake = genVSIntellisense = False
+        elif var.lower() == "--application-root":
+            if not args:
+                Die_("--application-root needs a directory\n")
+            applicationRoot = args.pop(0)
         else:
             activeConfiguration = var
     if activeConfiguration is None:
@@ -750,6 +765,18 @@ def Main_(argv):
     configMk = DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/Configuration.mk"
     c = Config_(activeConfiguration)
     genVSIntellisense = genVSIntellisense and IsVisualStudio_(c.BuildPlatform)
+
+    if applicationRoot is not None:
+        # its build in this configuration's CMake/App (as in a Skel application's own tree), its programs in this
+        # configuration's Builds directory
+        if not os.path.exists(DirectoryLayout.INTERMEDIATE_FILES_ROOT + activeConfiguration + "/Toolchain.cmake"):
+            Die_("Configuration " + activeConfiguration + " is not applied here: make CONFIGURATION=" + activeConfiguration + " libraries, first\n")
+        presets = os.path.join(applicationRoot, "CMakeUserPresets.json")
+        sys.stdout.write(leader + "Updating configuration " + activeConfiguration + ' in "' + presets + '" ... ')
+        sys.stdout.flush()
+        WriteBytes_(presets, CMakePresetsText_(c, ReadText_(presets, "utf-8"), forApplication=True).encode("utf-8"))
+        sys.stdout.write("done\n")
+        return
 
     if genConfigMake:
         if os.path.exists(configMk):

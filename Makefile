@@ -15,7 +15,7 @@ endif
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
-.PHONY:	all libraries tools tests samples documentation third-party-components run-tests clean clobber library-clobber distclean apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
+.PHONY:	all libraries tools tests samples documentation third-party-components run-tests skel-test clean clobber library-clobber distclean apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
 
 
 SHELL=/bin/bash
@@ -72,6 +72,7 @@ help:
 	@$(ECHO) "                                      [VALGRIND=memcheck, etc] to run with valgrind"
 	@$(ECHO) "                                      (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                      EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
+	@$(ECHO) "    skel-test:                   -    Builds the libraries, then a new Skel application on them - as a package manager's Stroika - and runs it"
 	@$(ECHO) "    apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations"
 	@$(ECHO) "                                      folder (not needed, automatic)"
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; see ./configure -help for environment variables"
@@ -118,9 +119,9 @@ $(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COM
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 
-run-tests:
+run-tests skel-test:
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 
 clean clobber library-clobber:
@@ -159,6 +160,23 @@ run-tests:	tests
 	fi
 ifeq (${ECHO_TIMESTAMPS},1)
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Run-Done: `date +%T`
+endif
+
+# A new Skel application, with no Stroika of its own (as a package manager would supply it), built on this one's package
+# and run (unless cross-compiled): what an application sees of Stroika's CMake package, which Stroika's own tests and samples
+# - part of its build - never read. Made afresh each time, in the configuration's IntermediateFiles; its build in CMake/App
+# there, its program in the configuration's Builds directory (ApplyConfiguration --application-root)
+skel-test:	libraries
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building a Skel application on Stroika's package {$(CONFIGURATION)}:"
+	@rm -rf "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp"
+	@$(StroikaSourceRoot)Build/Scripts/Skel --appRoot "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" --stroikaSource none > /dev/null
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaSourceRoot)Build/Scripts/ApplyConfiguration --application-root "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" $(CONFIGURATION)
+	@$(StroikaFindCMake) && $(StroikaFindJobs) && cd "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" &&\
+		env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --preset $(CONFIGURATION) --log-level=NOTICE &&\
+		env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION)
+ifneq ($(CrossCompiling),true)
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Running $(StroikaBuildsRoot)$(CONFIGURATION)/SkelApp/SkelApp"
+	@"$(StroikaBuildsRoot)$(CONFIGURATION)/SkelApp/SkelApp"
 endif
 
 # library-clobber: Stroika's own build afresh next time - its libraries, and all built on them (an application's too) -

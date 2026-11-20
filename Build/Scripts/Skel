@@ -3,7 +3,7 @@
 #
 #   Parameters:
 #       --appRoot <DIR>     # top level directory generated
-#       --stroika-source (git | download)
+#       --stroikaSource (git | none)
 #       --stroikaGitRemote <URL | DIR>
 #
 POSITIONAL_ARGS=()
@@ -36,7 +36,8 @@ help_()
   echo "  --appRoot <DIR>         # top level directory generated (required - e.g. ../myApp)"
   echo "  [--template T ]         # defaults to Basic, but supported: [Basic, HTMLUI]"
   echo '  [--appName <NAME>]      # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}` no spaces in name, and no punct except _)'
-  echo "  [--stroikaSource git]"
+  echo "  [--stroikaSource git | none] # git (DEFAULT): a git repository, Stroika a submodule of it; none: no Stroika in it (nor"
+  echo "                               # git) - built on a Stroika built elsewhere, as a package manager would supply one"
   echo "  [--stroikaGitRemote <URL | DIR>] # repository the Stroika submodule is cloned from (DEFAULT: $STROIKA_SOURCE_GIT_REMOTE)"
   # todo add | download | symbolic-link, or maybe conan, but NYI --LGP 2023-10-24
 }
@@ -64,7 +65,14 @@ parse_command_line_ () {
         fi
         ;;
       --stroikaSource)
-        echo "NYI - only support git for now... $1"
+        STROIKA_SOURCE="$2"
+        shift # past argument
+        shift # past value
+        if [[ "$STROIKA_SOURCE" != "git" && "$STROIKA_SOURCE" != "none" ]] ; then
+          echo "Unknown --stroikaSource $STROIKA_SOURCE"
+          help_;
+          exit 1
+        fi
         ;;
       --stroikaGitRemote)
         STROIKA_SOURCE_GIT_REMOTE="$2"
@@ -145,10 +153,13 @@ mkMyApp_()
 mkFinish_()
 {
   echo "Genericly adjusting $APP_ROOT contents for skel produced app..."
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaSourceRoot/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaSourceRoot/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
-  (cd $APP_ROOT; $StroikaSourceRoot/Build/Scripts/MakeFileLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
-  
+  # links to its Stroika's files (on Windows hard links, which need the file there): none without one
+  if [[ "$STROIKA_SOURCE" != "none" ]] ; then
+    (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaSourceRoot/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
+    (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaSourceRoot/Build/Scripts/MakeFileLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
+    (cd $APP_ROOT; $StroikaSourceRoot/Build/Scripts/MakeFileLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
+  fi
+
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/Common/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/Common/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/Common/.vscode/tasks.json > $APP_ROOT/.vscode/tasks.json
@@ -182,6 +193,12 @@ mkFinish_ >> $OUTLOG 2>&1
 
 echo "  done"
 echo "Suggested next steps:"
+if [[ "$STROIKA_SOURCE" == "none" ]] ; then
+  echo "  <a built Stroika>/Build/Scripts/ApplyConfiguration --application-root $APP_ROOT <configuration>    # the app's CMake preset, built on that Stroika's package"
+  echo "  cd $APP_ROOT"
+  echo "  cmake --preset <configuration> && cmake --build --preset <configuration>"
+  exit 0
+fi
 echo "  cd $APP_ROOT"
 echo "  ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot    # where the build goes: here, in IntermediateFiles/ and Builds/ (MakeBuildRoot --help)"
 echo "  make CONFIGURATION=Debug all -j8"
