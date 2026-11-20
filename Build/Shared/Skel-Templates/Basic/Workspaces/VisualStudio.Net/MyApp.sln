@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ROOT-FOLDER", "ROOT-FOLDER"
 		..\..\.gitmodules = ..\..\.gitmodules
 		..\..\Makefile = ..\..\Makefile
 		..\..\README.md = ..\..\README.md
-		..\..\VERSION = ..\..\VERSION
+		..\..\APP_VERSION = ..\..\APP_VERSION
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPartyComponents", "ThirdPartyComponents", "{679BC6AD-01AF-4A16-9EF4-16BE283E2F97}"

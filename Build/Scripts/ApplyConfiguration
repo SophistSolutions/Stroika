@@ -637,14 +637,15 @@ def VSCodeText_(c, existingText):
             raise ValueError
     except ValueError:
         doc = json.loads(EMPTY)
-    # myDefaultIncludePath, if missing (an .env that is not an object is left as it is). Empty: the
-    # project's own include directories, for it to add. NOT ${workspaceFolder}: IntelliSense searches includePath for <...>
-    # includes too, so it would take a Skel app's root VERSION file for <version> (case-insensitive on Windows)
+    # myDefaultIncludePath, if missing (an .env that is not an object is left as it is): the project's root, for what it
+    # includes from there. IntelliSense searches includePath for <...> includes too, so no file at the root may have a
+    # standard header's name - in any case, as Windows' file names have none: a Skel app's version file is APP_VERSION,
+    # not VERSION (<version>)
     env = doc.get("env") if isinstance(doc, dict) else None
     if isinstance(doc, dict) and (env is None or (isinstance(env, dict) and env.get("myDefaultIncludePath") is None)):
         if env is None:
             doc["env"] = {}
-        doc["env"]["myDefaultIncludePath"] = []
+        doc["env"]["myDefaultIncludePath"] = ["${workspaceFolder}"]
     configs = doc.get("configurations") if isinstance(doc, dict) else None
     configs = configs if isinstance(configs, list) else []
     index = len(configs)

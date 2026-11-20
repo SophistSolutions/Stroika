@@ -11,8 +11,8 @@ LC_APP_NAME=`echo -n "${APP_NAME}" | tr '[:upper:]' '[:lower:]'`
 
 sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/../Shared/Skel-Templates/$TEMPLATE/Makefile > $APP_ROOT/Makefile
 
-# The sample's CMakeLists.txt, the application's: its version the application's own (VERSION)
-sed 's|/\.\./\.\./STROIKA_VERSION"|/VERSION"|' < $oldStroikaDir/Samples/HTMLUI/CMakeLists.txt > $APP_ROOT/CMakeLists.txt
+# The sample's CMakeLists.txt, the application's: its version the application's own (APP_VERSION)
+sed 's|/\.\./\.\./STROIKA_VERSION"|/APP_VERSION"|' < $oldStroikaDir/Samples/HTMLUI/CMakeLists.txt > $APP_ROOT/CMakeLists.txt
 
 # Patch HTMLUI => {APP_NAME} in various source files: each of the sample's names to a placeholder, and only then the
 # placeholders to the application's names - so a name with HTMLUI in it is not renamed again, within itself
