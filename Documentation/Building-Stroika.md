@@ -47,7 +47,7 @@ If you have a relatively standard POSIX like c++ build environement, you maybe d
 
 ### Build with IDE
 
-Visual Studio opens Stroika's top directory (File > Open > Folder) and builds it with CMake, from each configuration's preset - see [Using Visual Studio](#using-visual-studio). VS Code has a workspace, [Workspaces/VSCode/](../Workspaces/VSCode/), whose settings `make project-files` writes (`make all`, as suggested above, does that too).
+Run `make project-files` first (`make all`, as suggested above, does it too): it makes the default configurations, if there are none, and writes each one's IDE settings - without them an IDE lists no configurations. Visual Studio then opens Stroika's top directory (File > Open > Folder) and builds it with CMake, from each configuration's preset - see [Using Visual Studio](#using-visual-studio). VS Code has a workspace, [Workspaces/VSCode/](../Workspaces/VSCode/).
 
 ### Build with Docker
 
@@ -248,7 +248,8 @@ Targets:
     reconfigure:                 -    Rebuild configuration files from the command-lines that built them before
     libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)
     library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)
-    project-files:               -    Alias for project-files-vs-code
+    project-files:               -    Writes each configuration's IDE settings - its CMake preset (Visual Studio's Open Folder
+                                      reads it) and VS Code's - making the default configurations first, if there are none
     project-files-vs-code:       -    Builds project files for visual studio code
     tests:
     format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards
@@ -581,7 +582,7 @@ make runs Stroika's CMake build (since Stroika v3.0d26: CMakeLists.txt), one bui
 
 - make `project-files`
 
-  Writes VS Code's settings for each configuration (`.vscode/c_cpp_properties.json`) - `make all` does too
+  Writes each configuration's IDE settings - its CMake preset (`CMakeUserPresets.json`, which Visual Studio's Open Folder reads) and VS Code's (`.vscode/c_cpp_properties.json`) - making the default configurations first, if there are none. `make all` does it too.
 
 - `make check-prerequisite-tools`
 
@@ -721,9 +722,9 @@ If something depending on dotfiles, `known_hosts` or keys mysteriously cannot se
 
 ### Using Visual Studio
 
-Open Stroika's top directory (File > Open > Folder). Visual Studio reads each configuration's CMake preset (`CMakeUserPresets.json`, written as the configuration is applied - by `make all`, or `make apply-configurations`) and lists the configurations; each one's CMake project holds every source file, test and sample, to build, run, debug and browse. Its debugger shows Stroika's types through `Library/Sources/Stroika/Foundation/Debug/Stroika-Foundation.natvis`, which each program's link puts in its .pdb.
+First run `make project-files` (or `make all`): it makes the default configurations, if there are none, and writes each one's CMake preset (`CMakeUserPresets.json`) - without the presets Visual Studio lists no configurations. Then open Stroika's top directory (File > Open > Folder) and pick a configuration in the toolbar's configure-preset box. Each configuration's CMake project holds every source file, test and sample, to build, run, debug and browse; its first configure builds its third-party components, which takes a while (View > Output, CMake). The debugger shows Stroika's types through `Library/Sources/Stroika/Foundation/Debug/Stroika-Foundation.natvis`, which each program's link puts in its .pdb.
 
-An application built on Stroika opens the same way - its own CMakeLists.txt and preset, as Skel makes them.
+An application built on Stroika opens the same way - `make project-files` in it first, then its folder - with its own CMakeLists.txt and preset, as Skel makes them.
 
 
 ### Using Visual Studio Code

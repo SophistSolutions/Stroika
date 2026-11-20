@@ -27,8 +27,8 @@ cmake --build --preset Debug
 
 ## IDES
 
-Visual Studio opens this directory (File > Open > Folder) and builds from each configuration's CMake preset
-(CMakeUserPresets.json); VS Code has a workspace, in Workspaces/VSCode. A configuration's preset is written as it is
-applied - by its first build (see above).
+Run make project-files first (or build: make all): it makes the default configurations, if there are none, and writes
+each one's CMake preset (CMakeUserPresets.json) - without it Visual Studio lists no configurations. Then Visual Studio
+opens this directory (File > Open > Folder); VS Code has a workspace, in Workspaces/VSCode.
 
 

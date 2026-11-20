@@ -92,6 +92,11 @@ apply-configurations-to-vscode:
 list-configurations list-configuration-tags apply-configurations apply-configuration apply-configurations-if-needed reconfigure:
 	@$(MAKE) --directory $(StroikaSourceRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
 
+# each configuration's IDE settings: its CMake preset (CMakeUserPresets.json, which Visual Studio's File > Open > Folder
+# reads) and VS Code's - making the default configurations first, if there are none
+project-files:	$(StroikaIntermediateFilesRoot)ASSURE_DEFAULT_CONFIGURATIONS_BUILT
+	@$(MAKE) --directory $(StroikaSourceRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+
 distclean:
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "${APP_NAME} $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifneq ($(CONFIGURATION),)
