@@ -1897,11 +1897,18 @@ namespace {
                              << "\t\t\t" << took.count () << " seconds" << endl;
             GetOutStream_ () << endl;
         }
-        // this test's JSONTestData directory - found by probing, since the test is run from different directories
+        // this test's JSONTestData directory: in the source tree RunTest's environment names (StroikaSourceRoot - as ctest
+        // runs the test, from its build directory); else, the test run by hand, found by probing from the current directory
         filesystem::path FindJSONTestRoot_ ()
         {
             using filesystem::path;
             const path kTestDir_ = "52"; // this test's directory under Tests/
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
+            const char* sourceRoot = std::getenv ("StroikaSourceRoot");
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
+            if (sourceRoot != nullptr and *sourceRoot != '\0') {
+                return path{sourceRoot} / "Tests" / kTestDir_ / "JSONTestData";
+            }
             for (const path& p : {path{"."} / kTestDir_, path{"."} / "Tests" / kTestDir_, path{".."} / "Tests" / kTestDir_,
                                   path{".."} / ".." / "Tests" / kTestDir_, path{".."} / ".." / ".." / kTestDir_}) {
                 if (filesystem::exists (p / "JSONTestData")) {
