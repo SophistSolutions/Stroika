@@ -52,6 +52,7 @@
 #include "Stroika/Foundation/Execution/CPUAffinity.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/SpinLock.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Math/Common.h"
@@ -1903,11 +1904,8 @@ namespace {
         {
             using filesystem::path;
             const path kTestDir_ = "52"; // this test's directory under Tests/
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            const char* sourceRoot = std::getenv ("StroikaSourceRoot");
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-            if (sourceRoot != nullptr and *sourceRoot != '\0') {
-                return path{sourceRoot} / "Tests" / kTestDir_ / "JSONTestData";
+            if (optional<String> sourceRoot = kEnvironment->Lookup ("StroikaSourceRoot"sv); sourceRoot and not sourceRoot->empty ()) {
+                return sourceRoot->As<path> () / "Tests" / kTestDir_ / "JSONTestData";
             }
             for (const path& p : {path{"."} / kTestDir_, path{"."} / "Tests" / kTestDir_, path{".."} / "Tests" / kTestDir_,
                                   path{".."} / ".." / "Tests" / kTestDir_, path{".."} / ".." / ".." / kTestDir_}) {
