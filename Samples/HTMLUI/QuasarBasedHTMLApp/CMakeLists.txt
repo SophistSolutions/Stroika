@@ -40,6 +40,11 @@ endif ()
 file (GLOB_RECURSE sources_ CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*" "${CMAKE_CURRENT_SOURCE_DIR}/public/*")
 file (GLOB topFiles_ CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/.env*" "${CMAKE_CURRENT_SOURCE_DIR}/*.js" "${CMAKE_CURRENT_SOURCE_DIR}/*.ts"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.mjs" "${CMAKE_CURRENT_SOURCE_DIR}/*.json" "${CMAKE_CURRENT_SOURCE_DIR}/*.html" "${CMAKE_CURRENT_SOURCE_DIR}/.prettierrc")
+# and their list, written only when it changes: a source deleted leaves only files no newer than the last build, so the
+# web app rebuilds for it only by depending on this list too
+string (JOIN "\n" sourceList_ ${sources_} ${topFiles_})
+set (sourceListFile_ "${CMAKE_CURRENT_BINARY_DIR}/web-app-sources.txt")
+file (CONFIGURE OUTPUT "${sourceListFile_}" CONTENT "${sourceList_}\n" @ONLY)
 set (workDir_ "${CMAKE_BINARY_DIR}/HTMLUI-html")
 set (stamp_ "${CMAKE_CURRENT_BINARY_DIR}/web-app.stamp")
 add_custom_command (
@@ -47,7 +52,7 @@ add_custom_command (
     COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}" "-DWORK_DIR=${workDir_}" "-DHTML_DIR=${html_}"
             "-DNPM=${STROIKA_NPM}" -P "${CMAKE_CURRENT_SOURCE_DIR}/BuildWebApp.cmake"
     COMMAND "${CMAKE_COMMAND}" -E touch "${stamp_}"
-    DEPENDS ${sources_} ${topFiles_} "${CMAKE_CURRENT_SOURCE_DIR}/BuildWebApp.cmake"
+    DEPENDS ${sources_} ${topFiles_} "${sourceListFile_}" "${CMAKE_CURRENT_SOURCE_DIR}/BuildWebApp.cmake"
     COMMENT "Building HTMLUI's web app - npm i, npm run build (logs in ${workDir_})"
     VERBATIM
 )
