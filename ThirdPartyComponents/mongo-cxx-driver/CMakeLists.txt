@@ -67,7 +67,7 @@ StroikaThirdPartyComponent (mongo-cxx-driver
     URLS https://github.com/mongodb/mongo-cxx-driver/archive/refs/tags/${version_}.tar.gz
     CONFIGURE_COMMAND "${CMAKE_COMMAND}" -E env "PKG_CONFIG_PATH=${STROIKA_PKG_CONFIG_PATH}"
                       "${CMAKE_COMMAND}" "-DARGUMENTS_FILE=${CMAKE_CURRENT_BINARY_DIR}/configure-arguments.cmake" -DSOURCE_DIR=<SOURCE_DIR>
-                      -DBINARY_DIR=<BINARY_DIR> -P "${CMAKE_CURRENT_SOURCE_DIR}/Configure.cmake"
+                      -DBINARY_DIR=<BINARY_DIR> "-DVERSION=${buildVersion_}" -P "${CMAKE_CURRENT_SOURCE_DIR}/Configure.cmake"
     ${install_}
     DEPENDS openssl zlib zstd # zstd: mongo-c-driver finds it, for its compression
 )
