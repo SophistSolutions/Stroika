@@ -14,6 +14,8 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
+#include "Exception.h"
+
 #include "LibraryContext.h"
 
 using namespace Stroika::Foundation;
@@ -204,6 +206,24 @@ LibraryContext ::~LibraryContext ()
         Verify (::OSSL_PROVIDER_unload (i) == 1);
     }
 #endif
+}
+
+void LibraryContext::SetProviderModuleDirectory (const optional<filesystem::path>& directory)
+{
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("OpenSSL::LibraryContext::SetProviderModuleDirectory", "{}"_f, directory)};
+    Debug::AssertExternallySynchronizedChecker::WriteContext declareContext{fThisAssertExternallySynchronized_};
+#if OPENSSL_VERSION_MAJOR >= 3
+    // a narrow path, as OpenSSL loads a module with (LoadLibraryA on Windows); nullptr goes back to OpenSSL's choice
+    optional<string> narrowDirectory = directory ? String{*directory}.AsNarrowSDKString () : optional<string>{};
+    OpenSSL::Exception::ThrowLastErrorIfFailed (::OSSL_PROVIDER_set_default_search_path (nullptr, narrowDirectory ? narrowDirectory->c_str () : nullptr));
+#endif
+    fProviderModuleDirectory_ = directory;
+}
+
+optional<filesystem::path> LibraryContext::GetProviderModuleDirectory () const
+{
+    Debug::AssertExternallySynchronizedChecker::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    return fProviderModuleDirectory_;
 }
 
 void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)

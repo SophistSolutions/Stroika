@@ -37,6 +37,7 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
@@ -594,6 +595,14 @@ namespace {
         if constexpr (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
             providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
         }
+        // the legacy provider's module as this configuration's OpenSSL build put it, beside Tests (Builds/<configuration>/lib/
+        // ossl-modules) - absent where the configuration uses the system's OpenSSL, which finds its own, or the test runs
+        // away from its build
+        filesystem::path configurationModules     = Execution::GetEXEDir ().parent_path () / "lib" / "ossl-modules";
+        bool             haveConfigurationModules = filesystem::is_directory (configurationModules);
+        if (haveConfigurationModules) {
+            OpenSSL::LibraryContext::sDefault.SetProviderModuleDirectory (configurationModules);
+        }
         for (String provider : providers2Try) {
             Debug::TraceContextBumper ctxp{
                 Stroika_Foundation_Debug_OptionalizeTraceArgs ("trying provider", "provider={}"_f, Characters::ToString (provider))};
@@ -608,8 +617,13 @@ namespace {
 #endif
             }
             catch (...) {
-                if (provider == "legacy"sv) {
-                    DbgTrace ("Skipping provider={}, due to exception: {}"_f, provider, Characters::ToString (current_exception ()));
+                if (provider == OpenSSL::LibraryContext::kLegacyProvider) {
+                    if (haveConfigurationModules) {
+                        ADD_FAILURE () << "Loading provider={} from {}: {}"_f(provider, configurationModules, current_exception ());
+                    }
+                    else {
+                        DbgTrace ("Skipping provider={}, due to exception: {}"_f, provider, Characters::ToString (current_exception ()));
+                    }
                 }
                 else {
                     Stroika::Frameworks::Test::WarnTestIssue ("Skipping provider={}, due to exception: {}"_f(provider, current_exception ()));

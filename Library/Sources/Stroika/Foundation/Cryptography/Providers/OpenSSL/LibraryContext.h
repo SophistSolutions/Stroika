@@ -6,6 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -48,9 +50,10 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
      *          TemporarilyAddProvider).
      *  LoadProvider takes any other name OpenSSL knows too ("base", "fips", ...).
      *
-     *  The legacy provider is a module (legacy.so, legacy.dll ...), which OpenSSL loads from the directory named by the
-     *  environment variable OPENSSL_MODULES, else from the one compiled into OpenSSL (MODULESDIR: where its build installed
-     *  it) - unless OpenSSL was configured no-module, which builds it into libcrypto. With no module there to load,
+     *  The legacy provider is a module (legacy.so, legacy.dll ...), which OpenSSL loads from the directory set by
+     *  SetProviderModuleDirectory, else the one the environment variable OPENSSL_MODULES names, else the one compiled into
+     *  OpenSSL (MODULESDIR: where its build installed it) - unless OpenSSL was configured no-module, which builds it into
+     *  libcrypto (and leaves out FIPS, whose provider is always a module). With no module there to load,
      *  LoadProvider (kLegacyProvider) throws.
      *
      *  Before OpenSSL 3 there are no providers: every algorithm is built in, and LoadProvider and UnLoadProvider do nothing.
@@ -112,6 +115,32 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
          *  \brief OpenSSL's old, insecure algorithms, kept for old data (@see LibraryContext) - loaded only when asked for
          */
         static inline constexpr string_view kLegacyProvider = "legacy"sv;
+
+    public:
+        /**
+         *  \brief The directory OpenSSL loads a provider's module from (@see LibraryContext) - or nullopt: OpenSSL's choice, the
+         *         directory OPENSSL_MODULES names, else the one compiled into OpenSSL
+         *
+         *  One directory (OpenSSL's 'default search path'), for the providers loaded after it is set. A program that ships
+         *  OpenSSL's modules - Stroika's OpenSSL build puts them in its lib/ossl-modules - sets it to where it put them.
+         *
+         *  Before OpenSSL 3 there are no provider modules: it is recorded, and changes nothing.
+         *
+         *  \par Example Usage
+         *      \code
+         *          // the modules shipped beside the program, in ../lib/ossl-modules
+         *          using namespace Cryptography::Providers;
+         *          OpenSSL::LibraryContext::sDefault.SetProviderModuleDirectory (Execution::GetEXEDir ().parent_path () / "lib" / "ossl-modules");
+         *          OpenSSL::LibraryContext::sDefault.LoadProvider (OpenSSL::LibraryContext::kLegacyProvider);
+         *      \endcode
+         */
+        nonvirtual void SetProviderModuleDirectory (const optional<filesystem::path>& directory);
+
+    public:
+        /**
+         *  \brief The directory SetProviderModuleDirectory set, if any: nullopt leaves it to OpenSSL
+         */
+        nonvirtual optional<filesystem::path> GetProviderModuleDirectory () const;
 
     public:
         /**
@@ -179,6 +208,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
     private:
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE LibraryInit_ fLibraryInit_;
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedChecker fThisAssertExternallySynchronized_;
+        optional<filesystem::path>                                                             fProviderModuleDirectory_;
 
 #if OPENSSL_VERSION_MAJOR >= 3
         Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers
