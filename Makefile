@@ -38,11 +38,13 @@ CONFIGURATION_TAGS?=$(TAGS)
 
 # use = not := cuz rarely used more than once, and commonly never, and when called without configs,needs
 # re-evaluation (make default-configurations internally called - assure...)
+# Without CONFIGURATION or TAGS: the configurations built by default - but for clobber and reconfigure every one, as what
+# they fix (a stale compiler path, say) is in each
 APPLY_CONFIGS=$(or \
 				$(CONFIGURATION), \
 				$(if $(CONFIGURATION_TAGS), \
 					$(shell $(StroikaDirectoryLayoutEnv) Build/Scripts/GetConfigurations --quiet --config-tags "$(CONFIGURATION_TAGS)"),\
-					$(if $(filter clobber, $(MAKECMDGOALS)),\
+					$(if $(filter clobber reconfigure, $(MAKECMDGOALS)),\
 						$(shell $(StroikaDirectoryLayoutEnv) Build/Scripts/GetConfigurations --quiet --all --quiet),\
 						$(shell $(StroikaDirectoryLayoutEnv) Build/Scripts/GetConfigurations --quiet --all-default)\
 					)\
@@ -341,7 +343,7 @@ endif
 reconfigure:
 ifeq ($(CONFIGURATION),)
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory reconfigure CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory reconfigure CONFIGURATION=$$i || exit $$?;\
 	done
 else
 	@Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Reconfiguring $(CONFIGURATION):"
