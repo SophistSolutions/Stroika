@@ -1,12 +1,13 @@
 """
 One of Stroika's third-party components, stroika-<directory>: ThirdPartyComponents/<directory>, built by its own recipe there
-as ThirdPartyComponents/CMakeLists.txt builds it - Conan only keeping what it builds, in its cache, so a configuration builds
-each component once, and every build tree on the machine finds it there after that (StroikaComponentFromConan, in
-ThirdPartyComponents/CMakeLists.txt, which runs Conan).
+as ThirdPartyComponents/CMakeLists.txt builds it (StroikaThirdPartyComponent.cmake) - Conan only keeping what it builds, in its
+cache, so a configuration builds each component once, and every build tree on the machine finds it there after that
+(StroikaComponentFromConan, in ThirdPartyComponents/CMakeLists.txt, which runs Conan).
 
 What identifies a package:
   - its version: its recipe's (set (version_ ...)), given as Conan's --version;
-  - its recipe revision: a digest of the files that build it (export_sources), so editing them builds it again;
+  - its recipe revision: a digest of the files that build it (export_sources) - StroikaThirdPartyComponent.cmake,
+    RemoveFiles.cmake and its directory - so editing them builds it again;
   - the option "configuration": a digest of the configuration's toolchain file and Stroika settings. No settings: the
     compilers and flags are the configuration's.
 Where the configuration and the build are - its toolchain file, the archives, cmake and its generator - are conf values
@@ -37,9 +38,9 @@ class StroikaThirdPartyComponent(ConanFile):
         return os.path.join(self.build_folder, "install").replace("\\", "/")
 
     def export_sources(self):
-        # what builds it: ThirdPartyComponents/CMakeLists.txt, RemoveFiles.cmake, and its directory - less make's own build
-        # of it (Makefile-Legacy's: its Makefile, and the sources that extracts, CURRENT and ORIGS)
-        copy(self, "CMakeLists.txt", self.recipe_folder, self.export_sources_folder)
+        # what builds it: StroikaThirdPartyComponent.cmake, RemoveFiles.cmake, and its directory - less make's own build of
+        # it (Makefile-Legacy's: its Makefile, and the sources that extracts, CURRENT and ORIGS)
+        copy(self, "StroikaThirdPartyComponent.cmake", self.recipe_folder, self.export_sources_folder)
         copy(self, "RemoveFiles.cmake", self.recipe_folder, self.export_sources_folder)
         copy(self, "*", os.path.join(self.recipe_folder, self._directory), os.path.join(self.export_sources_folder, self._directory),
              excludes=("Makefile", "CURRENT*", "ORIGS*", "ORIGs*"))
@@ -56,10 +57,16 @@ class StroikaThirdPartyComponent(ConanFile):
         for name in ("generator_instance", "make_program"):
             if conf(name):
                 generator += f' "-DCMAKE_{name.upper()}={conf(name)}"'
+        # a project of just this component, as ThirdPartyComponents/CMakeLists.txt adds each
+        save(self, os.path.join(self.source_folder, "CMakeLists.txt"),
+             "cmake_minimum_required (VERSION 3.22)\n"
+             f"project ({self.name} LANGUAGES NONE)\n"
+             'include ("${CMAKE_CURRENT_SOURCE_DIR}/StroikaThirdPartyComponent.cmake")\n'
+             f"add_subdirectory ({self._directory})\n")
         build = os.path.join(self.build_folder, "build").replace("\\", "/")
         self.run(f'"{cmake}" {generator} -S "{self.source_folder}" -B "{build}"'
                  f' "-DCMAKE_TOOLCHAIN_FILE={conf("toolchain_file")}" "-DSTROIKA_ORIGS_CACHE={conf("origs_cache")}"'
-                 f' "-DSTROIKA_THIRD_PARTY_ONLY={self._directory}" "-DSTROIKA_THIRD_PARTY_PREFIX={self._installPrefix}/"')
+                 f' "-DSTROIKA_THIRD_PARTY_PREFIX={self._installPrefix}/"')
         # a multi-configuration generator's (Visual Studio's) build type, and its processors (msbuild -m), as the top
         # CMakeLists.txt builds the components
         self.run(f'"{cmake}" --build "{build}"' + (f' --config {conf("build_config")} --parallel' if conf("build_config") else ""))
