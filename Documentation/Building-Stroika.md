@@ -812,6 +812,8 @@ which builds its libraries and tools if need be, then installs (`cmake --install
   cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=/opt/Stroika-Debug/lib/cmake/Stroika/Toolchain.cmake -DCMAKE_PREFIX_PATH=/opt/Stroika-Debug
   ~~~
 
+`make CONFIGURATION=Debug skel-test PREFIX=/opt/Stroika-Debug` builds a new Skel application on the installation, and runs it - as CI does, in each job, with its own.
+
 The installation can be moved (all it names is relative to where it is), but not to another machine unless its compilers are where they were (the toolchain file names them). On Windows, configure the program from a Visual Studio developer prompt (vcvarsall's INCLUDE, LIB and PATH), as for any CMake build with Visual Studio's compiler. Where Skel's application puts its program, the configuration's Builds directory, is - built on an installation - its own build directory.
 
 ---

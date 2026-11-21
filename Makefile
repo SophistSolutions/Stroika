@@ -72,7 +72,8 @@ help:
 	@$(ECHO) "                                      (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                      EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
 	@$(ECHO) "    skel-test:                   -    Builds the libraries, then a new Skel application on them - as a package manager's Stroika - and runs it"
-	@$(ECHO) "    install:                     -    Installs one configuration (CONFIGURATION=) in PREFIX=: its libraries, tools, headers and
+	@$(ECHO) "                                      (CONFIGURATION= PREFIX=: on that configuration's installation there, make install's, instead)"
+	@$(ECHO) "    install:                     -    Installs one configuration (CONFIGURATION=) in PREFIX=: its libraries, tools, headers and"
 	@$(ECHO) "                                      CMake package, with its third-party components - needing neither the source tree nor the build"
 	@$(ECHO) "    apply-configurations:        -    Writes what each configuration implies - its toolchain file, its CMake preset (which"
 	@$(ECHO) "                                      Visual Studio's File > Open > Folder lists) and VS Code's settings - making the default"
@@ -122,6 +123,7 @@ $(BUILD_TARGETS_):	$(StroikaIntermediateFilesRoot)PREREQUISITE_TOOLS_CHECKED_COM
 	done
 
 run-tests skel-test:
+	@if [ "$@" = "skel-test" ] && [ -n "$(PREFIX)" ] ; then echo "make skel-test PREFIX=: say which configuration is installed there, CONFIGURATION=<name>"; exit 1; fi
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
@@ -170,18 +172,22 @@ endif
 # A new Skel application, with no Stroika of its own (as a package manager would supply it), built on this one's package
 # and run (unless cross-compiled): what an application sees of Stroika's CMake package, which Stroika's own tests and samples
 # - part of its build - never read. Made afresh each time, in the configuration's IntermediateFiles; its build in CMake/App
-# there, its program in the configuration's Builds directory (ApplyConfiguration --application-root)
+# there, its program in the configuration's Builds directory (ApplyConfiguration --application-root). Given PREFIX=, built
+# instead on the installation there (make install): its toolchain file and package - and its program in its build
+# directory, as an installation has no Builds directory (StroikaConfig-Installed.cmake)
+SkelTestProgram_ = $(if $(PREFIX),$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/App/SkelApp/SkelApp,$(StroikaBuildsRoot)$(CONFIGURATION)/SkelApp/SkelApp)
 skel-test:	libraries
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building a Skel application on Stroika's package {$(CONFIGURATION)}:"
-	@rm -rf "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building a Skel application on Stroika's $(if $(PREFIX),installation in $(PREFIX),package) {$(CONFIGURATION)}:"
+	@rm -rf "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/App"
 	@$(StroikaSourceRoot)Build/Scripts/Skel --appRoot "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" --stroikaSource none > /dev/null
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaSourceRoot)Build/Scripts/ApplyConfiguration --application-root "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" $(CONFIGURATION)
-	@$(StroikaFindCMake) && $(StroikaFindJobs) && cd "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" &&\
-		env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --preset $(CONFIGURATION) --log-level=NOTICE &&\
+	@$(StroikaFindCMake) && $(StroikaFindJobs) && $(if $(PREFIX),$(StroikaFindPrefix) &&) cd "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/SkelApp" &&\
+		env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --preset $(CONFIGURATION) --log-level=NOTICE\
+			$(if $(PREFIX),"-DCMAKE_TOOLCHAIN_FILE=$$prefix_/lib/cmake/Stroika/Toolchain.cmake" "-DCMAKE_PREFIX_PATH=$$prefix_") &&\
 		env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION)
 ifneq ($(CrossCompiling),true)
-	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Running $(StroikaBuildsRoot)$(CONFIGURATION)/SkelApp/SkelApp"
-	@"$(StroikaBuildsRoot)$(CONFIGURATION)/SkelApp/SkelApp"
+	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Running $(SkelTestProgram_)"
+	@"$(SkelTestProgram_)"
 endif
 
 # The configuration installed in PREFIX (cmake --install; Library/CMakeLists.txt says what): an installation needing neither
@@ -189,14 +195,12 @@ endif
 # build type its preset builds (ApplyConfiguration): Debug where assertions are on. A Windows cmake is given Windows paths.
 install:	install-prefix-given_ libraries tools
 	@$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) "Installing Stroika {$(CONFIGURATION)} in $(PREFIX):"
-	@$(StroikaFindCMake) &&\
-	case "$$(command -v "$$cmake_")" in /usr/bin/*) Path_ () { echo "$$1"; };; *) Path_ () { cygpath --mixed "$$1" 2>/dev/null || echo "$$1"; };; esac &&\
-	case "$(PREFIX)" in /*|[A-Za-z]:*) prefix_="$(PREFIX)";; *) prefix_="$$PWD/$(PREFIX)";; esac &&\
+	@$(StroikaFindCMake) && $(StroikaFindPrefix) &&\
 	config_= &&\
 	if grep -q '^CMAKE_CONFIGURATION_TYPES:' "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/CMakeCache.txt"; then\
 		case "$$($(StroikaSourceRoot)Build/Scripts/GetConfigurationParameter $(CONFIGURATION) AssertionsEnabled)" in 1|true) config_=Debug;; *) config_=Release;; esac;\
 	fi &&\
-	"$$cmake_" --install "$$(Path_ "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake")" --prefix "$$(Path_ "$$prefix_")" $${config_:+--config $$config_}
+	"$$cmake_" --install "$$(Path_ "$(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake")" --prefix "$$prefix_" $${config_:+--config $$config_}
 
 # before building anything
 install-prefix-given_:

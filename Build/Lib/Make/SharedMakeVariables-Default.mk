@@ -148,6 +148,13 @@ StroikaFindCMake = cmake_="$$($(StroikaSourceRoot)Build/Scripts/GetConfiguration
 StroikaFindJobs = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
 	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
 
+# And prefix_ to PREFIX= (an installation of Stroika: make install's, skel-test's) as the configuration's cmake takes it -
+# absolute (as given, relative to where make runs), and a Windows path for a Windows cmake, as Path_ gives any other path -
+#     @$(StroikaFindCMake) && $(StroikaFindPrefix) && "$$cmake_" --install "$$(Path_ <its build directory>)" --prefix "$$prefix_"
+StroikaFindPrefix = case "$$(command -v "$$cmake_")" in /usr/bin/*) Path_ () { echo "$$1"; };; *) Path_ () { cygpath --mixed "$$1" 2>/dev/null || echo "$$1"; };; esac &&\
+	case "$(PREFIX)" in /*|[A-Za-z]:*) prefix_="$(PREFIX)";; *) prefix_="$$PWD/$(PREFIX)";; esac &&\
+	prefix_="$$(Path_ "$$prefix_")"
+
 # Put before the command of every $(shell ...) that runs a script, or a make, reading these directories:
 #     $(shell $(StroikaDirectoryLayoutEnv) $(StroikaSourceRoot)Build/Scripts/GetConfigurations --quiet)
 # GNU make passes its exported variables to a $(shell ...) only from version 4.4; before that, a $(shell ...) gets just

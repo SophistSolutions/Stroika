@@ -236,10 +236,15 @@ jobs:
       - name: Make samples
         run: |
           make samples
-      # a new Skel application built on Stroika's package, which nothing else here reads
+      # Stroika installed, as a package manager installs it; then a new Skel application built on Stroika's package, which
+      # nothing else here reads - the build's, then the installation's
+      - name: Make install
+        run: |
+          make install CONFIGURATION=${{ matrix.config_name }} PREFIX="${RUNNER_TEMP:-/tmp}/Stroika-Installed"
       - name: Make skel-test
         run: |
           make skel-test
+          make skel-test CONFIGURATION=${{ matrix.config_name }} PREFIX="${RUNNER_TEMP:-/tmp}/Stroika-Installed"
       - name: Build System Info
         run: |
           df -h
@@ -341,9 +346,14 @@ jobs:
           UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
         run: |
           make run-tests
+      # as for Linux: Stroika installed, and a Skel application built on the build's package, then the installation's
+      - name: Make install
+        run: |
+          make install CONFIGURATION=${{ matrix.config_name }} PREFIX="${RUNNER_TEMP:-/tmp}/Stroika-Installed"
       - name: Make skel-test
         run: |
           make skel-test
+          make skel-test CONFIGURATION=${{ matrix.config_name }} PREFIX="${RUNNER_TEMP:-/tmp}/Stroika-Installed"
       - name: Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
         if: always()
         run: |
@@ -471,11 +481,19 @@ jobs:
         timeout-minutes: 120
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+      # as for Linux: Stroika installed (in the build container), and a Skel application built on the build's package, then
+      # the installation's
+      - name: Make install
+        shell: "bash"
+        timeout-minutes: 60
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make install CONFIGURATION=${{ matrix.config_name }} PREFIX=c:/Stroika-Installed
       - name: Make skel-test
         shell: "bash"
         timeout-minutes: 60
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make skel-test
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make skel-test CONFIGURATION=${{ matrix.config_name }} PREFIX=c:/Stroika-Installed
       #   What a hang leaves behind: a timed-out (or cancelled) step kills only the docker exec client, so the processes it
       #   started are still in the container to be listed - which program each one is, its parent, and its CPU time (a wait
       #   or a spin). Hangs are rare and cannot be reproduced afterwards, so this stays: the first one must already be
