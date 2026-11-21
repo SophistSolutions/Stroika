@@ -34,8 +34,50 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
     using Containers::Set;
 
     /**
-     *  For now, provide no way to access additional library contexts, as I have no such need right now
-     *  and the docs don't make it super clear/simple.
+     *  \brief OpenSSL's library context - which providers are loaded, and so which algorithms a program can use
+     *
+     *  Since OpenSSL 3, each algorithm comes from a provider: a named set of algorithm implementations. OpenSSL looks an
+     *  algorithm up (a CipherAlgorithm, a DigestAlgorithm) among the providers loaded, so one whose provider is not loaded
+     *  is unavailable - availableCipherAlgorithms and availableDigestAlgorithms list those of the providers loaded. Stroika
+     *  names two:
+     *      o   kDefaultProvider: nearly every algorithm a program needs - AES, ChaCha20, triple DES, SHA-1, SHA-2, SHA-3,
+     *          MD5, ... sDefault loads it as it is constructed, so it is always there.
+     *      o   kLegacyProvider: the algorithms OpenSSL calls legacy - insecure or out of use, kept for reading and writing old
+     *          data: Blowfish, CAST, single DES, IDEA, RC2, RC4, SEED; MD4, MDC2, Whirlpool, RIPEMD160; PBKDF1. Among Stroika's
+     *          OpenSSL::CipherAlgorithms: kBlowfish*, kRC2* and kRC4. Loaded only when asked for (LoadProvider,
+     *          TemporarilyAddProvider).
+     *  LoadProvider takes any other name OpenSSL knows too ("base", "fips", ...).
+     *
+     *  The legacy provider is a module (legacy.so, legacy.dll ...), which OpenSSL loads from the directory named by the
+     *  environment variable OPENSSL_MODULES, else from the one compiled into OpenSSL (MODULESDIR: where its build installed
+     *  it) - unless OpenSSL was configured no-module, which builds it into libcrypto. With no module there to load,
+     *  LoadProvider (kLegacyProvider) throws.
+     *
+     *  Before OpenSSL 3 there are no providers: every algorithm is built in, and LoadProvider and UnLoadProvider do nothing.
+     *
+     *  For now, only OpenSSL's default library context (sDefault): Stroika provides no way to make others.
+     *
+     *  \par Example Usage
+     *      \code
+     *          using namespace Cryptography::Providers;
+     *          // data encrypted with Blowfish - in OpenSSL 3, only the legacy provider has it - loaded while legacy is in scope
+     *          OpenSSL::LibraryContext::TemporarilyAddProvider legacy{&OpenSSL::LibraryContext::sDefault, OpenSSL::LibraryContext::kLegacyProvider};
+     *          OpenSSL::CipherAlgorithm cipher = OpenSSL::CipherAlgorithms::kBlowfish_CBC;
+     *          Encoding::OpenSSLCryptoParams cryptoParams{cipher, OpenSSL::EVP_BytesToKey{cipher, OpenSSL::DigestAlgorithms::kMD5, passphrase}};
+     *          BLOB decrypted = Encoding::OpenSSLInputStream::New (cryptoParams, Encoding::Direction::eDecrypt,
+     *                                                              encrypted.As<Streams::InputStream::Ptr<byte>> ())
+     *                               .ReadAll ();
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          // or for the rest of the program
+     *          using namespace Cryptography::Providers;
+     *          OpenSSL::LibraryContext::sDefault.LoadProvider (OpenSSL::LibraryContext::kLegacyProvider);
+     *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a> - so
+     *          loading or unloading a provider while another thread uses sDefault needs the caller's synchronization
      */
     class LibraryContext {
     private:
@@ -60,14 +102,24 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         static LibraryContext sDefault;
 
     public:
+        /**
+         *  \brief OpenSSL's standard algorithms (@see LibraryContext) - always loaded in sDefault
+         */
         static inline constexpr string_view kDefaultProvider = "default"sv;
 
     public:
+        /**
+         *  \brief OpenSSL's old, insecure algorithms, kept for old data (@see LibraryContext) - loaded only when asked for
+         */
         static inline constexpr string_view kLegacyProvider = "legacy"sv;
 
     public:
         /**
-         *  Loads the given provider, but tracks count, so if loaded 4 times, takes 4 unloads to remove.
+         *  \brief Make the named provider's algorithms available (@see LibraryContext), until a matching UnLoadProvider
+         *
+         *  Counted: loaded 4 times, it takes 4 unloads to remove.
+         *
+         *  Throws (runtime_error) if OpenSSL cannot load it - an unknown name, or the legacy provider's module not found.
          */
         nonvirtual void LoadProvider (const String& providerName);
 
