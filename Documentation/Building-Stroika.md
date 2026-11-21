@@ -389,15 +389,16 @@ recipe (`ThirdPartyComponents/<name>/CMakeLists.txt`, through `ThirdPartyCompone
 in its cache. So a configuration's components are built once on a machine: each build tree copies them from the cache into its
 `Builds/<configuration>`, and another tree, or the same one after `make clobber`, builds none of them again. Conan keeps a
 component for its version, its recipe's files, and the configuration's toolchain file and Stroika settings: changing any of
-those builds it again; renaming the configuration, or moving the tree, does not. For now the libraries that depend on no
-other component - zlib, zstd, sqlite, lzma, fmtlib, GoogleTest and Xerces: openssl, curl, boost, libxml2 and
-mongo-cxx-driver are built as before, and so are StrawberryPerl and WIX (Windows tools, run where they are extracted).
+those builds it again; renaming the configuration, or moving the tree, does not. A component built on others (curl on
+OpenSSL, say) is kept for theirs too, and built again with them. All but WIX, the samples' installers' Windows tool, which is
+built as before; StrawberryPerl, the perl OpenSSL's Windows build runs, Conan keeps as a tool, not copied into `Builds`.
 
 - The cache is Conan's own - `~/.conan2`, or `$CONAN_HOME` - shared by all the user's build trees. To build the components
   again anyway: `conan remove "stroika-*" --confirm`.
 - Builds sharing the cache take turns at Conan's steps (a lock in its home): one needing a package another is building waits,
   then finds it in the cache.
-- A component's debug information names its sources in Conan's build directory for it, where they stay until it is removed.
+- Conan keeps the components' packages, not their builds: their build and source folders are removed once packaged (as
+  `make clean` removes a component's own) - so a component's debug information names sources that are gone.
 
 ---
 

@@ -7,27 +7,37 @@ machine finds it there after that (StroikaComponentFromConan, in ThirdPartyCompo
 What identifies a package:
   - its version: its recipe's (set (version_ ...)), given as Conan's --version;
   - its recipe revision: a digest of the files that build it (export_sources) - StroikaThirdPartyComponent.cmake,
-    RemoveFiles.cmake and its directory - so editing them builds it again;
+    RemoveFiles.cmake and its directory, and StroikaDeploy.py - so editing them builds it again;
   - the option "configuration": a digest of the configuration's toolchain file and Stroika settings. No settings: the
-    compilers and flags are the configuration's.
+    compilers and flags are the configuration's;
+  - the options "depends" and "tools": the components it is built on, and the tools its build runs (StroikaComponent's
+    DEPENDS and TOOLS, in ThirdPartyComponents/CMakeLists.txt), each "stroika-<directory>/<version>", comma-separated - and
+    each of those components' packages: built on another, it is built again.
 Where the configuration and the build are - its toolchain file, the archives, cmake and its generator - are conf values
 (user.stroika:...), not part of a package's identity.
 
-Built in Conan's cache, it is installed into a directory there, and packaged with that directory's path
-(stroika-install-prefix.txt) - which StroikaDeploy.py, copying the package into a configuration's Builds directory,
-replaces in each text file by that directory.
+Built in Conan's cache, it is installed into a directory there - which first holds the components it is built on, and the
+tools its build runs (as the configuration's Builds directory does, for a component built there), and gives its package
+just what its own install adds - packaged with that directory's path (stroika-install-prefix.txt), which StroikaDeploy.py,
+copying the package into a configuration's Builds directory, replaces in each text file by that directory.
 """
 
+import json
 import os
+import shutil
 
 from conan import ConanFile
 from conan.tools.files import copy, save
 
-_INSTALL_PREFIX_FILE = "stroika-install-prefix.txt"
+from StroikaDeploy import INSTALL_PREFIX_FILE, CopyPackage, Digest
+
+_STAGED_FILE = "stroika-staged.json"
 
 
 class StroikaThirdPartyComponent(ConanFile):
-    options = {"configuration": ["ANY"]}
+    options = {"configuration": ["ANY"], "depends": ["ANY"], "tools": ["ANY"]}
+    default_options = {"depends": "", "tools": ""}
+    exports = ("StroikaDeploy.py",)
 
     def _directory(self, folder):
         # its directory in folder: the package's name is stroika-<directory> in lower case, as Conan requires of names
@@ -47,7 +57,24 @@ class StroikaThirdPartyComponent(ConanFile):
         copy(self, "*", os.path.join(self.recipe_folder, directory), os.path.join(self.export_sources_folder, directory),
              excludes=("Makefile", "CURRENT*", "ORIGS*", "ORIGs*"))
 
+    def requirements(self):
+        for reference in filter(None, str(self.options.depends).split(",")):
+            self.requires(reference)
+
+    def build_requirements(self):
+        for reference in filter(None, str(self.options.tools).split(",")):
+            self.tool_requires(reference)
+
+    def package_id(self):
+        # the packages of the components it is built on, not just their versions: their headers and libraries are built in
+        self.info.requires.full_mode()
+
     def build(self):
+        # the components it is built on, and the tools its build runs, in its install directory, where its build finds them
+        staged = {}
+        for _, dependency in self.dependencies.items():
+            staged.update(CopyPackage(dependency.package_folder, self._installPrefix, self.output))
+        save(self, os.path.join(self.build_folder, _STAGED_FILE), json.dumps(staged))
         # as ThirdPartyComponents/CMakeLists.txt builds it, with that build's cmake and generator (STROIKA_CONAN_CONF)
         def conf(name):
             return self.conf.get("user.stroika:" + name, check_type=str)
@@ -74,5 +101,18 @@ class StroikaThirdPartyComponent(ConanFile):
         self.run(f'"{cmake}" --build "{build}"' + (f' --config {conf("build_config")} --parallel' if conf("build_config") else ""))
 
     def package(self):
-        copy(self, "*", self._installPrefix, self.package_folder)
-        save(self, os.path.join(self.package_folder, _INSTALL_PREFIX_FILE), self._installPrefix)
+        # what its install added: each file but those of the components it is built on, and the tools, as they were copied in
+        with open(os.path.join(self.build_folder, _STAGED_FILE)) as f:
+            staged = json.load(f)
+        for directory, _, files in os.walk(self._installPrefix):
+            for name in files:
+                source = os.path.join(directory, name)
+                relative = os.path.relpath(source, self._installPrefix)
+                if relative in staged:
+                    with open(source, "rb") as f:
+                        if Digest(f.read()) == staged[relative]:
+                            continue
+                destination = os.path.join(self.package_folder, relative)
+                os.makedirs(os.path.dirname(destination), exist_ok=True)
+                shutil.copy2(source, destination, follow_symlinks=False)
+        save(self, os.path.join(self.package_folder, INSTALL_PREFIX_FILE), self._installPrefix)

@@ -51,9 +51,10 @@ if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
     set (environment_)
     set (dependsOn_)
     if (STROIKA_FEATURE_StrawberryPerl STREQUAL "use")
-        # the StrawberryPerl component's perl (else the one on PATH), whose OpenSSL scripts take \ for / in the flags
-        ExternalProject_Get_Property (StrawberryPerl SOURCE_DIR)
-        file (TO_NATIVE_PATH "${SOURCE_DIR}/perl/bin" perlBin_)
+        # the StrawberryPerl component's perl (else the one on PATH), where it is installed - beside this, or, built by Conan
+        # (ThirdPartyComponents/conanfile.py), where Conan puts the tools its build runs - whose OpenSSL scripts take \ for /
+        # in the flags
+        file (TO_NATIVE_PATH "${STROIKA_BUILDS_DIR}StrawberryPerl/perl/bin" perlBin_)
         string (APPEND environment_ "set \"PATH=${perlBin_};%PATH%\"\n")
         string (REPLACE "/" "\\" CFlags_ "${CFlags_}")
         set (dependsOn_ StrawberryPerl)

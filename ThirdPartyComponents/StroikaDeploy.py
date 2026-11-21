@@ -2,49 +2,70 @@
 Conan's deployer (conan install --deployer) for Stroika's third-party components (conanfile.py): copies each package into the
 deployer folder - the configuration's Builds directory - with the directory it was installed to (stroika-install-prefix.txt)
 replaced, in each text file, by that folder. A file already there with the same contents is left alone, keeping its time, so
-nothing built from it is built again.
+nothing built from it is built again. Not the tools a component's build runs (StrawberryPerl): only what is built into
+Stroika, the host context's packages.
+
+CopyPackage does the copying, for conanfile.py too - which copies the components one is built on into its install directory.
 
 A binary file naming the install directory - OpenSSL's libraries name their OPENSSLDIR - cannot be changed so: it is copied as
 it is, and named in a warning.
 """
 
+import hashlib
 import os
 import shutil
 
-_INSTALL_PREFIX_FILE = "stroika-install-prefix.txt"
-_CONAN_FILES = ("conaninfo.txt", "conanmanifest.txt", _INSTALL_PREFIX_FILE)
+INSTALL_PREFIX_FILE = "stroika-install-prefix.txt"
+_CONAN_FILES = ("conaninfo.txt", "conanmanifest.txt", INSTALL_PREFIX_FILE)
+
+
+def Digest(data):
+    """A digest of a file's contents, as CopyPackage returns it"""
+    return hashlib.sha256(data).hexdigest()
+
+
+def CopyPackage(package, target, output):
+    """
+    The package - a folder Conan's cache holds, of one of Stroika's components - copied into the folder target, the directory
+    it was installed to replaced by target in each text file; a file already there with the same contents left alone.
+    Returns the relative path of each file, with a digest of its contents as copied.
+    """
+    target = target.replace("\\", "/").rstrip("/")
+    with open(os.path.join(package, INSTALL_PREFIX_FILE)) as f:
+        prefix = f.read().strip().rstrip("/")
+    # as CMake writes paths (/), and as a Windows program may (\)
+    replacements = {prefix.encode(): target.encode()}
+    if os.sep == "\\":
+        replacements[prefix.replace("/", "\\").encode()] = target.replace("/", "\\").encode()
+    copied = {}
+    for directory, _, files in os.walk(package):
+        for name in files:
+            source = os.path.join(directory, name)
+            relative = os.path.relpath(source, package)
+            if relative in _CONAN_FILES:
+                continue
+            with open(source, "rb") as f:
+                data = f.read()
+            for old, new in replacements.items():
+                if old in data:
+                    if b"\0" in data:
+                        output.warning(f"{relative} names the directory it was installed to, {old.decode()}, and is binary: copied unchanged")
+                    else:
+                        data = data.replace(old, new)
+            copied[relative] = Digest(data)
+            destination = os.path.join(target, relative)
+            if os.path.isfile(destination):
+                with open(destination, "rb") as f:
+                    if f.read() == data:
+                        continue
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+            with open(destination, "wb") as f:
+                f.write(data)
+            shutil.copymode(source, destination)
+    return copied
 
 
 def deploy(graph, output_folder, **kwargs):
-    target = output_folder.replace("\\", "/").rstrip("/").encode()
     for node in graph.nodes[1:]:  # [0] is the consumer, the command line
-        package = node.conanfile.package_folder
-        with open(os.path.join(package, _INSTALL_PREFIX_FILE)) as f:
-            prefix = f.read().strip().rstrip("/")
-        # as CMake writes paths (/), and as a Windows program may (\)
-        replacements = {prefix.encode(): target}
-        if os.sep == "\\":
-            replacements[prefix.replace("/", "\\").encode()] = target.replace(b"/", b"\\")
-        for directory, _, files in os.walk(package):
-            for name in files:
-                source = os.path.join(directory, name)
-                relative = os.path.relpath(source, package)
-                if relative in _CONAN_FILES:
-                    continue
-                with open(source, "rb") as f:
-                    data = f.read()
-                for old, new in replacements.items():
-                    if old in data:
-                        if b"\0" in data:
-                            node.conanfile.output.warning(f"{relative} names the directory it was installed to, {old.decode()}, and is binary: copied unchanged")
-                        else:
-                            data = data.replace(old, new)
-                destination = os.path.join(output_folder, relative)
-                if os.path.isfile(destination):
-                    with open(destination, "rb") as f:
-                        if f.read() == data:
-                            continue
-                os.makedirs(os.path.dirname(destination), exist_ok=True)
-                with open(destination, "wb") as f:
-                    f.write(data)
-                shutil.copymode(source, destination)
+        if node.context == "host":
+            CopyPackage(node.conanfile.package_folder, output_folder, node.conanfile.output)
