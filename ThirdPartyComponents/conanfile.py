@@ -1,8 +1,8 @@
 """
-One of Stroika's third-party components, stroika-<directory>: ThirdPartyComponents/<directory>, built by its own recipe there
-as ThirdPartyComponents/CMakeLists.txt builds it (StroikaThirdPartyComponent.cmake) - Conan only keeping what it builds, in its
-cache, so a configuration builds each component once, and every build tree on the machine finds it there after that
-(StroikaComponentFromConan, in ThirdPartyComponents/CMakeLists.txt, which runs Conan).
+One of Stroika's third-party components, stroika-<directory> (in lower case, as Conan requires): ThirdPartyComponents/
+<directory>, built by its own recipe there as ThirdPartyComponents/CMakeLists.txt builds it (StroikaThirdPartyComponent.cmake)
+- Conan only keeping what it builds, in its cache, so a configuration builds each component once, and every build tree on the
+machine finds it there after that (StroikaComponentFromConan, in ThirdPartyComponents/CMakeLists.txt, which runs Conan).
 
 What identifies a package:
   - its version: its recipe's (set (version_ ...)), given as Conan's --version;
@@ -29,9 +29,10 @@ _INSTALL_PREFIX_FILE = "stroika-install-prefix.txt"
 class StroikaThirdPartyComponent(ConanFile):
     options = {"configuration": ["ANY"]}
 
-    @property
-    def _directory(self):
-        return self.name[len("stroika-"):]
+    def _directory(self, folder):
+        # its directory in folder: the package's name is stroika-<directory> in lower case, as Conan requires of names
+        name = self.name[len("stroika-"):]
+        return next(d for d in os.listdir(folder) if d.lower() == name and os.path.isdir(os.path.join(folder, d)))
 
     @property
     def _installPrefix(self):
@@ -42,7 +43,8 @@ class StroikaThirdPartyComponent(ConanFile):
         # it (Makefile-Legacy's: its Makefile, and the sources that extracts, CURRENT and ORIGS)
         copy(self, "StroikaThirdPartyComponent.cmake", self.recipe_folder, self.export_sources_folder)
         copy(self, "RemoveFiles.cmake", self.recipe_folder, self.export_sources_folder)
-        copy(self, "*", os.path.join(self.recipe_folder, self._directory), os.path.join(self.export_sources_folder, self._directory),
+        directory = self._directory(self.recipe_folder)
+        copy(self, "*", os.path.join(self.recipe_folder, directory), os.path.join(self.export_sources_folder, directory),
              excludes=("Makefile", "CURRENT*", "ORIGS*", "ORIGs*"))
 
     def build(self):
@@ -62,7 +64,7 @@ class StroikaThirdPartyComponent(ConanFile):
              "cmake_minimum_required (VERSION 3.22)\n"
              f"project ({self.name} LANGUAGES NONE)\n"
              'include ("${CMAKE_CURRENT_SOURCE_DIR}/StroikaThirdPartyComponent.cmake")\n'
-             f"add_subdirectory ({self._directory})\n")
+             f"add_subdirectory ({self._directory(self.source_folder)})\n")
         build = os.path.join(self.build_folder, "build").replace("\\", "/")
         self.run(f'"{cmake}" {generator} -S "{self.source_folder}" -B "{build}"'
                  f' "-DCMAKE_TOOLCHAIN_FILE={conf("toolchain_file")}" "-DSTROIKA_ORIGS_CACHE={conf("origs_cache")}"'

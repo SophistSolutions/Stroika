@@ -389,8 +389,9 @@ recipe (`ThirdPartyComponents/<name>/CMakeLists.txt`, through `ThirdPartyCompone
 in its cache. So a configuration's components are built once on a machine: each build tree copies them from the cache into its
 `Builds/<configuration>`, and another tree, or the same one after `make clobber`, builds none of them again. Conan keeps a
 component for its version, its recipe's files, and the configuration's toolchain file and Stroika settings: changing any of
-those builds it again; renaming the configuration, or moving the tree, does not. For now zlib only: the other components are
-built as before.
+those builds it again; renaming the configuration, or moving the tree, does not. For now the libraries that depend on no
+other component - zlib, zstd, sqlite, lzma, fmtlib, GoogleTest and Xerces: openssl, curl, boost, libxml2 and
+mongo-cxx-driver are built as before, and so are StrawberryPerl and WIX (Windows tools, run where they are extracted).
 
 - The cache is Conan's own - `~/.conan2`, or `$CONAN_HOME` - shared by all the user's build trees. To build the components
   again anyway: `conan remove "stroika-*" --confirm`.

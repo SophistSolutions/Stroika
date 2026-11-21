@@ -19,9 +19,11 @@ include ("${CMAKE_CURRENT_SOURCE_DIR}/StroikaThirdPartyComponent.cmake")
 
 #
 # The components Conan keeps (StroikaComponentFromConan): built by their recipes here the first time a configuration needs
-# one, and found in Conan's cache after that - by any build tree on the machine. For now these; in time, all of them.
+# one, and found in Conan's cache after that - by any build tree on the machine. For now the libraries that depend on no
+# other component - not StrawberryPerl and WIX, tools run where they are extracted (OpenSSL's build, the samples'
+# installers), which install nothing; in time, all of them.
 #
-set (STROIKA_THIRD_PARTY_FROM_CONAN zlib)
+set (STROIKA_THIRD_PARTY_FROM_CONAN zlib zstd Xerces sqlite lzma fmtlib GoogleTest)
 if (STROIKA_THIRD_PARTY_FROM_CONAN)
     find_program (STROIKA_CONAN conan REQUIRED)
     # The configuration, to Conan (conanfile.py's option "configuration"): a digest of its toolchain file and Stroika settings,
@@ -81,7 +83,7 @@ endif ()
 function (StroikaComponentFromConan directory)
     file (STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/CMakeLists.txt" version_ REGEX "^set \\(version_ ")
     string (REGEX REPLACE "^set \\(version_ ([^) ]+)\\).*" "\\1" version_ "${version_}")
-    set (package_ stroika-${directory})
+    string (TOLOWER "stroika-${directory}" package_) # as Conan requires of a name (conanfile.py finds the directory)
     # what builds it, as conanfile.py exports it
     file (GLOB_RECURSE recipe_ LIST_DIRECTORIES false "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/*")
     list (FILTER recipe_ EXCLUDE REGEX "/${directory}/(Makefile$|CURRENT|ORIGS|ORIGs)")
