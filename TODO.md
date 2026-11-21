@@ -16,6 +16,16 @@ Generally will track stuff here between releases
   was deleted 2026-10-20). Its key and shared ssh files are prepared; what is left - test from plato - is in the shared
   notes' ssh-cleanup checklist. protagoras is already done.
 
+- **Consider dropping ThirdPartyComponents/Origs-Cache, now that Conan caches the components** (LGP 2026-11-20) - once
+  Conan's cache is vetted and has been used a while: probably no need for both. With every component through Conan, an
+  archive is needed only when Conan builds a package, and Conan can keep that itself (a recipe's source (), done once per
+  recipe revision; its download cache) - so the per-tree Origs-Cache, written into the source tree, may go.
+
+- **OpenSSL::LibraryContext: document the providers** (LGP 2026-11-21) - LibraryContext.h's kDefaultProvider,
+  kLegacyProvider and LoadProvider say nothing of what a provider is, what each one offers (legacy: the old algorithms
+  default lacks), or how to use one: add a `\par Example Usage`. Say too where the legacy provider comes from - a module
+  file OpenSSL finds in its compiled-in MODULESDIR, unless OpenSSL is built `no-module` - and so when it loads.
+
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
