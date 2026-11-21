@@ -63,6 +63,10 @@ CheckTool_ pkg-config pkg-config --version
 #	failure surfaces much later, inside the third-party builds.
 CheckTool_ realpath realpath --canonicalize-missing .
 CheckTool_ xxd
+#	conan: the third-party components are built by it, and kept in its cache (ThirdPartyComponents/conanfile.py). Probed, as on
+#	MSYS2 an old pip install of it can be found first and fail (Installing-Required-Tools.md). The Windows-MSYS Dockerfile's
+#	check of it is its own RUN's conan --version.
+CheckTool_ conan conan --version
 
 case "$DETECTED_HOST_OS_" in
 	Darwin)

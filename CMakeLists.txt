@@ -71,7 +71,7 @@ if (STROIKA_BUILD_THIRD_PARTY_COMPONENTS)
     endif ()
     execute_process (COMMAND "${CMAKE_COMMAND}" --build "${thirdPartyDir_}" ${buildArgs_} COMMAND_ERROR_IS_FATAL ANY)
     set (thirdPartySources_ "${CMAKE_SOURCE_DIR}/ThirdPartyComponents")
-    file (GLOB recipes_ "${thirdPartySources_}/*.cmake" "${thirdPartySources_}/*/*.cmake" "${thirdPartySources_}/CMakeLists.txt"
+    file (GLOB recipes_ "${thirdPartySources_}/*.cmake" "${thirdPartySources_}/*.py" "${thirdPartySources_}/*/*.cmake" "${thirdPartySources_}/CMakeLists.txt"
         "${thirdPartySources_}/*/CMakeLists.txt" "${thirdPartySources_}/*/*/CMakeLists.txt" "${thirdPartySources_}/*/Patches/*")
     set_property (DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${recipes_})
 endif ()

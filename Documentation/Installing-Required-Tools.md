@@ -12,6 +12,8 @@ Or better yet, can be avoided entirely by just using the pre-built docker contai
 ## What all build platforms require (overview)
 
 - c++ compiler supporting C++20 or later
+- conan (Conan 2, <https://conan.io>): builds the third-party components, keeping each in its cache - so a configuration's
+  components are built once on a machine, whatever build tree needs them
 - make (gnu make)
 - patch
 - perl (to build OpenSSL - but not on Windows, where Stroika fetches Strawberry Perl for it)
@@ -38,6 +40,7 @@ Or better yet, can be avoided entirely by just using the pre-built docker contai
       - to install apps with brew, use &quot;brew install APPNAME&quot;
     - brew install gnu-sed
     - brew install p7zip (if building lzma)
+    - brew install conan
 
 ---
 
@@ -113,6 +116,26 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
   python is MSYS2's own (`/usr/bin/python3`), which Stroika's Python build scripts run - not
   mingw-w64-x86_64-python, a native Windows one.
 
+### Conan (MSYS or Cygwin)
+
+Conan's own Windows build - a native conan.exe, which MSYS and Cygwin both run - from
+<https://github.com/conan-io/conan/releases> (conan-VERSION-windows-x86_64.zip), unpacked into C:\Program Files\Conan, which
+goes on the Windows PATH. In PowerShell, run as administrator:
+
+~~~
+Expand-Archive conan-VERSION-windows-x86_64.zip -DestinationPath 'C:\Program Files\Conan'
+[Environment]::SetEnvironmentVariable('PATH', [Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';C:\Program Files\Conan', 'Machine')
+~~~
+
+Cygwin inherits the Windows PATH. MSYS does only with MSYS2_PATH_TYPE=inherit - otherwise add to its ~/.bashrc:
+
+~~~
+export PATH="$PATH:/c/Program Files/Conan"
+~~~
+
+Not pip's Conan, in MSYS2's mingw64 python: an old one left there (/mingw64/bin/conan.exe) is found first, and stops working
+when that python is upgraded.
+
 ---
 
 ## For UNIX
@@ -125,6 +148,11 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
     - libc++ - if used - must be v 14 or later due to concept/chrono support
 - automake (if building curl)
 - libtool (gnu version) – (if building curl)
+- conan: on Debian and Ubuntu, which package none, Conan's own .deb from <https://github.com/conan-io/conan/releases>
+  ~~~sh
+  wget https://github.com/conan-io/conan/releases/download/VERSION/conan-VERSION-$(dpkg --print-architecture).deb
+  sudo apt-get install ./conan-VERSION-*.deb
+  ~~~
 
 ---
 

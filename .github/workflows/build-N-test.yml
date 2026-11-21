@@ -321,6 +321,7 @@ jobs:
           brew install -q autoconf
           brew install -q libtool
           brew install -q automake
+          brew install -q conan
           Build/Scripts/MakeBuildRoot
           make install-realpath
       - name: Configure
@@ -584,6 +585,10 @@ jobs:
         sudo apt-get update -y
         sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin
         sudo apt-get install -y g++
+        # Conan, which builds the third-party components: its own .deb, as Ubuntu has no Conan 2 package (the version the
+        # Ubuntu*-Small Dockerfiles install)
+        wget -q https://github.com/conan-io/conan/releases/download/2.34.0/conan-2.34.0-amd64.deb -O /tmp/conan.deb
+        sudo apt-get install -y /tmp/conan.deb
     - name: Configure
       # NOTE - disable optimizer due bugs/errors in optimizer (link errors) - but no matter, cuz also slows down analysis (I think)
       # --debug-symbols false to save space and cuz no need

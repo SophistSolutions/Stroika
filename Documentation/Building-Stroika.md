@@ -382,6 +382,22 @@ Stroika builds on, and neatly integrates functionality from several third-party 
 - xerces
 - zlib
 
+### Conan's cache
+
+Conan (Conan 2: [Installing-Required-Tools.md](Installing-Required-Tools.md)) builds the components - each by Stroika's own
+recipe (`ThirdPartyComponents/<name>/CMakeLists.txt`, through `ThirdPartyComponents/conanfile.py`) - and keeps what it builds
+in its cache. So a configuration's components are built once on a machine: each build tree copies them from the cache into its
+`Builds/<configuration>`, and another tree, or the same one after `make clobber`, builds none of them again. Conan keeps a
+component for its version, its recipe's files, and the configuration's toolchain file and Stroika settings: changing any of
+those builds it again; renaming the configuration, or moving the tree, does not. For now zlib only: the other components are
+built as before.
+
+- The cache is Conan's own - `~/.conan2`, or `$CONAN_HOME` - shared by all the user's build trees. To build the components
+  again anyway: `conan remove "stroika-*" --confirm`.
+- Builds sharing the cache take turns at Conan's steps (a lock in its home): one needing a package another is building waits,
+  then finds it in the cache.
+- A component's debug information names its sources in Conan's build directory for it, where they stay until it is removed.
+
 ---
 
 ## Build Results
