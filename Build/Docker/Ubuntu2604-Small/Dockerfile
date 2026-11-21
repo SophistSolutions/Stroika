@@ -50,7 +50,14 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y python3; \
     apt-get -qq install -y bsdextrautils; \
     apt-get -qq clean -y;
-    
+
+# Conan, which builds third-party components (#1157): its own .deb, as Ubuntu has no Conan 2 package - its version pinned
+# here, and in the other Ubuntu*-Small, Windows-MSYS and Windows-Cygwin Dockerfiles
+ARG CONAN_VERSION=2.34.0
+RUN wget -q https://github.com/conan-io/conan/releases/download/${CONAN_VERSION}/conan-${CONAN_VERSION}-$(dpkg --print-architecture).deb -O /tmp/conan.deb && \
+    apt-get -qq install -y /tmp/conan.deb && \
+    rm /tmp/conan.deb && \
+    conan --version
 
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
 RUN apt-get -qq install -y g++; \

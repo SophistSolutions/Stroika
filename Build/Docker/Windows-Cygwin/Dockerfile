@@ -57,6 +57,17 @@ RUN \
     C:\tools\cygwin\bin\bash.exe -c 'PATH=/usr/bin; for c in make git wget patch pkg-config automake unzip 7z doxygen xxd python3; do command -v $c > /dev/null || { echo cyg-get did not install: $c; exit 1; }; done'; \
     if ($LASTEXITCODE -ne 0) { throw 'cyg-get did not install everything' }
 
+# Conan, which builds third-party components (#1157): its own Windows build, a native conan.exe, on the Windows PATH, which
+# Cygwin's bash inherits. Its version pinned here, and in the Windows-MSYS and Ubuntu*-Small Dockerfiles.
+ARG CONAN_VERSION=2.34.0
+RUN $ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; \
+    Invoke-WebRequest -UseBasicParsing -uri "https://github.com/conan-io/conan/releases/download/${env:CONAN_VERSION}/conan-${env:CONAN_VERSION}-windows-x86_64.zip" -OutFile conan.zip; \
+    Expand-Archive conan.zip -DestinationPath 'C:\Program Files\Conan'; \
+    Remove-Item conan.zip; \
+    $env:PATH = $env:PATH + ';C:\Program Files\Conan'; \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine); \
+    conan --version; if ($LASTEXITCODE -ne 0) { throw ('conan --version failed, exit code ' + $LASTEXITCODE) }
+
 COPY Windows-Cygwin/Getting-Started-With-Stroika.md ./tools/cygwin/home
 COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
 

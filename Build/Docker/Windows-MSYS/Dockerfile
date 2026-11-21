@@ -112,6 +112,18 @@ RUN \
     msys 'pacman --noconfirm -Syuu'; \
     msys 'for c in sed wget python3 tar patch tr pkg-config realpath xxd make git unzip 7z doxygen; do command -v $c > /dev/null || { echo not installed: $c; exit 1; }; done'
 
+# Conan, which builds third-party components (#1157): its own Windows build, a native conan.exe - not a pip install into
+# MSYS2's python, which would give CMake POSIX paths - on the Windows PATH, which bash here inherits (MSYS2_PATH_TYPE
+# below). Its version pinned here, and in the Windows-Cygwin and Ubuntu*-Small Dockerfiles.
+ARG CONAN_VERSION=2.34.0
+RUN $ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; \
+    Invoke-WebRequest -UseBasicParsing -uri "https://github.com/conan-io/conan/releases/download/${env:CONAN_VERSION}/conan-${env:CONAN_VERSION}-windows-x86_64.zip" -OutFile conan.zip; \
+    Expand-Archive conan.zip -DestinationPath 'C:\Program Files\Conan'; \
+    Remove-Item conan.zip; \
+    $env:PATH = $env:PATH + ';C:\Program Files\Conan'; \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine); \
+    conan --version; if ($LASTEXITCODE -ne 0) { throw ('conan --version failed, exit code ' + $LASTEXITCODE) }
+
 COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
 COPY Windows-MSYS/.bash_profile $MSYS_DIR/home/
 
