@@ -156,7 +156,10 @@ execute_process (COMMAND [==[${install_}]==] COMMAND_ERROR_IS_FATAL ANY)\n\
 # five letters of its name. By CMake, not conan cache clean, whose python cannot remove a path longer than Windows'\n\
 # MAX_PATH (boost's documentation's, as of 1.92.0).\n\
 file (GLOB buildFolders_ LIST_DIRECTORIES true [==[${STROIKA_CONAN_HOME}/p/b/stroi*/b]==])\n\
-file (REMOVE_RECURSE \${buildFolders_})\n\
+# none when nothing was built: file (REMOVE_RECURSE) with no paths is an error in CMake 3.28.3 (not 3.31.6)\n\
+if (buildFolders_)\n\
+    file (REMOVE_RECURSE \${buildFolders_})\n\
+endif ()\n\
 file (TOUCH [==[${binaryDir_}/conan-stamp]==])\n\
 ")
     # run again when one it depends on was: its package is then another

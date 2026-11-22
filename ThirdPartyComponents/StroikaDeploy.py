@@ -13,6 +13,7 @@ it is, and named in a warning.
 
 import hashlib
 import os
+import re
 import shutil
 
 INSTALL_PREFIX_FILE = "stroika-install-prefix.txt"
@@ -33,10 +34,13 @@ def CopyPackage(package, target, output):
     target = target.replace("\\", "/").rstrip("/")
     with open(os.path.join(package, INSTALL_PREFIX_FILE)) as f:
         prefix = f.read().strip().rstrip("/")
-    # as CMake writes paths (/), and as a Windows program may (\)
-    replacements = {prefix.encode(): target.encode()}
+    # as CMake writes paths (/), and as a Windows program may (\) - there in any letter case, as Windows compares paths: CMake
+    # writes a path as the file system spells it (C:/stroika/.conan-home), which need not be as Conan was given it (CONAN_HOME
+    # c:/Stroika/.conan-home)
+    flags = re.IGNORECASE if os.sep == "\\" else 0
+    replacements = [(re.compile(re.escape(prefix.encode()), flags), target.encode())]
     if os.sep == "\\":
-        replacements[prefix.replace("/", "\\").encode()] = target.replace("/", "\\").encode()
+        replacements.append((re.compile(re.escape(prefix.replace("/", "\\").encode()), flags), target.replace("/", "\\").encode()))
     copied = {}
     for directory, _, files in os.walk(package):
         for name in files:
@@ -46,12 +50,13 @@ def CopyPackage(package, target, output):
                 continue
             with open(source, "rb") as f:
                 data = f.read()
-            for old, new in replacements.items():
-                if old in data:
+            for old, new in replacements:
+                found = old.search(data)
+                if found:
                     if b"\0" in data:
-                        output.warning(f"{relative} names the directory it was installed to, {old.decode()}, and is binary: copied unchanged")
+                        output.warning(f"{relative} names the directory it was installed to, {found[0].decode()}, and is binary: copied unchanged")
                     else:
-                        data = data.replace(old, new)
+                        data = old.sub(lambda _: new, data)
             copied[relative] = Digest(data)
             destination = os.path.join(target, relative)
             if os.path.isfile(destination):
