@@ -11,6 +11,13 @@ if (STROIKA_OPENSSL_EXTRA_ARGS MATCHES "purify")
 endif ()
 list (APPEND configArgs_ -no-tests -no-docs)
 
+# Configured with OpenSSL's default directories (no --prefix or --openssldir): compiled in as where to look for its
+# configuration (openssl.cnf) and its providers' modules, which only an administrator can write - UNIX /usr/local/ssl and
+# /usr/local/lib/ossl-modules, Windows C:\Program Files\Common Files\SSL and C:\Program Files\OpenSSL\lib\ossl-modules. Not
+# the directory it is installed to here, which a program run elsewhere does not have - and on Windows any user could create,
+# planting a module or a configuration. Its install is told where to put it instead (INSTALLTOP ...).
+string (REGEX REPLACE "/$" "" prefix_ "${STROIKA_BUILDS_DIR}")
+
 # Its configure takes the compiler flags from the environment: the configuration's, as make gives them (no preprocessor
 # definitions), but no sanitizer (libcurl's build then fails against it) and no -flto (it broke cross-compiled ARM builds,
 # with gcc 8)
@@ -37,8 +44,7 @@ if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
     if (STROIKA_ASSERTIONS_ENABLED)
         string (PREPEND target_ debug-)
     endif ()
-    string (REGEX REPLACE "/$" "" prefix_ "${STROIKA_BUILDS_DIR}")
-    list (APPEND configArgs_ -no-asm "--prefix=${prefix_}")
+    list (APPEND configArgs_ -no-asm)
     list (JOIN configArgs_ " " configArgs_)
     # warnings it would otherwise give where Stroika links it, with link-time code generation, silenced
     if (STROIKA_LINK_OPTIONS MATCHES "-LTCG")
@@ -65,7 +71,7 @@ if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
     # its install takes the ossl_static.pdb a -Zi build makes - not the configuration's -Z7: an empty one, removed after
     file (TO_NATIVE_PATH "${prefix_}/lib/ossl_static.pdb" installedPdb_)
     StroikaVisualStudioCommand (install_ install "${environment_}if not exist ossl_static.pdb type nul > ossl_static.pdb
-nmake install_sw install_ssldirs INSTALLTOP=${prefix_} OPENSSLDIR=${prefix_} ENGINESDIR=${prefix_}
+nmake install_sw install_ssldirs INSTALLTOP=${prefix_} OPENSSLDIR=${prefix_} MODULESDIR=${prefix_}/lib/ossl-modules
 del ossl_static.pdb
 if exist \"${installedPdb_}\" del \"${installedPdb_}\"")
     StroikaThirdPartyComponent (openssl
@@ -95,7 +101,7 @@ elseif (STROIKA_ARCH STREQUAL "aarch64")
 elseif (CMAKE_HOST_APPLE)
     set (targetArgs_ darwin64-${STROIKA_ARCH}-cc)
 endif ()
-list (APPEND configArgs_ "--prefix=${STROIKA_BUILDS_DIR}" --libdir=lib)
+list (APPEND configArgs_ --libdir=lib)
 
 if (CMAKE_GENERATOR MATCHES "Makefiles")
     set (make_ "$(MAKE)") # sharing make's job slots
@@ -118,6 +124,7 @@ StroikaThirdPartyComponent (openssl
     CONFIGURE_COMMAND "${CMAKE_COMMAND}" -E env --unset=MAKEFLAGS "CC=${CMAKE_C_COMPILER}" "AR=${CMAKE_AR}" "RANLIB=${CMAKE_RANLIB}"
                       "MACHINE=${STROIKA_ARCH}" "CFLAGS=${CFlags_}" "CXXFLAGS=${CXXFlags_}" "LDFLAGS=${ldFlags_}" ./config ${targetArgs_} ${configArgs_}
     BUILD_COMMAND ${make_} all
-    INSTALL_COMMAND ${make_} -j1 install_sw install_ssldirs
+    INSTALL_COMMAND ${make_} -j1 install_sw install_ssldirs "INSTALLTOP=${prefix_}" "OPENSSLDIR=${prefix_}/ssl"
+            COMMAND "${CMAKE_COMMAND}" "-DPC_DIR=${prefix_}/lib/pkgconfig" -P "${CMAKE_CURRENT_SOURCE_DIR}/UnixPc.cmake"
     DEPENDS zlib
 )

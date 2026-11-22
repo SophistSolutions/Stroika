@@ -52,7 +52,9 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
      *
      *  The legacy provider is a module (legacy.so, legacy.dll ...), which OpenSSL loads from the directory set by
      *  SetProviderModuleDirectory, else the one the environment variable OPENSSL_MODULES names, else the one compiled into
-     *  OpenSSL (MODULESDIR: where its build installed it) - unless OpenSSL was configured no-module, which builds it into
+     *  OpenSSL (MODULESDIR: where an installed OpenSSL keeps them - for Stroika's own OpenSSL build, OpenSSL's default,
+     *  /usr/local/lib/ossl-modules or C:/Program Files/OpenSSL/lib/ossl-modules, though it puts them in the configuration's
+     *  lib/ossl-modules) - unless OpenSSL was configured no-module, which builds it into
      *  libcrypto (and leaves out FIPS, whose provider is always a module). With no module there to load,
      *  LoadProvider (kLegacyProvider) throws.
      *
