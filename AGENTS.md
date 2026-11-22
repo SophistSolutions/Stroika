@@ -427,10 +427,11 @@ still compile". Say which one you did.
     `./Build/Scripts/Skel --appRoot ../myApp`). These are run as commands, not as `bash X`, so they
     must keep their executable bit — a lost `chmod +x` breaks the build on UNIX while still
     appearing to work on Windows (MSYS/Cygwin fake the mode).
-  - `Build/Lib/` — libraries pulled *into* other build files and never executed: `Make/` holds the
-    `.mk` fragments (`SharedMakeVariables-Default.mk` for variables, then
-    `SharedBuildRules-Default.mk` for rules — that include order is required), `Python/` the modules the Python
-    scripts import.
+  - `Build/Lib/` — libraries pulled *into* other build files and never executed: `CMake/` holds Stroika's CMake
+    functions (`StroikaEmbedFiles`, `StroikaInstallers`, ...; an application gets them through Stroika's CMake package)
+    and scripts run with `cmake -P`; `Make/` the `.mk` fragments (`SharedMakeVariables-Default.mk` for variables, then
+    `SharedBuildRules-Default.mk` for rules, make's own build's only — that include order is required); `Python/` the
+    modules the Python scripts import.
   - `Build/Shared/` — data read at build time rather than code: `Skel-Templates/`, the app skeletons
     `Skel` copies and substitutes into.
   - `Build/Tools/Src/` — source for host utilities the build needs *before* Stroika exists, and which
@@ -443,8 +444,9 @@ still compile". Say which one you did.
   warns and forwards to its new home. Don't add to it, and don't reference it from new code.
 - `Tools/` — tools built *with* Stroika, by the normal build, into `Builds/{CONFIGURATION}/bin/`;
   they depend on the Foundation/Frameworks and mirror `Library/`'s layout
-  (`Tools/Sources/Stroika/Frameworks/...`, plus per-VS-version projects under `Tools/Projects/`).
-  Currently `HTMLViewCompiler`, which `SharedBuildRules-Default.mk` invokes to compile `.swsp` files.
+  (`Tools/Sources/Stroika/Frameworks/...`).
+  Currently `HTMLViewCompiler`, which compiles a `.swsp` file to C++ (`Stroika::HTMLViewCompiler` in Stroika's CMake
+  package).
   The dividing line versus `Build/Tools/Src/`: **can it use Stroika?** If yes it belongs here; if it
   has to run before Stroika can be built, it belongs under `Build/`.
 - `Tests/Scripts/` — helpers specific to the regression-test harness (test naming, listing and renumbering).

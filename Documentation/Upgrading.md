@@ -26,10 +26,10 @@ Thus the obvious upgrade process from using one version of Stroika to another wo
 After each move to a new Stroika - a pull, or moving an app's `ThirdPartyComponents/Stroika/StroikaRoot` submodule - run
 `make distclean` (in an app made with Skel, from the app's root), and rebuild your configurations from scratch:
 
-- an incremental build keeps linking the OLD Stroika libraries: by default (`QUICK_BUILD=1`) `make` does not rebuild them once
-  they exist, and the build tracks no header dependencies, so nothing compiled against the old headers - your own code included -
-  is rebuilt
 - configure's defaults change between versions, so a configuration an older Stroika made is not what the new one would make
+- with make's own build (`make -f Makefile-Legacy`, until Stroika v3.0d26 ships), an incremental build keeps linking the OLD
+  Stroika libraries: by default (`QUICK_BUILD=1`) it does not rebuild them once they exist, and it tracks no header
+  dependencies, so nothing compiled against the old headers - your own code included - is rebuilt
 
 `make distclean` deletes the build root, configurations and all: make it again with `Build/Scripts/MakeBuildRoot` (in a
 Skel app, `ThirdPartyComponents/Stroika/StroikaRoot/Build/Scripts/MakeBuildRoot`; make prints the line if you

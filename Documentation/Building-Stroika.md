@@ -239,25 +239,27 @@ The command-line used to generate the configuration is the first element of the 
 ```text
 Help for making Stroika:
 Targets:
-    all:                         -    Builds everything
-    check:                       -    Checks everything was built properly
-    clean:
-    clobber:
-    clobber-stroika:                       -    clean + destroy Stroika targets (libs etc) - so all of stroika will be rebuilt next make (but doesnt destroy third-party-components)
+    all:                         -    Builds everything (with CMake: Stroika's CMakeLists.txt; make -f Makefile-Legacy for make's own build, until Stroika v3.0d26 ships)
+    clean:                       -    Removes what was built but not installed (objects, the third-party components' sources and build trees) - not the libraries and programs
+    clobber:                     -    Removes all that was built
     distclean:
     reconfigure:                 -    Rebuild configuration files from the command-lines that built them before
     libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)
-    library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)
-    tests:
+    library-clobber:             -    Stroika's own build afresh next time - its libraries, and all built on them - the third-party components kept
+    tools:                       -    Builds the tools (HTMLViewCompiler)
+    tests:                       -    Builds the regression tests
     format-code:                 -    Run Scripts/FormatCode (clang-format) on source code, and update it to conform to Stroika code formatting standards
-    samples:
-    documentation:
-    third-party-components:
-    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost;
+    samples:                     -    Builds the samples (and their installers)
+    documentation:               -    Builds the documentation (doxygen's), if doxygen is installed - needing no configuration
+    third-party-components:      -    Builds the configuration's third-party components
+    run-tests:                   -    Builds the regression tests, then runs them (ctest, one at a time) [REMOTE=] - eg. REMOTE=lewis@localhost;
                                       [VALGRIND=memcheck, etc] to run with valgrind
                                       (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)
                                       EG: VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp" make VALGRIND=memcheck run-tests
     skel-test:                   -    Builds the libraries, then a new Skel application on them - as a package manager's Stroika - and runs it
+                                      (CONFIGURATION= PREFIX=: on that configuration's installation there, make install's, instead)
+    install:                     -    Installs one configuration (CONFIGURATION=) in PREFIX=: its libraries, tools, headers and
+                                      CMake package, with its third-party components - needing neither the source tree nor the build
     apply-configurations:        -    Writes what each configuration implies - its toolchain file, its CMake preset (which
                                       Visual Studio's File > Open > Folder lists) and VS Code's settings - making the default
                                       configurations first, if there are none. Run it before opening an IDE
@@ -272,10 +274,8 @@ Special Variables:               -    Extra params you can pass to the make line
     CONFIGURATION=XYZ            -    Causes only the configuration XYZ to have the targetted goal applied (e.g. make all CONFIGURATION=Debug)
     CONFIGURATION_TAGS=TAGS      -    Causes only the configurations with tags TAGS to have the targetted goal applied (e.g. make all CONFIGURATION_TAGS=Windows)
                                       NB: TAGS is a handy shortcut for CONFIGURAITON_TAGS, so you can say make all TAGS="Windows 64"
-    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging
-    WRITE_PREPROCESSOR_OUTPUT=1  -    Write next to each object file a corresponding .i (preprocessor output) file; useful to reproduce and narrow compiler bugs (for report especially)
     MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make
-    QUICK_BUILD=1                -    Defaults=1, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; may skip detecting changes in libraries etc; used for some CI testing)
+    ECHO_BUILD_LINES=1, WRITE_PREPROCESSOR_OUTPUT=1, QUICK_BUILD=1 - make's own build only (make -f Makefile-Legacy)
     TEST_FAILURES_CAUSE_FAILED_MAKE=0
                                       only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)
     EXTRA_CONFIGURE_ARGS=        -    really proceeded by configure (only when its invoked); but handy to override values (eg --all-available-third-party-components --boost no)
@@ -485,6 +485,7 @@ includes it, or reads it as data.
 | Folder | Role |
 | :-- | :-- |
 | [Build/Scripts/](../Build/Scripts/) | Standalone programs, invoked directly by the Makefiles and by `configure` |
+| [Build/Lib/CMake/](../Build/Lib/CMake/) | CMake modules, `include`d by CMakeLists.txt files, and scripts run with `cmake -P` |
 | [Build/Lib/Make/](../Build/Lib/Make/) | `.mk` fragments, `include`d by other makefiles |
 | [Build/Lib/Python/](../Build/Lib/Python/) | `.py` modules, `import`ed by the Python scripts |
 | [Build/Shared/](../Build/Shared/) | Data read at build time, rather than code |
@@ -492,7 +493,8 @@ includes it, or reads it as data.
 | [Build/Docker/](../Build/Docker/) | Build-VM and dev container definitions |
 
 Note that these paths are effectively public, not merely internal to Stroika: an application built
-against Stroika `include`s the makefile fragments from **Build/Lib/Make/** in its own makefiles, and
+against Stroika gets the CMake functions in **Build/Lib/CMake/** through Stroika's CMake package
+(`find_package (Stroika)`), its makefiles `include` **Build/Lib/Make/SharedMakeVariables-Default.mk**, and
 if it was generated by `Skel` it began as a copy of the templates in **Build/Shared/**. Renaming
 things here is a breaking change for applications built against Stroika.
 
@@ -524,11 +526,17 @@ and forwards.
 Libraries pulled *into* other build files, and never executed - which is why, unlike **Build/Scripts/**,
 nothing here is marked executable.
 
-**Build/Lib/Make/** holds `SharedMakeVariables-Default.mk` (variables) and
-`SharedBuildRules-Default.mk` (rules). **Include them in that order** - the rules file needs variables
-the other defines, and warns if you get it backwards. `Makefile-CMake-Common.mk` adds the `CMAKE_...`
-variables used by the cmake-based third-party component builds. `Makefile-Common.mk` is deprecated (it
-just forwards to `SharedMakeVariables-Default.mk`).
+**Build/Lib/CMake/** holds Stroika's CMake functions - `StroikaEmbedFiles`, `StroikaInstallers`,
+`StroikaCopyFilesToExeDir`, ... (each in the file of its name, which documents it) - which Stroika's CMakeLists.txt
+files include, and an application's get through Stroika's CMake package. Beside them are scripts run with
+`cmake -P` (`EmbedFile.cmake`, `InstallerDeb.cmake`, ...), each giving its command line at its top.
+
+**Build/Lib/Make/** holds `SharedMakeVariables-Default.mk` (variables, among them `StroikaFindCMake` and
+`StroikaFindJobs`, with which a makefile runs a configuration's CMake build) and `SharedBuildRules-Default.mk` (rules,
+used only by make's own build: `make -f Makefile-Legacy`, until Stroika v3.0d26 ships). **Include them in that order** -
+the rules file needs variables the other defines, and warns if you get it backwards. `Makefile-CMake-Common.mk` adds
+the `CMAKE_...` variables with which make's own build builds the cmake-based third-party components.
+`Makefile-Common.mk` is deprecated (it just forwards to `SharedMakeVariables-Default.mk`).
 
 ### Build/Shared
 
@@ -544,7 +552,8 @@ These two are easy to confuse:
   `make -C Build/Tools/Src/vswhere` by hand). Neither is part of the normal build.
 - **Tools/** - tools built *with* Stroika, by the normal build, into **Builds/{CONFIGURATION}/bin/**.
   They depend on the Foundation/Frameworks and mirror **Library/**&#39;s layout. Currently
-  `HTMLViewCompiler`, which `SharedBuildRules-Default.mk` invokes to compile `.swsp` files.
+  `HTMLViewCompiler`, which compiles a `.swsp` file to C++ - for an application's CMake build, the target
+  `Stroika::HTMLViewCompiler` in Stroika's CMake package.
 
 The dividing line is just: **can it use Stroika?** If yes, it belongs in the top-level **Tools/**. If
 it has to run before Stroika can be built, it belongs under **Build/**.
@@ -635,7 +644,7 @@ This allows for building (or clobbering or whatever) a related family of configu
 
 ### Other Make variables that can be helpful
 
-- ECHO_BUILD_LINES=1 makes the output of make noisier, so you can run particular builds by hand, or debug the make process (make's own build: make -f Makefile-Legacy).
+- To see each command the build runs (to run one by hand, say): `cmake --build --preset <CONFIGURATION> --verbose`, after the configuration's `make` has applied it - one target with `--target`, e.g. `--target Test07`. (make's own build, make -f Makefile-Legacy: ECHO_BUILD_LINES=1.)
 - MAKE_INDENT_LEVEL=N, is useful when calling the stroika make process as part of another larger make process, to get its output indended.
 
 ### Cross-Compiling
