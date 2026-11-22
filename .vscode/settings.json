@@ -127,6 +127,5 @@
     "Archive/**": true,
     "**/node_modules/**": true
   },
-  "git.ignoreLimitWarning": true,
-  "cmake.sourceDirectory": "/Sandbox/Stroika-Dev/.dockerstuff/.vscode-server/extensions/twxs.cmake-0.0.17/node_modules/peg-cmake/test"
+  "git.ignoreLimitWarning": true
 }
