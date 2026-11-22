@@ -6,7 +6,7 @@
 # directory - boost's packages, which use it only while it is where they are, and pkg-config files (pkg-config's
 # --define-prefix) - are left as they are.
 #
-file (GLOB_RECURSE files_ "${CMAKE_INSTALL_PREFIX}/lib/cmake/*.cmake")
+file (GLOB_RECURSE files_ "${CMAKE_INSTALL_PREFIX}/lib/cmake/*.cmake" "${CMAKE_INSTALL_PREFIX}/cmake/*.cmake")
 foreach (file_ ${files_})
     file (READ "${file_}" text_)
     if (text_ MATCHES "_IMPORT_PREFIX")
