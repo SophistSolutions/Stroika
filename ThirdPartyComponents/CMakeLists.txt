@@ -19,10 +19,10 @@ include ("${CMAKE_CURRENT_SOURCE_DIR}/StroikaThirdPartyComponent.cmake")
 
 #
 # The components Conan keeps (StroikaComponentFromConan): built by their recipes here the first time a configuration needs
-# one, and found in Conan's cache after that - by any build tree on the machine. All but WIX, which the samples' installers
-# run where it is extracted (Build/Lib/CMake/StroikaInstallers.cmake).
+# one, and found in Conan's cache after that - by any build tree on the machine. One left out of this list is built here, in
+# this build tree.
 #
-set (STROIKA_THIRD_PARTY_FROM_CONAN zlib zstd StrawberryPerl openssl curl boost mongo-cxx-driver libxml2 Xerces sqlite lzma fmtlib GoogleTest)
+set (STROIKA_THIRD_PARTY_FROM_CONAN zlib zstd StrawberryPerl openssl curl boost mongo-cxx-driver libxml2 Xerces sqlite lzma fmtlib GoogleTest WIX)
 if (STROIKA_THIRD_PARTY_FROM_CONAN)
     find_program (STROIKA_CONAN conan REQUIRED)
     # The configuration, to Conan (conanfile.py's option "configuration"): a digest of its toolchain file and Stroika settings,

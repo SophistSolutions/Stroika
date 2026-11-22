@@ -106,14 +106,13 @@ function (StroikaInstallers target)
         list (APPEND outputs_ "${rpm_}")
     endif ()
     if (STROIKA_FEATURE_WIX AND NOT STROIKA_FEATURE_WIX STREQUAL "no")
-        # WIX's programs: with --WIX use, those the third-party build extracted
-        # (ThirdPartyComponents/WIX/CMakeLists.txt) - its build directory in this one, as the top CMakeLists.txt builds
-        # them, or beside it, for an application's build - or make did (ThirdPartyComponents/WIX/CURRENT); else, or if
-        # none has them, the PATH's
+        # WIX's programs: with --WIX use, where its third-party component installs them (ThirdPartyComponents/WIX/
+        # CMakeLists.txt), with the configuration's other components (STROIKA_THIRD_PARTY_INSTALL_DIR: its Builds
+        # directory, or an installation of it) - or where make's own build extracted them (ThirdPartyComponents/WIX/
+        # CURRENT); else, or if neither has them, the PATH's
         set (hints_)
         if (STROIKA_FEATURE_WIX STREQUAL "use")
-            set (hints_ HINTS "${CMAKE_BINARY_DIR}/ThirdParty/WIX/src" "${CMAKE_BINARY_DIR}/../ThirdParty/WIX/src"
-                "${StroikaInstallersDir_}/../../../ThirdPartyComponents/WIX/CURRENT")
+            set (hints_ HINTS "${STROIKA_THIRD_PARTY_INSTALL_DIR}bin/WIX" "${StroikaInstallersDir_}/../../../ThirdPartyComponents/WIX/CURRENT")
         endif ()
         foreach (tool_ candle light heat)
             string (TOUPPER "${tool_}" toolVariable_)

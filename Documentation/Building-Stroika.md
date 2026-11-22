@@ -390,8 +390,9 @@ in its cache. So a configuration's components are built once on a machine: each 
 `Builds/<configuration>`, and another tree, or the same one after `make clobber`, builds none of them again. Conan keeps a
 component for its version, its recipe's files, and the configuration's toolchain file and Stroika settings: changing any of
 those builds it again; renaming the configuration, or moving the tree, does not. A component built on others (curl on
-OpenSSL, say) is kept for theirs too, and built again with them. All but WIX, the samples' installers' Windows tool, which is
-built as before; StrawberryPerl, the perl OpenSSL's Windows build runs, Conan keeps as a tool, not copied into `Builds`.
+OpenSSL, say) is kept for theirs too, and built again with them. WIX, the Windows tool that builds the samples' installers,
+is copied into `Builds/<configuration>/bin/WIX`; StrawberryPerl, the perl OpenSSL's Windows build runs, Conan keeps as a tool,
+not copied into `Builds`.
 
 - The cache is Conan's own - `~/.conan2`, or `$CONAN_HOME` - shared by all the user's build trees. To build the components
   again anyway: `conan remove "stroika-*" --confirm`.
