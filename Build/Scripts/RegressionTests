@@ -438,10 +438,8 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 
 	SAMPLE_APPS_2_TEST=()
 	SAMPLE_APPS_2_TEST+=("Samples-AppSettings/AppSettings")
-	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip")
-	# the LZMA SDK's own archive, named as ThirdPartyComponents/lzma/Makefile fetches it: lzma<VERSION without its dots>.7z
-	LZMA_ARCHIVE_="lzma$(sed -n 's/^VERSION=//p' ThirdPartyComponents/lzma/Makefile | tr -d '.\r').7z"
-	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/${LZMA_ARCHIVE_}")
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list Samples/ArchiveUtility/TestData/Sample.zip")
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list Samples/ArchiveUtility/TestData/Sample.7z")
 	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
 	SAMPLE_APPS_2_TEST+=("Samples-DocumentDB/DocumentDB")
 	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")

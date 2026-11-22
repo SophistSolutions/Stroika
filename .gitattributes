@@ -25,6 +25,8 @@ README text diff
 *.htm text diff
 *.ico binary
 *.bmp binary
+*.zip binary
+*.7z binary
 *.xml text eol=crlf diff
 *.manifest text eol=crlf diff
 *.rc text eol=crlf diff
