@@ -3,7 +3,12 @@
 #
 set (version_ 2.15.4)
 
-set (args_ -DLIBXML2_WITH_ICONV=OFF -DLIBXML2_WITH_HTTP=OFF -DLIBXML2_WITH_LZMA=OFF -DLIBXML2_WITH_PYTHON=OFF -DBUILD_SHARED_LIBS=OFF)
+# No catalogs (which map a resource's name to where to load it from): Stroika's XML providers resolve what a schema imports
+# themselves (Schema's resolver). libxml2 would read its default catalog from a path compiled in - the directory it was
+# installed to, which a program run elsewhere does not have, and on Windows any user could create.
+# No tests: never run here - and without catalogs, libxml2 2.15.4's tests still need xmlcatalog, so its configure fails.
+set (args_ -DLIBXML2_WITH_ICONV=OFF -DLIBXML2_WITH_HTTP=OFF -DLIBXML2_WITH_LZMA=OFF -DLIBXML2_WITH_PYTHON=OFF -DLIBXML2_WITH_CATALOG=OFF
+           -DLIBXML2_WITH_TESTS=OFF -DBUILD_SHARED_LIBS=OFF)
 if (STROIKA_FEATURE_ZLib STREQUAL "no")
     list (APPEND args_ -DLIBXML2_WITH_ZLIB=OFF)
 endif ()
