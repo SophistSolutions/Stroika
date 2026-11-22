@@ -18,6 +18,7 @@ if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio" AND "-LTCG" IN_LIST STROIKA_L
     # constraints wrong - so validating against a schema with an xs:key or xs:unique fails (Tests/34):
     #   Internal error: xmlSchemaIDCRegisterMatchers, Could not find an augmented IDC item for an IDC definition.
     # libxml2 built without -GL there (still -O2). Any change near the code (a fprintf, one file at -Od) hides it.
+    # Reported: https://developercommunity.visualstudio.com/t/MSVC-x86-GL-LTCG-miscompiles-libxml2-s/11186428
     if (STROIKA_ARCH STREQUAL "x86")
         execute_process (COMMAND "${CMAKE_C_COMPILER}" OUTPUT_QUIET ERROR_VARIABLE banner_)
         if (banner_ MATCHES "Version ([0-9]+\\.[0-9]+)" AND CMAKE_MATCH_1 VERSION_EQUAL 19.52)
