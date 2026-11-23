@@ -8,8 +8,8 @@ Stroika, the host context's packages.
 CopyPackage does the copying, for conanfile.py too - which copies the components one is built on into its install directory.
 
 A binary file naming the install directory - a path compiled in, as a component's default directory for its configuration
-files or modules might be (built with gcc or clang, its debug information does not name it: StroikaThirdPartyComponent.cmake)
-- cannot be changed so: it is copied as it is, and named in a warning.
+files or modules might be (its debug information does not name it: StroikaThirdPartyComponent.cmake) - cannot be changed
+so: it is copied as it is, and named in a warning.
 """
 
 import hashlib

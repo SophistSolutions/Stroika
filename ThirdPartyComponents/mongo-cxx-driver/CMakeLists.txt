@@ -25,6 +25,12 @@ if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
     string (APPEND cFlags_ " -MP2")
     string (APPEND cxxFlags_ " -MP2")
     string (REGEX REPLACE "(^| )-fsanitize=address( |$)" "\\1" cFlags_ "${cFlags_}")
+    # and, built by Conan, debug information that does not name the directory it is installed into
+    # (StroikaThirdPartyComponent.cmake) - as the build type's flags: mongo-c-driver compiles CMAKE_C_FLAGS into its handshake
+    if (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS)
+        string (APPEND cFlags_ " ${STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS}")
+        string (APPEND cxxFlags_ " ${STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS}")
+    endif ()
     list (APPEND args_ "-DCMAKE_C_FLAGS_${buildType_}=${cFlags_}" "-DCMAKE_CXX_FLAGS_${buildType_}=${cxxFlags_}"
         "-DCMAKE_CONFIGURATION_TYPES=${STROIKA_THIRD_PARTY_BUILD_TYPE}")
     # and its mongoc2-static.pc fixed after its install (WindowsPc.cmake)

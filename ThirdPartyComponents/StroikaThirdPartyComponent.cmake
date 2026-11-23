@@ -26,14 +26,24 @@ endif ()
 # components it is built on are, in Conan's build folder, removed once packaged - as ".", so that a package names that
 # directory only where it is compiled in, which StroikaDeploy.py warns of. The compiler's debug information names it as
 # the include directory of those components; on a Mac, the linker's debug map names each object a program links, by path -
-# those of the static libraries there too.
+# those of the static libraries there too. With Visual Studio, where the configuration's toolchain file gives the flags, a
+# recipe that gives its own adds these (mongo-cxx-driver's).
 set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS)
 set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS)
-if (DEFINED STROIKA_THIRD_PARTY_PREFIX AND NOT STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
+if (DEFINED STROIKA_THIRD_PARTY_PREFIX)
     string (REGEX REPLACE "/$" "" prefix_ "${STROIKA_THIRD_PARTY_PREFIX}")
-    set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS "-fdebug-prefix-map=${prefix_}=.")
-    if (CMAKE_HOST_APPLE)
-        set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS "-Wl,-oso_prefix,${prefix_}/")
+    if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
+        # /experimental:deterministic only for /pathmap, which MSVC takes only with it - else D9007, "'/pathmap:' requires
+        # '/experimental:deterministic'; option ignored" (MSVC 19.44, 19.52). It also makes the compiler's output
+        # deterministic: no time stamps, and a warning (C5048) where __DATE__ or __TIME__ is used. /pathmap matches the
+        # directory in any letter case.
+        file (TO_NATIVE_PATH "${prefix_}" nativePrefix_)
+        set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS "/experimental:deterministic \"/pathmap:${nativePrefix_}=.\"")
+    else ()
+        set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS "-fdebug-prefix-map=${prefix_}=.")
+        if (CMAKE_HOST_APPLE)
+            set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS "-Wl,-oso_prefix,${prefix_}/")
+        endif ()
     endif ()
 endif ()
 
