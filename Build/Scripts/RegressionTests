@@ -594,7 +594,9 @@ NTSANS=`grep -c -F "because sudo sysctl vm.mmap_rnd_bits" $TEST_OUT_FILE`
 XF=`grep -v -E '^[[:space:]]*WARNING:' $TEST_OUT_FILE | grep -c -E '\[  FAILED  \] .+ \([0-9]+ ms\)|FAILED: |FAILED - not run|\*\*FAILED\*\*'`
 XE=`grep -v -E '^[[:space:]]*WARNING:' $TEST_OUT_FILE | grep -c -E -i "error[ \t]*:"`
 XC=`grep -c -i "core dump" $TEST_OUT_FILE`
-VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep -c "^=="`
+### valgrind's lines, by its own prefix, ==PID== - not every line starting '==': Conan's section headers do too
+### (======== Installing packages ========)
+VOL=`grep -c -E '^==[0-9]+==' $TEST_OUT_FILE`
 XW=`grep -c -E -i "warning.*:" $TEST_OUT_FILE`
 ### each test executable that skipped any (GTEST_SKIP, SkipTestPart) ends with '[  SKIPPED ] N test(s).' - sum the N's
 XS=`cat $TEST_OUT_FILE | grep -oE '\[  SKIPPED \] [0-9]+ tests?' | awk '{ s += $4 } END { print s + 0 }'`
@@ -643,7 +645,7 @@ if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 		### WHERE they are: each line counted above, by the test whose output it is in (the '[NN] TestName - ...' header
 		### Tests/Scripts/RunTest prints, plus the configuration from its Builds/<config>/ path) or the sample app (the
 		### valgrind command echoed before it), with that one's exact error count - --gen-suppressions=all prints one
-		### <insert_a_suppression_name_here> per error. The configuration matters: a sanitizer report starts with '==' too.
+		### <insert_a_suppression_name_here> per error. The configuration matters: a sanitizer report starts with ==PID== too.
 		VALGRIND_BY_SOURCE_=$(awk '
 			function Key_(  k) {
 				k = (src == "" ? "(outside any test or sample app)" : src)
@@ -656,7 +658,7 @@ if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 				if (match($0, /Builds\/[^\/ ]+\//)) { src = src " {" substr($0, RSTART + 7, RLENGTH - 8) "}" }
 			}
 			/--log-file=valgrind-log\.tmp / { src = $0; sub(/.*--log-file=valgrind-log\.tmp /, "", src); sub(/(\.\.\.| ).*/, "", src) }
-			/^==/ && !/\[==========\]/ { k = Key_(); ++lines_[k] }
+			/^==[0-9]+==/ { k = Key_(); ++lines_[k] }
 			/<insert_a_suppression_name_here>/ { k = Key_(); ++errs_[k] }
 			END {
 				for (i = 1; i <= n_; ++i) {
