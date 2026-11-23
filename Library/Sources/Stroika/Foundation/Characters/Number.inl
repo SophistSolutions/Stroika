@@ -440,71 +440,124 @@ namespace Stroika::Foundation::Characters::Number {
      ************************** Number::Parse (integral T) **************************
      ********************************************************************************
      */
-    template <integral T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (span<const CHAR_T> s, const IntegerParseOptions& options)
-    {
-        const unsigned int radix = options.fRadix;
-        Require (2 <= radix and radix <= 36);
-        using ERRT        = Common::StdCompat::unexpected<DataExchange::BadFormatException>;
-        auto notAnInteger = [&] () {
-            return ERRT{DataExchange::BadFormatException{
-                Private_::QuoteForParseError_ (s) +
-                (radix == 10 ? String{" is not an integer"sv} : " is not a base-"sv + String{to_string (radix)} + " integer"sv)}};
-        };
-        if (options.fIgnoreSurroundingWhitespace) {
-            IntegerParseOptions o          = options;
-            o.fIgnoreSurroundingWhitespace = false;
-            return Parse<T> (Private_::TrimWhitespace_ (s), o);
-        }
-        if (Punctuation punctuation = ResolvePunctuation (options.fPunctuation); punctuation.fDigitSeparator) {
-            // slow - it copies the text twice (into a String, then a string without the separators): a candidate to optimize, if a
-            // separator is used where speed matters
-            if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
-                if (not Character::IsASCII (s)) {
+    namespace Private_ {
+        template <integral T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        Common::StdCompat::expected<T, DataExchange::BadFormatException> ParseIntegerReference_ (span<const CHAR_T> s, const IntegerParseOptions& options)
+        {
+            const unsigned int radix = options.fRadix;
+            Require (2 <= radix and radix <= 36);
+            using ERRT        = Common::StdCompat::unexpected<DataExchange::BadFormatException>;
+            auto notAnInteger = [&] () {
+                return ERRT{DataExchange::BadFormatException{
+                    Private_::QuoteForParseError_ (s) +
+                    (radix == 10 ? String{" is not an integer"sv} : " is not a base-"sv + String{to_string (radix)} + " integer"sv)}};
+            };
+            if (options.fIgnoreSurroundingWhitespace) {
+                IntegerParseOptions o          = options;
+                o.fIgnoreSurroundingWhitespace = false;
+                return Parse<T> (Private_::TrimWhitespace_ (s), o);
+            }
+            if (Punctuation punctuation = ResolvePunctuation (options.fPunctuation); punctuation.fDigitSeparator) {
+                // slow - it copies the text twice (into a String, then a string without the separators): a candidate to optimize, if a
+                // separator is used where speed matters
+                if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+                    if (not Character::IsASCII (s)) {
+                        return notAnInteger ();
+                    }
+                }
+                bool             prefix = options.fAcceptRadixPrefix and (radix == 16 or radix == 8 or radix == 2);
+                optional<string> c      = Private_::ToCNumberText_ (String{s}, punctuation, false, prefix);
+                if (not c) {
                     return notAnInteger ();
                 }
+                IntegerParseOptions o = options;
+                o.fPunctuation        = Punctuation{};
+                return Parse<T> (span<const char>{c->data (), c->size ()}, o);
             }
-            bool             prefix = options.fAcceptRadixPrefix and (radix == 16 or radix == 8 or radix == 2);
-            optional<string> c      = Private_::ToCNumberText_ (String{s}, punctuation, false, prefix);
-            if (not c) {
+            Memory::StackBuffer<char> ascii;
+            span<const char>          text;
+            if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+                text = s; // read where it is: a byte past ASCII is no digit, so fails as any other non-digit does
+            }
+            else if (Character::AsASCIIQuietly (s, &ascii)) {
+                text = span<const char>{ascii.data (), ascii.size ()};
+            }
+            else {
                 return notAnInteger ();
             }
-            IntegerParseOptions o = options;
-            o.fPunctuation        = Punctuation{};
-            return Parse<T> (span<const char>{c->data (), c->size ()}, o);
-        }
-        Memory::StackBuffer<char> ascii;
-        span<const char>          text;
-        if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
-            text = s; // read where it is: a byte past ASCII is no digit, so fails as any other non-digit does
-        }
-        else if (Character::AsASCIIQuietly (s, &ascii)) {
-            text = span<const char>{ascii.data (), ascii.size ()};
-        }
-        else {
+            {
+                const char* b        = text.data ();
+                const char* e        = text.data () + text.size ();
+                bool        negative = b != e and *b == '-';
+                if (b != e and (*b == '+' or *b == '-')) {
+                    if (not options.fAcceptSign) {
+                        return notAnInteger ();
+                    }
+                    ++b; // the sign is read here, so a prefix can follow it (and from_chars takes no +, nor - for an unsigned type)
+                }
+                if (options.fAcceptRadixPrefix and e - b > 2 and b[0] == '0') {
+                    char p = static_cast<char> (b[1] | 0x20); // in either case
+                    if ((radix == 16 and p == 'x') or (radix == 8 and p == 'o') or (radix == 2 and p == 'b')) {
+                        b += 2;
+                    }
+                }
+                if (b != e and *b != '+' and *b != '-') { // a sign at most once
+                    using U = make_unsigned_t<T>;
+                    U magnitude{};
+                    auto [ptr, ec] = from_chars (b, e, magnitude, static_cast<int> (radix));
+                    if (ptr == e and ec == errc{}) {
+                        // the sign applied here, so -128 fits an int8_t, though 128 does not
+                        if constexpr (unsigned_integral<T>) {
+                            if (not negative or magnitude == 0) {
+                                return magnitude;
+                            }
+                        }
+                        else {
+                            constexpr U kMax = static_cast<U> (numeric_limits<T>::max ());
+                            if (magnitude <= kMax) {
+                                return negative ? static_cast<T> (-static_cast<T> (magnitude)) : static_cast<T> (magnitude);
+                            }
+                            if (negative and magnitude == kMax + 1u) {
+                                return numeric_limits<T>::min ();
+                            }
+                        }
+                    }
+                    if (ptr == e and (ec == errc{} or ec == errc::result_out_of_range)) {
+                        if (options.fSaturate) {
+                            return negative ? numeric_limits<T>::min () : numeric_limits<T>::max ();
+                        }
+                        return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + " is out of range ("sv +
+                                                                     String{to_string (+numeric_limits<T>::min ())} + " to "sv +
+                                                                     String{to_string (+numeric_limits<T>::max ())} + ")"sv}};
+                    }
+                }
+            }
             return notAnInteger ();
         }
-        {
-            const char* b        = text.data ();
-            const char* e        = text.data () + text.size ();
-            bool        negative = b != e and *b == '-';
-            if (b != e and (*b == '+' or *b == '-')) {
-                if (not options.fAcceptSign) {
-                    return notAnInteger ();
-                }
-                ++b; // the sign is read here, so a prefix can follow it (and from_chars takes no +, nor - for an unsigned type)
-            }
-            if (options.fAcceptRadixPrefix and e - b > 2 and b[0] == '0') {
-                char p = static_cast<char> (b[1] | 0x20); // in either case
-                if ((radix == 16 and p == 'x') or (radix == 8 and p == 'o') or (radix == 2 and p == 'b')) {
-                    b += 2;
-                }
-            }
-            if (b != e and *b != '+' and *b != '-') { // a sign at most once
-                using U = make_unsigned_t<T>;
-                U magnitude{};
-                auto [ptr, ec] = from_chars (b, e, magnitude, static_cast<int> (radix));
-                if (ptr == e and ec == errc{}) {
+    }
+    template <integral T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (span<const CHAR_T> s, const IntegerParseOptions& options)
+    {
+        if constexpr (same_as<remove_cv_t<CHAR_T>, char>) {
+            // The common case, read here in line - cheap, where the reference is a call with a large frame (its error paths'
+            // temporaries): char text, the default options but for fAcceptSign and fSaturate (so an option added later goes to the
+            // reference until it is handled here), and an integer in T's range. Anything else, and every error, the reference reads.
+            if (options == IntegerParseOptions{.fAcceptSign = options.fAcceptSign, .fSaturate = options.fSaturate}) {
+                auto readHere = [&] () -> optional<T> {
+                    const char* b        = s.data ();
+                    const char* e        = s.data () + s.size ();
+                    bool        negative = b != e and *b == '-';
+                    if (b != e and (*b == '+' or *b == '-')) {
+                        if (not options.fAcceptSign) {
+                            return nullopt;
+                        }
+                        ++b; // the sign is read here: from_chars, reading an unsigned type, takes none - so a second fails there
+                    }
+                    using U = make_unsigned_t<T>;
+                    U magnitude{};
+                    if (auto [ptr, ec] = from_chars (b, e, magnitude); ptr != e or ec != errc{}) {
+                        return nullopt;
+                    }
                     // the sign applied here, so -128 fits an int8_t, though 128 does not
                     if constexpr (unsigned_integral<T>) {
                         if (not negative or magnitude == 0) {
@@ -520,18 +573,18 @@ namespace Stroika::Foundation::Characters::Number {
                             return numeric_limits<T>::min ();
                         }
                     }
-                }
-                if (ptr == e and (ec == errc{} or ec == errc::result_out_of_range)) {
-                    if (options.fSaturate) {
-                        return negative ? numeric_limits<T>::min () : numeric_limits<T>::max ();
-                    }
-                    return ERRT{DataExchange::BadFormatException{Private_::QuoteForParseError_ (s) + " is out of range ("sv +
-                                                                 String{to_string (+numeric_limits<T>::min ())} + " to "sv +
-                                                                 String{to_string (+numeric_limits<T>::max ())} + ")"sv}};
+                    return nullopt;
+                };
+                if (optional<T> r = readHere ()) {
+#if qStroika_Foundation_Debug_AssertionsChecked
+                    auto reference = Private_::ParseIntegerReference_<T> (s, options);
+                    Ensure (reference.has_value () and *reference == *r);
+#endif
+                    return *r;
                 }
             }
         }
-        return notAnInteger ();
+        return Private_::ParseIntegerReference_<T> (s, options);
     }
     template <integral T, IConvertibleToString STRINGISH_ARG>
     inline Common::StdCompat::expected<T, DataExchange::BadFormatException> Parse (STRINGISH_ARG&& s, const IntegerParseOptions& options)

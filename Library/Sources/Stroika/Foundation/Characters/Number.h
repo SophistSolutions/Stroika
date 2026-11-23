@@ -461,6 +461,8 @@ namespace Stroika::Foundation::Characters::Number {
          *  is taken as the greatest one representable).
          */
         bool fSaturate{false};
+
+        constexpr bool operator== (const IntegerParseOptions&) const = default;
     };
 
     /**
