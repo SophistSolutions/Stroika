@@ -130,25 +130,69 @@ namespace {
     }
 
     /*
-     *  badssl.com resets connections now and then - at times many in a row, to any client (curl's command line too) - which
-     *  says nothing of Stroika's HTTP client: so a fetch from it that fails for any reason but its certificate is tried again,
-     *  some seconds apart. Not one that timed out, though: a connect timeout alone takes minutes.
+     *  badssl.com is unavailable now and then, to any client (curl's command line too), which says nothing of Stroika's HTTP
+     *  client: it resets connections, at times many in a row, most often mid-handshake (libcurl's CURLE_SSL_CONNECT_ERROR -
+     *  matched by its code, as libcurl's error_category gives it the condition it gives a refused certificate); it may answer
+     *  503 Service Unavailable; and the network may fail any fetch (IsTransientNetworkError_). Any other failure is Stroika's
+     *  to explain - a refused certificate above all, where a check expects none.
+     */
+    bool IsBadSSLUnavailable_ (const exception_ptr& e)
+    {
+        try {
+            rethrow_exception (e);
+        }
+        catch (const IO::Network::HTTP::Exception& httpError) {
+            return httpError.GetStatus () == IO::Network::HTTP::StatusCodes::kServiceUnavailable;
+        }
+        catch (const system_error& systemError) {
+#if qStroika_HasComponent_libcurl
+            if (systemError.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl::error_category ()}) {
+                return true;
+            }
+#endif
+            return IsTransientNetworkError_ (systemError);
+        }
+        catch (...) {
+            return false;
+        }
+    }
+
+    /*
+     *  Fetch from badssl.com, trying again - some seconds apart - while it is unavailable (IsBadSSLUnavailable_); but not after
+     *  a timeout: a connect timeout alone takes minutes
      */
     template <invocable F>
-    auto RetryIfNotCertificateError_ (F&& f)
+    auto RetryWhileBadSSLUnavailable_ (F&& f)
     {
         constexpr unsigned int kMaxTries_{5};
         for (unsigned int tries = 1;; ++tries) {
             try {
                 return f ();
             }
-            catch (const system_error& e) {
-                if (IsCertificateError_ (e) or Execution::IsA (e, errc::timed_out) or tries == kMaxTries_) {
+            catch (...) {
+                if (not IsBadSSLUnavailable_ (current_exception ()) or Execution::IsA (current_exception (), errc::timed_out) or tries == kMaxTries_) {
                     ReThrow ();
                 }
-                DbgTrace ("trying again, after: {}"_f, e);
+                DbgTrace ("trying again, after: {}"_f, current_exception ());
                 Execution::Sleep (2s * tries);
             }
+        }
+    }
+
+    /*
+     *  Called in the handler for a badssl.com check's failed fetch: the check is skipped if the site was still unavailable after
+     *  RetryWhileBadSSLUnavailable_'s tries, else the test fails. Skipped, not warned of: a warning every few runs, for the same
+     *  outside cause, would only hide the warnings that matter. The exception's text is traced, not put in the skip's reason,
+     *  which must not say "error:" (SkipTestPart).
+     */
+    void SkipIfUnavailableElseFail_ (const String& check)
+    {
+        if (IsBadSSLUnavailable_ (current_exception ())) {
+            DbgTrace ("{} - skipped: {}"_f, check, current_exception ());
+            SkipTestPart ("{} - skipped: the site was unavailable"_f(check).AsUTF8<std::string> ());
+        }
+        else {
+            ADD_FAILURE () << "{}: {}"_f(check, current_exception ());
         }
     }
 }
@@ -601,7 +645,7 @@ namespace {
         const URI kGoodSite_{"https://badssl.com/"}; // ironically this is a site with good SSL cert
         try {
             o.fFailConnectionIfSSLCertificateInvalid = true;
-            RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kGoodSite_); });
+            RetryWhileBadSSLUnavailable_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kGoodSite_); });
         }
         catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
@@ -611,13 +655,11 @@ namespace {
 #endif
         }
         catch (...) {
-            // if transient issue, ignore
-            Stroika::Frameworks::Test::WarnTestIssue (
-                "badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = true: {}"_f(current_exception ()));
+            SkipIfUnavailableElseFail_ ("badssl.com, verifying its good certificate"sv);
         }
         try {
             o.fFailConnectionIfSSLCertificateInvalid = false;
-            RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kGoodSite_); });
+            RetryWhileBadSSLUnavailable_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kGoodSite_); });
         }
         catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
@@ -627,9 +669,7 @@ namespace {
 #endif
         }
         catch (...) {
-            // if transient issue, ignore
-            Stroika::Frameworks::Test::WarnTestIssue (
-                "badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: {}"_f(current_exception ()));
+            SkipIfUnavailableElseFail_ ("badssl.com, not verifying its certificate"sv);
         }
 
         // BAD SSL SITE
@@ -638,11 +678,11 @@ namespace {
         {
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
-                RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_); });
+                RetryWhileBadSSLUnavailable_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_); });
                 EXPECT_TRUE (false); // getting here means our check for invalid cert didn't work, so thats bad
             }
             catch (const system_error& e) {
-                // refused for its certificate, as it should be - any other failure (the network's) checks nothing
+                // refused for its certificate, as it should be
                 if (IsCertificateError_ (e)) {
 #if qStroika_HasComponent_libcurl
                     // with curl's own account of why (OpenSSL's), not just its error code's generic text - and not merely the URL
@@ -652,15 +692,24 @@ namespace {
 #endif
                 }
                 else {
-                    Stroika::Frameworks::Test::WarnTestIssue ("expired.badssl.com failed, but not for its certificate: {}"_f(e));
+                    SkipIfUnavailableElseFail_ ("expired.badssl.com, refusing its expired certificate"sv);
                 }
             }
+            catch (const IO::Network::HTTP::Exception& e) {
+                // an answer at all - even an error status - means the connection was made: its expired certificate accepted
+                ADD_FAILURE () << "expired.badssl.com, refusing its expired certificate: it answered {}"_f(e.GetStatus ());
+            }
+            catch (const RequiredComponentMissingException&) {
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+                SkipTestPart ("no HTTP client built in (neither libcurl nor WinHTTP)");
+#endif
+            }
             catch (...) {
-                DbgTrace ("Good - this should fail"_f);
+                SkipIfUnavailableElseFail_ ("expired.badssl.com, refusing its expired certificate"sv);
             }
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = false;
-                RetryIfNotCertificateError_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_); });
+                RetryWhileBadSSLUnavailable_ ([&] () { T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_); });
                 // Getting here is fine - we should be able to ignore the invalid CERT
             }
             catch (const RequiredComponentMissingException&) {
@@ -671,8 +720,7 @@ namespace {
 #endif
             }
             catch (...) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: {}"_f(current_exception ()));
+                SkipIfUnavailableElseFail_ ("expired.badssl.com, accepting its expired certificate"sv);
             }
         }
     }
