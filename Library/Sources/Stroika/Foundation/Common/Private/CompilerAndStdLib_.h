@@ -2212,6 +2212,23 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\Objec
 #endif
 
 /*
+ * qCompilerAndStdLib_constexpr_local_in_lambda_in_generic_lambda_Buggy: a lambda inside a generic lambda, both capturing by
+ * reference ([&]), that uses a constexpr local of the function around them - whose value needs no capture - fails to compile,
+ * or crashes the compiler (an internal compiler error). A static constexpr local is fine.
+ *
+C:\Sandbox\Stroika\DevRoot\Tests\34\Test.cpp(1796): error C3493: 'kValid_' cannot be implicitly captured because no default capture mode has been specified
+ */
+#ifndef qCompilerAndStdLib_constexpr_local_in_lambda_in_generic_lambda_Buggy
+#if defined(_MSC_VER)
+// first seen broken in _MSC_VER_v145_1952_ (not in _MSC_VER_2k22_17Pt14_ or _MSC_VER_v145_1951_)
+#define qCompilerAndStdLib_constexpr_local_in_lambda_in_generic_lambda_Buggy                                                               \
+    (_MSC_VER_v145_1952_ <= _MSC_VER and CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_v145_1952_))
+#else
+#define qCompilerAndStdLib_constexpr_local_in_lambda_in_generic_lambda_Buggy 0
+#endif
+#endif
+
+/*
 ng Stroika Library {clang++-18-debug-libc++}:
    Building Stroika Foundation Objs {clang++-18-debug-libc++}:
       Compiling Library/Sources/Stroika/Foundation/Characters/CodeCvt.cpp ... 
