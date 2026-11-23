@@ -535,11 +535,16 @@ jobs:
         timeout-minutes: 120
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make tests
+      # TEMPORARY (3.0d26), deleted once we know why a test process's first backtrace takes ~30 s on some runners (Release
+      # x86_64 jobs - Test::Setup logs how long it took, TestHarness.cpp): DbgHelp, which loads the symbols for MSVC's
+      # std::stacktrace (through DbgEng), logs each process's symbol search to DbgHelp.log, copied into Log Data's
+      # TRACE_LOGS. What we look for: what a slow first backtrace waits on - with no symbol path set, DbgEng searches
+      # Microsoft's symbol server (cache*;SRV*https://msdl.microsoft.com/download/symbols), wherever symsrv.dll loads.
       - name: Run-Tests
         shell: "bash"
         timeout-minutes: 120
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env DBGHELP_LOG=c:/Stroika/IntermediateFiles/DbgHelp.log buildContainer make run-tests
       # as for Linux: Stroika installed (in the build container), and a Skel application built on the build's package, then
       # the installation's
       - name: Make install
@@ -584,6 +589,8 @@ jobs:
           # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
           docker stop buildContainer
           (docker cp "buildContainer:c:/TRACE_LOGS" "${ARTIFACTS_DIR}") || echo "error copying tracelogs ignored"
+          # TEMPORARY, with Run-Tests' DBGHELP_LOG
+          (mkdir -p "${ARTIFACTS_DIR}/TRACE_LOGS" && cp "${NORMALIZED_WORKSPACE_DIR_}/IntermediateFiles/DbgHelp.log" "${ARTIFACTS_DIR}/TRACE_LOGS/") || :
           (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
           #PDB files are big - no need to save if I want to debug, will do from source/rebuild
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}

@@ -11,10 +11,13 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Debugger.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "TestHarness.h"
 
@@ -131,6 +134,19 @@ vector<string> Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const ch
 #endif
         v.push_back (argv[i]);
     }
+#if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
+    // TEMPORARY (3.0d26), deleted once we know why: on some Windows CI runners a process's first backtrace takes ~30 s
+    // (Release x86_64 jobs; normally ~0.5 s). Each Throw traces one, so a test whose first Throw falls in a timed wait fails -
+    // Test40's AbortTasks (5s), CI job 137318528781. Taken here instead, before any test, and timed in the trace log: what
+    // we look for is which runs stall, and what MSVC's std::stacktrace - loading symbols through DbgEng - waits on (CI's
+    // Windows jobs log DbgHelp's symbol search: build-N-test.yml, Run-Tests). Then the cause gets fixed, or, if it is
+    // inherent, a documented Debug::BackTrace call that loads the symbols replaces this.
+    {
+        Time::TimePointSeconds start = Time::GetTickCount ();
+        (void)Debug::BackTrace::Capture ();
+        DbgTrace ("Test::Setup: the first backtrace took {} seconds"_f, (Time::GetTickCount () - start).count ());
+    }
+#endif
     return v;
 }
 
