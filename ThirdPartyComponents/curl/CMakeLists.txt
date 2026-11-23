@@ -28,6 +28,11 @@ foreach (directory_ IN LISTS cpath_)
 endforeach ()
 list (JOIN STROIKA_LINK_OPTIONS " " ldFlags_)
 string (REGEX REPLACE "(^| )--std=[^ ]*" "" ldFlags_ "${ldFlags_}")
+# and, built by Conan, a program's debug map that does not name the directory it is installed into
+# (StroikaThirdPartyComponent.cmake)
+if (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS)
+    string (APPEND ldFlags_ " ${STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS}")
+endif ()
 
 set (configure_ --enable-static --disable-shared)
 if (STROIKA_FEATURE_OpenSSL STREQUAL "no")

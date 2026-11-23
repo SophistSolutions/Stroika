@@ -21,6 +21,22 @@ if (DEFINED STROIKA_THIRD_PARTY_PREFIX)
     set (STROIKA_BUILDS_DIR "${STROIKA_THIRD_PARTY_PREFIX}")
 endif ()
 
+# STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS for a component's compiles, and STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS for its
+# programs' links: built by Conan, debug information names the directory the component is installed into - where the
+# components it is built on are, in Conan's build folder, removed once packaged - as ".", so that a package names that
+# directory only where it is compiled in, which StroikaDeploy.py warns of. The compiler's debug information names it as
+# the include directory of those components; on a Mac, the linker's debug map names each object a program links, by path -
+# those of the static libraries there too.
+set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS)
+set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS)
+if (DEFINED STROIKA_THIRD_PARTY_PREFIX AND NOT STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
+    string (REGEX REPLACE "/$" "" prefix_ "${STROIKA_THIRD_PARTY_PREFIX}")
+    set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS "-fdebug-prefix-map=${prefix_}=.")
+    if (CMAKE_HOST_APPLE)
+        set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS "-Wl,-oso_prefix,${prefix_}/")
+    endif ()
+endif ()
+
 if (POLICY CMP0135)
     cmake_policy (SET CMP0135 NEW) # files extracted from an archive get the time of extraction
 endif ()
@@ -57,6 +73,11 @@ else ()
         string (APPEND STROIKA_THIRD_PARTY_CXX_FLAGS " -DNDEBUG")
     endif ()
     list (APPEND STROIKA_THIRD_PARTY_CMAKE_ARGS -DCMAKE_BUILD_TYPE=None "-DCMAKE_C_FLAGS=${STROIKA_THIRD_PARTY_C_FLAGS}" "-DCMAKE_CXX_FLAGS=${STROIKA_THIRD_PARTY_CXX_FLAGS}")
+    # STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS as the build type's flags, not in CMAKE_<LANG>_FLAGS: a component may compile
+    # those in - mongo-c-driver sends them to the server, in its handshake - and they name the directory
+    if (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS)
+        list (APPEND STROIKA_THIRD_PARTY_CMAKE_ARGS "-DCMAKE_C_FLAGS_NONE=${STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS}" "-DCMAKE_CXX_FLAGS_NONE=${STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS}")
+    endif ()
 endif ()
 
 if (NOT DEFINED STROIKA_ORIGS_CACHE) # given for a component Conan builds (conanfile.py): the source tree's
