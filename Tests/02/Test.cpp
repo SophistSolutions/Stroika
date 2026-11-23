@@ -1232,9 +1232,7 @@ namespace {
                 auto f = FloatConversion::ToFloat<FLOAT_TYPE> (Characters::ToString (l, FloatToStringOptions::kRoundTrip));
                 if (not Math::NearlyEquals (l, f)) {
                     if (Debug::IsRunningUnderValgrind ()) {
-                        Stroika::Frameworks::Test::WarnTestIssue (
-                            "ToFloat(ToString({})) not properly roundtripping under valgrind (valgrind holds long double in 64 bits): {}; note isinf({})={}, and isinf(f)={}"_f(
-                                l, f, l, isinf (l), isinf (f)));
+                        SkipTestPart ("ToFloat (ToString (x)) round trip not checked under valgrind (it holds a long double in 64 bits)");
                         return;
                     }
                     if (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {

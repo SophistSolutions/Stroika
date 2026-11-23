@@ -1188,11 +1188,7 @@ namespace {
                         // vOut stays empty
                     }
                     if (vOut != v) {
-                        Stroika::Frameworks::Test::WarnTestIssue (
-                            "JSONONLY_Test_09_ReadWriteNANShouldNotFail_ (valgrind holds long double in 64 bits): v={}, encodedRep={}, vOut={}"_f(
-                                v, String::FromUTF8 (encodedRep), vOut ? Characters::ToString (*vOut) : "(the reader threw)"_k)
-                                .ReplaceAll ("[\\r\\n]"_RegEx, ""));
-                        SkipTestPart ("NaN and infinity round trip not checked under valgrind (valgrind holds long double in 64 bits)");
+                        SkipTestPart ("NaN and infinity round trip not checked under valgrind (it holds a long double in 64 bits)");
                     }
                     return;
                 }
@@ -2223,8 +2219,7 @@ namespace {
                 }
             }
             if (floatsNotCheckedUnderValgrind != 0) {
-                Stroika::Frameworks::Test::WarnTestIssue ("XML_ONLY_CompleteBinding_ (valgrind holds long double in 64 bits): {} round trips with a Float not checked"_f(
-                    floatsNotCheckedUnderValgrind));
+                SkipTestPart ("round trips with a Float not checked under valgrind (it holds a long double in 64 bits)");
             }
         }
     }
@@ -2388,8 +2383,7 @@ namespace {
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
             if (Debug::IsRunningUnderValgrind () and v != vrt) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "Test3_VariantValue_Helper_MinMax_ (valgrind holds long double in 64 bits): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
+                SkipTestPart ("lowest () round trip not checked under valgrind (it holds a long double in 64 bits)");
             }
             else {
                 EXPECT_EQ (v, vrt);
@@ -2406,8 +2400,7 @@ namespace {
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
             if (Debug::IsRunningUnderValgrind () and v != vrt) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "Test3_VariantValue_Helper_MinMax_ (valgrind holds long double in 64 bits): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
+                SkipTestPart ("max () round trip not checked under valgrind (it holds a long double in 64 bits)");
             }
             else {
                 EXPECT_EQ (v, vrt);
