@@ -13,7 +13,9 @@ Or better yet, can be avoided entirely by just using the pre-built docker contai
 
 - c++ compiler supporting C++20 or later
 - conan (Conan 2, <https://conan.io>): builds the third-party components, keeping each in its cache - so a configuration's
-  components are built once on a machine, whatever build tree needs them
+  components are built once on a machine, whatever build tree needs them. If it fails at once with "table recipes has 4
+  columns but 5 values were supplied", its home - the directory `conan config home` prints - was made by an early Conan 2
+  (before 2.0.14), which a current one cannot read: move that directory aside, and Conan makes a new one
 - make (gnu make)
 - patch
 - perl (to build OpenSSL - but not on Windows, where Stroika fetches Strawberry Perl for it)
