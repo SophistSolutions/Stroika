@@ -16,8 +16,9 @@
 #         /var/opt/<name>/             empty
 #     The .deb's control file is Installers/<package>.control.static, given its version and architecture; its maintainer
 #     scripts Installers/<package>.preinst, .postinst, .prerm and .postrm, each where there is one - else, the service
-#     enabled and started once installed, and stopped and disabled before it is removed. The .rpm's spec is
-#     Installers/<package>.rpm.spec, given its version: its scripts too, and the list of the files it installs.
+#     enabled and started once installed, and stopped and disabled before it is removed, where systemd is running. The
+#     .rpm's spec is Installers/<package>.rpm.spec, given its version: its scripts too, and the list of the files it
+#     installs.
 #   - unless the configuration has no WIX (configure's --WIX no), <name>-Windows-<arch>-<configuration>.msi
 #     (InstallerWIX.cmake), from Installers/Installer.wix: the program as WIX_PROGRAM_NAME (by default its own file name).
 #     What else it installs (FILES, say) is WIX_SCRIPT's to add - an installer's own step, given WIX_ARGS - as

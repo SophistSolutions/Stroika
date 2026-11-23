@@ -17,14 +17,18 @@ execute_process (COMMAND chmod -R 755 "${root_}" COMMAND_ERROR_IS_FATAL ANY)
 file (READ "${SOURCE_DIR}/${PACKAGE}.control.static" control_)
 file (WRITE "${root_}/DEBIAN/control" "Version: ${VERSION}\n${control_}Architecture: ${ARCH}\n")
 # its maintainer scripts: SOURCE_DIR's PACKAGE.preinst, .postinst, .prerm and .postrm, where it has one - else, for postinst
-# and prerm, the service enabled and started once installed, and stopped and disabled before it is removed
+# and prerm, the service enabled and started once installed, and stopped and disabled before it is removed, where systemd is
+# running (/run/systemd/system): elsewhere, as in a container, systemctl fails - and a failed postinst leaves the package
+# half-configured
 foreach (script_ preinst postinst prerm postrm)
     if (EXISTS "${SOURCE_DIR}/${PACKAGE}.${script_}")
         file (COPY_FILE "${SOURCE_DIR}/${PACKAGE}.${script_}" "${root_}/DEBIAN/${script_}")
     elseif (script_ STREQUAL "postinst")
-        file (WRITE "${root_}/DEBIAN/postinst" "systemctl enable ${PACKAGE}\nsystemctl start ${PACKAGE}\n")
+        file (WRITE "${root_}/DEBIAN/postinst" "#!/bin/sh\n" "if [ -d /run/systemd/system ]; then\n" "    systemctl enable ${PACKAGE}\n"
+              "    systemctl start ${PACKAGE}\n" "fi\n")
     elseif (script_ STREQUAL "prerm")
-        file (WRITE "${root_}/DEBIAN/prerm" "(systemctl stop ${PACKAGE}) || true\n(systemctl disable ${PACKAGE}) || true\n")
+        file (WRITE "${root_}/DEBIAN/prerm" "#!/bin/sh\n" "if [ -d /run/systemd/system ]; then\n" "    systemctl stop ${PACKAGE} || true\n"
+              "    systemctl disable ${PACKAGE} || true\n" "fi\n")
     else ()
         continue ()
     endif ()

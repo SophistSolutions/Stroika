@@ -49,21 +49,24 @@ cp -a * %{buildroot}
 rm -rf %{buildroot}
 
 %pre
+# here, in %preun and in %post, systemctl only where systemd is running (/run/systemd/system) - not, say, in a container
 if [ "$1" = "1" ]; then
    echo "Nothing needed for initial installation" > /dev/null
-elif [ "$1" == "2" ]; then
+elif [ "$1" == "2" ] && [ -d /run/systemd/system ]; then
    echo "Stop the service if its already running" > /dev/null
    systemctl stop stroika-sample-htmlui
 fi
 
 %preun
-if [ $1 -eq 0 ] ; then
+if [ $1 -eq 0 ] && [ -d /run/systemd/system ]; then
 	systemctl disable stroika-sample-htmlui
 fi
 
 %post
+if [ -d /run/systemd/system ]; then
 	systemctl enable stroika-sample-htmlui
 	systemctl start stroika-sample-htmlui
+fi
 
 %files
 /opt/Stroika-Sample-HTMLUI/Stroika-Sample-HTMLUI
