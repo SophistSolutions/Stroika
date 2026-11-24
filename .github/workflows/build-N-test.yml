@@ -521,6 +521,13 @@ jobs:
           docker exec buildContainer systeminfo
           docker exec buildContainer echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
           docker exec buildContainer df -h
+      # TEMPORARY PROBE, removed with the fix for 5ae837d91c's failures: MSVC's -pathmap and __FILE__ in this mounted
+      # checkout (.github/probe-pathmap.ps1) - the job stops after it
+      - name: Probe MSVC's -pathmap in the mounted checkout (temporary)
+        shell: "bash"
+        timeout-minutes: 30
+        run: |
+          MSYS_NO_PATHCONV=1 docker exec buildContainer powershell -NoProfile -ExecutionPolicy Bypass -File c:/Stroika/.github/probe-pathmap.ps1
       # as for Linux: without the third-party components' sources
       - name: Configure
         shell: "bash"
