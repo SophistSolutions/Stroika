@@ -576,6 +576,20 @@ On any platform, building Stroika, and all is demo applications and regression t
 
 make runs Stroika's CMake build (since Stroika v3.0d26: CMakeLists.txt), one build directory per configuration - `IntermediateFiles/<configuration>/CMake` - with the configuration's CMake preset (`CMakeUserPresets.json`, written as the configuration is applied - by any make target for it, or `make apply-configurations`). So `cmake --preset Debug` then `cmake --build --preset Debug -j8` builds as `make CONFIGURATION=Debug all -j8` does, and `ctest --preset Debug` runs its tests. It is one CMake project, whose configure step builds the configuration's third-party components first; so an IDE that reads the presets - Visual Studio's File > Open > Folder on the top directory, VS Code's CMake Tools - builds from them too, and sees every source file, test and sample (to debug one, say). make applies a configuration again whenever it has changed (re-run configure, say, or pull a newer Stroika); without make, the build stops instead, saying how. A configuration's CMake generator is configure's `--cmake-generator` (ninja, msbuild or make; by default ninja with Visual Studio, else make), which make prints as the build starts. Until Stroika v3.0d26 ships, `make -f Makefile-Legacy <target>` is make's own build of before, kept as a fallback.
 
+On Windows, a configuration's cmake is Visual Studio's own (configure records it, as `CMAKE`), and make runs it by its path - so
+there may be no `cmake` on PATH. To type `cmake --preset` yourself, use that same one: a Visual Studio developer shell
+(Developer PowerShell, or Developer Command Prompt) has it on PATH; in MSYS2's or Cygwin's bash, add its directory in
+`~/.bashrc`, for your Visual Studio's version and edition:
+
+```bash
+export PATH="$PATH:/c/Program Files/Microsoft Visual Studio/18/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin"
+```
+
+Do not install a second cmake for this (Kitware's, or MSYS2's mingw64 package): two cmakes of different versions configuring
+the same build directory configure it afresh at each switch, and MSYS2's own `cmake` package cannot drive Visual Studio's
+compiler at all. An IDE needs nothing set up: each preset names the configuration's cmake (`cmakeExecutable`), which VS
+Code's CMake Tools runs; Visual Studio runs its own, the same for a configuration built with that Visual Studio.
+
 ### Special Targets
 
 - `make`
