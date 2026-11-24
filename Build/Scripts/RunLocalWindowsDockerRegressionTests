@@ -7,12 +7,19 @@
 #
 #       for var in "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests ; done
 #
+# Conan's cache is kept between runs, in a docker volume per image (<image>-conan-cache; CONAN_CACHE_VOLUME names another,
+# empty none): copied onto the container's own disk before the build, and back after it, less what the run did not use.
+# Not Conan's home on the volume itself: a Hyper-V container reaches a volume as a mapped folder, which builds far more
+# slowly. One run at a time per volume; `docker volume rm <name>` starts one afresh.
+#
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22}"
 CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
 USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_MSYS-VS2k22-In-Docker}"
 BRANCH="${BRANCH:-v3-Dev}"
 VERSION=`./Build/Scripts/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 DOCKER="${DOCKER:-docker.exe}"
+IMAGE_NAME_="${CONTAINER_IMAGE##*/}"
+CONAN_CACHE_VOLUME="${CONAN_CACHE_VOLUME-${IMAGE_NAME_%%:*}-conan-cache}"
 
 # Due to https://github.com/SophistSolutions/Stroika/issues/876 - Invoke-WebRequest : The remote name could not be resolved: 
 #  Add 
@@ -32,6 +39,13 @@ DOCKER_RUN_ARGS_+=" --memory ${MEMORY_}"
 DOCKER_RUN_ARGS_+=" --cpus ${CPUS_}"
 DOCKER_RUN_ARGS_+=" --name $CONTAINER_NAME"
 DOCKER_RUN_ARGS_+=" --storage-opt size=${DISK_}"
+if [[ -n "${CONAN_CACHE_VOLUME}" ]] ; then
+    DOCKER_RUN_ARGS_+=" --volume ${CONAN_CACHE_VOLUME}:c:/conan-cache"
+    DOCKER_RUN_ARGS_+=" --env CONAN_HOME=c:/conan"
+fi
+# robocopy's options for copying Conan's cache: directories' times too - conan remove --lru takes a package's last use
+# from its folder's - and no retries
+CONAN_CACHE_COPY_="/MT:16 /DCOPY:DAT /R:0 /W:0 /NFL /NDL /NJH /NP"
 
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
@@ -46,6 +60,13 @@ $DOCKER run \
 $DOCKER exec \
     $CONTAINER_NAME \
     bash -c "git clone https://github.com/SophistSolutions/Stroika.git --branch $BRANCH"
+
+# (powershell, so no POSIX shell converts robocopy's /options to paths; "complete": the last copy out finished)
+if [[ -n "${CONAN_CACHE_VOLUME}" ]] ; then
+    echo "Copying in Conan's cache, from volume ${CONAN_CACHE_VOLUME}"
+    $DOCKER exec $CONTAINER_NAME powershell -Command "if (Test-Path C:\conan-cache\complete) { robocopy C:\conan-cache C:\conan /E /XF complete ${CONAN_CACHE_COPY_}; exit [int](\$LASTEXITCODE -ge 8) } else { 'none' }"
+fi
+RUN_START_=$(date +%s)
 
 # NB: https://github.com/SophistSolutions/Stroika/issues/895 -  -l needed for building openssl on MSYS
 $DOCKER exec \
@@ -63,6 +84,19 @@ echo "Done with build, and copied out results to (Tests/HistoricalRegressionTest
 #     --env USE_TEST_BASENAME=$USE_TEST_BASENAME \
 #     $CONTAINER_NAME \
 #     bash -l -c "cd c:/Stroika; cp Tests/HistoricalRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-* c:/launchedfrom/Tests/HistoricalPerformanceRegressionTestResults/"
+
+# Only when the run used Conan's cache: one that failed before building used none, and removing all it did not use would
+# empty the cache. A run touches the folder of each recipe it uses (which is how conan remove --lru knows).
+if [[ -n "${CONAN_CACHE_VOLUME}" ]] ; then
+    if $DOCKER exec $CONTAINER_NAME powershell -Command "exit [int](-not (Get-ChildItem C:\conan\p -Directory -ErrorAction Ignore | Where-Object LastWriteTimeUtc -ge ([DateTimeOffset]::FromUnixTimeSeconds(${RUN_START_}).UtcDateTime)))" ; then
+        UNUSED_FOR_=$(( ($(date +%s) - RUN_START_) / 3600 + 1 ))h
+        echo "Copying out Conan's cache, to volume ${CONAN_CACHE_VOLUME}, less what this run did not use (unused for ${UNUSED_FOR_})"
+        $DOCKER exec $CONTAINER_NAME bash -l -c "conan remove '*#*:*' --lru=${UNUSED_FOR_} --confirm; conan remove '*#*' --lru=${UNUSED_FOR_} --confirm"
+        $DOCKER exec $CONTAINER_NAME powershell -Command "Remove-Item -ErrorAction Ignore C:\conan-cache\complete; robocopy C:\conan C:\conan-cache /MIR ${CONAN_CACHE_COPY_}; if (\$LASTEXITCODE -ge 8) { exit 1 }; New-Item C:\conan-cache\complete > \$null"
+    else
+        echo "Conan's cache unused (the run failed before building): volume ${CONAN_CACHE_VOLUME} left as it was"
+    fi
+fi
 
 $DOCKER stop $CONTAINER_NAME
 # echo "Done with build, so copying out results to (Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-x86-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-x86_64-$VERSION.txt)"

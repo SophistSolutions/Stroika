@@ -262,6 +262,11 @@ Must be done on a Windows machine - medusa-windows-dev runs them (docker with hy
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k26 USE_TEST_BASENAME=Windows-MSYS-VS2k26-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests
   ```
 
+  Each image's runs keep Conan's cache in a docker volume of their own, `<image>-conan-cache` (as
+  `stroika-buildvm-windows-msys-vs2k26-conan-cache`), so a run builds only the third-party components changed since the
+  last. `docker system df -v` shows the volumes' sizes; `docker volume rm <name>` starts one afresh;
+  `CONAN_CACHE_VOLUME=` (empty) runs without one.
+
 - WSL (tested on Ubuntu 26.04) test
   (inside WSL2 bash prompt)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
