@@ -30,6 +30,8 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
+     *  \brief SignalID is the type of a signal, which is an integer (POSIX and C++ standard).
+     *         https://man7.org/linux/man-pages/man7/signal.7.html
      */
     using SignalID = int;
 
