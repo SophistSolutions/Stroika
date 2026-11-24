@@ -75,10 +75,13 @@ endif ()
 #
 # The component in <directory> as Conan names its package (conanfile.py): stroika-<directory> in lower case, as Conan requires
 # of a name, and its recipe's version (set (version_ ...)) - <variable>_PACKAGE, <variable>_VERSION, and <variable>, the two
-# as a reference
+# as a reference. The recipe is read as this build is configured, so it is one of the files that configures this build
+# again when changed (CMAKE_CONFIGURE_DEPENDS): else the Conan steps written with the version before (conan.cmake) run on.
 #
 function (StroikaConanPackage_ variable directory)
-    file (STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/CMakeLists.txt" version_ REGEX "^set \\(version_ ")
+    set (recipe_ "${CMAKE_CURRENT_SOURCE_DIR}/${directory}/CMakeLists.txt")
+    set_property (DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${recipe_}")
+    file (STRINGS "${recipe_}" version_ REGEX "^set \\(version_ ")
     string (REGEX REPLACE "^set \\(version_ ([^) ]+)\\).*" "\\1" version_ "${version_}")
     string (TOLOWER "stroika-${directory}" package_)
     set (${variable}_PACKAGE ${package_} PARENT_SCOPE)
