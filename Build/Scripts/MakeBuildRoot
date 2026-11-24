@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/sh
 #
 #   MakeBuildRoot - run it once, with no arguments, in the top directory of what you build, before any make:
 #       Build/Scripts/MakeBuildRoot                                             in Stroika's own tree
@@ -27,6 +27,16 @@
 #   Build/Lib/Python/DirectoryLayout.py does the work; the top of Build/Lib/Make/SharedMakeVariables-Default.mk documents
 #   the directories.
 #
+#   A Python program that sh starts: the first command a new machine runs, it says what to install where there is no
+#   /usr/bin/python3, which every Stroika build script runs - not the shell's bare "bad interpreter". To Python, the sh
+#   part below is a string.
+''':'
+if [ ! -x /usr/bin/python3 ]; then
+    "$(dirname "$0")/GetMessageForMissingTool" python3 1>&2
+    exit 1
+fi
+exec /usr/bin/python3 "$0" "$@"
+'''
 import argparse
 import os
 import sys
