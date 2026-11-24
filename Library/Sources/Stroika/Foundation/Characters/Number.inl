@@ -513,11 +513,11 @@ namespace Stroika::Foundation::Characters::Number {
                             }
                         }
                         else {
-                            constexpr U kMax = static_cast<U> (numeric_limits<T>::max ());
-                            if (magnitude <= kMax) {
+                            constexpr U kMax_ = static_cast<U> (numeric_limits<T>::max ());
+                            if (magnitude <= kMax_) {
                                 return negative ? static_cast<T> (-static_cast<T> (magnitude)) : static_cast<T> (magnitude);
                             }
-                            if (negative and magnitude == kMax + 1u) {
+                            if (negative and magnitude == kMax_ + 1u) {
                                 return numeric_limits<T>::min ();
                             }
                         }
@@ -565,11 +565,11 @@ namespace Stroika::Foundation::Characters::Number {
                         }
                     }
                     else {
-                        constexpr U kMax = static_cast<U> (numeric_limits<T>::max ());
-                        if (magnitude <= kMax) {
+                        constexpr U kMax_ = static_cast<U> (numeric_limits<T>::max ());
+                        if (magnitude <= kMax_) {
                             return negative ? static_cast<T> (-static_cast<T> (magnitude)) : static_cast<T> (magnitude);
                         }
-                        if (negative and magnitude == kMax + 1u) {
+                        if (negative and magnitude == kMax_ + 1u) {
                             return numeric_limits<T>::min ();
                         }
                     }
