@@ -24,11 +24,6 @@ Generally will track stuff here between releases
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
-   - **Windows In-Docker regression runs: test against mongo** (LGP 2026-10-23) - Tests/36's 3 mongo tests skip there
-     (12 SKIPPED per run in 3.0d25): Build/Scripts/RunLocalWindowsDockerRegressionTests passes only USE_TEST_BASENAME into
-     the container, though Regression-Tests.md's command line sets MONGO_CONNECTION_STRING - pass it as
-     RunRemoteRegressionTests does. Check the container resolves medusa.lan: that script's comment has Docker's DNS set to
-     8.8.8.8 (#876).
    - **String: a UTF-8 (char8_t) rep** (LGP 2026-11-07; may postpone, once discussed) - so a constant u8 string that is not ASCII
      is shared, not decoded and copied: enum names are UTF-8 now (EnumNameText), shared already when ASCII, as nearly all are.
      String.inl's FromStringConstant has the @todo and the design question (a UTF-8 rep cannot index directly).

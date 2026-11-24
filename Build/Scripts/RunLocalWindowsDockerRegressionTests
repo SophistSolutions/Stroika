@@ -7,6 +7,8 @@
 #
 #       for var in "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./Build/Scripts/RunLocalWindowsDockerRegressionTests ; done
 #
+# MONGO_CONNECTION_STRING, if set, goes into the container: the mongo server Tests/36 tests against (else it skips them).
+#
 # Conan's cache is kept between runs, in a docker volume per image (<image>-conan-cache; CONAN_CACHE_VOLUME names another,
 # empty none): copied onto the container's own disk before the build, and back after it, less what the run did not use.
 # Not Conan's home on the volume itself: a Hyper-V container reaches a volume as a mapped folder, which builds far more
@@ -27,6 +29,7 @@ CONAN_CACHE_VOLUME="${CONAN_CACHE_VOLUME-${IMAGE_NAME_%%:*}-conan-cache}"
 #     "8.8.8.8"
 #   ],
 #   to Docker Desktop App / Settings / Docker Engine / JSON Configuration File
+#   - and list the LAN's own DNS server too, or the container cannot resolve LAN names (the mongo server in MONGO_CONNECTION_STRING)
 
 CPUS_=6
 MEMORY_=16G
@@ -71,6 +74,7 @@ RUN_START_=$(date +%s)
 # NB: https://github.com/SophistSolutions/Stroika/issues/895 -  -l needed for building openssl on MSYS
 $DOCKER exec \
     --env USE_TEST_BASENAME=$USE_TEST_BASENAME \
+    --env "MONGO_CONNECTION_STRING=$MONGO_CONNECTION_STRING" \
     $CONTAINER_NAME \
     bash -l -c "export PARALELLMAKEFLAG=-j${CPUS_}; cd c:/Stroika; ./Build/Scripts/RegressionTests; cp Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-OUT.txt c:/launchedfrom/Tests/HistoricalRegressionTestResults/; cp Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-* c:/launchedfrom/Tests/HistoricalPerformanceRegressionTestResults/"
 
