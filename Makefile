@@ -104,7 +104,8 @@ help:
 # generator, printed as the build starts (configure's --cmake-generator: by default ninja with Visual Studio, else
 # make). Configured each time, which builds the third-party components first. Each target as make's own: all, or a part
 # (libraries, tools, tests, samples, documentation, third-party-components) with what it needs; -jN, N jobs at once
-# (just -j, from make 3.81: one per processor), the third-party components' builds too. Without CONFIGURATION: each
+# (from macOS's make 3.81, which passes on no count: CMAKE_BUILD_PARALLEL_LEVEL's jobs, if set, else one per processor),
+# the third-party components' builds too. Without CONFIGURATION: each
 # configuration make builds by default (or each TAGS= names). Until Stroika v3.0d26 make built Stroika itself - as
 # Makefile-Legacy still does, until 3.0d26 ships.
 #

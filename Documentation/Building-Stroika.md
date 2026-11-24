@@ -77,6 +77,8 @@ docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-wi
 ### **_Note_**
 
 It takes a while to build all of Stroika (10-20 minutes per configuration), so adding -j10 (or so) helps a lot.
+macOS's make (GNU make 3.81) passes on no job count, so there any -jN builds with one job per processor - or with
+`CMAKE_BUILD_PARALLEL_LEVEL`'s, if that is set (`export CMAKE_BUILD_PARALLEL_LEVEL=5`).
 
 ---
 

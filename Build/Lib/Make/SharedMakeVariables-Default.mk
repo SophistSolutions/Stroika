@@ -143,10 +143,11 @@ StroikaFindCMake = cmake_="$$($(StroikaSourceRoot)Build/Scripts/GetConfiguration
 
 # And jobs_ to the jobs make was given (-jN), for cmake's build - a build of its own, given them as
 # CMAKE_BUILD_PARALLEL_LEVEL, which the third-party components' build takes too (Stroika's CMakeLists.txt) - so not
-# given this make's MAKEFLAGS: its jobserver, its -s and -k -
+# given this make's MAKEFLAGS: its jobserver, its -s and -k. A -j with no count - as macOS's GNU make 3.81 passes on any
+# -jN - is CMAKE_BUILD_PARALLEL_LEVEL's jobs, if that is set, else one per processor -
 #     @$(StroikaFindCMake) && $(StroikaFindJobs) && env -u MAKEFLAGS -u MFLAGS $${jobs_:+CMAKE_BUILD_PARALLEL_LEVEL=$$jobs_} "$$cmake_" --build --preset $(CONFIGURATION)
 StroikaFindJobs = jobs_="$$(echo " $$MAKEFLAGS" | sed -n 's/.* -j\([0-9][0-9]*\).*/\1/p')" &&\
-	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$$(getconf _NPROCESSORS_ONLN)"; fi
+	if [ -z "$$jobs_" ] && echo " $$MAKEFLAGS " | grep -q -e ' -j '; then jobs_="$${CMAKE_BUILD_PARALLEL_LEVEL:-$$(getconf _NPROCESSORS_ONLN)}"; fi
 
 # And prefix_ to PREFIX= (an installation of Stroika: make install's, skel-test's) as the configuration's cmake takes it -
 # absolute (as given, relative to where make runs), and a Windows path for a Windows cmake, as Path_ gives any other path -
