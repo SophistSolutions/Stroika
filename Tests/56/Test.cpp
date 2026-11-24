@@ -724,6 +724,8 @@ namespace {
         EXPECT_FALSE (FromText<uint8_t> ("-1"sv).has_value ());
         EXPECT_FALSE (FromText<int32_t> ("12abc"sv).has_value ());
         EXPECT_FALSE (FromText<int32_t> (""sv).has_value ());
+        EXPECT_EQ (FromText<int32_t> ("-5"sv), -5);
+        EXPECT_FALSE (FromText<int32_t> ("+-5"sv).has_value ()); // a sign at most once
         EXPECT_EQ (FromText<double> ("-1.5E-3"sv), -1.5e-3);
         EXPECT_FALSE (FromText<double> ("NaN"sv).has_value ()); // UPnP has neither
         EXPECT_FALSE (FromText<double> ("INF"sv).has_value ());

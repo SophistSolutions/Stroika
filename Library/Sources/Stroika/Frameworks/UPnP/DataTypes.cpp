@@ -3,7 +3,6 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <charconv>
 #include <cmath>
 
 #include "Stroika/Foundation/Characters/Format.h"
@@ -22,22 +21,6 @@ using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::DataTypes;
 
 namespace {
-    // an integer as UPnP writes it - decimal, a leading + and zeros allowed - whole, and in T's range
-    template <integral T>
-    optional<T> ParseInteger_ (const String& text)
-    {
-        string s = text.AsUTF8<string> ();
-        if (s.starts_with ('+')) {
-            s.erase (0, 1);
-        }
-        T result{};
-        auto [end, ec] = from_chars (s.data (), s.data () + s.size (), result);
-        if (ec != errc{} or end != s.data () + s.size () or s.empty ()) {
-            return nullopt;
-        }
-        return result;
-    }
-
     // text read as data type t, whose C++ type is T
     template <IValue T>
     optional<T> Read_ (const String& text, DataType t)
@@ -62,11 +45,18 @@ namespace {
                 return nullopt;
             }
             else if constexpr (integral<T>) {
-                return ParseInteger_<T> (s);
+                // as UPnP writes one - an optional sign, then decimal digits, leading zeros allowed: Number::Parse's default
+                if (auto r = Number::Parse<T> (s)) {
+                    return *r;
+                }
+                return nullopt;
             }
             else if constexpr (floating_point<T>) {
-                T v = Number::Parse<T> (s).value_or (NAN); // NaN if it is not a number
-                return std::isfinite (v) ? optional<T>{v} : nullopt;
+                // and finite: UPnP has no NaN or infinity
+                if (auto r = Number::Parse<T> (s); r and std::isfinite (*r)) {
+                    return *r;
+                }
+                return nullopt;
             }
             else if constexpr (same_as<T, Time::Date>) {
                 return Time::Date::ParseQuietly (s, String{Time::Date::kISO8601Format});
