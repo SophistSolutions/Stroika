@@ -95,7 +95,9 @@ class StroikaThirdPartyComponent(ConanFile):
              'include ("${CMAKE_CURRENT_SOURCE_DIR}/StroikaThirdPartyComponent.cmake")\n'
              f"add_subdirectory ({self._directory(self.source_folder)})\n")
         build = os.path.join(self.build_folder, "build").replace("\\", "/")
-        self.run(f'"{cmake}" {generator} -S "{self.source_folder}" -B "{build}"'
+        # --no-warn-unused-cli: every component is given these, and not every one uses them all (StrawberryPerl and WIX map
+        # no paths; MSVC's builds take no placeholder - StroikaThirdPartyComponent.cmake)
+        self.run(f'"{cmake}" {generator} -S "{self.source_folder}" -B "{build}" --no-warn-unused-cli'
                  f' "-DCMAKE_TOOLCHAIN_FILE={conf("toolchain_file")}" "-DSTROIKA_ORIGS_CACHE={conf("origs_cache")}"'
                  f' "-DSTROIKA_THIRD_PARTY_PREFIX={self._installPrefix}/" "-DSTROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER={DEPLOY_DIR_PLACEHOLDER}"')
         # a multi-configuration generator's (Visual Studio's) build type, and its processors (msbuild -m), as the top

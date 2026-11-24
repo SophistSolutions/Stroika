@@ -12,6 +12,8 @@ includes will be once deployed, by DEPLOY_DIR_PLACEHOLDER standing for the deplo
 Deploying writes the folder over it, in each binary file - padded with separators to the placeholder's length, so nothing
 else in the file moves - and a debugger finds them, with nothing set up. A folder longer than the placeholder is not written
 (a warning says so), nor where a file holds it in a form not written plainly - as gcc's LTO intermediate code, compressed.
+MSVC's debug information names them relative to the folder instead (StroikaThirdPartyComponent.cmake says why): nothing to
+write over, and the debugger is given the folder as its source path.
 
 A binary file naming the install directory - a path compiled in, as a component's default directory for its configuration
 files or modules might be (its debug information names DEPLOY_DIR_PLACEHOLDER instead) - cannot be changed so: it is copied
@@ -26,9 +28,8 @@ import shutil
 INSTALL_PREFIX_FILE = "stroika-install-prefix.txt"
 _CONAN_FILES = ("conaninfo.txt", "conanmanifest.txt", INSTALL_PREFIX_FILE)
 
-# The deployer folder, as a component's debug information names it: the same on every machine, so that a package built on one
-# deploys to any. Long enough for the folder; and short enough that on Windows a path naming it - the component's deepest
-# source after it - stays under MAX_PATH (260), written over or not.
+# The deployer folder, as a component's debug information names it (gcc's, clang's): the same on every machine, so that a
+# package built on one deploys to any; long enough for the folder.
 DEPLOY_DIR_PLACEHOLDER = "/StroikaDeployDirectory".ljust(128, "_")
 
 
@@ -56,16 +57,12 @@ def CopyPackage(package, target, output, deploying=True):
     replacements = [(re.compile(re.escape(prefix.encode()), flags), target.encode())]
     if os.sep == "\\":
         replacements.append((re.compile(re.escape(prefix.replace("/", "\\").encode()), flags), target.replace("/", "\\").encode()))
-    # the placeholder - on Windows also as MSVC's debug information writes it, its / a \ (StroikaThirdPartyComponent.cmake) -
-    # and its replacement in a binary file: target, with the platform's separators, and more of them after it to the
-    # placeholder's length - /a/b////src/x.c is /a/b/src/x.c
-    placeholders = [DEPLOY_DIR_PLACEHOLDER.encode()]
-    if os.sep == "\\":
-        placeholders.append(DEPLOY_DIR_PLACEHOLDER.replace("/", "\\").encode())
-    nativeTarget = target.replace("/", os.sep)
+    # the placeholder, and its replacement in a binary file: target, and more separators after it to the placeholder's
+    # length - /a/b////src/x.c is /a/b/src/x.c
+    placeholder = DEPLOY_DIR_PLACEHOLDER.encode()
     placeholderReplacement = None
-    if len(nativeTarget) <= len(DEPLOY_DIR_PLACEHOLDER):
-        placeholderReplacement = nativeTarget.ljust(len(DEPLOY_DIR_PLACEHOLDER), os.sep).encode()
+    if len(target) <= len(DEPLOY_DIR_PLACEHOLDER):
+        placeholderReplacement = target.ljust(len(DEPLOY_DIR_PLACEHOLDER), "/").encode()
     copied = {}
     for directory, _, files in os.walk(package):
         for name in files:
@@ -82,14 +79,13 @@ def CopyPackage(package, target, output, deploying=True):
                         output.warning(f"{relative} names the directory it was installed to, {found[0].decode()}, and is binary: copied unchanged")
                     else:
                         data = old.sub(lambda _: new, data)
-            for placeholder in placeholders if deploying else []:
-                if placeholder in data:
-                    if b"\0" not in data:
-                        data = data.replace(placeholder, target.encode())
-                    elif placeholderReplacement:
-                        data = data.replace(placeholder, placeholderReplacement)
-                    else:
-                        output.warning(f"{relative}: its debug information names its sources' directory as {DEPLOY_DIR_PLACEHOLDER}, not {target} - longer than that")
+            if deploying and placeholder in data:
+                if b"\0" not in data:
+                    data = data.replace(placeholder, target.encode())
+                elif placeholderReplacement:
+                    data = data.replace(placeholder, placeholderReplacement)
+                else:
+                    output.warning(f"{relative}: its debug information names its sources' directory as {DEPLOY_DIR_PLACEHOLDER}, not {target} - longer than that")
             copied[relative] = Digest(data)
             destination = os.path.join(target, relative)
             if os.path.isfile(destination):

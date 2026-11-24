@@ -119,7 +119,8 @@ endfunction ()
 # The compiler flags (a list) with which the calling directory's component, built by Conan, names in its debug information
 # where its sources, and the headers it includes, will be once deployed into a configuration's Builds directory
 # (StroikaDeploy.py) - each by STROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER, which deploying writes over with that directory, so
-# that a debugger finds them with nothing set up:
+# that a debugger finds them with nothing set up; with MSVC, relative to that directory, which the debugger is given as its
+# source path (MSVC's -pathmap cannot take the placeholder, below):
 #   - its binary directory - StroikaThirdPartyComponent's src/ and build/: its sources, and what its build makes or fetches
 #     there (mongo-c-driver) - as src/<directory> there, where conanfile.py packages them (STROIKA_THIRD_PARTY_SOURCES);
 #   - its install directory, which holds the headers of the components it is built on, as that Builds directory, which
@@ -166,15 +167,19 @@ function (StroikaThirdPartyDebugPathFlags variable)
             math (EXPR j_ "${i_} + 1")
             list (GET maps_ ${i_} from_)
             list (GET maps_ ${j_} to_)
-            set (deployed_ "${STROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER}")
-            if (NOT to_ STREQUAL ".")
-                string (APPEND deployed_ "/${to_}")
-            endif ()
             if (vs_)
+                # Relative, not by the placeholder: -pathmap overruns __FILE__ where it makes it much longer - a directory short
+                # beside the placeholder, as with a Conan home of 20 characters or so (CI's, c:/conan) - with C2001, C1004 or
+                # C1001, a crash or a hang, as the lengths fall (MSVC 19.44, 19.52). A relative path is shorter than any
+                # directory it replaces.
                 file (TO_NATIVE_PATH "${from_}" from_)
-                string (REPLACE "/" "\\" deployed_ "${deployed_}")
-                list (APPEND flags_ "-pathmap:${from_}=${deployed_}")
+                file (TO_NATIVE_PATH "${to_}" to_)
+                list (APPEND flags_ "-pathmap:${from_}=${to_}")
             else ()
+                set (deployed_ "${STROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER}")
+                if (NOT to_ STREQUAL ".")
+                    string (APPEND deployed_ "/${to_}")
+                endif ()
                 list (APPEND flags_ "-fdebug-prefix-map=${from_}=${deployed_}")
             endif ()
         endforeach ()

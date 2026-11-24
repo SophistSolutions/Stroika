@@ -408,7 +408,10 @@ not copied into `Builds`.
   so names them by a stand-in, `/StroikaDeployDirectory___...`. For that, each configuration has a file mapping it to its
   `Builds` directory, for the debugger to read: `source Builds/<configuration>/ThirdPartySources.gdb` in gdb (in VS Code's
   `launch.json`, a `setupCommands` entry), `command source Builds/<configuration>/ThirdPartySources.lldb` in lldb (CodeLLDB's
-  `initCommands`). The sources take about 120 MB a configuration, in Conan's cache and again in each tree; configure's
+  `initCommands`). With Visual Studio's compiler the debug information names them relative to `Builds/<configuration>`
+  instead (MSVC mishandles the stand-in: `ThirdPartyComponents/StroikaThirdPartyComponent.cmake` says how), so give the
+  debugger that directory as a source path - `.srcpath+ <directory>` in WinDbg or cdb; in Visual Studio, its Debug Source
+  Files, or point its "source not found" prompt there. The sources take about 120 MB a configuration, in Conan's cache and again in each tree; configure's
   `--third-party-sources false` leaves them out (CI does), at the cost of building the configuration's components again.
 
 ---
