@@ -1,12 +1,13 @@
 #
 # mongo-cxx-driver - and the mongo-c-driver its own configure fetches - as its Makefile builds it
 #
-set (version_ r4.6.1)
+# without the r its tags (and so its archives) carry: Conan, given this as its package's version, warns of an alphanumeric
+# major part
+set (version_ 4.6.1)
 
-# Its version (r4.6.1 is 4.6.1), which it must be given: GitHub's tag archive has no build/VERSION_CURRENT, so it would
-# otherwise compute one from git history it does not have
-string (REGEX REPLACE "^r" "" buildVersion_ "${version_}")
-set (args_ "-DBUILD_VERSION=${buildVersion_}" -DBUILD_SHARED_LIBS:BOOL=OFF -DENABLE_SHARED:BOOL=OFF)
+# Its version, which it must be given: GitHub's tag archive has no build/VERSION_CURRENT, so it would otherwise compute one
+# from git history it does not have
+set (args_ "-DBUILD_VERSION=${version_}" -DBUILD_SHARED_LIBS:BOOL=OFF -DENABLE_SHARED:BOOL=OFF)
 if (STROIKA_FEATURE_OpenSSL STREQUAL "no")
     list (APPEND args_ -DENABLE_SSL=OFF)
 endif ()
@@ -69,11 +70,11 @@ endforeach ()
 file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/configure-arguments.cmake" "${text_}\n)\n")
 
 StroikaThirdPartyComponent (mongo-cxx-driver
-    ARCHIVE mongo-cxx-driver-${version_}.tar.gz
-    URLS https://github.com/mongodb/mongo-cxx-driver/archive/refs/tags/${version_}.tar.gz
+    ARCHIVE mongo-cxx-driver-r${version_}.tar.gz
+    URLS https://github.com/mongodb/mongo-cxx-driver/archive/refs/tags/r${version_}.tar.gz
     CONFIGURE_COMMAND "${CMAKE_COMMAND}" -E env "PKG_CONFIG_PATH=${STROIKA_PKG_CONFIG_PATH}"
                       "${CMAKE_COMMAND}" "-DARGUMENTS_FILE=${CMAKE_CURRENT_BINARY_DIR}/configure-arguments.cmake" -DSOURCE_DIR=<SOURCE_DIR>
-                      -DBINARY_DIR=<BINARY_DIR> "-DVERSION=${buildVersion_}" -P "${CMAKE_CURRENT_SOURCE_DIR}/Configure.cmake"
+                      -DBINARY_DIR=<BINARY_DIR> "-DVERSION=${version_}" -P "${CMAKE_CURRENT_SOURCE_DIR}/Configure.cmake"
     ${install_}
     DEPENDS openssl zlib zstd # zstd: mongo-c-driver finds it, for its compression
 )
