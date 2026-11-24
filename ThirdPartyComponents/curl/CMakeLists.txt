@@ -14,6 +14,10 @@ execute_process (COMMAND "${CMAKE_C_COMPILER}" --version OUTPUT_VARIABLE compile
 if (NOT compilerBanner_ MATCHES "clang" AND compilerVersion_ VERSION_LESS 12)
     string (REGEX REPLACE "(^| )-fsanitize=[^ ]*" "" cFlags_ "${cFlags_}")
 endif ()
+# and the debug information naming its sources, and the headers it includes, where they will be once deployed
+StroikaThirdPartyDebugPathFlags (debugPathFlags_)
+list (JOIN debugPathFlags_ " " debugPathFlags_)
+string (APPEND cFlags_ " ${debugPathFlags_}")
 # the configuration's include directories; then CPATH's, searched after everything else (a Mac shell's
 # CPATH=/opt/homebrew/include would else put Homebrew's OpenSSL headers ahead of the configuration's), and CPATH unset
 set (cppFlags_)

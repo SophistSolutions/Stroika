@@ -21,30 +21,14 @@ if (DEFINED STROIKA_THIRD_PARTY_PREFIX)
     set (STROIKA_BUILDS_DIR "${STROIKA_THIRD_PARTY_PREFIX}")
 endif ()
 
-# STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS for a component's compiles, and STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS for its
-# programs' links: built by Conan, debug information names the directory the component is installed into - where the
-# components it is built on are, in Conan's build folder, removed once packaged - as ".", so that a package names that
-# directory only where it is compiled in, which StroikaDeploy.py warns of. The compiler's debug information names it as
-# the include directory of those components; on a Mac, the linker's debug map names each object a program links, by path -
-# those of the static libraries there too. With Visual Studio, where the configuration's toolchain file gives the flags, a
-# recipe that gives its own adds these (mongo-cxx-driver's).
-set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS)
+# STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS for a component's programs' links: built by Conan, on a Mac, the linker's debug
+# map names each object a program links, by path - those of the static libraries in the directory the component is
+# installed into too, in Conan's build folder, removed once packaged - so names them relative to it. (What a compile's debug
+# information names: StroikaThirdPartyDebugPathFlags.)
 set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS)
-if (DEFINED STROIKA_THIRD_PARTY_PREFIX)
+if (DEFINED STROIKA_THIRD_PARTY_PREFIX AND CMAKE_HOST_APPLE)
     string (REGEX REPLACE "/$" "" prefix_ "${STROIKA_THIRD_PARTY_PREFIX}")
-    if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
-        # /experimental:deterministic only for /pathmap, which MSVC takes only with it - else D9007, "'/pathmap:' requires
-        # '/experimental:deterministic'; option ignored" (MSVC 19.44, 19.52). It also makes the compiler's output
-        # deterministic: no time stamps, and a warning (C5048) where __DATE__ or __TIME__ is used. /pathmap matches the
-        # directory in any letter case.
-        file (TO_NATIVE_PATH "${prefix_}" nativePrefix_)
-        set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS "/experimental:deterministic \"/pathmap:${nativePrefix_}=.\"")
-    else ()
-        set (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS "-fdebug-prefix-map=${prefix_}=.")
-        if (CMAKE_HOST_APPLE)
-            set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS "-Wl,-oso_prefix,${prefix_}/")
-        endif ()
-    endif ()
+    set (STROIKA_THIRD_PARTY_DEBUG_PATH_LINK_FLAGS "-Wl,-oso_prefix,${prefix_}/")
 endif ()
 
 if (POLICY CMP0135)
@@ -83,11 +67,6 @@ else ()
         string (APPEND STROIKA_THIRD_PARTY_CXX_FLAGS " -DNDEBUG")
     endif ()
     list (APPEND STROIKA_THIRD_PARTY_CMAKE_ARGS -DCMAKE_BUILD_TYPE=None "-DCMAKE_C_FLAGS=${STROIKA_THIRD_PARTY_C_FLAGS}" "-DCMAKE_CXX_FLAGS=${STROIKA_THIRD_PARTY_CXX_FLAGS}")
-    # STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS as the build type's flags, not in CMAKE_<LANG>_FLAGS: a component may compile
-    # those in - mongo-c-driver sends them to the server, in its handshake - and they name the directory
-    if (STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS)
-        list (APPEND STROIKA_THIRD_PARTY_CMAKE_ARGS "-DCMAKE_C_FLAGS_NONE=${STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS}" "-DCMAKE_CXX_FLAGS_NONE=${STROIKA_THIRD_PARTY_DEBUG_PATH_FLAGS}")
-    endif ()
 endif ()
 
 if (NOT DEFINED STROIKA_ORIGS_CACHE) # given for a component Conan builds (conanfile.py): the source tree's
@@ -135,23 +114,129 @@ function (StroikaVisualStudioCommand variable name script)
 endfunction ()
 
 #
+# StroikaThirdPartyDebugPathFlags (<variable> [SOURCES_ONLY] [MAP <directory> <deployed>])
+#
+# The compiler flags (a list) with which the calling directory's component, built by Conan, names in its debug information
+# where its sources, and the headers it includes, will be once deployed into a configuration's Builds directory
+# (StroikaDeploy.py) - each by STROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER, which deploying writes over with that directory, so
+# that a debugger finds them with nothing set up:
+#   - its binary directory - StroikaThirdPartyComponent's src/ and build/: its sources, and what its build makes or fetches
+#     there (mongo-c-driver) - as src/<directory> there, where conanfile.py packages them (STROIKA_THIRD_PARTY_SOURCES);
+#   - its install directory, which holds the headers of the components it is built on, as that Builds directory, which
+#     holds the same - but with SOURCES_ONLY, for a component built on none that compiles its flags in (OpenSSL, as its
+#     version information): its libraries would name that directory, which deploying warns of;
+#   - MAP's directory, in its binary directory, as <deployed> there (relative to it): boost's headers as include/boost,
+#     where its install copied them, rather than packaged again.
+# Empty where Conan does not build it. Where two match a path, MSVC takes the first, gcc and clang the last: so MAP's goes
+# first, or last. -pathmap, not /pathmap: OpenSSL's Windows build turns each / in its flags into \.
+#
+function (StroikaThirdPartyDebugPathFlags variable)
+    cmake_parse_arguments (PARSE_ARGV 1 arg "SOURCES_ONLY" "" "MAP")
+    set (flags_)
+    if (DEFINED STROIKA_THIRD_PARTY_PREFIX AND DEFINED STROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER)
+        string (REGEX REPLACE "/$" "" prefix_ "${STROIKA_THIRD_PARTY_PREFIX}")
+        cmake_path (GET CMAKE_CURRENT_SOURCE_DIR FILENAME directory_)
+        set (maps_ "${CMAKE_CURRENT_BINARY_DIR}" "src/${directory_}")
+        if (NOT arg_SOURCES_ONLY)
+            list (APPEND maps_ "${prefix_}" ".")
+        endif ()
+        set (vs_ OFF)
+        if (STROIKA_BUILD_PLATFORM MATCHES "^VisualStudio")
+            set (vs_ ON)
+        endif ()
+        if (arg_MAP)
+            list (GET arg_MAP 0 from_)
+            list (GET arg_MAP 1 to_)
+            if (vs_)
+                list (PREPEND maps_ "${CMAKE_CURRENT_BINARY_DIR}/${from_}" "${to_}")
+            else ()
+                list (APPEND maps_ "${CMAKE_CURRENT_BINARY_DIR}/${from_}" "${to_}")
+            endif ()
+        endif ()
+        if (vs_)
+            # -experimental:deterministic only for -pathmap, which MSVC takes only with it - else D9007, "'/pathmap:' requires
+            # '/experimental:deterministic'; option ignored" (MSVC 19.44, 19.52). It also makes the compiler's output
+            # deterministic: no time stamps, and a warning (C5048) where __DATE__ or __TIME__ is used. -pathmap matches a
+            # directory in any letter case - and rewrites __FILE__ too.
+            set (flags_ -experimental:deterministic)
+        endif ()
+        list (LENGTH maps_ n_)
+        math (EXPR last_ "${n_} - 1")
+        foreach (i_ RANGE 0 ${last_} 2)
+            math (EXPR j_ "${i_} + 1")
+            list (GET maps_ ${i_} from_)
+            list (GET maps_ ${j_} to_)
+            set (deployed_ "${STROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER}")
+            if (NOT to_ STREQUAL ".")
+                string (APPEND deployed_ "/${to_}")
+            endif ()
+            if (vs_)
+                file (TO_NATIVE_PATH "${from_}" from_)
+                string (REPLACE "/" "\\" deployed_ "${deployed_}")
+                list (APPEND flags_ "-pathmap:${from_}=${deployed_}")
+            else ()
+                list (APPEND flags_ "-fdebug-prefix-map=${from_}=${deployed_}")
+            endif ()
+        endforeach ()
+    endif ()
+    set (${variable} "${flags_}" PARENT_SCOPE)
+endfunction ()
+
+#
+# StroikaThirdPartyDebugPathProjectInclude (<variable> [MAP <directory> <deployed>])
+#
+# For a component's own CMake build: -DCMAKE_PROJECT_INCLUDE=<file>, a file giving each project () of its build
+# StroikaThirdPartyDebugPathFlags as compile options - not in its CMAKE_<LANG>_FLAGS, which a component may compile in
+# (mongo-c-driver sends them to the server, in its handshake). Empty where Conan does not build it.
+#
+function (StroikaThirdPartyDebugPathProjectInclude variable)
+    StroikaThirdPartyDebugPathFlags (flags_ ${ARGN})
+    set (result_)
+    if (flags_)
+        set (content_)
+        foreach (flag_ IN LISTS flags_)
+            string (APPEND content_ "add_compile_options ([==[$<$<COMPILE_LANGUAGE:C,CXX>:${flag_}>]==])\n")
+        endforeach ()
+        file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/DebugPaths.cmake" "${content_}")
+        set (result_ "-DCMAKE_PROJECT_INCLUDE=${CMAKE_CURRENT_BINARY_DIR}/DebugPaths.cmake")
+    endif ()
+    set (${variable} "${result_}" PARENT_SCOPE)
+endfunction ()
+
+#
 # StroikaThirdPartyComponent (<name> ARCHIVE <file> URLS <url>... [SOURCE_SUBDIR <directory>] [PATCH_COMMAND <command>...]
 #                             [CMAKE_ARGS <arg>...] [BUILD_TARGETS <target>...] [DEPENDS <component>...]
 #                             [BUILD_IN_SOURCE] [CONFIGURE_COMMAND <command>...] [BUILD_COMMAND <command>...]
-#                             [INSTALL_COMMAND <command>...])
+#                             [INSTALL_COMMAND <command>...] [PACKAGE_SOURCES <pattern>... | NO_SOURCES])
 #
 # The component <name>, from <file> in Origs-Cache (downloaded there from the first of the URLs that works, when missing),
 # configured with STROIKA_THIRD_PARTY_CMAKE_ARGS and CMAKE_ARGS, built (just BUILD_TARGETS, when given), and installed -
 # after each component it DEPENDS on that the configuration uses, as its own build finds them installed. One that is not a
 # CMake project gives its own CONFIGURE_COMMAND, BUILD_COMMAND and INSTALL_COMMAND, and BUILD_IN_SOURCE where it builds
-# among its sources. SOURCE_SUBDIR, PATCH_COMMAND and those are ExternalProject_Add's. Each step's output goes to a log file
-# in the component's build directory, shown when the step fails.
+# among its sources - and, its own flags, StroikaThirdPartyDebugPathFlags. SOURCE_SUBDIR, PATCH_COMMAND and those are
+# ExternalProject_Add's. Each step's output goes to a log file in the component's build directory, shown when the step fails.
+#
+# Built by Conan, with the configuration's STROIKA_THIRD_PARTY_SOURCES, its package carries its sources - those of its
+# binary directory's files (src/ and build/) that PACKAGE_SOURCES matches, by default its C and C++ files - for its debug
+# information to name once deployed (StroikaThirdPartyDebugPathFlags): conanfile.py copies them, as package-sources.txt
+# in its binary directory lists the patterns. NO_SOURCES for a tool, or binaries, it does not compile (StrawberryPerl, WIX).
 #
 function (StroikaThirdPartyComponent name)
-    cmake_parse_arguments (PARSE_ARGV 1 arg "BUILD_IN_SOURCE" "ARCHIVE;SOURCE_SUBDIR"
-        "URLS;PATCH_COMMAND;CMAKE_ARGS;BUILD_TARGETS;DEPENDS;CONFIGURE_COMMAND;BUILD_COMMAND;INSTALL_COMMAND")
+    cmake_parse_arguments (PARSE_ARGV 1 arg "BUILD_IN_SOURCE;NO_SOURCES" "ARCHIVE;SOURCE_SUBDIR"
+        "URLS;PATCH_COMMAND;CMAKE_ARGS;BUILD_TARGETS;DEPENDS;CONFIGURE_COMMAND;BUILD_COMMAND;INSTALL_COMMAND;PACKAGE_SOURCES")
     if (arg_UNPARSED_ARGUMENTS)
         message (FATAL_ERROR "StroikaThirdPartyComponent (${name}): unknown arguments ${arg_UNPARSED_ARGUMENTS}")
+    endif ()
+    file (REMOVE "${CMAKE_CURRENT_BINARY_DIR}/package-sources.txt")
+    if (DEFINED STROIKA_THIRD_PARTY_PREFIX AND STROIKA_THIRD_PARTY_SOURCES AND NOT arg_NO_SOURCES)
+        set (patterns_ ${arg_PACKAGE_SOURCES})
+        if (NOT patterns_)
+            foreach (extension_ IN ITEMS c cc cpp cxx h hh hpp hxx ipp inl inc tcc s S asm)
+                list (APPEND patterns_ "src/*.${extension_}" "build/*.${extension_}")
+            endforeach ()
+        endif ()
+        list (JOIN patterns_ "\n" patterns_)
+        file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/package-sources.txt" "${patterns_}\n")
     endif ()
     set (passOn_)
     foreach (component_ IN LISTS arg_DEPENDS)
@@ -204,8 +289,11 @@ function (StroikaThirdPartyComponent name)
         if (arg_SOURCE_SUBDIR)
             string (APPEND source_ "/${arg_SOURCE_SUBDIR}")
         endif ()
+        # and its debug information naming its sources, and the headers it includes, where they will be once deployed
+        StroikaThirdPartyDebugPathProjectInclude (projectInclude_)
         set (configure_ CONFIGURE_COMMAND "${CMAKE_COMMAND}" -E env "PKG_CONFIG_PATH=${STROIKA_PKG_CONFIG_PATH}"
-            "${CMAKE_COMMAND}" ${STROIKA_THIRD_PARTY_GENERATOR_ARGS} ${STROIKA_THIRD_PARTY_CMAKE_ARGS} ${arg_CMAKE_ARGS} -S ${source_} -B <BINARY_DIR>)
+            "${CMAKE_COMMAND}" ${STROIKA_THIRD_PARTY_GENERATOR_ARGS} ${STROIKA_THIRD_PARTY_CMAKE_ARGS} ${projectInclude_} ${arg_CMAKE_ARGS}
+            -S ${source_} -B <BINARY_DIR>)
     endif ()
     if (arg_BUILD_COMMAND)
         set (build_ ${arg_BUILD_COMMAND})

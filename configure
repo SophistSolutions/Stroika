@@ -199,6 +199,7 @@ class Configure_:
         self.AR = None
         self.CMAKE = None
         self.CMakeGenerator = None  # --cmake-generator's (ninja, msbuild or make); None: ApplyConfiguration's default
+        self.THIRD_PARTY_SOURCES = True  # --third-party-sources
         self.LIBTOOL = None  # Windows format LIB tool
         self.RANLIB = None
         self.LINKER = None
@@ -1891,6 +1892,7 @@ class Configure_:
         w(Element("qFeatureFlag_libxml2", self.FEATUREFLAG_libxml2))
         w(Element("qFeatureFlag_ZLib", self.FEATUREFLAG_ZLib))
         w(Element("qFeatureFlag_zstd", self.FEATUREFLAG_zstd))
+        w(Element("ThirdPartySources", self.THIRD_PARTY_SOURCES))
         if self.gAssertionsEnabled is not None:
             w(Element("AssertionsEnabled", self.gAssertionsEnabled))
         w(Element("SanitizerFlags", "".join(v + " " for v in self.sanitizerFlags)))
@@ -2220,6 +2222,8 @@ OPTIONS_ = [
             SetTo_("DoSetThirdPartyComponentsParameterFromCommandLine", "fill-in-defaults")),
     Option_("no-third-party-components", None, "equivilent to --StrawberryPerl no --LibCurl no ...",
             SetTo_("DoSetThirdPartyComponentsParameterFromCommandLine", "none")),
+    Option_("third-party-sources", TRUE_FALSE_, "keep the third-party components' C and C++ sources - in their packages in Conan's cache, and in\nBuilds/<configuration>/src - where their debug information names them, for a debugger [default true]. About 120 MB a\nconfiguration; changing it builds the components again",
+            Set_("THIRD_PARTY_SOURCES")),
     Option_("trace2file", ENABLE_DISABLE_DEFAULT_, "Enables/disable trace2file feature",
             Set_("ENABLE_TRACE2FILE")),
     Option_("static-link-gccruntime", {"enable": True, "disable": False}, "Enables/disable gcc runtime static link (only applies if gcc family compiler)",

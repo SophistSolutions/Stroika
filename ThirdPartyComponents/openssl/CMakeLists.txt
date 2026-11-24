@@ -25,6 +25,12 @@ foreach (language_ IN ITEMS C CXX)
     string (REGEX REPLACE "(^| )-fsanitize=[^ ]*" "" flags_ "${STROIKA_PLATFORM_${language_}_FLAGS}")
     string (REGEX REPLACE "(^| )-flto( |$)" "\\1" ${language_}Flags_ "${flags_}")
 endforeach ()
+# and the debug information naming its sources where they will be once deployed - just its sources: it builds on no other
+# component, and it compiles its flags in, as its version information
+StroikaThirdPartyDebugPathFlags (debugPathFlags_ SOURCES_ONLY)
+list (JOIN debugPathFlags_ " " debugPathFlags_)
+string (APPEND CFlags_ " ${debugPathFlags_}")
+string (APPEND CXXFlags_ " ${debugPathFlags_}")
 set (ldFlags_)
 foreach (option_ IN LISTS STROIKA_LINK_OPTIONS)
     if (NOT option_ MATCHES "^-fsanitize=")

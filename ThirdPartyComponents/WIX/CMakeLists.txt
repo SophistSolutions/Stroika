@@ -13,4 +13,5 @@ StroikaThirdPartyComponent (WIX
     BUILD_COMMAND "${CMAKE_COMMAND}" -E true
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory <SOURCE_DIR> "${installDir_}"
             COMMAND "${CMAKE_COMMAND}" -E rm -rf "${installDir_}/doc" "${installDir_}/sdk"
+    NO_SOURCES
 )

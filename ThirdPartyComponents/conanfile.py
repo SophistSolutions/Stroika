@@ -19,7 +19,9 @@ Where the configuration and the build are - its toolchain file, the archives, cm
 Built in Conan's cache, it is installed into a directory there - which first holds the components it is built on, and the
 tools its build runs (as the configuration's Builds directory does, for a component built there), and gives its package
 just what its own install adds - packaged with that directory's path (stroika-install-prefix.txt), which StroikaDeploy.py,
-copying the package into a configuration's Builds directory, replaces in each text file by that directory.
+copying the package into a configuration's Builds directory, replaces in each text file by that directory. With the
+configuration's STROIKA_THIRD_PARTY_SOURCES, the package carries the component's sources too (src/<directory>), for its debug
+information to name once deployed (StroikaThirdPartyComponent.cmake).
 """
 
 import json
@@ -29,7 +31,7 @@ import shutil
 from conan import ConanFile
 from conan.tools.files import copy, save
 
-from StroikaDeploy import INSTALL_PREFIX_FILE, CopyPackage, Digest
+from StroikaDeploy import DEPLOY_DIR_PLACEHOLDER, INSTALL_PREFIX_FILE, CopyPackage, Digest
 
 _STAGED_FILE = "stroika-staged.json"
 
@@ -73,7 +75,7 @@ class StroikaThirdPartyComponent(ConanFile):
         # the components it is built on, and the tools its build runs, in its install directory, where its build finds them
         staged = {}
         for _, dependency in self.dependencies.items():
-            staged.update(CopyPackage(dependency.package_folder, self._installPrefix, self.output))
+            staged.update(CopyPackage(dependency.package_folder, self._installPrefix, self.output, deploying=False))
         save(self, os.path.join(self.build_folder, _STAGED_FILE), json.dumps(staged))
         # as ThirdPartyComponents/CMakeLists.txt builds it, with that build's cmake and generator (STROIKA_CONAN_CONF)
         def conf(name):
@@ -95,7 +97,7 @@ class StroikaThirdPartyComponent(ConanFile):
         build = os.path.join(self.build_folder, "build").replace("\\", "/")
         self.run(f'"{cmake}" {generator} -S "{self.source_folder}" -B "{build}"'
                  f' "-DCMAKE_TOOLCHAIN_FILE={conf("toolchain_file")}" "-DSTROIKA_ORIGS_CACHE={conf("origs_cache")}"'
-                 f' "-DSTROIKA_THIRD_PARTY_PREFIX={self._installPrefix}/"')
+                 f' "-DSTROIKA_THIRD_PARTY_PREFIX={self._installPrefix}/" "-DSTROIKA_THIRD_PARTY_DEPLOY_PLACEHOLDER={DEPLOY_DIR_PLACEHOLDER}"')
         # a multi-configuration generator's (Visual Studio's) build type, and its processors (msbuild -m), as the top
         # CMakeLists.txt builds the components
         self.run(f'"{cmake}" --build "{build}"' + (f' --config {conf("build_config")} --parallel' if conf("build_config") else ""))
@@ -115,4 +117,13 @@ class StroikaThirdPartyComponent(ConanFile):
                 destination = os.path.join(self.package_folder, relative)
                 os.makedirs(os.path.dirname(destination), exist_ok=True)
                 shutil.copy2(source, destination, follow_symlinks=False)
+        # its sources, as src/<directory>, where its debug information names them once deployed - those of its binary
+        # directory's files that the build listed (StroikaThirdPartyComponent.cmake: none, without STROIKA_THIRD_PARTY_SOURCES)
+        directory = self._directory(self.source_folder)
+        binary = os.path.join(self.build_folder, "build", directory)
+        listed = os.path.join(binary, "package-sources.txt")
+        if os.path.isfile(listed):
+            with open(listed) as f:
+                for pattern in filter(None, (line.strip() for line in f)):
+                    copy(self, pattern, binary, os.path.join(self.package_folder, "src", directory), excludes=("*/CMakeFiles/*",))
         save(self, os.path.join(self.package_folder, INSTALL_PREFIX_FILE), self._installPrefix)

@@ -191,10 +191,12 @@ jobs:
         run: |
           echo "CONAN_HOME=$GITHUB_WORKSPACE/.conan-home" >> "$GITHUB_ENV"
           echo "CONAN_CACHE_RESTORED_AT=$(date +%s)" >> "$GITHUB_ENV"
+      # without the third-party components' sources (--third-party-sources): no one debugs here, and they would grow the
+      # Conan cache GitHub keeps for each job
       - name: Configure ${{ matrix.config_name }}
         run: |
           Build/Scripts/MakeBuildRoot
-          ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
+          ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }} --third-party-sources false
           cat IntermediateFiles/ConfigurationFiles/${{ matrix.config_name }}.xml
       # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
       # to show the summary time for each part
@@ -363,9 +365,10 @@ jobs:
         run: |
           echo "CONAN_HOME=$GITHUB_WORKSPACE/.conan-home" >> "$GITHUB_ENV"
           echo "CONAN_CACHE_RESTORED_AT=$(date +%s)" >> "$GITHUB_ENV"
+      # as for Linux: without the third-party components' sources
       - name: Configure
         run: |
-          ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}
+          ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }} --third-party-sources false
           cat IntermediateFiles/ConfigurationFiles/${{ matrix.config_name }}.xml
       - name: Build third-party-components
         run: |
@@ -518,10 +521,11 @@ jobs:
           docker exec buildContainer systeminfo
           docker exec buildContainer echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
           docker exec buildContainer df -h
+      # as for Linux: without the third-party components' sources
       - name: Configure
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika buildContainer sh -c "Build/Scripts/MakeBuildRoot && ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir c:/Stroika buildContainer sh -c "Build/Scripts/MakeBuildRoot && ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }} --third-party-sources false"
           docker exec --workdir c:/Stroika buildContainer cat IntermediateFiles/ConfigurationFiles/${{ matrix.config_name }}.xml
       #   Each step's timeout-minutes ends a hung step (no output, make never returns) well before the job's: 2x the longest
       #   legitimate step (59 min, Build Library and Tools - Oct/Nov 2026, ~800 jobs).

@@ -345,6 +345,9 @@ def StroikaConfigurationText_(c):
     for feature in ("ATLMFC", "boost", "fmtlib", "GoogleTest", "LibCurl", "LZMA", "mongocxxdriver", "OpenSSL", "sqlite", "StrawberryPerl",
                     "WinHTTP", "WIX", "Xerces", "libxml2", "ZLib", "zstd"):
         w("set(STROIKA_FEATURE_" + feature + " " + CMakeString_(c.G("qFeatureFlag_" + feature)) + ")\n")
+    w("# whether each component's package keeps its sources, deployed into Builds/<configuration>/src, for a debugger -\n")
+    w("# configure's --third-party-sources (ON in a configuration made before it)\n")
+    w("set(STROIKA_THIRD_PARTY_SOURCES " + ("OFF" if c.G("ThirdPartySources") == "0" else "ON") + ")\n")
     w("\n")
     w("# Foundation's preprocessor definitions and include directories, and the platform's include directories\n")
     w("set(STROIKA_FOUNDATION_DEFINITIONS " + items(f[2:] for f in foundationFlags if f.startswith("-D")) + ")\n")

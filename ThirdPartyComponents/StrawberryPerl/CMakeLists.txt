@@ -12,4 +12,5 @@ StroikaThirdPartyComponent (StrawberryPerl
     CONFIGURE_COMMAND "${CMAKE_COMMAND}" -E true
     BUILD_COMMAND "${CMAKE_COMMAND}" -E true
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory <SOURCE_DIR>/perl "${STROIKA_BUILDS_DIR}StrawberryPerl/perl"
+    NO_SOURCES
 )

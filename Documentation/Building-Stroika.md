@@ -401,7 +401,15 @@ not copied into `Builds`.
 - Builds sharing the cache take turns at Conan's steps (a lock in its home): one needing a package another is building waits,
   then finds it in the cache.
 - Conan keeps the components' packages, not their builds: their build and source folders are removed once packaged (as
-  `make clean` removes a component's own) - so a component's debug information names sources that are gone.
+  `make clean` removes a component's own). But a package keeps the component's C and C++ sources, copied with it into
+  `Builds/<configuration>/src/<component>`, and its debug information names them there - so a debugger steps into a
+  component with nothing set up (the debug information is written over as it is copied: `ThirdPartyComponents/StroikaDeploy.py`).
+  Except where it cannot be written over - gcc's LTO, in a Release build, keeps the names in its own compressed code - and
+  so names them by a stand-in, `/StroikaDeployDirectory___...`. For that, each configuration has a file mapping it to its
+  `Builds` directory, for the debugger to read: `source Builds/<configuration>/ThirdPartySources.gdb` in gdb (in VS Code's
+  `launch.json`, a `setupCommands` entry), `command source Builds/<configuration>/ThirdPartySources.lldb` in lldb (CodeLLDB's
+  `initCommands`). The sources take about 120 MB a configuration, in Conan's cache and again in each tree; configure's
+  `--third-party-sources false` leaves them out (CI does), at the cost of building the configuration's components again.
 
 ---
 

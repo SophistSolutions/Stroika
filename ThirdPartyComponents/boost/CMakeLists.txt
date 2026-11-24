@@ -22,8 +22,21 @@ else ()
     set (cFlags_ "${CMAKE_C_FLAGS}")
     set (cxxFlags_ "${CMAKE_CXX_FLAGS}")
 endif ()
+# And the debug information naming its sources where they will be once deployed - its headers as include/boost, where its
+# install copies them, so not packaged again (PACKAGE_SOURCES, below) - each \ a /: user-config.jam's strings take \ as an
+# escape, and MSVC's -pathmap matches a directory written with either. Its assembler sources (context's) too, but for MSVC's
+# assembler, which takes no -pathmap.
+StroikaThirdPartyDebugPathFlags (debugPathFlags_ MAP src/boost include/boost)
+list (JOIN debugPathFlags_ " " debugPathFlags_)
+string (REPLACE "\\" "/" debugPathFlags_ "${debugPathFlags_}")
+string (APPEND cFlags_ " ${debugPathFlags_}")
+string (APPEND cxxFlags_ " ${debugPathFlags_}")
+set (asmFlags_)
+if (NOT toolset_ STREQUAL "msvc")
+    set (asmFlags_ "${debugPathFlags_}")
+endif ()
 file (CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/user-config.jam" @ONLY
-    CONTENT "using ${toolset_} : : \"${CMAKE_CXX_COMPILER}\" : <cflags>\"${cFlags_}\" <cxxflags>\"${cxxFlags_}\" <linkflags>\"\" ;\n")
+    CONTENT "using ${toolset_} : : \"${CMAKE_CXX_COMPILER}\" : <cflags>\"${cFlags_}\" <cxxflags>\"${cxxFlags_}\" <asmflags>\"${asmFlags_}\" <linkflags>\"\" ;\n")
 
 # --hash: b2 names its build directories by a hash, not by their properties - else too long for Windows
 set (b2Args_ toolset=${toolset_} link=static runtime-link=static threading=multi --layout=system
@@ -81,6 +94,9 @@ StroikaThirdPartyComponent (boost
     BUILD_COMMAND ${build_}
     INSTALL_COMMAND ${afterInstall_}
     DEPENDS zlib zstd
+    # its libraries' sources - not its headers, nor its tests, examples and documentation - and their build directories (small:
+    # build files), which some name their sources through (libs/math/build/../src/tr1/acosh.cpp)
+    PACKAGE_SOURCES "src/libs/*/src/*" "src/libs/*/build/*"
 )
 # Built again when its flags change - in user-config.jam, not its build's command line, which ExternalProject compares - and
 # from the start (its build first removes b2's, bin.v2): b2 takes no object as out of date for flags changed there.
