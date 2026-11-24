@@ -20,12 +20,16 @@ add_subdirectory (QuasarBasedHTMLApp)
 set (html_ "${STROIKA_BUILDS_DIR}Samples-HTMLUI/html") # the web app, as QuasarBasedHTMLApp/ builds it
 
 # beside the backend, html: a link to the web app it serves (from GetEXEDir ()/html), as its Makefile links it - or a copy,
-# where Windows makes no symbolic link (without Developer Mode)
-add_custom_target (HTMLUI-html-link ALL
+# where Windows makes no symbolic link (without Developer Mode); made again when the web app is built again (its stamp)
+set (linkStamp_ "${CMAKE_CURRENT_BINARY_DIR}/html-link.stamp")
+add_custom_command (OUTPUT "${linkStamp_}"
     COMMAND "${CMAKE_COMMAND}" "-DTARGET=${html_}" "-DLINK=${STROIKA_BUILDS_DIR}Samples-HTMLUI/Backend/html"
             -P "${CMAKE_CURRENT_SOURCE_DIR}/Backend/LinkHTML.cmake"
+    COMMAND "${CMAKE_COMMAND}" -E touch "${linkStamp_}"
+    DEPENDS "${webAppStamp_}" "${CMAKE_CURRENT_SOURCE_DIR}/Backend/LinkHTML.cmake"
     VERBATIM
 )
+add_custom_target (HTMLUI-html-link ALL DEPENDS "${linkStamp_}")
 add_dependencies (HTMLUI-html-link HTMLUI HTMLUI-html)
 
 # its installers: the backend, and beside it the web app it serves (the .msi's, Installers/AddWebAppToWIX.cmake adds) - so
