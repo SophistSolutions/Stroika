@@ -178,17 +178,19 @@ jobs:
           echo "After cleanup:" ; df -h
       # Conan's cache (Building-Stroika.md, "Conan's cache") from this job's last run, so the third-party components it built
       # are not built again - kept in the checkout (.conan-home), where both the steps (in the container) and the cache
-      # actions find it: saved under a key for the packages it holds, after third-party-components, and restored from this
-      # job's newest.
+      # actions find it: each matrix entry's own (named for its displayTargetName: a package is built for one configuration,
+      # so jobs on one image share none), saved under a key for the packages it holds, after third-party-components, and
+      # restored from this job's newest.
       - name: Restore Conan's cache
         uses: actions/cache/restore@v6
         with:
           path: .conan-home
-          key: conan-${{ matrix.container_image }}-${{ matrix.config_name }}-${{ github.sha }}
-          restore-keys: conan-${{ matrix.container_image }}-${{ matrix.config_name }}-
+          key: conan-${{ matrix.displayTargetName }}-${{ github.sha }}
+          restore-keys: conan-${{ matrix.displayTargetName }}-
       - name: Conan's cache, in the checkout
         run: |
           echo "CONAN_HOME=$GITHUB_WORKSPACE/.conan-home" >> "$GITHUB_ENV"
+          echo "CONAN_CACHE_RESTORED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - name: Configure ${{ matrix.config_name }}
         run: |
           Build/Scripts/MakeBuildRoot
@@ -199,15 +201,19 @@ jobs:
       - name: Make third-party-components
         run: |
           make third-party-components
-      # its packages, not their build and source folders; a run that built none saves nothing (its key is there already)
+      # the packages this run used - not the others (conan remove --lru: a build touches the folder of each recipe and package
+      # it uses), nor their build and source folders; a run that changed none saves nothing (its key is there already)
       - name: Conan's cache, to save
         run: |
+          unused_for=$(( ($(date +%s) - CONAN_CACHE_RESTORED_AT) / 60 + 1 ))m
+          conan remove "*#*:*" --lru=$unused_for --confirm
+          conan remove "*#*" --lru=$unused_for --confirm
           conan cache clean "*" --source --build --temp
       - name: Save Conan's cache
         uses: actions/cache/save@v6
         with:
           path: .conan-home
-          key: conan-${{ matrix.container_image }}-${{ matrix.config_name }}-${{ hashFiles('.conan-home/p/**/conaninfo.txt') }}
+          key: conan-${{ matrix.displayTargetName }}-${{ hashFiles('.conan-home/p/**/conaninfo.txt') }}
       - name: Copy Build Artifacts (third-party-components Log Data etc)
         if: always()
         run: |
@@ -351,11 +357,12 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: .conan-home
-          key: conan-${{ matrix.runs_on }}-${{ matrix.config_name }}-${{ github.sha }}
-          restore-keys: conan-${{ matrix.runs_on }}-${{ matrix.config_name }}-
+          key: conan-${{ matrix.displayTargetName }}-${{ github.sha }}
+          restore-keys: conan-${{ matrix.displayTargetName }}-
       - name: Conan's cache, in the checkout
         run: |
           echo "CONAN_HOME=$GITHUB_WORKSPACE/.conan-home" >> "$GITHUB_ENV"
+          echo "CONAN_CACHE_RESTORED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - name: Configure
         run: |
           ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}
@@ -364,14 +371,18 @@ jobs:
         run: |
           make third-party-components
           make clean
+      # as for Linux: the packages this run used
       - name: Conan's cache, to save
         run: |
+          unused_for=$(( ($(date +%s) - CONAN_CACHE_RESTORED_AT) / 60 + 1 ))m
+          conan remove "*#*:*" --lru=$unused_for --confirm
+          conan remove "*#*" --lru=$unused_for --confirm
           conan cache clean "*" --source --build --temp
       - name: Save Conan's cache
         uses: actions/cache/save@v6
         with:
           path: .conan-home
-          key: conan-${{ matrix.runs_on }}-${{ matrix.config_name }}-${{ hashFiles('.conan-home/p/**/conaninfo.txt') }}
+          key: conan-${{ matrix.displayTargetName }}-${{ hashFiles('.conan-home/p/**/conaninfo.txt') }}
       - name: Build Library and Tools
         run: |
           make libraries tools
@@ -486,8 +497,12 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: .conan-home
-          key: conan-${{ matrix.container_image }}-${{ matrix.config_name }}-${{ github.sha }}
-          restore-keys: conan-${{ matrix.container_image }}-${{ matrix.config_name }}-
+          key: conan-${{ matrix.displayTargetName }}-${{ github.sha }}
+          restore-keys: conan-${{ matrix.displayTargetName }}-
+      - name: Conan's cache, restored at
+        shell: "bash"
+        run: |
+          echo "CONAN_CACHE_RESTORED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - name: Start docker build environment
         shell: "bash"
         # docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
@@ -515,16 +530,19 @@ jobs:
         timeout-minutes: 120
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make libraries tools
-      # the third-party components were built with the libraries
+      # as for Linux: the packages this run used (the third-party components were built with the libraries)
       - name: Conan's cache, to save
         shell: "bash"
         run: |
+          unused_for=$(( ($(date +%s) - CONAN_CACHE_RESTORED_AT) / 60 + 1 ))m
+          docker exec buildContainer conan remove "*#*:*" --lru=$unused_for --confirm
+          docker exec buildContainer conan remove "*#*" --lru=$unused_for --confirm
           docker exec buildContainer conan cache clean "*" --source --build --temp
       - name: Save Conan's cache
         uses: actions/cache/save@v6
         with:
           path: .conan-home
-          key: conan-${{ matrix.container_image }}-${{ matrix.config_name }}-${{ hashFiles('.conan-home/p/**/conaninfo.txt') }}
+          key: conan-${{ matrix.displayTargetName }}-${{ hashFiles('.conan-home/p/**/conaninfo.txt') }}
       - name: Build Samples
         shell: "bash"
         timeout-minutes: 120
