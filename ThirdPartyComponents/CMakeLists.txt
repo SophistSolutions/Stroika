@@ -23,7 +23,17 @@ include ("${CMAKE_CURRENT_SOURCE_DIR}/StroikaThirdPartyComponent.cmake")
 # this build tree.
 #
 set (STROIKA_THIRD_PARTY_FROM_CONAN zlib zstd StrawberryPerl openssl curl boost mongo-cxx-driver libxml2 Xerces sqlite lzma fmtlib GoogleTest WIX)
-if (STROIKA_THIRD_PARTY_FROM_CONAN)
+# Conan, where the configuration builds a component (configure's --<component> use): one that builds none - each no, or
+# use-system - needs no Conan installed. make checks for it by the same rule (check-prerequisite-tools-current-configuration).
+get_cmake_property (variables_ VARIABLES)
+list (FILTER variables_ INCLUDE REGEX "^STROIKA_FEATURE_")
+set (buildsComponents_ OFF)
+foreach (variable_ IN LISTS variables_)
+    if ("${${variable_}}" STREQUAL "use")
+        set (buildsComponents_ ON)
+    endif ()
+endforeach ()
+if (buildsComponents_ AND STROIKA_THIRD_PARTY_FROM_CONAN)
     find_program (STROIKA_CONAN conan REQUIRED)
     # The configuration, to Conan (conanfile.py's option "configuration"): a digest of its toolchain file and Stroika settings,
     # less what names this build tree or the configuration - their paths, its name and file - so the same configuration in

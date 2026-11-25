@@ -394,7 +394,7 @@ component for its version, its recipe's files, and the configuration's toolchain
 those builds it again; renaming the configuration, or moving the tree, does not. A component built on others (curl on
 OpenSSL, say) is kept for theirs too, and built again with them. WIX, the Windows tool that builds the samples' installers,
 is copied into `Builds/<configuration>/bin/WIX`; StrawberryPerl, the perl OpenSSL's Windows build runs, Conan keeps as a tool,
-not copied into `Builds`.
+not copied into `Builds`. A configuration that builds no component - each `no`, or `use-system` - needs no Conan.
 
 - The cache is Conan's own - `~/.conan2`, or `$CONAN_HOME` - shared by all the user's build trees. To build the components
   again anyway: `conan remove "stroika-*" --confirm`.

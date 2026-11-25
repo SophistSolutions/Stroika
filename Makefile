@@ -313,6 +313,15 @@ endif
 		echo; $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool cmake; echo "    (the configuration's: $$cmake_)"; exit 1;\
 	fi
 	@$(ECHO) done
+	@# conan, where the configuration builds a third-party component (configure's --<component> use): Conan builds them, and
+	@# keeps them in its cache (ThirdPartyComponents/CMakeLists.txt, by the same rule). Probed, as on MSYS2 an old pip install
+	@# of it can be found first and fail (Installing-Required-Tools.md). The Windows-MSYS Dockerfile's check of it is its own
+	@# RUN's conan --version.
+	@if grep -q '>use</qFeatureFlag_' "$(StroikaConfigurationFilesDir)$(CONFIGURATION).xml"; then\
+		$(StroikaSourceRoot)Build/Scripts/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Check-Prerequisite-Tools {$(CONFIGURATION)}: conan ... ";\
+		if ! conan --version > /dev/null 2>&1; then echo; $(StroikaSourceRoot)Build/Scripts/GetMessageForMissingTool conan; exit 1; fi;\
+		$(ECHO) done;\
+	fi
 	@mkdir -p $(StroikaIntermediateFilesRoot)$(CONFIGURATION); touch $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/TOOLS_CHECKED
 
 
