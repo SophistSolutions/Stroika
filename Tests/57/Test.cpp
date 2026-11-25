@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
+#include <thread>
 
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/Property.h"
@@ -953,6 +954,35 @@ namespace {
         releaseHandlers.Set ();
         EXPECT_TRUE (ReadUntilEndsWith_ (a, "done"sv).has_value ());
         EXPECT_TRUE (ReadUntilEndsWith_ (b, "done"sv).has_value ());
+    }
+
+    /*
+     *  Connection::stats, asked on another thread - as ConnectionManager::statistics () asks it - while the connection's own
+     *  thread changes its socket (sets an option; shuts it down, closes it): stats reports the socket as the connection was
+     *  made, without using it.
+     */
+    GTEST_TEST (Frameworks_WebServer, ConnectionStatsWhileItsSocketChanges_)
+    {
+        TraceContextBumper ctx{"ConnectionStatsWhileItsSocketChanges_"};
+        namespace ConnectionOrientedStreamSocket = IO::Network::ConnectionOrientedStreamSocket;
+        auto [serverSide, clientSide]            = ConnectionOrientedStreamSocket::NewPair ();
+        WebServer::Connection connection{serverSide, WebServer::Connection::Options{}};
+        const auto            socketID = serverSide.GetNativeSocket ();
+        atomic<bool>          stop{false};
+        atomic<unsigned int>  wrongIDs{0};
+        std::thread           statsReader{[&connection, socketID, &stop, &wrongIDs] () {
+            while (not stop) {
+                if (connection.stats ().fSocketID != socketID) {
+                    ++wrongIDs;
+                }
+            }
+        }};
+        for (Time::TimePointSeconds until = Time::GetTickCount () + 1s; Time::GetTickCount () < until;) {
+            serverSide.SetTCPNoDelay (true); // takes the socket's write lock, as Shutdown and Close do
+        }
+        stop = true;
+        statsReader.join ();
+        EXPECT_EQ (wrongIDs, 0u);
     }
 }
 #endif

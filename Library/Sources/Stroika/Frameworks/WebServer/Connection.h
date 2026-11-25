@@ -409,10 +409,13 @@ namespace Stroika::Frameworks::WebServer {
         const optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
         const Time::DurationSeconds                            fIdleConnectionTimeout_;
         const ConnectionOrientedStreamSocket::Ptr              fSocket_;
-        Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
-        const TimePointSeconds                                 fConnectionStartedAt_{};
-        TimePointSeconds                                       fIdleSince_{};
-        optional<TimePointSeconds>                             fIncompleteHeaderSince_; // @see GetIncompleteHeaderSince
+        // fSocket_'s native socket, as the connection was made: what stats reports - on any thread, so without using fSocket_,
+        // whose rep this connection's own thread changes (sets options, shuts down, closes)
+        const Socket::PlatformNativeHandle    fSocketID_;
+        Streams::InputOutputStream::Ptr<byte> fSocketStream_;
+        const TimePointSeconds                fConnectionStartedAt_{};
+        TimePointSeconds                      fIdleSince_{};
+        optional<TimePointSeconds>            fIncompleteHeaderSince_; // @see GetIncompleteHeaderSince
         // replaced for each request - but kept, between ReadAndProcessMessage calls, while its header has come only in part (so
         // its response is not completed): it holds what was read of it
         unique_ptr<MyMessage_>    fMessage_;

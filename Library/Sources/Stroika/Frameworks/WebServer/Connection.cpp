@@ -234,8 +234,8 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
         // NO - INTERNALLY SYNCHRONIZED!!! AssertExternallySynchronizedChecker::ReadContext declareContext{*thisObj};
         // typically called from thread OTHER than the one filling in these variables
-        auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without synchronization
-        TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
+        auto             uniqueID = thisObj->fSocketID_;            // const, set as constructed - not fSocket_, which other threads change
+        TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // const too
 #if qStroika_Frameworks_WebServer_Connection_TrackExtraStats
         Stats2Capture_ statsCapturedDuringMessageProcessing = thisObj->fExtraStats_.load ();
         using State                                         = Stats::State;
@@ -308,6 +308,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , fSupportedCompressionEncodings_{options.fSupportedCompressionEncodings}
     , fIdleConnectionTimeout_{options.fIdleConnectionTimeout}
     , fSocket_{s}
+    , fSocketID_{s.GetNativeSocket ()}
     , fConnectionStartedAt_{Time::GetTickCount ()}
     , fIdleSince_{fConnectionStartedAt_}
 {
