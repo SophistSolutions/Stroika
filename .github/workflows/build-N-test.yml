@@ -369,7 +369,6 @@ jobs:
       - name: Build third-party-components
         run: |
           make third-party-components
-          make clean
       # as for Linux: the packages this run used
       - name: Conan's cache, to save
         run: |
@@ -382,6 +381,15 @@ jobs:
         with:
           path: .conan-home
           key: conan-${{ matrix.displayTargetName }}-${{ hashFiles('.conan-home/p/**/conaninfo.txt') }}
+      # as for Linux: each component's log, before make clean deletes it
+      - name: Copy Build Artifacts (third-party-components Log Data)
+        if: always()
+        run: |
+          mkdir -p /tmp/LOGS-ARCHIVE
+          cp -R IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents /tmp/LOGS-ARCHIVE/ 2>/dev/null || :
+      - name: Save space
+        run: |
+          make clean
       - name: Build Library and Tools
         run: |
           make libraries tools
@@ -408,14 +416,8 @@ jobs:
       - name: Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
         if: always()
         run: |
-          mkdir /tmp/LOGS-ARCHIVE
-          cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE || :
-      # as for Linux: each component's log
-      - name: Copy Build Artifacts (third-party-components Log Data)
-        if: always()
-        run: |
           mkdir -p /tmp/LOGS-ARCHIVE
-          cp -R IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents /tmp/LOGS-ARCHIVE/ 2>/dev/null || :
+          cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE || :
       - name: Build System Info
         run: |
           df -h
@@ -684,6 +686,14 @@ jobs:
     - name: Make third-party-components
       run: |
         make third-party-components
+    # as for Linux: each component's log, before make clean deletes it
+    - name: Copy Build Artifacts (third-party-components Log Data)
+      if: always()
+      run: |
+        mkdir -p "${RUNNER_TEMP}/BUILD_LOGS"
+        cp -R IntermediateFiles/Release/ThirdPartyComponents "${RUNNER_TEMP}/BUILD_LOGS/" 2>/dev/null || :
+    - name: Save space
+      run: |
         make clean
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -696,12 +706,6 @@ jobs:
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
     - name: Make Stroika
       run: make all
-    # as for Linux: each component's log
-    - name: Copy Build Artifacts (third-party-components Log Data)
-      if: always()
-      run: |
-        mkdir -p "${RUNNER_TEMP}/BUILD_LOGS"
-        cp -R IntermediateFiles/Release/ThirdPartyComponents "${RUNNER_TEMP}/BUILD_LOGS/" 2>/dev/null || :
     - name: Archive Log Data
       if: always()
       uses: actions/upload-artifact@v7
