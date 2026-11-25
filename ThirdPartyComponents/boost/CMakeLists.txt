@@ -23,12 +23,14 @@ else ()
     set (cxxFlags_ "${CMAKE_CXX_FLAGS}")
 endif ()
 # And the debug information naming its sources where they will be once deployed - its headers as include/boost, where its
-# install copies them, so not packaged again (PACKAGE_SOURCES, below) - each \ a /: user-config.jam's strings take \ as an
-# escape, and MSVC's -pathmap matches a directory written with either. Its assembler sources (context's) too, but for MSVC's
-# assembler, which takes no -pathmap.
+# install copies them, so not packaged again (PACKAGE_SOURCES, below). Its assembler sources (context's) too, but for MSVC's
+# assembler, which takes no -pathmap. Each \ doubled: user-config.jam's strings take \ as an escape. Not each \ a /, though
+# -pathmap matches either: MSVC 19.52 (not 19.44), with link-time code generation (-GL), then fails creating a precompiled
+# header (-Yc) in a directory a -pathmap names - math's, in bin.v2 - opening it by the directory as the map spells it:
+#   fatal error C1083: Cannot open compiler intermediate file: 'C:/.../bin.v2\libs\math\build\<hash>\pch.pch': No such file or directory
 StroikaThirdPartyDebugPathFlags (debugPathFlags_ MAP src/boost include/boost)
 list (JOIN debugPathFlags_ " " debugPathFlags_)
-string (REPLACE "\\" "/" debugPathFlags_ "${debugPathFlags_}")
+string (REPLACE "\\" "\\\\" debugPathFlags_ "${debugPathFlags_}")
 string (APPEND cFlags_ " ${debugPathFlags_}")
 string (APPEND cxxFlags_ " ${debugPathFlags_}")
 set (asmFlags_)
@@ -66,16 +68,6 @@ if (toolset_ STREQUAL "msvc")
         list (APPEND b2Args_ address-model=32)
     else ()
         list (APPEND b2Args_ address-model=64)
-    endif ()
-    # MSVC 19.52 (not 19.44), with link-time code generation (-GL), fails creating a precompiled header (-Yc) where a -pathmap
-    # (StroikaThirdPartyDebugPathFlags) covers the directory it goes in - math's, in bin.v2:
-    #   fatal error C1083: Cannot open compiler intermediate file: '...\bin.v2\libs\math\build\<hash>\pch.pch': No such file or directory
-    # Built without precompiled headers there.
-    if (cxxFlags_ MATCHES "(^| )[-/]GL( |$)")
-        execute_process (COMMAND "${CMAKE_CXX_COMPILER}" OUTPUT_QUIET ERROR_VARIABLE banner_)
-        if (banner_ MATCHES "Version ([0-9]+\\.[0-9]+)" AND CMAKE_MATCH_1 VERSION_EQUAL 19.52)
-            list (APPEND b2Args_ pch=off)
-        endif ()
     endif ()
     list (JOIN b2Args_ " " b2Args_)
     StroikaVisualStudioCommand (configure_ configure "cd tools\\build
