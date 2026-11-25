@@ -706,6 +706,12 @@ jobs:
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
     - name: Make Stroika
       run: make all
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v4
+      with:
+        output: ${{ runner.temp }}/codeql-results
+    # with CodeQL's own: its results (SARIF - the code scanning upload omits its extraction diagnostics: which files its C++
+    # front end failed on, and why) and its extractor's and tracer's logs
     - name: Archive Log Data
       if: always()
       uses: actions/upload-artifact@v7
@@ -715,8 +721,10 @@ jobs:
         path: |
           IntermediateFiles/Release/CMake/Samples/**/*-Installer-Build-Output.txt
           ${{ runner.temp }}/BUILD_LOGS
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
+          ${{ runner.temp }}/codeql-results
+          ${{ runner.temp }}/codeql_databases/log
+          ${{ runner.temp }}/codeql_databases/cpp/log
+          ${{ runner.temp }}/codeql_databases/cpp/diagnostic
 
   doxygen:
     runs-on: ubuntu-latest
