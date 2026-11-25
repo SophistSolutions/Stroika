@@ -2,6 +2,12 @@
 
 Rough steps I go through do do each release (rough draft)
 
+## Before starting: third-party components up to date
+
+Some days before, update each third-party component to its latest version (`version_`, at the top of
+`ThirdPartyComponents/<component>/CMakeLists.txt`), so CI and a night's regression runs have tried them before the release
+builds. Change them together: a new version rebuilds that component, and every one built on it, in each tree and CI cache.
+
 ## Release notes
 
 Built purely from the commits since the last release (its tag - the same as `v3-Release...HEAD` while v3-Release is that release):
