@@ -4,13 +4,17 @@
 //  TEST    Foundation::Caching
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <atomic>
 #include <iostream>
 #include <random>
+#include <thread>
+#include <utility>
 
 #include "Stroika/Foundation/Cache/BloomFilter.h"
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/Memoizer.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"
+#include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -703,6 +707,45 @@ namespace {
         s.IncrementHits ();
         s.IncrementMisses ();
         EXPECT_EQ (s.ToString (), "{ hits: 1, misses: 1, hit%: 0.5 }");
+    }
+}
+
+namespace {
+    /*
+     *  A SynchronizedTimedCache, used from several threads at once: each Lookup, LookupValue, GetExpiration and Add - keyless and
+     *  keyed - takes the cache's lock. The values are Collections, whose Debug checks abort a read of one that overlaps a write;
+     *  in a Release build an unlocked read could copy a rep another thread is freeing.
+     */
+    GTEST_TEST (Foundation_Caching, SynchronizedTimedCacheOnThreads_)
+    {
+        using Containers::Collection;
+        using Time::DurationSeconds;
+        SynchronizedTimedCache<void, Collection<int>> keyless;
+        SynchronizedTimedCache<int, Collection<int>>  keyed;
+        atomic<int>                                   fills{0};
+        auto                                          filled = [&fills] () { return Collection<int>{1, 2, 3, ++fills}; };
+        vector<std::thread>                           threads;
+        for (int t = 0; t < 8; ++t) {
+            threads.emplace_back ([&keyless, &keyed, &filled, key = t % 3] () {
+                const auto stopAt = chrono::steady_clock::now () + 1s;
+                while (chrono::steady_clock::now () < stopAt) {
+                    (void)keyless.LookupValue (DurationSeconds{0.001}, filled);
+                    (void)keyless.Lookup ();
+                    (void)as_const (keyless).Lookup ();
+                    (void)keyless.GetExpiration ();
+                    keyless.Add (filled ());
+                    (void)keyed.LookupValue (key, DurationSeconds{0.001}, [&filled] (int) { return filled (); });
+                    (void)keyed.Lookup (key);
+                    (void)keyed.Lookup (key, DurationSeconds{0.001});
+                    (void)keyed.GetExpiration (key);
+                    keyed.Add (key, filled ());
+                }
+            });
+        }
+        for (std::thread& th : threads) {
+            th.join ();
+        }
+        EXPECT_GT (fills, 0);
     }
 }
 #endif

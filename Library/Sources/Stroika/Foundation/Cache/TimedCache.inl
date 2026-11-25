@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Cache {
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup () const
     {
         shared_lock critSec{fMaybeMutex_};
-        if (optional<VALUE> ov = fData_) {
+        if (optional<MyResult_> ov = fData_) {
             if (Expired_ (*ov)) {
                 /*
                  *  Cannot update fData_ to indicate item expired const constant overload
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Cache {
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup ()
     {
         scoped_lock critSec{fMaybeMutex_};
-        if (optional<VALUE> ov = fData_) {
+        if (optional<MyResult_> ov = fData_) {
             if (Expired_ (*ov)) {
                 /*
                  *  since expired, remove from cache
@@ -290,6 +290,7 @@ namespace Stroika::Foundation::Cache {
         requires (not IKeyedCache<K> and TRAITS::kTrackFreshness)
     inline optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (TimeStampDifferenceType maxAge) const
     {
+        shared_lock critSec{fMaybeMutex_};
         if (optional<MyResult_> ov = fData_) {
             TimeStampType now = TRAITS::GetCurrentTimestamp ();
             if (ov->fLastRefreshedAt + maxAge <= now) {
@@ -489,24 +490,23 @@ namespace Stroika::Foundation::Cache {
     auto TimedCache<KEY, VALUE, TRAITS>::GetExpiration () const -> optional<TimeStampType>
         requires (not IKeyedCache<K>)
     {
-        if (optional<MyResult_> ov = fData_) {
-            if (Expired_ (*ov)) {
-                /*
-                 *  Cannot update fData_ to indicate item expired const constant overload
-                 */
-                fStats_.IncrementMisses ();
-                return nullopt;
-            }
-            fStats_.IncrementHits ();
-            return ov->fResult;
+        shared_lock critSec{fMaybeMutex_};
+        if (not fData_ or Expired_ (*fData_)) {
+            return nullopt;
         }
-        return nullopt;
+        if constexpr (kTrackExpiration) {
+            return fData_->fExpiresAt;
+        }
+        else if constexpr (kTrackFreshness) {
+            return fData_->fLastRefreshedAt + GetMaxAge_ ();
+        }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::GetExpiration (typename Common::ArgByValueType<K> key) const -> optional<TimeStampType>
         requires (IKeyedCache<K>)
     {
+        shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i = fData_.find (key);
         if (i == fData_.end ()) {
             return nullopt;
