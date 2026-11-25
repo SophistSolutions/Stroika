@@ -54,9 +54,12 @@ def CopyPackage(package, target, output, deploying=True):
     # writes a path as the file system spells it (C:/stroika/.conan-home), which need not be as Conan was given it (CONAN_HOME
     # c:/Stroika/.conan-home)
     flags = re.IGNORECASE if os.sep == "\\" else 0
-    replacements = [(re.compile(re.escape(prefix.encode()), flags), target.encode())]
+    # Not where it is the directory a -pathmap maps: MSVC's link-time code generation (-GL) keeps each object's compiler
+    # options in it, for the link to apply - our -pathmap among them, the map's own text, not a path anything opens
+    notMapped = rb"(?<![-/]pathmap:)"
+    replacements = [(re.compile(notMapped + re.escape(prefix.encode()), flags), target.encode())]
     if os.sep == "\\":
-        replacements.append((re.compile(re.escape(prefix.replace("/", "\\").encode()), flags), target.replace("/", "\\").encode()))
+        replacements.append((re.compile(notMapped + re.escape(prefix.replace("/", "\\").encode()), flags), target.replace("/", "\\").encode()))
     # the placeholder, and its replacement in a binary file: target, and more separators after it to the placeholder's
     # length - /a/b////src/x.c is /a/b/src/x.c
     placeholder = DEPLOY_DIR_PLACEHOLDER.encode()
