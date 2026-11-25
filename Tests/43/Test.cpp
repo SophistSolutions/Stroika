@@ -14,6 +14,7 @@
 #include <net/if.h>
 #include <netinet/in.h>
 #include <sys/resource.h>
+#include <sys/select.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #if qStroika_Platform_Linux
@@ -1490,6 +1491,57 @@ namespace {
 
         release (); // a descriptor frees: the Listener takes the waiting connection
         EXPECT_NO_THROW (accepted.Wait (5s));
+    }
+#endif
+
+#if qStroika_Platform_POSIX
+    // A socket numbered FD_SETSIZE (1024) or more - in a process with that many files open, where its limit allows that (docker's
+    // does) - connects with a timeout, and says what it can read, as any other: no wait uses select (), whose fd_set holds only
+    // FD_SETSIZE descriptors - for such a socket, FD_SET writes past it
+    GTEST_TEST (Foundation_IO_Network, SocketNumberedAboveFD_SETSIZE_)
+    {
+        Debug::TraceContextBumper           ctx{"SocketNumberedAboveFD_SETSIZE_"};
+        ConnectionOrientedMasterSocket::Ptr listener = ListenerBind_::Listen_ (SocketAddress{V4::kLocalhost, 0});
+        SocketAddress                       addr     = *listener.GetLocalAddress ();
+
+        // room above FD_SETSIZE, and every descriptor below it taken - so the next sockets are numbered FD_SETSIZE or more
+        constexpr rlim_t kNeeded_ = FD_SETSIZE + 16;
+        ::rlimit         saved{};
+        ASSERT_EQ (::getrlimit (RLIMIT_NOFILE, &saved), 0);
+        if (saved.rlim_cur != RLIM_INFINITY and saved.rlim_cur < kNeeded_) {
+            ::rlimit raised = saved;
+            raised.rlim_cur = kNeeded_;
+            if (::setrlimit (RLIMIT_NOFILE, &raised) != 0) {
+                GTEST_SKIP () << "the open-files limit (soft " << saved.rlim_cur << ", hard " << saved.rlim_max << ") cannot be raised to " << kNeeded_;
+            }
+        }
+        vector<int>             fillers;
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept {
+            for (int fd : fillers) {
+                ::close (fd);
+            }
+            ::setrlimit (RLIMIT_NOFILE, &saved);
+        });
+        while (fillers.empty () or fillers.back () < FD_SETSIZE - 1) {
+            int fd = ::open ("/dev/null", O_RDONLY);
+            ASSERT_GE (fd, 0);
+            fillers.push_back (fd);
+        }
+
+        ConnectionOrientedStreamSocket::Ptr client = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
+        ASSERT_GE (client.GetNativeSocket (), FD_SETSIZE);
+        client.Connect (addr, 10s);
+        ConnectionOrientedStreamSocket::Ptr server = listener.Accept ();
+        ASSERT_GE (server.GetNativeSocket (), FD_SETSIZE);
+        EXPECT_FALSE (server.AvailableToRead ().has_value ()); // nothing sent yet
+        const std::byte kSent_[]{std::byte{1}, std::byte{2}, std::byte{3}};
+        client.Write (span{kSent_});
+        optional<size_t> available;
+        for (Time::TimePointSeconds giveUpAt = Time::GetTickCount () + 10s;
+             not(available = server.AvailableToRead ()).has_value () and Time::GetTickCount () < giveUpAt;) {
+            Execution::Sleep (10ms);
+        }
+        EXPECT_EQ (available, std::size (kSent_));
     }
 #endif
 }

@@ -109,13 +109,15 @@ namespace {
         }
         nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, Time::TimePointSeconds timeoutAt) const
         {
-            // what is left of the deadline, when the OS is asked - never below zero, which select () rejects
-            auto timeLeft = [timeoutAt] () {
-                return Time::Duration{Math::AtLeast<Time::DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s)}.As<timeval> ();
-            };
             AssertExternallySynchronizedChecker::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                                 useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qStroika_Platform_POSIX
+            // what is left of the deadline, in poll ()'s milliseconds, rounded up: never below zero, which poll () reads as no
+            // timeout at all, nor above what an int holds (a longer wait polls again)
+            auto millisecondsLeft = [timeoutAt] () {
+                double ms = ceil (Math::AtLeast<Time::DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s).count () * 1000);
+                return static_cast<int> (Math::AtMost<double> (ms, numeric_limits<int>::max ()));
+            };
             // http://developerweb.net/viewtopic.php?id=3196.
             // and see https://stackoverflow.com/questions/4181784/how-to-set-socket-timeout-in-c-when-making-multiple-connections/4182564#4182564 for why not using SO_RCVTIMEO/SO_SNDTIMEO
             long savedFlags{};
@@ -132,19 +134,14 @@ namespace {
                     case EINTR:
                         break; // ignore - try again
                     case EINPROGRESS: {
-                        Handle_ErrNoResultInterruption ([&] () -> int {
-                            // set up at each try: after EINTR, select () leaves its fd_set and timeval unspecified
-                            Stroika_ATTRIBUTE_INDETERMINATE fd_set myset;
-                            FD_ZERO (&myset);
-                            FD_SET (fSD_, &myset);
-                            timeval time_out = timeLeft ();
-                            auto    r        = ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
-                            if (r == 0) {
-                                // https://man7.org/linux/man-pages/man2/select.2.html - "The return value may be zero if the timeout expired before any file descriptors became ready"
+                        // wait until it can write - connected, or failed. poll, not select: select's fd_set holds only FD_SETSIZE
+                        // (1024) descriptors, and FD_SET writes past it for a socket numbered that or more
+                        pollfd pollData{fSD_, POLLOUT, 0};
+                        while (Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, millisecondsLeft ()); }) == 0) {
+                            if (Time::GetTickCount () >= timeoutAt) {
                                 Execution::ThrowError (errc::timed_out);
                             }
-                            return r;
-                        });
+                        }
                         // Check the errno value returned...
                         if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
                             Execution::ThrowSystemErrNo (err);
@@ -157,6 +154,10 @@ namespace {
                 }
             }
 #elif qStroika_Platform_Windows
+            // what is left of the deadline - never below zero, which select () rejects
+            auto timeLeft = [timeoutAt] () {
+                return Time::Duration{Math::AtLeast<Time::DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s)}.As<timeval> ();
+            };
             // https://stackoverflow.com/questions/46045434/winsock-c-connect-timeout
             {
                 u_long block = 1;
@@ -261,11 +262,20 @@ namespace {
             }
 #if qStroika_Platform_POSIX or qStroika_Platform_Windows
             {
+#if qStroika_Platform_POSIX
+                // poll, not select: select's fd_set holds only FD_SETSIZE (1024) descriptors, and FD_SET writes past it for a
+                // socket numbered that or more
+                pollfd pollData{fSD_, POLLIN, 0};
+                bool   readable = Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); }) == 1;
+#elif qStroika_Platform_Windows
+                // Windows' fd_set is a counted array of sockets - no limit on a socket's value
                 Stroika_ATTRIBUTE_INDETERMINATE fd_set input;
                 FD_ZERO (&input);
                 FD_SET (fSD_, &input);
                 struct timeval timeout{};
-                if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
+                bool           readable = ::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1;
+#endif
+                if (readable) {
                     // don't know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
                     // But MUST check if is EOF or real data available
                     char buf[1024];
