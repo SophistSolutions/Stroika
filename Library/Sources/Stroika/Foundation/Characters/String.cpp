@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <algorithm>
+#include <atomic>
 #include <climits>
 #include <cstdarg>
 #include <istream>
@@ -83,7 +84,8 @@ namespace {
 
 #if qStroika_Foundation_Debug_AssertionsChecked
         private:
-            mutable unsigned int fOutstandingIterators_{};
+            // atomic: every copy of a String shares its rep, and iterates it from const methods - so from several threads at once
+            mutable atomic<unsigned int> fOutstandingIterators_{};
 #endif
 
         protected:

@@ -1817,6 +1817,33 @@ namespace {
 }
 
 namespace {
+    // Threads iterating their own copies of one String share its rep - and, in Debug builds, the rep's count of outstanding
+    // iterators, which each iteration changes from a const method on its copy. A lost update fails a Require as an iterator
+    // ends; ThreadSanitizer reports the race even when none is lost.
+    GTEST_TEST (Foundation_Characters, IterateCopiesOnThreads_)
+    {
+        Debug::TraceContextBumper ctx{"IterateCopiesOnThreads_"};
+        const String              shared{"http"sv};
+        atomic<bool>              allASCII{true};
+        vector<std::thread>       threads;
+        for (unsigned int t = 0; t < 4; ++t) {
+            threads.emplace_back ([shared, &allASCII] () {
+                const auto stopAt = chrono::steady_clock::now () + 1s;
+                for (unsigned int i = 0; i < 1'000'000 and chrono::steady_clock::now () < stopAt; ++i) {
+                    if (not shared.All ([] (Character c) { return c.IsASCII (); })) {
+                        allASCII = false;
+                    }
+                }
+            });
+        }
+        for (std::thread& th : threads) {
+            th.join ();
+        }
+        EXPECT_TRUE (allASCII);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, SDKStringFollowsGlobalLocale_)
     {
         Debug::TraceContextBumper ctx{"SDKStringFollowsGlobalLocale_"};
