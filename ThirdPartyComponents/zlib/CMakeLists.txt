@@ -14,8 +14,7 @@ endif ()
 StroikaThirdPartyComponent (zlib
     ARCHIVE zlib-${version_}.tar.gz
     URLS https://github.com/madler/zlib/archive/v${version_}.tar.gz
-         http://zlib.net/zlib-${version_}.tar.gz
-         "http://prdownloads.sourceforge.net/libpng/zlib-${version_}.tar.gz?download"
+         https://zlib.net/fossils/zlib-${version_}.tar.gz # every release - the top level holds only the newest
     CMAKE_ARGS ${args_}
     BUILD_TARGETS zlibstatic zlib # not its examples
 )

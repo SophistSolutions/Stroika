@@ -40,9 +40,7 @@ ZIPPED_SOURCES_FILE_=../Origs-Cache/zlib-${ZLIB_VERSION_}.tar.gz
 
 FETCHURLS_=
 FETCHURLS_+=https://github.com/madler/zlib/archive/v${ZLIB_VERSION_}.tar.gz
-FETCHURLS_+=http://zlib.net/zlib-${ZLIB_VERSION_}.tar.gz
-FETCHURLS_+=http://prdownloads.sourceforge.net/libpng/zlib-${ZLIB_VERSION_}.tar.gz?download
-#FETCHURLS_+=http://sourceforge.net/projects/libpng/files/zlib/${ZLIB_VERSION_}/zlib-${ZLIB_VERSION_}.tar.gz/download
+FETCHURLS_+=https://zlib.net/fossils/zlib-${ZLIB_VERSION_}.tar.gz
 
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
