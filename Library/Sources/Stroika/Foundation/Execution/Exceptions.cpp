@@ -328,15 +328,15 @@ bool Execution::IsA (const exception_ptr& e, error_condition cond) noexcept
  ********************************************************************************
  */
 namespace {
-    // Win32 codes std::system_category () maps onto no condition (or not onto all the ones they mean). A code may be listed more
-    // than once: its FIRST row is its default_error_condition (). @see Win32_error_category and
+    // Win32 codes std::system_category () maps onto no condition (or not onto all the ones they mean). An association, not a
+    // mapping: a code may have several conditions - its FIRST row is its default_error_condition (). @see Win32_error_category and
     // https://github.com/SophistSolutions/Stroika/issues/1192 (and the earlier report to Microsoft about their _Winerror_map,
     // https://developercommunity.visualstudio.com/content/problem/484206/const-int-posv-winerror-map-errval-should-probably.html)
-    struct Win32ConditionMapping_ {
+    struct Win32ConditionAssociation_ {
         int  fWin32;
         errc fCondition;
     };
-    constexpr Win32ConditionMapping_ kWin32ConditionMappings_[] = {
+    constexpr Win32ConditionAssociation_ kWin32ConditionAssociations_[] = {
         // winerror.h's own network errors - std maps only their Winsock (WSAE*) twins
         {ERROR_NETNAME_DELETED, errc::connection_reset},
         {ERROR_NETNAME_DELETED, errc::connection_aborted},
@@ -401,7 +401,7 @@ namespace {
         }
         virtual error_condition default_error_condition (int ev) const noexcept override
         {
-            for (const Win32ConditionMapping_& i : kWin32ConditionMappings_) {
+            for (const Win32ConditionAssociation_& i : kWin32ConditionAssociations_) {
                 if (i.fWin32 == ev and ev != 0) {
                     return make_error_condition (i.fCondition);
                 }
@@ -410,7 +410,7 @@ namespace {
         }
         virtual bool equivalent (int ev, const error_condition& cond) const noexcept override
         {
-            for (const Win32ConditionMapping_& i : kWin32ConditionMappings_) {
+            for (const Win32ConditionAssociation_& i : kWin32ConditionAssociations_) {
                 if (i.fWin32 == ev and ev != 0 and make_error_condition (i.fCondition) == cond) {
                     return true;
                 }
