@@ -398,6 +398,8 @@ Test.cpp:372:31: warning: value computed is not used [-Wunused-value]
  *  constructor - "'!Memory::ISpan<Character>' evaluated to false". The concept alone, as a static_assert, gets the same
  *  cases right, so it depends on context. So on clang 15, ISpan is a plain type trait instead. clang 16 and later get it
  *  right (verified 2026-09-29, clang 16-22, libc++ and libstdc++, by forcing this to 0).
+ *
+ *  CI's codeql-analyze job sets it to 1 too - see qCompilerAndStdLib_template_concept_matcher_requires_Buggy.
  */
 #ifndef qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy
 
@@ -1335,6 +1337,12 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\IO\Network\HTTP\Re
       |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /usr/lib/llvm-18/bin/../include/c++/v1/__concepts/constructible.h:27:30: note: while checking the s
 */
+/*
+ *  CodeQL's C++ front end needs it too (as of CodeQL 2.27.6): it quits a whole file - silently, its extractor exiting 5 -
+ *  evaluating such a matcher whose lambda deduces two or more template parameters (IPair, ISpan, IDuration ...). It
+ *  defines no macro of its own to test, so CI's codeql-analyze job sets this to 1 on its configure line, with
+ *  qCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy.
+ */
 #ifndef qCompilerAndStdLib_template_concept_matcher_requires_Buggy
 #if defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++17

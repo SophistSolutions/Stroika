@@ -111,17 +111,40 @@ namespace Stroika::Foundation::Common {
     static_assert (invocable_r<decltype ([] (int) { return ""; }), const char*, int>);
     static_assert (invocable_r<decltype ([] (char*, char*) {}), void, char*, char*>);
 
+    namespace Private_ {
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        template <typename T>
+        struct is_duration_ : false_type {};
+        template <typename REP, typename PERIOD>
+        struct is_duration_<chrono::duration<REP, PERIOD>> : true_type {};
+        template <typename T>
+        struct is_time_point_ : false_type {};
+        template <typename CLOCK, typename DURATION>
+        struct is_time_point_<chrono::time_point<CLOCK, DURATION>> : true_type {};
+#endif
+    }
+
     // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
     template <typename T>
     concept IDuration =
-        requires { []<typename Rep, typename Period> (type_identity<chrono::duration<Rep, Period>>) {}(type_identity<T> ()); };
-    static_assert (not IDuration<float>);
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        Private_::is_duration_<T>::value
+#else
+        requires { []<typename Rep, typename Period> (type_identity<chrono::duration<Rep, Period>>) {}(type_identity<T> ()); }
+#endif
+        ;
+    static_assert (IDuration<chrono::seconds> and not IDuration<float>);
 
     // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
     template <typename T>
     concept ITimePoint =
-        requires { []<typename CLOCK, typename DURATION> (type_identity<chrono::time_point<CLOCK, DURATION>>) {}(type_identity<T> ()); };
-    static_assert (not ITimePoint<float>);
+#if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
+        Private_::is_time_point_<T>::value
+#else
+        requires { []<typename CLOCK, typename DURATION> (type_identity<chrono::time_point<CLOCK, DURATION>>) {}(type_identity<T> ()); }
+#endif
+        ;
+    static_assert (ITimePoint<chrono::system_clock::time_point> and not ITimePoint<float>);
 
     /**
      *  \brief Concept: trivial shorthand for variadic same_as A or same_as B, or ...

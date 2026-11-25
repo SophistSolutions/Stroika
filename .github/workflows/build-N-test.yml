@@ -678,9 +678,12 @@ jobs:
     - name: Configure
       # NOTE - disable optimizer due bugs/errors in optimizer (link errors) - but no matter, cuz also slows down analysis (I think)
       # --debug-symbols false to save space and cuz no need
+      # the two qCompilerAndStdLib_ defines: CodeQL's C++ front end quits a whole file on the concept matchers they replace
+      # (Common/Private/CompilerAndStdLib_.h says which)
       run: |
         Build/Scripts/MakeBuildRoot
-        ./configure Release --compiler-driver g++ --apply-default-release-flags --lto disable --append-CXXFLAGS -O0 --debug-symbols false
+        ./configure Release --compiler-driver g++ --apply-default-release-flags --lto disable --append-CXXFLAGS -O0 --debug-symbols false \
+            --append-CPPFLAGS "-DqCompilerAndStdLib_template_concept_matcher_requires_Buggy=1 -DqCompilerAndStdLib_ISpanMisevaluatedInContext_Buggy=1"
         cat IntermediateFiles/ConfigurationFiles/Release.xml
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
     # to show the summary time for each part
@@ -726,6 +729,24 @@ jobs:
           ${{ runner.temp }}/codeql_databases/log
           ${{ runner.temp }}/codeql_databases/cpp/log
           ${{ runner.temp }}/codeql_databases/cpp/diagnostic
+    # CodeQL's front end can quit a whole file, silently, on a construct it cannot handle - and an analysis of almost nothing
+    # still passes (it did from at least 2026-09 to 2026-11, failing 816 compiler invocations). So more than a few failures
+    # fails the job. A few are CodeQL's own: as of 2.27.6, Tests/11, 23 and 32 end "exiting with code 4" after only its
+    # internal warnings.
+    - name: Check CodeQL extracted the build
+      run: |
+        python3 - "${RUNNER_TEMP}/codeql-results/cpp.sarif" <<'EOF'
+        import json, sys
+        notes = [n for run in json.load(open(sys.argv[1]))["runs"] for i in run.get("invocations", []) for n in i.get("toolExecutionNotifications", [])]
+        failed = [n["message"]["text"] for n in notes if n["descriptor"]["id"] == "cpp/diagnostics/failed-extractor-invocations"]
+        extracted = sum(n["descriptor"]["id"] == "cpp/diagnostics/successfully-extracted-files" for n in notes)
+        print(f"CodeQL extracted {extracted} files without error, and failed {len(failed)} compiler invocations")
+        for text in failed:
+            print("  " + text[:300])
+        if len(failed) > 10:
+            print(f"::error::CodeQL failed {len(failed)} compiler invocations - files it did not analyze (Log Data: codeql-results/cpp.sarif)")
+            sys.exit(1)
+        EOF
 
   doxygen:
     runs-on: ubuntu-latest
