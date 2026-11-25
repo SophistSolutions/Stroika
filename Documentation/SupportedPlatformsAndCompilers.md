@@ -138,6 +138,12 @@ Beyond the per-row notes above:
   compiler). GNU ld mis-links clang LTO, so configure then links with `-fuse-ld=lld`; without lld it
   leaves LTO off, and the build otherwise works the same. The regression-test Docker images install
   lld for every clang they carry.
+- **gcc Release builds link with `-flto=2`, which is not two jobs where make's jobserver is.** gcc runs a
+  link's LTO jobs under make's jobserver whenever the link can reach it - with make 4.4 or later, or a
+  make recipe line marked `+` - sharing the build's `-j`, whatever the number (gcc's manual does not say
+  so; its code does - configure's comment has the link). The 2 is for links that cannot reach it (CMake's,
+  with make before 4.4, as on Ubuntu 22.04 and 24.04; Ninja): there `-flto=auto`, and `-flto=jobserver`,
+  start one job per CPU in every link at once, overloading the machine.
 - **Sanitizer and valgrind coverage is narrower than the compiler coverage above** - every sanitizer
   configuration is a `g++` one, and GitHub Actions runs no sanitizer or valgrind job at all. Dynamic
   analysis happens in the per-release regression runs.

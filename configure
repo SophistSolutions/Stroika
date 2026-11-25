@@ -1414,11 +1414,14 @@ class Configure_:
             if self.IsGCCOrGPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
                 self.CFLAGS.append("-flto")
                 self.CXXFLAGS.append("-flto")
-                # -flto=auto runs the LTRANS jobs under make's jobserver, so they share the -j budget. It used to spin up too
-                # many processes (2023-10-26, when -flto=2 was chosen instead): with make before 4.4 a plain recipe line gets no
-                # jobserver, so gcc starts one job per CPU. DEFAULT_LINK_LINE now marks LTO links '+' there, which fixes that.
-                # (-flto=0, 1 or missing produce warnings: lto-wrapper: warning: using serial compilation of 13 LTRANS jobs)
-                self.LinkerArgs_ExtraPrefix += " -flto=auto"
+                # -flto=2 is NOT two LTRANS jobs wherever make's jobserver is: a link that can reach it runs its LTRANS jobs
+                # under it, sharing the build's -j, whatever the number - gcc's lto-wrapper replaces -flto=N by a jobserver it
+                # detects (run_gcc - not in gcc's manual: https://github.com/gcc-mirror/gcc/blob/releases/gcc-15.2.0/gcc/lto-wrapper.cc#L1694-L1705).
+                # make 4.4's jobserver (a named fifo) reaches every link; older make's only a recipe line marked '+', which
+                # DEFAULT_LINK_LINE is, but CMake's link rules are not. The 2 is for those, and for Ninja: -flto=auto starts one
+                # job per CPU there, in every link at once - and -flto=jobserver falls back to that. (-flto=0, 1 or missing
+                # produce warnings: lto-wrapper: warning: using serial compilation of 13 LTRANS jobs)
+                self.LinkerArgs_ExtraPrefix += " -flto=2"
             if self.IsClangOrClangPlusPlus_(self.COMPILER_DRIVER_CPlusPlus):
                 self.CFLAGS.append("-flto")
                 self.CXXFLAGS.append("-flto")

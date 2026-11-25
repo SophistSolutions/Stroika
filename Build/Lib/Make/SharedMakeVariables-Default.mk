@@ -564,12 +564,12 @@ DEFAULT_LINK_LINE=\
 		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
 else
 #
-# gcc -flto=auto runs a link's LTRANS jobs under make's jobserver when it can reach it, and otherwise starts one per
-# CPU - in every link running in parallel. GNU make before 4.4 hands its jobserver (inherited file descriptors) only to
-# recipe lines marked '+', so such links get that prefix there (which also makes 'make -n' run them). make 4.4's
+# gcc's LTO link (-flto=N, configure) runs its LTRANS jobs under make's jobserver when it can reach it - whatever N, which
+# applies only where it cannot (configure says more). GNU make before 4.4 hands its jobserver (inherited file descriptors)
+# only to recipe lines marked '+', so such links get that prefix there (which also makes 'make -n' run them). make 4.4's
 # jobserver is a named fifo any child can open, so it needs none.
 #
-DEFAULT_LINK_LINE_JOBSERVER_PREFIX_=$(if $(and $(findstring -flto=auto,$(Platform_LinkerArgs_ExtraPrefix)),$(filter 3.% 4.0% 4.1% 4.2% 4.3%,$(MAKE_VERSION))),+)
+DEFAULT_LINK_LINE_JOBSERVER_PREFIX_=$(if $(and $(findstring -flto=,$(Platform_LinkerArgs_ExtraPrefix)),$(filter 3.% 4.0% 4.1% 4.2% 4.3%,$(MAKE_VERSION))),+)
 DEFAULT_LINK_LINE=\
 	$(DEFAULT_LINK_LINE_JOBSERVER_PREFIX_)"$(LINKER)" \
 		$3 \
