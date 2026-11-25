@@ -208,8 +208,8 @@ install-prefix-given_:
 	@if [ -z "$(PREFIX)" ] ; then echo "make install: say where, PREFIX=<directory>"; exit 1; fi
 
 # library-clobber: Stroika's own build afresh next time - its libraries, and all built on them (an application's too) -
-# the third-party components' build kept; clean: that, and the components' sources and build trees too - not what each
-# installed, nor its stamps (so not built again: a component whose recipe then changes needs clobber), nor WIX's (its
+# the third-party components' build kept; clean: that, and the components' sources, build trees and logs too - not what
+# each installed, nor its stamps (so not built again: a component whose recipe then changes needs clobber), nor WIX's (its
 # programs, which the installers run). Each keeps the libraries and programs already built, until built again. clobber:
 # all of it.
 clean library-clobber:
@@ -218,6 +218,7 @@ clean library-clobber:
 		find $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake -mindepth 1 -maxdepth 1 ! -name ThirdParty -exec rm -rf {} +;\
 	fi
 	@if [ "$@" = "clean" ] ; then\
+		rm -rf $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/ThirdPartyComponents;\
 		for stamp_ in $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/CMake/ThirdParty/*/stamp ; do\
 			component_="$${stamp_%/stamp}";\
 			if [ -d "$$stamp_" ] && [ "$${component_##*/}" != WIX ]; then rm -rf "$$component_/src" "$$component_/build"; fi;\

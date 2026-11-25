@@ -6,9 +6,8 @@
 # configuration:
 #     cmake -S ThirdPartyComponents -B <build directory> -DCMAKE_TOOLCHAIN_FILE=<build root>/<configuration>/Toolchain.cmake
 #     CMAKE_BUILD_PARALLEL_LEVEL=8 cmake --build <build directory>
-# The jobs: with a Makefiles generator, the components' own builds share make's job slots, as under make; with Ninja, they
-# build one at a time, each with CMAKE_BUILD_PARALLEL_LEVEL's (make's -jN sets it). curl builds here on UNIX only, as
-# Stroika uses it only there.
+# The jobs: the components build one at a time (Conan's lock), each with CMAKE_BUILD_PARALLEL_LEVEL's (make's -jN sets
+# it). curl builds here on UNIX only, as Stroika uses it only there.
 #
 cmake_minimum_required (VERSION 3.22)
 project (StroikaThirdPartyComponents LANGUAGES NONE)
@@ -107,7 +106,7 @@ endfunction ()
 # components it DEPENDS on, with the TOOLS its build runs (each one Conan keeps). A target of its name, as
 # StroikaThirdPartyComponent makes, for the components built after it; it runs Conan again only once what builds the
 # component, or one it depends on, changes. Conan's commands are in a script (conan.cmake, in the component's binary
-# directory), which takes Conan's lock first.
+# directory; ConanSteps.cmake), which takes Conan's lock first, and logs them in the configuration's IntermediateFiles.
 #
 function (StroikaComponentFromConan directory)
     cmake_parse_arguments (PARSE_ARGV 1 arg "" "" "DEPENDS;TOOLS")
@@ -133,55 +132,51 @@ function (StroikaComponentFromConan directory)
         if (NOT component_ STREQUAL directory)
             list (APPEND tools_ ${package})
         endif ()
-        string (APPEND exports_ "execute_process (COMMAND [==[${STROIKA_CONAN}]==] export [==[${CMAKE_CURRENT_SOURCE_DIR}]==] --name ${package_PACKAGE} --version ${package_VERSION} COMMAND_ERROR_IS_FATAL ANY)\n")
+        list (APPEND exports_ ${package})
     endforeach ()
     list (JOIN depends_ "," depends_)
     list (JOIN tools_ "," tools_)
     set_property (GLOBAL APPEND PROPERTY STROIKA_CONAN_OPTIONS_ -o:a "${this_PACKAGE}/*:depends=${depends_}" -o:a "${this_PACKAGE}/*:tools=${tools_}")
     get_property (options_ GLOBAL PROPERTY STROIKA_CONAN_OPTIONS_)
     # options and conf values for both contexts (:a) - the tools' (build) too, not just what is built into Stroika (host)
-    set (install_ "${STROIKA_CONAN}" install --requires ${this} --build missing
+    set (arguments_ --requires ${this} --build missing
         -o:a "stroika-*/*:configuration=${STROIKA_CONAN_CONFIGURATION_DIGEST}" ${options_} -pr:a "${STROIKA_CONAN_PROFILE}"
         -c:a "user.stroika:toolchain_file=${CMAKE_TOOLCHAIN_FILE}" -c:a "user.stroika:origs_cache=${STROIKA_ORIGS_CACHE}")
     foreach (conf_ IN LISTS STROIKA_CONAN_CONF)
-        list (APPEND install_ -c:a "${conf_}")
+        list (APPEND arguments_ -c:a "${conf_}")
     endforeach ()
-    list (APPEND install_ --deployer "${CMAKE_CURRENT_SOURCE_DIR}/StroikaDeploy.py" --deployer-folder "${STROIKA_BUILDS_DIR}"
+    set (deployArguments_ --deployer "${CMAKE_CURRENT_SOURCE_DIR}/StroikaDeploy.py" --deployer-folder "${STROIKA_BUILDS_DIR}"
         --output-folder "${binaryDir_}")
     # each argument a bracket argument in the script, so none needs quoting
-    list (JOIN install_ "]==] [==[" install_)
+    foreach (list_ IN ITEMS exports_ arguments_ deployArguments_)
+        list (JOIN ${list_} "]==] [==[" ${list_})
+    endforeach ()
+    set (logDirectory_ "${configurationDir_}/ThirdPartyComponents/${directory}")
     # written only when changed (file (CONFIGURE)), so the script's time says when it last did
     file (CONFIGURE OUTPUT "${binaryDir_}/conan.cmake" @ONLY CONTENT "\
-# ${this_PACKAGE} from Conan's cache - built there first, if the configuration has no package of it yet - copied into the\n\
-# configuration's Builds directory: cmake -P, by ThirdPartyComponents/CMakeLists.txt's StroikaComponentFromConan, which wrote it.\n\
-# MAKEFLAGS unset: Conan does not pass on make's job slots, so the component's own build takes CMAKE_BUILD_PARALLEL_LEVEL's jobs\n\
-unset (ENV{MAKEFLAGS})\n\
-unset (ENV{MFLAGS})\n\
-file (LOCK [==[${STROIKA_CONAN_LOCK}]==] GUARD PROCESS TIMEOUT 0 RESULT_VARIABLE locked_)\n\
-if (NOT locked_ EQUAL 0)\n\
-    message (STATUS [==[${this_PACKAGE}: waiting for another build's Conan steps (${STROIKA_CONAN_LOCK})]==])\n\
-    file (LOCK [==[${STROIKA_CONAN_LOCK}]==] GUARD PROCESS)\n\
-endif ()\n\
-${exports_}\
-execute_process (COMMAND [==[${install_}]==] COMMAND_ERROR_IS_FATAL ANY)\n\
-# Conan's cache keeps the components' packages, not their builds (as make clean removes a component's own): their build\n\
-# folders, many GB for boost, removed once packaged - each package's b, beside its p, in a folder Conan names for the first\n\
-# five letters of its name. By CMake, not conan cache clean, whose python cannot remove a path longer than Windows'\n\
-# MAX_PATH (boost's documentation's, as of 1.92.0).\n\
-file (GLOB buildFolders_ LIST_DIRECTORIES true [==[${STROIKA_CONAN_HOME}/p/b/stroi*/b]==])\n\
-# none when nothing was built: file (REMOVE_RECURSE) with no paths is an error in CMake 3.28.3 (not 3.31.6)\n\
-if (buildFolders_)\n\
-    file (REMOVE_RECURSE \${buildFolders_})\n\
-endif ()\n\
-file (TOUCH [==[${binaryDir_}/conan-stamp]==])\n\
+# ${this_PACKAGE}'s Conan steps (ConanSteps.cmake says what they do): cmake -P, by ThirdPartyComponents/CMakeLists.txt's\n\
+# StroikaComponentFromConan, which wrote it\n\
+set (CONAN [==[${STROIKA_CONAN}]==])\n\
+set (PACKAGE [==[${this}]==])\n\
+set (RECIPES [==[${CMAKE_CURRENT_SOURCE_DIR}]==])\n\
+set (EXPORTS [==[${exports_}]==])\n\
+set (ARGUMENTS [==[${arguments_}]==])\n\
+set (DEPLOY_ARGUMENTS [==[${deployArguments_}]==])\n\
+set (LOCK [==[${STROIKA_CONAN_LOCK}]==])\n\
+set (CONAN_HOME [==[${STROIKA_CONAN_HOME}]==])\n\
+set (LOG_DIRECTORY [==[${logDirectory_}]==])\n\
+set (STAMP [==[${binaryDir_}/conan-stamp]==])\n\
+include ([==[${CMAKE_CURRENT_SOURCE_DIR}/ConanSteps.cmake]==])\n\
 ")
-    # run again when one it depends on was: its package is then another
+    # run again when one it depends on was: its package is then another. Not in the terminal (USES_TERMINAL), which would
+    # run one at a time with everything else in it: its output is in a log, and the build shows where as it starts
     add_custom_command (OUTPUT "${binaryDir_}/conan-stamp"
         COMMAND "${CMAKE_COMMAND}" -P "${binaryDir_}/conan.cmake"
         DEPENDS "${binaryDir_}/conan.cmake" ${recipe_} ${dependsStamps_} "${CMAKE_CURRENT_SOURCE_DIR}/StroikaThirdPartyComponent.cmake"
                 "${CMAKE_CURRENT_SOURCE_DIR}/RemoveFiles.cmake" "${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py"
-                "${CMAKE_CURRENT_SOURCE_DIR}/StroikaDeploy.py" "${CMAKE_TOOLCHAIN_FILE}" "${configurationDir_}/Stroika-Configuration.cmake"
-        USES_TERMINAL
+                "${CMAKE_CURRENT_SOURCE_DIR}/StroikaDeploy.py" "${CMAKE_CURRENT_SOURCE_DIR}/ConanSteps.cmake"
+                "${CMAKE_TOOLCHAIN_FILE}" "${configurationDir_}/Stroika-Configuration.cmake"
+        COMMENT "${this_PACKAGE} ${this_VERSION}: from Conan's cache, or built (log: ${logDirectory_}/BuildRecipeLog.txt)"
         VERBATIM
     )
     add_custom_target (${directory} ALL DEPENDS "${binaryDir_}/conan-stamp")

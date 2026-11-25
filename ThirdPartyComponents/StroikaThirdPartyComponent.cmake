@@ -315,14 +315,13 @@ function (StroikaThirdPartyComponent name)
     else ()
         set (install_ "${CMAKE_COMMAND}" --install <BINARY_DIR> --config ${STROIKA_THIRD_PARTY_BUILD_TYPE})
     endif ()
-    # Its build step in the terminal (USES_TERMINAL_BUILD): under Ninja, in its console pool - so one component builds at a
-    # time, with the build's jobs (CMAKE_BUILD_PARALLEL_LEVEL), not several at once, each with Ninja's default (a job per
-    # processor and two more)
+    # Its build step in the terminal (USES_TERMINAL_BUILD): under Ninja, in its console pool, whose output is passed on as
+    # it comes - Ninja holds back any other step's until it ends - so the component's log (ConanSteps.cmake) grows as it
+    # builds. Its steps' output is not kept in logs of their own (LOG_BUILD and the rest): it goes to that log.
     ExternalProject_Add (${name} URL "${archive_}" ${configure_}
         BUILD_COMMAND ${build_}
         INSTALL_COMMAND ${install_}
         USES_TERMINAL_BUILD ON
-        LOG_DOWNLOAD ON LOG_CONFIGURE ON LOG_BUILD ON LOG_INSTALL ON LOG_OUTPUT_ON_FAILURE ON
         ${passOn_}
     )
 endfunction ()

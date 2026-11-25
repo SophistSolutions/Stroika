@@ -219,16 +219,9 @@ jobs:
       - name: Copy Build Artifacts (third-party-components Log Data etc)
         if: always()
         run: |
-          # each component's step logs - its configure, build and install (CMake's ExternalProject: in its stamp directory):
-          # in Conan's build folder (p/b/stroi*/b - ThirdPartyComponents/CMakeLists.txt removes it once packaged, so one is
-          # left only by a failed build), or in this tree, for a component built here
-          for stamp in "${CONAN_HOME:-$HOME/.conan2}"/p/b/stroi*/b/build/*/stamp \
-                       IntermediateFiles/${{ matrix.config_name }}/CMake/ThirdParty/*/stamp; do
-            [ -d "$stamp" ] || continue
-            component="$(basename "$(dirname "$stamp")")"
-            mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/$component"
-            cp "$stamp"/*.log "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/$component/" 2>/dev/null || :
-          done
+          # each component's log - Conan's steps, and its build if Conan built it (ThirdPartyComponents/ConanSteps.cmake)
+          mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}"
+          cp -R IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents "${ARTIFACTS_DIR_BUILDLOGS}/" 2>/dev/null || :
       - name: Save space (Safe)
         if: always()
         run: |
@@ -417,18 +410,12 @@ jobs:
         run: |
           mkdir /tmp/LOGS-ARCHIVE
           cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE || :
-      # as for Linux: each component's step logs - copied, as upload-artifact leaves out what is in a hidden directory
-      # (.conan-home)
+      # as for Linux: each component's log
       - name: Copy Build Artifacts (third-party-components Log Data)
         if: always()
         run: |
-          for stamp in "${CONAN_HOME:-$HOME/.conan2}"/p/b/stroi*/b/build/*/stamp \
-                       IntermediateFiles/${{ matrix.config_name }}/CMake/ThirdParty/*/stamp; do
-            [ -d "$stamp" ] || continue
-            component="$(basename "$(dirname "$stamp")")"
-            mkdir -p "/tmp/LOGS-ARCHIVE/ThirdPartyComponents/$component"
-            cp "$stamp"/*.log "/tmp/LOGS-ARCHIVE/ThirdPartyComponents/$component/" 2>/dev/null || :
-          done
+          mkdir -p /tmp/LOGS-ARCHIVE
+          cp -R IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents /tmp/LOGS-ARCHIVE/ 2>/dev/null || :
       - name: Build System Info
         run: |
           df -h
@@ -636,14 +623,8 @@ jobs:
           cp "${COPY_FROM_ROOT_}/CMake/HTMLUI-html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/CMake/HTMLUI-html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/CMake/Samples/HTMLUI/WIX-Installer-Build-Output.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/" || :
-          # as for Linux: each component's step logs - Conan's home is the checkout's .conan-home (the container's CONAN_HOME)
-          for stamp in "${NORMALIZED_WORKSPACE_DIR_}"/.conan-home/p/b/stroi*/b/build/*/stamp \
-                       "${COPY_FROM_ROOT_}"/CMake/ThirdParty/*/stamp; do
-            [ -d "$stamp" ] || continue
-            component="$(basename "$(dirname "$stamp")")"
-            mkdir -p "${COPY_TO_ROOT_}/ThirdPartyComponents/$component"
-            cp "$stamp"/*.log "${COPY_TO_ROOT_}/ThirdPartyComponents/$component/" 2>/dev/null || :
-          done
+          # as for Linux: each component's log
+          cp -R "${COPY_FROM_ROOT_}/ThirdPartyComponents" "${COPY_TO_ROOT_}/" 2>/dev/null || :
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v7
@@ -715,18 +696,12 @@ jobs:
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
     - name: Make Stroika
       run: make all
-    # as for Linux: each component's step logs - copied, as upload-artifact leaves out what is in a hidden directory
-    # (~/.conan2)
+    # as for Linux: each component's log
     - name: Copy Build Artifacts (third-party-components Log Data)
       if: always()
       run: |
-        for stamp in "${CONAN_HOME:-$HOME/.conan2}"/p/b/stroi*/b/build/*/stamp \
-                     IntermediateFiles/Release/CMake/ThirdParty/*/stamp; do
-          [ -d "$stamp" ] || continue
-          component="$(basename "$(dirname "$stamp")")"
-          mkdir -p "${RUNNER_TEMP}/BUILD_LOGS/ThirdPartyComponents/$component"
-          cp "$stamp"/*.log "${RUNNER_TEMP}/BUILD_LOGS/ThirdPartyComponents/$component/" 2>/dev/null || :
-        done
+        mkdir -p "${RUNNER_TEMP}/BUILD_LOGS"
+        cp -R IntermediateFiles/Release/ThirdPartyComponents "${RUNNER_TEMP}/BUILD_LOGS/" 2>/dev/null || :
     - name: Archive Log Data
       if: always()
       uses: actions/upload-artifact@v7
