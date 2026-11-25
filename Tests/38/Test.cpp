@@ -4,7 +4,13 @@
 //  TEST    Foundation::Execution::ProcessRunner
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <functional>
 #include <iostream>
+#if qStroika_Platform_POSIX
+#include <unistd.h>
+#elif qStroika_Platform_Windows
+#include <Windows.h>
+#endif
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -138,6 +144,61 @@ namespace {
         Time::TimePointSeconds startedBy = Time::GetTickCount ();
         EXPECT_TRUE (bpr.GetChildProcessID ().has_value ());
         EXPECT_TRUE ((startedBy - startTime) < Time::DurationSeconds{10}); // should be quick
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, ChildHoldsNoOtherHandle)
+    {
+        // A child gets its stdin, stdout and stderr - no other handle of this process, inheritable or not. Here, a pipe's
+        // inheritable write end: a child holding it would keep its read end from reaching end-of-file until the child exits
+        // (a detached one: whenever it likes) - as one holding this process's own stdout keeps a reader of that waiting.
+        Debug::TraceContextBumper ctx{"ChildHoldsNoOtherHandle"};
+        // how long, once this process closes the pipe's write end, reading its other end takes to reach end-of-file - with a
+        // child started (start) while the write end was open
+        auto timeToEndOfFile = [] (const std::function<ProcessRunner::BackgroundProcess ()>& start) {
+#if qStroika_Platform_Windows
+            HANDLE              readEnd{};
+            HANDLE              writeEnd{};
+            SECURITY_ATTRIBUTES inheritable{.nLength = sizeof (SECURITY_ATTRIBUTES), .bInheritHandle = true};
+            Verify (::CreatePipe (&readEnd, &writeEnd, &inheritable, 0));
+#else
+            int fds[2]; // both ends inheritable: no O_CLOEXEC
+            Verify (::pipe (fds) == 0);
+#endif
+            start ().WaitForStarted ();
+            Time::TimePointSeconds closedAt = Time::GetTickCount ();
+#if qStroika_Platform_Windows
+            ::CloseHandle (writeEnd);
+            byte  b{};
+            DWORD n{};
+            (void)::ReadFile (readEnd, &b, 1, &n, nullptr); // returns at end-of-file (ERROR_BROKEN_PIPE)
+            ::CloseHandle (readEnd);
+#else
+            ::close (fds[1]);
+            byte b{};
+            (void)::read (fds[0], &b, 1); // returns at end-of-file (0)
+            ::close (fds[0]);
+#endif
+            return Time::GetTickCount () - closedAt;
+        };
+        EXPECT_LT (
+            timeToEndOfFile ([] () {
+                return ProcessRunner{CommandLine{CommandLine::WrapInShell::eBash, "sleep 20"}, ProcessRunner::Options{.fDetached = true}}.RunInBackground ();
+            }),
+            10s)
+            << "a detached child";
+        {
+            Streams::MemoryStream::Ptr<byte>           out = Streams::MemoryStream::New<byte> ();
+            optional<ProcessRunner::BackgroundProcess> bp;
+            EXPECT_LT (timeToEndOfFile ([&] () {
+                           bp = ProcessRunner{"sleep 20"}.RunInBackground (nullptr, out);
+                           return *bp;
+                       }),
+                       10s)
+                << "a child whose output this process reads";
+            bp->Terminate ();
+        }
     }
 }
 

@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <sstream>
+#include <vector>
 
 #if qStroika_Platform_POSIX
 #include <fcntl.h>
@@ -49,6 +50,7 @@
 #include "ProcessRunner.h"
 
 using std::byte;
+using std::vector;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -1139,8 +1141,9 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
             }
         }
 
-        STARTUPINFO startInfo{
-            .cb = sizeof (startInfo), .dwFlags = STARTF_USESTDHANDLES, .hStdInput = jStdin[1], .hStdOutput = jStdout[0], .hStdError = jStderr[0]};
+        STARTUPINFOEX startInfo{
+            .StartupInfo = {
+                .cb = sizeof (STARTUPINFOEX), .dwFlags = STARTF_USESTDHANDLES, .hStdInput = jStdin[1], .hStdOutput = jStdout[0], .hStdError = jStderr[0]}};
 
         DWORD createProcFlags{NORMAL_PRIORITY_CLASS};
         if (options.fCreateNoWindow) {
@@ -1151,10 +1154,42 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
             createProcFlags |= DETACHED_PROCESS;
         }
 
+        /*
+         *  The child inherits the stdin, stdout and stderr given it (the pipes above), and no other handle - as the POSIX child
+         *  closes all but those (closefrom). CreateProcess's bInheritHandles alone passes it every inheritable handle in this
+         *  process: another thread's child's pipe, or the pipe this process's own output goes to - which the child then holds
+         *  open as long as it runs (a detached one, as long as it likes), so the reader at its other end waits for it.
+         *  PROC_THREAD_ATTRIBUTE_HANDLE_LIST names those it gets.
+         */
+        HANDLE inherited[3];
+        DWORD  nInherited{0};
+        for (HANDLE h : {startInfo.StartupInfo.hStdInput, startInfo.StartupInfo.hStdOutput, startInfo.StartupInfo.hStdError}) {
+            if (h != INVALID_HANDLE_VALUE) {
+                inherited[nInherited++] = h;
+            }
+        }
+        vector<byte>                 attributesBuffer;
+        LPPROC_THREAD_ATTRIBUTE_LIST attributes{nullptr};
+        [[maybe_unused]] auto&&      cleanup = Finally ([&] () noexcept {
+            if (attributes != nullptr) {
+                ::DeleteProcThreadAttributeList (attributes);
+            }
+        });
+        if (nInherited != 0) {
+            SIZE_T size{};
+            (void)::InitializeProcThreadAttributeList (nullptr, 1, 0, &size); // fails, saying the size it needs
+            attributesBuffer.resize (size);
+            Execution::Platform::Windows::ThrowIfZeroGetLastError (
+                ::InitializeProcThreadAttributeList (reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST> (attributesBuffer.data ()), 1, 0, &size));
+            attributes = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST> (attributesBuffer.data ());
+            Execution::Platform::Windows::ThrowIfZeroGetLastError (::UpdateProcThreadAttribute (
+                attributes, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, inherited, nInherited * sizeof (HANDLE), nullptr, nullptr));
+            startInfo.lpAttributeList = attributes;
+            createProcFlags |= EXTENDED_STARTUPINFO_PRESENT;
+        }
+
         {
-            // UNCLEAR; visual studio system() impl uses true; docs not clear
-            // BUT - when I use false I get "unknown file: error: C++ exception with description "Spawned program 'echo hi mom' failed: error: 1" thrown in the test body." for some tests
-            bool bInheritHandles = true;
+            bool bInheritHandles = nInherited != 0;
 
             TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
             Characters::CString::Copy (cmdLineBuf, std::size (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
@@ -1204,7 +1239,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
             // it runs the search path algorithm and tries to do the right thing
             Execution::Platform::Windows::ThrowIfZeroGetLastError (
                 ::CreateProcess (useEXEPath == nullopt ? nullptr : useEXEPath->c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
-                                 createProcFlags, lpEnvironment, useCWD.c_str (), &startInfo, &processInfo));
+                                 createProcFlags, lpEnvironment, useCWD.c_str (), &startInfo.StartupInfo, &processInfo));
         }
 
         if (runneeDetails != nullptr) {
