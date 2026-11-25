@@ -13,7 +13,7 @@ include $(StroikaSourceRoot)Build/Lib/Make/SharedMakeVariables-Default.mk
 
 
 #
-# CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
+# CHECK FOR UPDATED VERSIONS https://curl.se/download.html
 #
 
 VERSION=8.23.0
@@ -58,8 +58,8 @@ SLINKDIRNAME=$(BASENAME)
 
 
 FETCHURLS=
-FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
-FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
+FETCHURLS+=https://curl.se/download/curl-$(VERSION).tar.gz
+FETCHURLS+=https://github.com/curl/curl/releases/download/curl-$(subst .,_,$(VERSION))/curl-$(VERSION).tar.gz
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(StroikaIntermediateFilesRoot)$(CONFIGURATION)/ThirdPartyComponents/curl)/

@@ -4,6 +4,8 @@
 #
 set (version_ 4.0.3)
 set (base_ openssl-${version_})
+# its GitHub release; openssl.org's source/ redirects there - and no mirror has 4.x (as of 4.0.3), so nothing backs it up
+set (urls_ https://github.com/openssl/openssl/releases/download/${base_}/${base_}.tar.gz https://www.openssl.org/source/${base_}.tar.gz)
 
 set (configArgs_ -no-shared)
 if (STROIKA_OPENSSL_EXTRA_ARGS MATCHES "purify")
@@ -82,12 +84,7 @@ del ossl_static.pdb
 if exist \"${installedPdb_}\" del \"${installedPdb_}\"")
     StroikaThirdPartyComponent (openssl
         ARCHIVE ${base_}.tar.gz
-        URLS https://github.com/openssl/openssl/releases/download/${base_}/${base_}.tar.gz
-             https://www.openssl.org/source/${base_}.tar.gz
-             http://www.openssl.org/source/${base_}.tar.gz
-             ftp://mirror.switch.ch/mirror/openssl/source/${base_}.tar.gz
-             http://artfiles.org/openssl.org/source/${base_}.tar.gz
-             https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/${base_}.tar.gz
+        URLS ${urls_}
         BUILD_IN_SOURCE
         CONFIGURE_COMMAND ${configure_}
         BUILD_COMMAND ${build_}
@@ -116,16 +113,7 @@ else ()
 endif ()
 StroikaThirdPartyComponent (openssl
     ARCHIVE ${base_}.tar.gz
-    URLS https://github.com/openssl/openssl/releases/download/${base_}/${base_}.tar.gz
-         https://www.openssl.org/source/${base_}.tar.gz
-         http://www.openssl.org/source/${base_}.tar.gz
-         http://www.openssl.org/source/old/3.1/${base_}.tar.gz
-         http://www.openssl.org/source/old/3.2/${base_}.tar.gz
-         http://www.openssl.org/source/old/3.3/${base_}.tar.gz
-         http://www.openssl.org/source/old/3.4/${base_}.tar.gz
-         ftp://mirror.switch.ch/mirror/openssl/source/${base_}.tar.gz
-         http://artfiles.org/openssl.org/source/${base_}.tar.gz
-         https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/${base_}.tar.gz
+    URLS ${urls_}
     BUILD_IN_SOURCE
     CONFIGURE_COMMAND "${CMAKE_COMMAND}" -E env --unset=MAKEFLAGS "CC=${CMAKE_C_COMPILER}" "AR=${CMAKE_AR}" "RANLIB=${CMAKE_RANLIB}"
                       "MACHINE=${STROIKA_ARCH}" "CFLAGS=${CFlags_}" "CXXFLAGS=${CXXFlags_}" "LDFLAGS=${ldFlags_}" ./config ${targetArgs_} ${configArgs_}

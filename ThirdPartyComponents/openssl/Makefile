@@ -53,14 +53,6 @@ ZIPPEDFILE:=../Origs-Cache/$(BASENAME).tar.gz
 FETCHURLS:=
 FETCHURLS+=https://github.com/openssl/openssl/releases/download/$(BASENAME)/$(BASENAME).tar.gz
 FETCHURLS+=https://www.openssl.org/source/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/old/3.1/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/old/3.2/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/old/3.3/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/old/3.4/$(BASENAME).tar.gz
-FETCHURLS+=ftp://mirror.switch.ch/mirror/openssl/source/$(BASENAME).tar.gz
-FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
-FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
 
 
 SHELL=/bin/bash

@@ -87,9 +87,11 @@ endif ()
 
 # make itself - not $(MAKE), which ExternalProject passes on only as a command's first word, not after cmake -E env
 find_program (make_ make REQUIRED)
+# curl's own site, then its GitHub release (tagged with the version's dots as underscores)
+string (REPLACE "." "_" releaseTag_ "curl-${version_}")
 StroikaThirdPartyComponent (curl
     ARCHIVE curl-${version_}.tar.gz
-    URLS https://curl.haxx.se/download/curl-${version_}.tar.gz http://curl.askapache.com/download/curl-${version_}.tar.gz
+    URLS https://curl.se/download/curl-${version_}.tar.gz https://github.com/curl/curl/releases/download/${releaseTag_}/curl-${version_}.tar.gz
     BUILD_IN_SOURCE
     CONFIGURE_COMMAND autoreconf -fi
               COMMAND "${CMAKE_COMMAND}" -E env --unset=CPATH "PKG_CONFIG_PATH=${STROIKA_BUILDS_DIR}lib/pkgconfig" "ARCH=${STROIKA_ARCH}"

@@ -30,7 +30,7 @@ StroikaThirdPartyComponent (Xerces
     URLS http://archive.apache.org/dist/xerces/c/3/sources/xerces-c-${version_}.tar.gz
          http://apache.cs.utah.edu//xerces/c/3/sources/xerces-c-${version_}.tar.gz
          http://www.apache.org/dist/xerces/c/3/sources/xerces-c-${version_}.tar.gz
-         http://www-us.apache.org/dist/xerces/c/3/sources/xerces-c-${version_}.tar.gz
+         https://dlcdn.apache.org/xerces/c/3/sources/xerces-c-${version_}.tar.gz
     PATCH_COMMAND "${STROIKA_PATCH}" -p0 <SOURCE_DIR>/tests/src/Char16Test/Char16Test.cpp "${patches_}/Char16Test_IOSTREAMCHANGE.PATCH"
           COMMAND "${STROIKA_PATCH}" -p0 <SOURCE_DIR>/src/xercesc/util/XMLString.hpp "${patches_}/AvoidMemMoveOfZero.patch"
     CMAKE_ARGS ${args_}
