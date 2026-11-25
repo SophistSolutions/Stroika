@@ -48,8 +48,8 @@ make default-configurations     # create default named configurations under Inte
 Configurations are named, XML-described build variants (compiler, flags, feature flags for optional
 components like boost/openssl/sqlite/mongocxx/etc). List them with `make list-configurations` /
 `make list-configuration-tags`. **Never hand-edit a `ConfigurationFiles/*.xml` file** (in the build root, IntermediateFiles/) — amend the
-`configure` command line stored as the first element of the file and re-run `make apply-configurations`
-(or `make CONFIGURATION=X apply-configuration`).
+`configure` command line stored as the first element of the file and re-run it: `make CONFIGURATION=X reconfigure`
+(`make reconfigure` re-runs every configuration's).
 
 ### Building
 ```bash
