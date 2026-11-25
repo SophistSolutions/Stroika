@@ -357,7 +357,7 @@ class Configure_:
                 self.FEATUREFLAG_GoogleTest = LIBFEATUREFLAG_UseStaticTPP_
         elif x == "none":
             for f in ("ATLMFC", "boost", "LIBCURL", "libxml2", "Xerces", "LZMA", "fmtlib", "OpenSSL", "sqlite", "mongocxxdriver",
-                      "WinHTTP", "ZLib", "zstd", "GoogleTest"):
+                      "WinHTTP", "ZLib", "zstd", "GoogleTest", "WIX"):
                 if getattr(self, "FEATUREFLAG_" + f) is None:
                     setattr(self, "FEATUREFLAG_" + f, LIBFEATUREFLAG_No_)
         else:
@@ -1546,7 +1546,7 @@ class Configure_:
         if self.FEATUREFLAG_StrawberryPerl is None:
             self.FEATUREFLAG_StrawberryPerl = "use" if (self.FEATUREFLAG_OpenSSL == "use" and IS_WINDOWS_HOST_) else LIBFEATUREFLAG_No_
         if self.FEATUREFLAG_WIX is None:
-            # No need to install, because its checked into ThirdPartyComponents/WiX
+            # On Windows: it builds the samples' installers
             self.FEATUREFLAG_WIX = "use" if IS_WINDOWS_HOST_ else LIBFEATUREFLAG_No_
 
         if self.STDCXXLIB is not None:
