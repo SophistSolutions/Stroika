@@ -66,6 +66,33 @@ String Pinger::ResultType::ToString () const
     return sb;
 }
 
+namespace {
+    // the length, in bytes, of the IPv4 header packet starts with (its ihl) - nullopt if packet is too short for that header,
+    // or for an ICMP header after it
+    optional<size_t> IPHeaderLengthBeforeICMP_ (span<const byte> packet)
+    {
+        if (packet.size () < sizeof (IP::V4::PacketHeader)) {
+            return nullopt;
+        }
+        size_t length = reinterpret_cast<const IP::V4::PacketHeader*> (packet.data ())->ihl * 4;
+        if (length < sizeof (IP::V4::PacketHeader) or packet.size () < length + ICMP::V4::ICMP_MIN) {
+            return nullopt;
+        }
+        return length;
+    }
+    // The id of the echo request an ICMP error message (time exceeded, destination unreachable) quotes: after its own 8-byte
+    // ICMP header comes the request's IP header (with any options) and the first 8 bytes of its data - the request's ICMP
+    // header (RFC 792). nullopt if the message is too short to quote it.
+    optional<uint16_t> QuotedRequestID_ (span<const byte> icmpMessage)
+    {
+        span<const byte> quoted = icmpMessage.subspan (ICMP::V4::ICMP_MIN);
+        if (optional<size_t> ipHeaderLength = IPHeaderLengthBeforeICMP_ (quoted)) {
+            return reinterpret_cast<const ICMP::V4::PacketHeader*> (quoted.data () + *ipHeaderLength)->id;
+        }
+        return nullopt;
+    }
+}
+
 /*
  ********************************************************************************
  *************************** NetworkMonitor::Ping::Pinger ***********************
@@ -122,40 +149,30 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         constexpr size_t kExtraSluff_{100}; // Leave a little extra room in case some packets return extra
         StackBuffer<byte> recv_buf{Memory::eUninitialized, fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) +
                                                                kExtraSluff_}; // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
-        size_t n = fSocket_.ReceiveFrom (recv_buf, 0, &fromAddress, pingTimeoutAfter - Time::GetTickCount ()).size ();
+        span<const byte> packet = fSocket_.ReceiveFrom (recv_buf, 0, &fromAddress, pingTimeoutAfter - Time::GetTickCount ());
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("got back packet from {}"_f, fromAddress);
 #endif
-        const IP::V4::PacketHeader* replyIPHeader = reinterpret_cast<const IP::V4::PacketHeader*> (recv_buf.begin ());
-
-        // Skip ahead to the ICMP header within the IP packet
-        unsigned short                header_len      = replyIPHeader->ihl * 4;
-        const ICMP::V4::PacketHeader* replyICMPHeader = (const ICMP::V4::PacketHeader*)((const byte*)replyIPHeader + header_len);
-
-        // Make sure the reply is sane
-        if (n < header_len + ICMP::V4::ICMP_MIN) {
-            Execution::Throw (Execution::Exception{"too few bytes from "sv + Characters::ToString (fromAddress)}); // draft @todo fix
+        // The raw socket gets every ICMP packet this host does, from anyone: one too short for what its headers say is skipped,
+        // as is one that answers no request of this pinger's (below) - the wait goes on, to the timeout
+        optional<size_t> ipHeaderLength = IPHeaderLengthBeforeICMP_ (packet);
+        if (not ipHeaderLength) {
+            DbgTrace ("ignoring a packet too short to be an ICMP message ({} bytes) from {}"_f, packet.size (), fromAddress);
+            continue;
         }
+        const IP::V4::PacketHeader*   replyIPHeader   = reinterpret_cast<const IP::V4::PacketHeader*> (packet.data ());
+        span<const byte>              icmpMessage     = packet.subspan (*ipHeaderLength);
+        const ICMP::V4::PacketHeader* replyICMPHeader = reinterpret_cast<const ICMP::V4::PacketHeader*> (icmpMessage.data ());
 
-        /*
-         * If we got a response id, compare it with the request we sent to make sure we're reading a resposne to the request we sent
-         */
+        // the id of the echo request it answers: an echo reply's own, or the one an error message quotes
         optional<uint16_t> echoedID;
         switch (replyICMPHeader->type) {
             case ICMP::V4::ICMP_ECHO_REPLY: {
                 echoedID = replyICMPHeader->id;
             } break;
-            case ICMP::V4::ICMP_TTL_EXPIRE: {
-                // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Time_exceeded - we also can find the first 8 bytes of original datagram's data
-                const ICMP::V4::PacketHeader* echoedICMPHeader =
-                    (const ICMP::V4::PacketHeader*)((const byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
-                echoedID = echoedICMPHeader->id;
-            } break;
+            case ICMP::V4::ICMP_TTL_EXPIRE:
             case ICMP::V4::ICMP_DEST_UNREACH: {
-                // According to https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Destination_unreachable - we also can find the first 8 bytes of original datagram's data
-                const ICMP::V4::PacketHeader* echoedICMPHeader =
-                    (const ICMP::V4::PacketHeader*)((const byte*)replyICMPHeader + 8 + sizeof (IP::V4::PacketHeader));
-                echoedID = echoedICMPHeader->id;
+                echoedID = QuotedRequestID_ (icmpMessage);
             } break;
             default: {
                 // Not a reply to any echo request - the raw socket gets every ICMP packet this host does: this request itself, when
@@ -166,9 +183,9 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
                 continue;
             }
         }
-        if (echoedID and echoedID != pingRequest.id) {
-            DbgTrace ("echoedID ({} != pingRequest.id (0x{:x})) so ignoring this reply"_f, echoedID, static_cast<int> (pingRequest.id));
-            // Must be a reply for another pinger running locally, so just ignore it (this will likely be quite rare).
+        if (echoedID != pingRequest.id) {
+            // for another pinger running locally (likely quite rare) - or an error message too short to say which request
+            DbgTrace ("echoedID ({}) != pingRequest.id (0x{:x}), so ignoring this reply"_f, echoedID, static_cast<int> (pingRequest.id));
             continue;
         }
 
