@@ -610,6 +610,11 @@ still compile". Say which one you did.
   StyledTextIO (RTF, HTML, PlainText), WordProcessor, SimpleTextStore and HiddenText.
 - **Build logic**: hairy Makefile recipes may move into `Build/Scripts/`, keeping the output byte-compatible - proved by
   an old-vs-new diff of real runs. New scripts are Python, not Perl.
+- **No serializing build steps for tidy output** (LGP, 2026-11-25): output that now and then interleaves is fine - make's
+  old build had it. Under Ninja, `USES_TERMINAL` (ExternalProject's `USES_TERMINAL_<step>`) runs a step in the console
+  pool, one at a time: use it only where a step needs the terminal itself, or its output as it comes (Ninja holds back
+  any other step's until it ends); send a long step's output to a log instead.
+  Anything that runs one at a time where several could run is worth a look.
 - **Test coverage is a case-by-case cost/benefit call** - there is no "no redundant coverage" rule; by default keep what
   exists.
 - **No more tweaks to the hand-rolled third-party build** (LGP, 2026-09-25): those components are to come from a package
