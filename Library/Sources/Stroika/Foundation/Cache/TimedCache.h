@@ -188,19 +188,19 @@ namespace Stroika::Foundation::Cache {
             static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
 
             /**
-             * @brief This just applies to LookupValue() calls; can increase latency setting to true
-             * 
-             *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
-             *  This is because typically, filling the cache
-             *  will be slow (otherwise you would be us using the SynchronizedTimedCache).
+             * @brief Hold the cache's lock while LookupValue fills it, so calls that miss together run the filler once
              *
-             *  But this has the downside, that you could try filling the cache multiple times with the same value.
+             *  This matters for a cache used from several threads at once (SynchronizedTimedCache), and applies only to
+             *  LookupValue ().
              *
-             *  Thats perfectly safe, but not speedy.
+             *  By default (false) no lock is held while the filler runs - filling is typically slow - so threads that miss the same
+             *  value at once each run the filler, and each adds its result. That is safe, but wasteful when fills are costly.
              *
-             *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
-             *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
-             *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
+             *  With kHoldWriteLockDuringCacheFill, a LookupValue that misses takes the cache's exclusive lock, looks again - another
+             *  thread may have filled it meanwhile - and runs the filler only if the value is still missing or stale. Every other
+             *  use of the cache, for any key, waits while the filler runs. So the filler must not use the same cache - its lock is
+             *  not recursive (an internally synchronized cache's is a shared_timed_mutex) - and two such caches must not each fill
+             *  from the other, directly or not: two threads would take their locks in opposite orders, and deadlock.
              */
             static constexpr bool kHoldWriteLockDuringCacheFill = false;
 
@@ -788,8 +788,11 @@ namespace Stroika::Foundation::Cache {
          *      \endcode
          * 
          *  \note   This function may update the TimedCache (which is why it is non-const).
-         * 
+         *
          *  \note   Any time arguments given constrain the lookup. They are not used for the Add ().
+         *
+         *  \note   With TRAITS::kHoldWriteLockDuringCacheFill, cacheFiller runs holding the cache's lock, and calls that miss
+         *          together run it once (@see TimedCacheSupport::ExplicitTraits::kHoldWriteLockDuringCacheFill).
          */
         template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
             requires (IKeyedCache<K>)
@@ -842,7 +845,16 @@ namespace Stroika::Foundation::Cache {
         nonvirtual void Add (typename Common::ArgByValueType<V> result, TimeStampType expiresAt);
 
     private:
-        // no locking or bookkeeping - just add the item
+        // no locking or bookkeeping - just add the item, stamped now (fresh now, or expiring GetMaxAge_ () from now) unless given a time
+        template <typename K = KEY>
+            requires (IKeyedCache<K> and IValuelessCache<VALUE>)
+        nonvirtual void Add_ (typename Common::ArgByValueType<K> key);
+        template <typename K = KEY, typename V = VALUE>
+            requires (IKeyedCache<K> and not IValuelessCache<V>)
+        nonvirtual void Add_ (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result);
+        template <typename K = KEY, typename V = VALUE>
+            requires (not IKeyedCache<K> and not IValuelessCache<V>)
+        nonvirtual void Add_ (typename Common::ArgByValueType<V> result);
         template <typename K = KEY>
             requires (IKeyedCache<K> and IValuelessCache<VALUE> and TRAITS::kTrackExpiration)
         nonvirtual void Add_ (typename Common::ArgByValueType<K> key, TimeStampType expiresAt);
@@ -940,6 +952,8 @@ namespace Stroika::Foundation::Cache {
 
     private:
         nonvirtual bool Expired_ (const MyResult_& r, TimeStampType now = TRAITS::GetCurrentTimestamp ()) const;
+        // what Lookup would return: not expired - or, given maxAge, refreshed within it. Counts no hit or miss.
+        nonvirtual bool Fresh_ (const MyResult_& r, optional<TimeStampDifferenceType> maxAge) const;
 
     private:
         // @todo could consider using Stroika Mapping<> - or TRAITS specified Mapper strategy
@@ -949,12 +963,18 @@ namespace Stroika::Foundation::Cache {
 
     private:
         // most PRIVATE(_) routines assume locking done externally, but these 'Locking' ones do the locking themselves.
+        // LookupValue's fill, after a miss. With kHoldWriteLockDuringCacheFill it fills holding the lock, after looking again as the
+        // caller's Lookup did (maxAge is the caller's, if any)
         template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
             requires (not IKeyedCache<K>)
-        nonvirtual VALUE LockingLookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller);
+        nonvirtual VALUE LockingLookupValueAdder_ (optional<TimeStampDifferenceType> maxAge, CACHE_FILLTER_T&& cacheFiller);
         template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
             requires (IKeyedCache<K>)
-        nonvirtual VALUE LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
+        nonvirtual VALUE LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, optional<TimeStampDifferenceType> maxAge,
+                                                   CACHE_FILLTER_T&& cacheFiller);
+        template <typename K = KEY, typename V = VALUE, Common::invocable_r<K, K> CACHE_FILLTER_T>
+            requires (IKeyedCache<K> and IValuelessCache<V>)
+        nonvirtual KEY LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
 
     private:
         Stroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;

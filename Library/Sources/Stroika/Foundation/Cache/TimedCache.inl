@@ -110,6 +110,19 @@ namespace Stroika::Foundation::Cache {
         return now > expiresAt;
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    inline bool TimedCache<KEY, VALUE, TRAITS>::Fresh_ (const MyResult_& r, optional<TimeStampDifferenceType> maxAge) const
+    {
+        if constexpr (kTrackFreshness) {
+            if (maxAge) {
+                return r.fLastRefreshedAt + *maxAge > TRAITS::GetCurrentTimestamp ();
+            }
+        }
+        else {
+            Require (not maxAge); // only a LookupValue that tracks freshness takes one
+        }
+        return not Expired_ (r);
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     constexpr auto TimedCache<KEY, VALUE, TRAITS>::GetMaxAge_ () const -> TimeStampDifferenceType
     {
         if constexpr (TRAITS::kPerCacheMaxAge) {
@@ -530,7 +543,7 @@ namespace Stroika::Foundation::Cache {
             return *o;
         }
         else {
-            return LockingLookupValueAdder_ (key, forward<CACHE_FILLTER_T> (cacheFiller));
+            return LockingLookupValueAdder_ (key, nullopt, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -542,7 +555,7 @@ namespace Stroika::Foundation::Cache {
             return *o;
         }
         else {
-            return LockingLookupValueAdder_ (key, forward<CACHE_FILLTER_T> (cacheFiller));
+            return LockingLookupValueAdder_ (key, maxAge, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -554,7 +567,7 @@ namespace Stroika::Foundation::Cache {
             return *ov;
         }
         else {
-            return LockingLookupValueAdder_ (forward<CACHE_FILLTER_T> (cacheFiller));
+            return LockingLookupValueAdder_ (nullopt, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -566,7 +579,7 @@ namespace Stroika::Foundation::Cache {
             return *ov;
         }
         else {
-            return LockingLookupValueAdder_ (forward<CACHE_FILLTER_T> (cacheFiller));
+            return LockingLookupValueAdder_ (maxAge, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -578,36 +591,69 @@ namespace Stroika::Foundation::Cache {
             return *ok;
         }
         else {
-            KEY kr = forward<CACHE_FILLTER_T> (cacheFiller) (key);
-            Add (kr);
-            return kr;
+            return LockingLookupValueAdder_ (key, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
         requires (not IKeyedCache<K>)
-    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LockingLookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller)
+    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LockingLookupValueAdder_ (optional<TimeStampDifferenceType> maxAge, CACHE_FILLTER_T&& cacheFiller)
     {
-        VALUE r = forward<CACHE_FILLTER_T> (cacheFiller) ();
-        Add (r);
-        return r;
+        if constexpr (TRAITS::kHoldWriteLockDuringCacheFill) {
+            scoped_lock critSec{fMaybeMutex_};
+            if (fData_ and Fresh_ (*fData_, maxAge)) {
+                return fData_->fResult; // filled by another thread while this one waited for the lock
+            }
+            VALUE v = forward<CACHE_FILLTER_T> (cacheFiller) ();
+            Add_ (v);
+            return v;
+        }
+        else {
+            VALUE v = forward<CACHE_FILLTER_T> (cacheFiller) ();
+            Add (v);
+            return v;
+        }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
         requires (IKeyedCache<K>)
-    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller)
+    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key,
+                                                                           optional<TimeStampDifferenceType> maxAge, CACHE_FILLTER_T&& cacheFiller)
     {
         if constexpr (TRAITS::kHoldWriteLockDuringCacheFill) {
             scoped_lock critSec{fMaybeMutex_};
-            VALUE       v = forward<CACHE_FILLTER_T> (cacheFiller) (key);
+            if (auto i = fData_.find (key); i != fData_.end () and Fresh_ (i->second, maxAge)) {
+                return i->second.fResult; // filled by another thread while this one waited for the lock
+            }
+            VALUE v = forward<CACHE_FILLTER_T> (cacheFiller) (key);
             AutomaticallyClearExpiredDataSometimes_ ();
             Add_ (key, v);
             return v;
         }
         else {
             VALUE v = forward<CACHE_FILLTER_T> (cacheFiller) (key);
-            Add (key, v); // public API so will acquire lock
+            Add (key, v);
             return v;
+        }
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, typename V, Common::invocable_r<K, K> CACHE_FILLTER_T>
+        requires (IKeyedCache<K> and IValuelessCache<V>)
+    inline KEY TimedCache<KEY, VALUE, TRAITS>::LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller)
+    {
+        if constexpr (TRAITS::kHoldWriteLockDuringCacheFill) {
+            scoped_lock critSec{fMaybeMutex_};
+            if (auto i = fData_.find (key); i != fData_.end () and Fresh_ (i->second, nullopt)) {
+                return i->first; // filled by another thread while this one waited for the lock
+            }
+            KEY kr = forward<CACHE_FILLTER_T> (cacheFiller) (key);
+            Add_ (kr);
+            return kr;
+        }
+        else {
+            KEY kr = forward<CACHE_FILLTER_T> (cacheFiller) (key);
+            Add (kr);
+            return kr;
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -617,13 +663,7 @@ namespace Stroika::Foundation::Cache {
     {
         scoped_lock critSec{fMaybeMutex_};
         // nb skip AutomaticallyClearExpiredDataSometimes_ cuz Valueless has no map, and add will just overwrite
-        TimeStampType now = TRAITS::GetCurrentTimestamp ();
-        if constexpr (kTrackExpiration) {
-            Add_ (key, now + GetMaxAge_ ());
-        }
-        else if constexpr (kTrackFreshness) {
-            Add_ (key, now);
-        }
+        Add_ (key);
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
@@ -632,13 +672,7 @@ namespace Stroika::Foundation::Cache {
     {
         scoped_lock critSec{fMaybeMutex_};
         AutomaticallyClearExpiredDataSometimes_ ();
-        TimeStampType now = TRAITS::GetCurrentTimestamp ();
-        if constexpr (kTrackExpiration) {
-            Add_ (key, result, now + GetMaxAge_ ());
-        }
-        else if constexpr (kTrackFreshness) {
-            Add_ (key, result, now);
-        }
+        Add_ (key, result);
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
@@ -663,13 +697,9 @@ namespace Stroika::Foundation::Cache {
         requires (not IKeyedCache<K> and not IValuelessCache<V>)
     inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<V> result)
     {
-        TimeStampType now = TRAITS::GetCurrentTimestamp ();
-        if constexpr (kTrackExpiration) {
-            Add (result, now + GetMaxAge_ ());
-        }
-        else if constexpr (kTrackFreshness) {
-            Add (result, now);
-        }
+        scoped_lock critSec{fMaybeMutex_};
+        // no AutomaticallyClearExpiredDataSometimes_ for not keyed cache
+        Add_ (result);
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
@@ -688,6 +718,45 @@ namespace Stroika::Foundation::Cache {
         scoped_lock critSec{fMaybeMutex_};
         AutomaticallyClearExpiredDataSometimes_ ();
         Add_ (result, expiresAt);
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K>
+        requires (IKeyedCache<K> and IValuelessCache<VALUE>)
+    inline void TimedCache<KEY, VALUE, TRAITS>::Add_ (typename Common::ArgByValueType<K> key)
+    {
+        TimeStampType now = TRAITS::GetCurrentTimestamp ();
+        if constexpr (kTrackExpiration) {
+            Add_ (key, now + GetMaxAge_ ());
+        }
+        else if constexpr (kTrackFreshness) {
+            Add_ (key, now);
+        }
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, typename V>
+        requires (IKeyedCache<K> and not IValuelessCache<V>)
+    inline void TimedCache<KEY, VALUE, TRAITS>::Add_ (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result)
+    {
+        TimeStampType now = TRAITS::GetCurrentTimestamp ();
+        if constexpr (kTrackExpiration) {
+            Add_ (key, result, now + GetMaxAge_ ());
+        }
+        else if constexpr (kTrackFreshness) {
+            Add_ (key, result, now);
+        }
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, typename V>
+        requires (not IKeyedCache<K> and not IValuelessCache<V>)
+    inline void TimedCache<KEY, VALUE, TRAITS>::Add_ (typename Common::ArgByValueType<V> result)
+    {
+        TimeStampType now = TRAITS::GetCurrentTimestamp ();
+        if constexpr (kTrackExpiration) {
+            Add_ (result, now + GetMaxAge_ ());
+        }
+        else if constexpr (kTrackFreshness) {
+            Add_ (result, now);
+        }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>

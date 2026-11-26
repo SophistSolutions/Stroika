@@ -748,6 +748,52 @@ namespace {
         EXPECT_GT (fills, 0);
     }
 }
+
+namespace {
+    /*
+     *  With kHoldWriteLockDuringCacheFill, LookupValue calls that miss together run the filler once - the others wait for the
+     *  cache's lock, then find the value - for every LookupValue overload: keyless, keyed and valueless.
+     */
+    GTEST_TEST (Foundation_Caching, WriteLockDuringCacheFill_FillsOnce_)
+    {
+        using namespace TimedCacheSupport;
+        using Time::DurationSeconds;
+        // calls lookupValue (filler) on 8 threads at once, and returns how many times the filler ran
+        auto fillsAtOnce = [] (auto&& lookupValue) {
+            atomic<int> fills{0};
+            // slow, so every thread misses before the first fill ends
+            auto filler = [&fills] () {
+                ++fills;
+                this_thread::sleep_for (200ms);
+                return 42;
+            };
+            vector<std::thread> threads;
+            for (int t = 0; t < 8; ++t) {
+                threads.emplace_back ([&] () { EXPECT_EQ (lookupValue (filler), 42); });
+            }
+            for (std::thread& th : threads) {
+                th.join ();
+            }
+            return fills.load ();
+        };
+        SynchronizedTimedCache<void, int, WriteLockDuringCacheFillTraits<DefaultTraits<void, int>>> keyless1;
+        SynchronizedTimedCache<void, int, WriteLockDuringCacheFillTraits<DefaultTraits<void, int>>> keyless2;
+        SynchronizedTimedCache<int, int, WriteLockDuringCacheFillTraits<DefaultTraits<int, int>>>   keyed1;
+        SynchronizedTimedCache<int, int, WriteLockDuringCacheFillTraits<DefaultTraits<int, int>>>   keyed2;
+        SynchronizedTimedCache<int, ValuelessSentinalType, WriteLockDuringCacheFillTraits<DefaultTraits<int, ValuelessSentinalType>>> valueless;
+        EXPECT_EQ (fillsAtOnce ([&] (auto filler) { return keyless1.LookupValue (filler); }), 1);
+        EXPECT_EQ (fillsAtOnce ([&] (auto filler) { return keyless2.LookupValue (DurationSeconds{60}, filler); }), 1);
+        EXPECT_EQ (fillsAtOnce ([&] (auto filler) { return keyed1.LookupValue (3, [&] (int) { return filler (); }); }), 1);
+        EXPECT_EQ (fillsAtOnce ([&] (auto filler) { return keyed2.LookupValue (3, DurationSeconds{60}, [&] (int) { return filler (); }); }), 1);
+        EXPECT_EQ (fillsAtOnce ([&] (auto filler) {
+                       return valueless.LookupValue (42, [&] (int key) {
+                           (void)filler ();
+                           return key;
+                       });
+                   }),
+                   1);
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
