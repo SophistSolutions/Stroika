@@ -352,7 +352,8 @@ namespace Stroika::Frameworks::WebServer {
     private:
         struct MyMessage_ : Message {
             MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream::Ptr<byte>& socketStream,
-                        const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse);
+                        const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse,
+                        const optional<size_t>& automaticTransferChunkSize);
 
             // Only valid until the end of a successful ReadHeaders
             HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
@@ -406,6 +407,7 @@ namespace Stroika::Frameworks::WebServer {
         const Headers                                          fDefaultResponseHeaders_;
         const optional<Headers>                                fDefaultGETResponseHeaders_;
         const optional<bool>                                   fAutoComputeETagResponse_;
+        const optional<size_t>                                 fAutomaticTransferChunkSize_;
         const optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
         const Time::DurationSeconds                            fIdleConnectionTimeout_;
         const ConnectionOrientedStreamSocket::Ptr              fSocket_;

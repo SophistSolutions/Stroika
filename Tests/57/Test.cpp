@@ -847,6 +847,38 @@ namespace {
     }
 
     /*
+     *  Options::fAutomaticTransferChunkSize says when a response turns to chunked transfer: once its body is longer than that -
+     *  never, for Response::kNoChunkedTransfer. Before Stroika v3.0d26 the option did nothing: every response turned at
+     *  Response::kAutomaticTransferChunkSize_Default.
+     */
+    GTEST_TEST (Frameworks_WebServer, AutomaticTransferChunkSize_)
+    {
+        TraceContextBumper ctx{"AutomaticTransferChunkSize_"};
+        constexpr size_t   kSmallBody_ = Response::kAutomaticTransferChunkSize_Default / 4;
+        constexpr size_t   kBigBody_   = Response::kAutomaticTransferChunkSize_Default * 4;
+        // is the response to a GET of a body this long chunked - from a server with this fAutomaticTransferChunkSize
+        auto chunked = [] (size_t bodyLength, optional<size_t> chunkSize) {
+            ConnectionManager                                server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_),
+                                                                    Sequence<Route>{Route{"body"_RegEx,
+                                                                                          [=] (Request&, Response& response) {
+                                                               response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                                               const string body (bodyLength, 'x');
+                                                               response.write (as_bytes (span{body}));
+                                                                                          }}},
+                                                                    ConnectionManager::Options{.fAutomaticTransferChunkSize = chunkSize}};
+            IO::Network::ConnectionOrientedStreamSocket::Ptr client = ConnectToTestServer_ ();
+            client.Write (as_bytes (span{"GET /body HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"sv}));
+            optional<string> response = ReadUntilClosed_ (client);
+            EXPECT_TRUE (response) << "the server left the connection open";
+            return String::FromLatin1 (response.value_or (string{})).Contains ("Transfer-Encoding: chunked"sv, eCaseInsensitive);
+        };
+        EXPECT_FALSE (chunked (kSmallBody_, nullopt));
+        EXPECT_TRUE (chunked (kSmallBody_, kSmallBody_ / 4));
+        EXPECT_TRUE (chunked (kBigBody_, nullopt));
+        EXPECT_FALSE (chunked (kBigBody_, Response::kNoChunkedTransfer));
+    }
+
+    /*
      *  Interceptors added from two threads at once are all in the chain a new connection gets.
      */
     GTEST_TEST (Frameworks_WebServer, AddInterceptorConcurrently_)

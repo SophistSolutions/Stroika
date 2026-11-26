@@ -53,14 +53,16 @@ using IO::Network::HTTP::KeepAlive;
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
-Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream::Ptr<byte>& socketStream,
-                                    const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse)
+Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr&   socket,
+                                    const Streams::InputOutputStream::Ptr<byte>& socketStream, const Headers& defaultResponseHeaders,
+                                    const optional<bool> autoComputeETagResponse, const optional<size_t>& automaticTransferChunkSize)
     : Message{Request{socketStream}, Response{socket, socketStream, defaultResponseHeaders}, socket.GetPeerAddress ()}
     , fMsgHeaderInTextStream{HTTP::MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}
 {
     if (autoComputeETagResponse) {
         this->rwResponse ().autoComputeETag = *autoComputeETagResponse;
     }
+    this->rwResponse ().automaticTransferChunkSize = automaticTransferChunkSize; // nullopt: the Response's default
 }
 
 Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders ()
@@ -305,6 +307,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , fDefaultResponseHeaders_{options.fDefaultResponseHeaders}
     , fDefaultGETResponseHeaders_{options.fDefaultGETResponseHeaders}
     , fAutoComputeETagResponse_{options.fAutoComputeETagResponse}
+    , fAutomaticTransferChunkSize_{options.fAutomaticTransferChunkSize}
     , fSupportedCompressionEncodings_{options.fSupportedCompressionEncodings}
     , fIdleConnectionTimeout_{options.fIdleConnectionTimeout}
     , fSocket_{s}
@@ -426,7 +429,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
         // a message whose header came only in part last time (its response not completed) goes on, with what was read of it
         if (fMessage_ == nullptr or fMessage_->response ().responseCompleted ()) {
-            fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
+            fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_, fAutomaticTransferChunkSize_);
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedChecker_Enabled
             fMessage_->SetAssertExternallySynchronizedCheckerContext (GetSharedContext ());
 #endif
