@@ -78,10 +78,10 @@ time).
 
 - \$TEST_TARGET=MacOS_XCode26_m1
 
-  (takes about 3 h)
+  (takes about 3 h; -j3 because the Mac has 8 GB of memory - more jobs swap, and build slower)
 
   ```bash
-  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode26_m1 PARALELLMAKEFLAG=-j5 \
+  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode26_m1 PARALELLMAKEFLAG=-j3 \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       ./Build/Scripts/RunRemoteRegressionTests
   ```
