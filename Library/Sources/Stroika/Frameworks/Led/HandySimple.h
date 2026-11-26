@@ -21,6 +21,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     template <typename WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
     Led_Size GetTextExtent (Tablet* tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap);
 
@@ -106,6 +107,7 @@ namespace Stroika::Frameworks::Led {
         Led_Rect      fCachedIntoRect;
         Tablet*       fCachedIntoTablet;
     };
+#endif
 
 }
 

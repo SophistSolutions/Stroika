@@ -4,6 +4,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @METHOD:        GetTextExtent<WORDWRAPPEDTEXTIMAGER,SIMPLETEXTIMAGER,TEXTSTORE>
     @DESCRIPTION:   <p>Trivial wrapper on TrivialImager<TEXTSTORE,IMAGER> etc, except it handles
@@ -146,5 +147,6 @@ namespace Stroika::Frameworks::Led {
         bool printing = true; // not really printing - but set this to disable erase call
         fCachedImager->Draw (subsetToDraw, printing);
     }
+#endif
 
 }

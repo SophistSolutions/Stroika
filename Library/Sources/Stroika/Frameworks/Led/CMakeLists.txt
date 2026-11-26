@@ -4,6 +4,7 @@ target_sources (stroika-frameworks PRIVATE
     Command.cpp
     FlavorPackage.cpp
     GDI.cpp
+    HandySimple.cpp
     HiddenText.cpp
     IdleManager.cpp
     LineBasedPartition.cpp
@@ -31,6 +32,7 @@ target_sources (stroika-frameworks PRIVATE
     TextBreaks.cpp
     TextImager.cpp
     TextInteractor.cpp
+    TextInteractorMixins.cpp
     TextStore.cpp
     WordProcessor.cpp
     WordWrappedTextImager.cpp
