@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Cache {
         requires (IKeyedCache<K> and not IValuelessCache<V>)
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key)
     {
-        shared_lock                   critSec{fMaybeMutex_};
+        scoped_lock                   critSec{fMaybeMutex_}; // not shared_lock: this may change fData_
         typename MyMapType_::iterator i = fData_.find (key);
         if (i == fData_.end ()) {
             fStats_.IncrementMisses ();
@@ -370,7 +370,7 @@ namespace Stroika::Foundation::Cache {
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) -> optional<tuple<VALUE, TimeStampType>>
         requires (kTrackExpiration and IKeyedCache<K>)
     {
-        shared_lock                   critSec{fMaybeMutex_};
+        scoped_lock                   critSec{fMaybeMutex_}; // not shared_lock: this may change fData_
         typename MyMapType_::iterator i = fData_.find (key);
         if (i == fData_.end ()) {
             fStats_.IncrementMisses ();
@@ -417,7 +417,7 @@ namespace Stroika::Foundation::Cache {
     inline auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) -> optional<tuple<VALUE, TimeStampType>>
         requires (kTrackFreshness and IKeyedCache<K>)
     {
-        shared_lock                   critSec{fMaybeMutex_};
+        scoped_lock                   critSec{fMaybeMutex_}; // not shared_lock: this may change fData_
         typename MyMapType_::iterator i = fData_.find (key);
         if (i == fData_.end ()) {
             fStats_.IncrementMisses ();
@@ -716,7 +716,7 @@ namespace Stroika::Foundation::Cache {
     inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<V> result, TimeStampType expiresAt)
     {
         scoped_lock critSec{fMaybeMutex_};
-        AutomaticallyClearExpiredDataSometimes_ ();
+        // no AutomaticallyClearExpiredDataSometimes_ for not keyed cache
         Add_ (result, expiresAt);
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>

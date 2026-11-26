@@ -794,6 +794,43 @@ namespace {
                    1);
     }
 }
+
+namespace {
+    /*
+     *  A SynchronizedTimedCache's expired entries, looked up from several threads at once: the non-const Lookup and LookupDetails
+     *  remove an expired entry they find, so they take the cache's exclusive lock - else two threads could both remove it.
+     */
+    GTEST_TEST (Foundation_Caching, SynchronizedTimedCacheExpiredOnThreads_)
+    {
+        using namespace TimedCacheSupport;
+        using Time::DurationSeconds;
+        SynchronizedTimedCache<int, int>                                                   freshness;
+        SynchronizedTimedCache<int, int, TrackExpirationTraits<DefaultTraits<int, int>>>   expiration;
+        SynchronizedTimedCache<void, int, TrackExpirationTraits<DefaultTraits<void, int>>> keylessExpiration;
+        vector<std::thread>                                                                threads;
+        for (int t = 0; t < 8; ++t) {
+            threads.emplace_back ([&] () {
+                const auto stopAt = chrono::steady_clock::now () + 1s;
+                while (chrono::steady_clock::now () < stopAt) {
+                    const auto longAgo = Time::GetTickCount () - DurationSeconds{24 * 60 * 60}; // so each entry added has expired
+                    freshness.Add (1, 1, longAgo);
+                    EXPECT_FALSE (freshness.Lookup (1));
+                    freshness.Add (1, 1, longAgo);
+                    EXPECT_FALSE (freshness.LookupDetails (1));
+                    expiration.Add (1, 1, longAgo);
+                    EXPECT_FALSE (expiration.Lookup (1));
+                    expiration.Add (1, 1, longAgo);
+                    EXPECT_FALSE (expiration.LookupDetails (1));
+                    keylessExpiration.Add (1, longAgo);
+                    EXPECT_FALSE (keylessExpiration.Lookup ());
+                }
+            });
+        }
+        for (std::thread& th : threads) {
+            th.join ();
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
