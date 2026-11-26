@@ -8,6 +8,16 @@ Some days before, update each third-party component to its latest version (`vers
 `ThirdPartyComponents/<component>/CMakeLists.txt`), so CI and a night's regression runs have tried them before the release
 builds. Change them together: a new version rebuilds that component, and every one built on it, in each tree and CI cache.
 
+## Before starting: CodeQL's alerts
+
+Look over CodeQL's open alerts on v3-Dev: fix the real ones, and dismiss the rest (false positive, or won't fix) with a
+reason - a dismissal covers every branch. An alert open only in a category no workflow runs any more is stale: dismiss it.
+
+```bash
+gh api 'repos/SophistSolutions/Stroika/code-scanning/alerts?ref=refs/heads/v3-Dev&state=open&per_page=100' \
+  --jq '.[] | "\(.number) \(.rule.id) \(.most_recent_instance.location.path):\(.most_recent_instance.location.start_line)"'
+```
+
 ## Release notes
 
 Built purely from the commits since the last release (its tag - the same as `v3-Release...HEAD` while v3-Release is that release):
