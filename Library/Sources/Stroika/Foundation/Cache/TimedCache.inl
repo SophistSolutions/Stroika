@@ -276,6 +276,7 @@ namespace Stroika::Foundation::Cache {
             fStats_.IncrementHits ();
             return ov->fResult;
         }
+        fStats_.IncrementMisses ();
         return nullopt;
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -296,6 +297,7 @@ namespace Stroika::Foundation::Cache {
             fStats_.IncrementHits ();
             return ov->fResult;
         }
+        fStats_.IncrementMisses ();
         return nullopt;
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -316,6 +318,7 @@ namespace Stroika::Foundation::Cache {
             fStats_.IncrementHits ();
             return ov->fResult;
         }
+        fStats_.IncrementMisses ();
         return nullopt;
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -345,7 +348,7 @@ namespace Stroika::Foundation::Cache {
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) const -> optional<tuple<VALUE, TimeStampType>>
-        requires (kTrackExpiration and IKeyedCache<K>)
+        requires (kTrackExpiration and IKeyedCache<K> and not IValuelessCache<VALUE>)
     {
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i = fData_.find (key);
@@ -368,7 +371,7 @@ namespace Stroika::Foundation::Cache {
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) -> optional<tuple<VALUE, TimeStampType>>
-        requires (kTrackExpiration and IKeyedCache<K>)
+        requires (kTrackExpiration and IKeyedCache<K> and not IValuelessCache<VALUE>)
     {
         scoped_lock                   critSec{fMaybeMutex_}; // not shared_lock: this may change fData_
         typename MyMapType_::iterator i = fData_.find (key);
@@ -392,7 +395,7 @@ namespace Stroika::Foundation::Cache {
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) const -> optional<tuple<VALUE, TimeStampType>>
-        requires (kTrackFreshness and IKeyedCache<K>)
+        requires (kTrackFreshness and IKeyedCache<K> and not IValuelessCache<VALUE>)
     {
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i = fData_.find (key);
@@ -415,7 +418,7 @@ namespace Stroika::Foundation::Cache {
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     inline auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) -> optional<tuple<VALUE, TimeStampType>>
-        requires (kTrackFreshness and IKeyedCache<K>)
+        requires (kTrackFreshness and IKeyedCache<K> and not IValuelessCache<VALUE>)
     {
         scoped_lock                   critSec{fMaybeMutex_}; // not shared_lock: this may change fData_
         typename MyMapType_::iterator i = fData_.find (key);
@@ -444,7 +447,7 @@ namespace Stroika::Foundation::Cache {
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
         -> optional<tuple<VALUE, TimeStampType>>
-        requires (kTrackFreshness and IKeyedCache<K>)
+        requires (kTrackFreshness and IKeyedCache<K> and not IValuelessCache<VALUE>)
     {
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i   = fData_.find (key);
@@ -468,17 +471,21 @@ namespace Stroika::Foundation::Cache {
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (TimeStampDifferenceType maxAge) const -> optional<tuple<VALUE, TimeStampType>>
-        requires (not IKeyedCache<K>)
+        requires (kTrackFreshness and not IKeyedCache<K>)
     {
-        AssertNotImplemented (); // but easy
-        return nullopt;
+        shared_lock critSec{fMaybeMutex_};
+        if (not fData_ or fData_->fLastRefreshedAt + maxAge <= TRAITS::GetCurrentTimestamp ()) {
+            fStats_.IncrementMisses ();
+            return nullopt;
+        }
+        fStats_.IncrementHits ();
+        return make_tuple (fData_->fResult, fData_->fLastRefreshedAt);
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
         requires (IKeyedCache<K> and IValuelessCache<V>)
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) const -> optional<tuple<KEY, TimeStampType>>
     {
-        static_assert (not IKeyedCache<KEY>); // cuz cannot be both unkeyed and valueless
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i = fData_.find (key);
         if (i == fData_.end ()) {
@@ -495,7 +502,12 @@ namespace Stroika::Foundation::Cache {
             }
             fStats_.IncrementHits ();
             // return the STORED key object, which could contain more fields/data than the argument KEY
-            return i->first;
+            if constexpr (kTrackExpiration) {
+                return make_tuple (i->first, i->second.fExpiresAt);
+            }
+            else {
+                return make_tuple (i->first, i->second.fLastRefreshedAt);
+            }
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>

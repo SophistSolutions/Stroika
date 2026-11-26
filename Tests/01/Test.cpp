@@ -701,6 +701,75 @@ namespace {
 }
 
 namespace {
+    /*
+     *  LookupDetails: the value - for a valueless cache, the stored key - with when it was last refreshed (tracking freshness)
+     *  or when it expires (tracking expiration)
+     */
+    GTEST_TEST (Foundation_Caching, LookupDetails_)
+    {
+        using namespace TimedCacheSupport;
+        using Time::DurationSeconds;
+        const auto before = Time::GetTickCount ();
+        {
+            TimedCache<void, int> keyless;
+            EXPECT_FALSE (keyless.LookupDetails (DurationSeconds{60}));
+            keyless.Add (3);
+            auto d = keyless.LookupDetails (DurationSeconds{60});
+            ASSERT_TRUE (d);
+            EXPECT_EQ (get<0> (*d), 3);
+            EXPECT_GE (get<1> (*d), before);
+            EXPECT_LE (get<1> (*d), Time::GetTickCount ());
+            keyless.Add (3, before - DurationSeconds{30});
+            EXPECT_TRUE (keyless.LookupDetails (DurationSeconds{60}));
+            EXPECT_FALSE (keyless.LookupDetails (DurationSeconds{10})); // refreshed longer ago than that
+        }
+        {
+            TimedCache<int, ValuelessSentinalType> valueless{DurationSeconds{60}};
+            valueless.Add (4);
+            EXPECT_FALSE (valueless.LookupDetails (3));
+            auto d = valueless.LookupDetails (4);
+            ASSERT_TRUE (d);
+            EXPECT_EQ (get<0> (*d), 4);
+            EXPECT_GE (get<1> (*d), before);
+            EXPECT_LE (get<1> (*d), Time::GetTickCount ());
+            const auto& constValueless = valueless;
+            EXPECT_TRUE (constValueless.LookupDetails (4));
+        }
+        {
+            TimedCache<int, ValuelessSentinalType, TrackExpirationTraits<DefaultTraits<int, ValuelessSentinalType>>> valueless;
+            valueless.Add (4);
+            auto d = valueless.LookupDetails (4);
+            ASSERT_TRUE (d);
+            EXPECT_EQ (get<0> (*d), 4);
+            EXPECT_GT (get<1> (*d), Time::GetTickCount ()); // when it expires
+        }
+    }
+}
+
+namespace {
+    /*
+     *  A keyless cache's lookups find nothing in an empty cache: each is a miss, as a keyed cache's lookup of a key it lacks is
+     */
+    GTEST_TEST (Foundation_Caching, KeylessLookupStatistics_)
+    {
+        using Time::DurationSeconds;
+        struct BasicStatsTraits_ : TimedCacheSupport::DefaultTraits<void, int> {
+            using StatsType = Statistics::Stats_Basic;
+        };
+        TimedCache<void, int, BasicStatsTraits_> c;
+        EXPECT_FALSE (c.Lookup ());
+        EXPECT_FALSE (as_const (c).Lookup ());
+        EXPECT_FALSE (c.Lookup (DurationSeconds{60}));
+        EXPECT_FALSE (c.LookupDetails (DurationSeconds{60}));
+        EXPECT_EQ (c.GetStats ().fCachedCollected_Misses.load (), 4u);
+        c.Add (3);
+        EXPECT_TRUE (c.Lookup ());
+        EXPECT_EQ (c.GetStats ().fCachedCollected_Hits.load (), 1u);
+        EXPECT_EQ (c.GetStats ().fCachedCollected_Misses.load (), 4u);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Caching, Statistics_)
     {
         Statistics::Stats_Basic s;

@@ -677,7 +677,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  \brief Returns the value associated with argument 'key', or nullopt, if its missing (missing same as expired). Can be used to retrieve lastRefreshedAt
+         *  \brief Returns the value associated with argument 'key', or nullopt, if its missing (missing same as expired). LookupDetails () also returns when it was last refreshed, or expires
          * 
          *  \note that the non-const overload of Lookup respects TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed, and will
          *        auto-refresh the item (similar to LRUCache) if found.
@@ -720,7 +720,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  \brief Returns the value associated with argument 'key' (if IKeyedCache), or nullopt, if its missing (missing same as expired). Like Lookup but also returns expiration information.
+         *  \brief Returns the value associated with argument 'key' (if IKeyedCache), or nullopt, if its missing (missing same as expired). Like Lookup but also returns a time: when it expires (kTrackExpiration), or when it was last refreshed (kTrackFreshness). A valueless cache returns the stored key, as its Lookup does.
          * 
          *  \note that the non-const overload of Lookup respects TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed, and will
          *        auto-refresh the item (similar to LRUCache) if found.
@@ -732,22 +732,22 @@ namespace Stroika::Foundation::Cache {
          */
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key) const
-            requires (kTrackExpiration and IKeyedCache<K>);
+            requires (kTrackExpiration and IKeyedCache<K> and not IValuelessCache<VALUE>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key)
-            requires (kTrackExpiration and IKeyedCache<K>);
+            requires (kTrackExpiration and IKeyedCache<K> and not IValuelessCache<VALUE>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key) const
-            requires (kTrackFreshness and IKeyedCache<K>);
+            requires (kTrackFreshness and IKeyedCache<K> and not IValuelessCache<VALUE>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key)
-            requires (kTrackFreshness and IKeyedCache<K>);
+            requires (kTrackFreshness and IKeyedCache<K> and not IValuelessCache<VALUE>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
-            requires (kTrackFreshness and IKeyedCache<K>);
+            requires (kTrackFreshness and IKeyedCache<K> and not IValuelessCache<VALUE>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (TimeStampDifferenceType maxAge) const
-            requires (not IKeyedCache<K>);
+            requires (kTrackFreshness and not IKeyedCache<K>);
         template <typename K = KEY, typename V = VALUE>
             requires (IKeyedCache<K> and IValuelessCache<V>)
         nonvirtual optional<tuple<KEY, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key) const;
