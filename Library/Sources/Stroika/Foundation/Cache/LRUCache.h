@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Cache {
      * 
      *  \par Implementation Note:
      *       Private (_) routines dont hold locks - the public ones do. And in unsyncrhonized builds, the 'locks' aren't really locks
-     *       but Debug::AssertExternallySyncrhonizedMutex - to detect bad usage.
+     *       but Debug::AssertExternallySynchronizedChecker - to detect bad usage.
      *
      *  \note   \em Thread-Safety   if (TRAITS::kInternallySynchronized == eInternallySynchronized)           <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
      *  \note   \em Thread-Safety   if (TRAITS::kInternallySynchronized == eNotKnownInternallySynchronized)   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

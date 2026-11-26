@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Cache {
      *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
      *          {
      *              const Time::Duration                                        kCacheTTL_{5min};
-     *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};    // not threadsafe (not internally synchronized) by default - but checked with Debug::AssertExternallySyncrhonizedMutex
+     *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};    // not threadsafe (not internally synchronized) by default - but checked with Debug::AssertExternallySynchronizedChecker
      *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
      *                  return DNS::kThe.ReverseLookup (inetAddr);
      *              });
