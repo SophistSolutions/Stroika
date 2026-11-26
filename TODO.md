@@ -21,14 +21,6 @@ Generally will track stuff here between releases
   archive is needed only when Conan builds a package, and Conan can keep that itself (a recipe's source (), done once per
   recipe revision; its download cache) - so the per-tree Origs-Cache, written into the source tree, may go.
 
-- **Cold third-party builds: measure, then maybe build the components in parallel** (LGP 2026-11-25; #1157's build
-  speed) - each component builds inside `conan install`, under Conan's lock (ThirdPartyComponents/CMakeLists.txt), so a
-  build with nothing in Conan's cache makes them one at a time. First count how many builds are still cold, once CI's
-  per-job caches and the Windows docker runs' Conan volumes (721cc8703a) have run a while. If still common: build each
-  component in the tree, outside Conan, and hold the lock only for Conan's short steps (export, then `conan export-pkg`,
-  then the install into Builds) - the builds sharing make's job slots, or a job pool under Ninja; check the debug path
-  maps against the tree's build folder.
-
 - v3.0d26x - at the start
    - **Issues scheduled for this release: milestone 3.0d26** - https://github.com/SophistSolutions/Stroika/milestone/3.
      What follows here has no issue.
