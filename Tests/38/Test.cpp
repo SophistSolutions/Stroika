@@ -177,7 +177,7 @@ namespace {
 #else
             ::close (fds[1]);
             byte b{};
-            (void)::read (fds[0], &b, 1); // returns at end-of-file (0)
+            EXPECT_EQ (::read (fds[0], &b, 1), 0); // end-of-file
             ::close (fds[0]);
 #endif
             return Time::GetTickCount () - closedAt;
