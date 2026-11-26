@@ -96,7 +96,9 @@ if [[ -n "${CONAN_CACHE_VOLUME}" ]] ; then
         UNUSED_FOR_=$(( ($(date +%s) - RUN_START_) / 3600 + 1 ))h
         echo "Copying out Conan's cache, to volume ${CONAN_CACHE_VOLUME}, less what this run did not use (unused for ${UNUSED_FOR_})"
         $DOCKER exec $CONTAINER_NAME bash -l -c "conan remove '*#*:*' --lru=${UNUSED_FOR_} --confirm; conan remove '*#*' --lru=${UNUSED_FOR_} --confirm"
-        $DOCKER exec $CONTAINER_NAME powershell -Command "Remove-Item -ErrorAction Ignore C:\conan-cache\complete; robocopy C:\conan C:\conan-cache /MIR ${CONAN_CACHE_COPY_}; if (\$LASTEXITCODE -ge 8) { exit 1 }; New-Item C:\conan-cache\complete > \$null"
+        # robocopy lists each file /MIR purges, /NFL /NDL notwithstanding (Server Core ltsc2025's) - thousands, for a package
+        # dropped - so its output goes to a log in the container, and only its summary and any errors are shown
+        $DOCKER exec $CONTAINER_NAME powershell -Command "Remove-Item -ErrorAction Ignore C:\conan-cache\complete; robocopy C:\conan C:\conan-cache /MIR ${CONAN_CACHE_COPY_} /LOG:C:\conan-copy-out.log; \$rc = \$LASTEXITCODE; Select-String -Path C:\conan-copy-out.log -Pattern 'Total\s+Copied','^\s*(Dirs|Files|Bytes) :',' ERROR ' | ForEach-Object Line; if (\$rc -ge 8) { exit 1 }; New-Item C:\conan-cache\complete > \$null"
     else
         echo "Conan's cache unused (the run failed before building): volume ${CONAN_CACHE_VOLUME} left as it was"
     fi
