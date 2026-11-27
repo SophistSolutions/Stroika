@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 /**
  *  \file
@@ -51,6 +52,12 @@ namespace Stroika::Frameworks::UPnP::SSDP {
          *  (nullopt: not known). Not part of the message: Serialize ignores it, and DeSerialize leaves it nullopt.
          */
         optional<Foundation::IO::Network::Interface::SystemIDType> fReceivedOn;
+
+        /**
+         *  When it arrived (Time::GetTickCount ()), as a Client::Listener or Client::Search heard it (nullopt: not known). Not
+         *  part of the message, as fReceivedOn is not.
+         */
+        optional<Foundation::Time::TimePointSeconds> fReceivedAt;
 
         bool operator== (const Advertisement&) const = default;
 

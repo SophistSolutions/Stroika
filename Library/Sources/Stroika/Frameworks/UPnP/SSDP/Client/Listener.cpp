@@ -203,6 +203,7 @@ public:
         SSDP::Advertisement d;
         SSDP::DeSerialize (Memory::BLOB{packet}, &headLine, &d);
         d.fReceivedOn = receivedOn;
+        d.fReceivedAt = Time::GetTickCount ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
         DbgTrace ("headLine: {}"_f, headLine);

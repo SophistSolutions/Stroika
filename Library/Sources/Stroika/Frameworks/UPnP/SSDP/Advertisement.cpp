@@ -54,6 +54,9 @@ String Advertisement::ToString () const
     if (fReceivedOn) {
         sb << ", receivedOn : "sv << *fReceivedOn;
     }
+    if (fReceivedAt) {
+        sb << ", receivedAt : "sv << *fReceivedAt;
+    }
     sb << "}"sv;
     return sb;
 }

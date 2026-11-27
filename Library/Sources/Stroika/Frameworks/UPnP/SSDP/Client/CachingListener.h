@@ -206,6 +206,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
     public:
         /**
          *  \brief The advertisements in force: each added, and not yet removed - fAlive true. Safe to call from any thread.
+         *
+         *  Each as last heard, so its fReceivedAt says when it was last heard.
          */
         nonvirtual Containers::Collection<SSDP::Advertisement> GetAdvertisements () const;
 

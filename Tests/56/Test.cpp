@@ -2444,11 +2444,15 @@ namespace {
             // the same USN at another LOCATION: an advertisement of its own
             notify (alive ("upnp:rootdevice"sv, rootUSN, location2, 60s));
             EXPECT_TRUE (waitForChanges (2));
-            // heard again: kept longer - not added again
+            // heard again: kept longer - not added again - and kept as last heard
+            const Time::TimePointSeconds heardAgainAt = Time::GetTickCount ();
             notify (alive ("upnp:rootdevice"sv, rootUSN, location1, 60s));
             Execution::Sleep (500ms);
             EXPECT_EQ (cached ().size (), 2u);
             EXPECT_TRUE (cached ().All ([] (const SSDP::Advertisement& a) { return a.fAlive == true; }));
+            EXPECT_TRUE (cached ().Any ([&] (const SSDP::Advertisement& a) {
+                return a.fLocation == location1 and a.fReceivedAt >= heardAgainAt;
+            })) << Characters::ToString (cached ()).AsNarrowSDKString ();
             // another of the device's advertisements: one of its services
             notify (alive (service, serviceUSN, location1, 60s));
             EXPECT_TRUE (waitForChanges (3));
@@ -2481,6 +2485,7 @@ namespace {
         DbgTrace ("told: {}"_f, changes);
         // each change told once, in order - though each NOTIFY came twice; fAlive says which: added or removed
         ASSERT_EQ (changes.size (), 9u);
+        EXPECT_TRUE (changes.All ([] (const SSDP::Advertisement& a) { return a.fReceivedAt.has_value (); }));
         auto is = [] (const SSDP::Advertisement& a, bool alive, const String& usn, const URI& location) {
             return a.fAlive == alive and a.fUSN == usn and a.fLocation == location;
         };
