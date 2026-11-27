@@ -56,6 +56,9 @@ Run it on the commit that dropped the 'x', with "run all" checked (no entry in i
 the images get `:<version>`, which downstream projects pin (WTF's docker builds): Build/Docker/Makefile's tag-images adds it
 only when STROIKA_VERSION has no 'x' - run on any other commit, the images get just `:v3` and `:latest`.
 
+To backfill a missed `:<version>`, run it on the release's tag - then on v3-Dev again: every run also pushes `:v3` and
+`:latest` (tag-images, push-images), so a run on the tag moves them back to the release's images.
+
 ## Do most builds on medusa-windows-dev VM
 
 see <Regression-Tests.md> for steps to run most regression tests
