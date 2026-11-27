@@ -1519,6 +1519,36 @@ namespace {
     };
 
     /*
+     *  GetTimeout says what SetTimeout set - kInfinity until then - and a transfer works under each. Before Stroika v3.0d26
+     *  libcurl's GetTimeout was not implemented (an assertion failed), and its SetTimeout (kInfinity) converted infinity to
+     *  an int.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, GetTimeoutSaysWhatSetTimeoutSet_)
+    {
+        Debug::TraceContextBumper ctx{"GetTimeoutSaysWhatSetTimeoutSet_"};
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in (neither libcurl nor WinHTTP)";
+#endif
+        EchoMethodAndBodyServer_ server;
+        [[maybe_unused]] auto    check = [&] (Connection::Ptr c) {
+            c.SetSchemeAndAuthority (server.fSite);
+            EXPECT_TRUE (c.GetTimeout () == Time::kInfinity);
+            c.SetTimeout (30s);
+            EXPECT_TRUE (c.GetTimeout () == 30s);
+            EXPECT_EQ (c.GET (URI{"/"sv}).GetData ().As<string> (), "GET\n");
+            c.SetTimeout (Time::kInfinity);
+            EXPECT_TRUE (c.GetTimeout () == Time::kInfinity);
+            EXPECT_EQ (c.GET (URI{"/"sv}).GetData ().As<string> (), "GET\n");
+        };
+#if qStroika_HasComponent_libcurl
+        check (LibCurl::Connection::New (kDefaultTestOptions_));
+#endif
+#if qStroika_HasComponent_WinHTTP
+        check (WinHTTP::Connection::New (kDefaultTestOptions_));
+#endif
+    }
+
+    /*
      *  A request whose method is neither GET, POST nor PUT - UPnP's NOTIFY, say - sends its body too, and the connection's next
      *  request is sent with its own method. Before Stroika v3.0d25 libcurl's sent no body (so a GENA NOTIFY arrived empty), and
      *  sent the next GET by the name of the method before it; WinHTTP's did both right.

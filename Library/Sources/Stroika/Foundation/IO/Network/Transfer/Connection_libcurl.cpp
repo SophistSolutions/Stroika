@@ -174,14 +174,14 @@ namespace {
         }
         virtual Time::DurationSeconds GetTimeout () const override
         {
-            AssertNotImplemented ();
-            return 0s;
+            return fTimeout_;
         }
         virtual void SetTimeout (Time::DurationSeconds timeout) override
         {
-            MakeHandleIfNeeded_ ();
-            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout.count () * 1000)));
-            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout.count () * 1000)));
+            fTimeout_ = timeout;
+            if (fCurlHandle_ != nullptr) {
+                ApplyTimeout_ ();
+            }
         }
         virtual URI GetSchemeAndAuthority () const override
         {
@@ -355,6 +355,16 @@ namespace {
         }
 
     private:
+        // fTimeout_ bounds the whole transfer, and its connect within it (kInfinity: libcurl's defaults - no limit, and 300 s to
+        // connect)
+        nonvirtual void ApplyTimeout_ ()
+        {
+            AssertNotNull (fCurlHandle_);
+            // 0 is no limit, so a finite timeout is never 0
+            long ms = fTimeout_ == Time::kInfinity ? 0L : static_cast<long> (min<double> (fTimeout_.count () * 1000 + 1, numeric_limits<int>::max ()));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, ms));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, ms));
+        }
         nonvirtual void MakeHandleIfNeeded_ ()
         {
             if (fCurlHandle_ == nullptr) {
@@ -365,6 +375,7 @@ namespace {
                  */
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_ERRORBUFFER, fErrorBuffer_)); // curl empties it before each transfer
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fURL_.As<string> ().c_str ()));
+                ApplyTimeout_ ();
 
 #if USE_LIBCURL_VERBOSE_
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_VERBOSE, 1));
@@ -530,6 +541,7 @@ namespace {
         }
 
     private:
+        Time::DurationSeconds   fTimeout_{Time::kInfinity};
         void*                   fCurlHandle_{nullptr};
         char                    fErrorBuffer_[CURL_ERROR_SIZE]{};
         URI                     fURL_;
