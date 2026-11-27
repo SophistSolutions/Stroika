@@ -57,11 +57,12 @@ namespace Stroika::Foundation::Debug {
          *        info symbol 0x1b974
          *      ... etc for each symbol returned in []
          *
-         *  \note   to get symbols working on Linux (GNU linker), it may be necessary to link with -rdynamic
-         *          This can be done with the Stroika configure flags:
-         *              --extra-linker-args -rdynamic
-         *          OR
-         *              --apply-default-debug-flags
+         *  \note   A frame shows its function's name where one can be found. Through boost (the usual path on UNIX) that
+         *          means the dynamic symbol table, which holds a program's own functions only if it is linked with -rdynamic
+         *          - as Debug configurations are (configure's --apply-default-debug-flags; or --extra-linker-args -rdynamic).
+         *          On UNIX, a frame with no name shows where its call lies instead, [<module>+0x<offset>]: on Linux,
+         *          addr2line -f -C -i -e <module> 0x<offset> turns that into function, file and line (-i: with the functions
+         *          inlined there) - for a stripped program, run against the unstripped build of it.
          *
          *  \note   BackTrace () Uses no Stroika classes internally (like String, InlineBuffer) etc, since
          *          doing so could create deadlocks in the likely use cases where one would want to call this, from

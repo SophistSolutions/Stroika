@@ -13,6 +13,7 @@
 #include <wininet.h> // for error codes
 #endif
 
+#include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -550,6 +551,24 @@ namespace {
             GTEST_SKIP () << "BackTrace does not show Level3 in this build (no symbol names, or the walk stopped early)";
         }
         EXPECT_TRUE (lines.First ().value_or (Characters::String{}).Contains ("Level1")) << Characters::String{bt}.AsUTF8<string> ();
+    }
+    GTEST_TEST (Foundation_Execution_Exceptions, BackTrace_EveryFrameSaysWhere_)
+    {
+        Debug::TraceContextBumper ctx{"BackTrace_EveryFrameSaysWhere_"};
+#if qStroika_Platform_POSIX
+        // A frame with no name (a Release build's own functions) shows its module and offset (BackTrace.h) - never an
+        // empty "N# ;"
+        wstring bt    = Stroika_Test37_BackTraceFrames::Level3 ();
+        auto    lines = Characters::String{bt}.AsLines ().Where ([] (const Characters::String& l) { return l != "..."sv; });
+        if (lines.empty ()) {
+            GTEST_SKIP () << "BackTrace::Capture () returns nothing in this build";
+        }
+        for (const Characters::String& l : lines) {
+            EXPECT_FALSE (l.Matches ("\\s*([0-9]+# *)?;"_RegEx)) << Characters::String{bt}.AsUTF8<string> ();
+        }
+#else
+        GTEST_SKIP () << "only UNIX promises a frame with no name its module and offset";
+#endif
     }
 }
 

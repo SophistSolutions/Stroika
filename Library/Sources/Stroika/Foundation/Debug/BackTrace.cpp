@@ -6,6 +6,10 @@
 #include <cstdlib> // to force __GLIBCXX__ define reference
 #include <sstream>
 
+#if qStroika_Platform_POSIX
+#include <dlfcn.h>
+#endif
+
 #if qStroika_Platform_Linux
 #include <execinfo.h>
 #include <unistd.h>
@@ -40,6 +44,26 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Debug;
 
+namespace {
+#if qStroika_Platform_POSIX
+    // Where a frame's call lies - "[<module>+0x<offset>]", the arguments addr2line takes - for a frame with no name; "" if
+    // dladdr cannot tell. A frame's address is where its call returns to, just past the call: one byte back is in the call,
+    // whose line - and function - addr2line should give.
+    [[maybe_unused]] string ModuleAndOffset_ (const void* returnAddress)
+    {
+        const void* call = static_cast<const std::byte*> (returnAddress) - 1;
+        Dl_info     info{};
+        if (::dladdr (call, &info) == 0 or info.dli_fbase == nullptr) {
+            return string{};
+        }
+        stringstream o;
+        o << "[" << (info.dli_fname == nullptr ? "?" : info.dli_fname) << "+0x" << hex
+          << reinterpret_cast<uintptr_t> (call) - reinterpret_cast<uintptr_t> (info.dli_fbase) << "]";
+        return o.str ();
+    }
+#endif
+}
+
 /*
  ********************************************************************************
  ************************ Debug::BackTrace::Capture *****************************
@@ -69,13 +93,20 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     auto st = std::stacktrace::current (useSkipFrames, min<size_t> (usingMaxFrames, numeric_limits<std::stacktrace::size_type>::max () - useSkipFrames));
     stringstream o;
     for (const stacktrace_entry& entry : st) {
-        string eText       = entry.description ();
-        bool   useFileName = eText.empty ();
-        if (useFileName) {
-            // if using file, always write line#
+        string eText = entry.description ();
+        if (eText.empty ()) {
+            // no name: its source file and line, where debug information gives them; else where its code lies
             eText = entry.source_file ();
+            if (not eText.empty ()) {
+                eText += "#" + to_string (entry.source_line ());
+            }
+#if qStroika_Platform_POSIX
+            else {
+                eText = ModuleAndOffset_ (reinterpret_cast<const void*> (entry.native_handle ()));
+            }
+#endif
         }
-        else if (useFileName or options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines)) {
+        else if (options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines)) {
             eText += "#" + to_string (entry.source_line ());
         }
         o << eText << ";" << Characters::kEOL<char>;
@@ -102,12 +133,15 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         result << i;
         result.width (w);
         result << L"# ";
-        if (includeSrcLines) {
-            result << String::FromNarrowSDKString (boost::stacktrace::to_string (bt[i])).As<wstring> ();
+        string name  = bt[i].name ();
+        string frame = includeSrcLines ? boost::stacktrace::to_string (bt[i]) : name;
+#if qStroika_Platform_POSIX
+        if (name.empty ()) {
+            string where = ModuleAndOffset_ (bt[i].address ());
+            frame += (frame.empty () or where.empty () ? "" : " ") + where;
         }
-        else {
-            result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
-        }
+#endif
+        result << String::FromNarrowSDKString (frame).As<wstring> ();
         result << L";" << Characters::kEOL<wchar_t>;
     }
     return result.str ();
