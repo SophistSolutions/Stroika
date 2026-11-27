@@ -61,7 +61,10 @@ namespace Stroika::Foundation::IO::Network {
              *  Share the address with other live listening sockets that ALSO set this - to spread connections across
              *  processes, or to start a new server before the old one stops, so there is never a moment when nothing
              *  listens. Sharing takes BOTH sockets' consent: one that does not set this can neither join a shared address,
-             *  nor be joined.
+             *  nor be joined - except on Windows, where a socket that sets this can also bind beside a listener that set no
+             *  option at all - another program's (Stroika's own set SO_EXCLUSIVEADDRUSE when not sharing) - and take its
+             *  connections: Windows' SO_REUSEADDR asks only the second socket (Windows 11;
+             *  @see https://github.com/SophistSolutions/Stroika/issues/1275).
              *
              *  Which of the sharing sockets gets each new connection depends on the OS (Linux 7.0, macOS 26, Windows 11):
              *      o   Linux: spread across them; and they must belong to the same user (SO_REUSEPORT)
