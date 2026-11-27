@@ -1417,6 +1417,43 @@ namespace {
 
 namespace {
     /*
+     *  A connection's timeout bounds the whole Send - the wait for the answer too, so a server that never answers is given up
+     *  on once it passes. Before Stroika v3.0d26 WinHTTP's was checked only between reads of the answer's body, so the wait
+     *  for an answer lasted WinHTTP's own receive timeout, 30 seconds.
+     */
+    GTEST_TEST (Foundation_IO_Network_Transfer, TimeoutBoundsTheWaitForAnAnswer_)
+    {
+        Debug::TraceContextBumper           ctx{"TimeoutBoundsTheWaitForAnAnswer_"};
+        ConnectionOrientedMasterSocket::Ptr listener = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
+        listener.Bind (SocketAddress{V4::kLocalhost, 0});
+        listener.Listen (5); // never accepted: the connection is made (from the backlog), and the request sent, but never answered
+        [[maybe_unused]] auto check = [&] (Connection::Ptr c) {
+            c.SetSchemeAndAuthority (URI{"http://127.0.0.1:{}"_f(listener.GetLocalAddress ()->GetPort ())});
+            c.SetTimeout (1s);
+            Time::TimePointSeconds startedAt = Time::GetTickCount ();
+            try {
+                (void)c.GET (URI{"/"sv});
+                ADD_FAILURE () << "a server that never answers answered";
+            }
+            catch (...) {
+                EXPECT_TRUE (Execution::IsA (current_exception (), errc::timed_out)) << "{}"_f(current_exception ());
+            }
+            EXPECT_LT (Time::GetTickCount () - startedAt, 10s) << "the timeout did not bound the wait for the answer";
+        };
+#if qStroika_HasComponent_libcurl
+        check (LibCurl::Connection::New (kDefaultTestOptions_));
+#endif
+#if qStroika_HasComponent_WinHTTP
+        check (WinHTTP::Connection::New (kDefaultTestOptions_));
+#endif
+#if not qStroika_HasComponent_libcurl and not qStroika_HasComponent_WinHTTP
+        GTEST_SKIP () << "no HTTP client built in";
+#endif
+    }
+}
+
+namespace {
+    /*
      *  A server on loopback answering each request with its method, a newline, and its body - one request to a connection.
      *  With fEchoHeaders, it answers instead with the request's header block (its request line, then each header line, each
      *  ending in CRLF); fExtraResponseHeaders (lines, each ending in CRLF) go in each response's header.

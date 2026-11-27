@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Execution/Timeout.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -215,6 +216,17 @@ namespace {
                                                              fURL_.GetAuthorityRelativeResource ().As<wstring> ().c_str (), nullptr, WINHTTP_NO_REFERER,
                                                              WINHTTP_DEFAULT_ACCEPT_TYPES, useSecureHTTP ? WINHTTP_FLAG_SECURE : 0)};
 
+            // WinHTTP's own timeouts bound each step - name lookup, connect, send, the wait for each piece of the answer - so
+            // before each, all are set to what is left of fTimeout_ (kInfinity: WinHTTP's own defaults apply)
+            auto limitNextStepToTimeLeft = [&] () {
+                Execution::ThrowTimeoutExceptionAfter (endBy); // never, for kInfinity
+                if (fTimeout_ != Time::kInfinity) {
+                    Time::DurationSeconds timeLeft = endBy - Time::GetTickCount ();
+                    int ms = static_cast<int> (clamp<double> (timeLeft.count () * 1000, 1, numeric_limits<int>::max ())); // at least 1: 0 is no timeout
+                    ThrowIfZeroGetLastError (::WinHttpSetTimeouts (hRequest, ms, ms, ms, ms));
+                }
+            };
+
             // See https://github.com/SophistSolutions/Stroika/issues/576 (STK-442) - we pre-set to avoid double try on failure, but
             // we cannot IF we want to know if SSL connect failed (until I figure out how)
             constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{true};
@@ -256,12 +268,14 @@ namespace {
                 if (useRequest.fData.size () > numeric_limits<DWORD>::max ()) {
                     Throw (Execution::Exception{"Too large a message to send using WinHTTP"sv});
                 }
+                limitNextStepToTimeLeft ();
                 ThrowIfZeroGetLastError (
                     ::WinHttpSendRequest (hRequest, useHeaderStrBuf.As<wstring> ().c_str (), static_cast<DWORD> (-1),
                                           useRequest.fData.empty () ? nullptr : const_cast<byte*> (useRequest.fData.begin ()),
                                           static_cast<DWORD> (useRequest.fData.size ()), static_cast<DWORD> (useRequest.fData.size ()), NULL));
 
                 // this must be called before the 'body' goes out of scope!
+                limitNextStepToTimeLeft ();
                 ThrowIfZeroGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
             }
             catch (const system_error& e) {
@@ -282,9 +296,7 @@ namespace {
                 // Keep reading data til all done
                 DWORD dwSize = 0;
                 do {
-                    if (Time::GetTickCount () > endBy) [[unlikely]] {
-                        Execution::ThrowError (errc::timed_out);
-                    }
+                    limitNextStepToTimeLeft ();
 
                     // Check for available data.
                     dwSize = 0;
