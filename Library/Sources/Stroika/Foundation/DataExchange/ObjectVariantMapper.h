@@ -916,8 +916,8 @@ namespace Stroika::Foundation::DataExchange {
          *  Optional parameter to MakeCommonSerializer, and AddCommonType
          */
         struct RangeSerializerOptions {
-            optional<String> fLowerBoundFieldName;
-            optional<String> fUpperBoundFieldName;
+            String fLowerBoundFieldName{"LowerBound"sv};
+            String fUpperBoundFieldName{"UpperBound"sv};
         };
 
     public:
@@ -1093,8 +1093,15 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_WithKeyValuePairAdd_ ();
 
     private:
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+        template <typename RANGE_TYPE>
+        static TypeMappingDetails MakeCommonSerializer_Range_ ();
+        template <typename RANGE_TYPE>
+        static TypeMappingDetails MakeCommonSerializer_Range_ (const RangeSerializerOptions& options);
+#else
         template <typename RANGE_TYPE>
         static TypeMappingDetails MakeCommonSerializer_Range_ (const RangeSerializerOptions& options = {});
+#endif
 
     private:
         template <typename CLASS>

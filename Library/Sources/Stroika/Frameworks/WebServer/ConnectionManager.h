@@ -92,16 +92,16 @@ namespace Stroika::Frameworks::WebServer {
             optional<unsigned int> fMaxConcurrentlyHandledConnections;
 
             /**
-             *  If bindFlags omitted, it defaults to kDefault_BindFlags
+             *  How the listening sockets bind: by default despite old connections, so a restarted server listens again at once
              */
-            optional<ConnectionOrientedMasterSocket::BindFlags> fBindFlags;
+            ConnectionOrientedMasterSocket::BindFlags fBindFlags{kDefault_BindFlags};
 
             /**
              *  fDefaultResponseHeaders may be used to specify initial{default} values for some HTTP Response headers.
              *  It can be used for specifying any non-standard HTTP headers to add to all responded (like X-Foobar: value).
-             *  It can be used to specify a default 'Server' header.
+             *  It can be used to specify a default 'Server' header - by default, kDefault_Headers's.
              *  This is equivalent to adding an interceptor early in the interceptor chain, and calling
-             *      response.rwHeaders = *fDefaultResponseHeaders;
+             *      response.rwHeaders = fDefaultResponseHeaders;
              * 
              *  Probably not a good idea to specify things like contentLength, etc here. That may produce bad results.
              *  @todo consider listing a stronger set of requirements for what headings can and cannot be set?)
@@ -109,7 +109,7 @@ namespace Stroika::Frameworks::WebServer {
              * This is also a good place to add defaults like:
              *      "Content-Type": DataExchange::InternetMediaTypes::kOctetStream (which was done automatically by Stroika before 2.1b10)
              */
-            optional<Headers> fDefaultResponseHeaders;
+            Headers fDefaultResponseHeaders{kDefault_Headers};
 
             /**
              *  fDefaultGETResponseHeaders - like fDefaultResponseHeaders - may be used to specify initial{default} values for some HTTP headers,
@@ -127,10 +127,8 @@ namespace Stroika::Frameworks::WebServer {
 
             /**
              *  \brief sets the initial value for each Response. Harmless except for the slight performance cost (wont always work) - see Response::autoComputeETag
-             *
-             *  defaults to kDefault_AutoComputeETagResponse
              */
-            optional<bool> fAutoComputeETagResponse;
+            bool fAutoComputeETagResponse{kDefault_AutoComputeETagResponse};
 
             /**
              *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
@@ -138,10 +136,8 @@ namespace Stroika::Frameworks::WebServer {
              *  communications more reliable.
              *
              *  Turn this on - especially - if you see connection reset when clients talk to the Stroika web-server (TCP RST sent).
-             *
-             *  \note - this defaults to 2 seconds (kDefault_AutomaticTCPDisconnectOnClose)
              */
-            optional<Duration> fAutomaticTCPDisconnectOnClose;
+            Duration fAutomaticTCPDisconnectOnClose{kDefault_AutomaticTCPDisconnectOnClose};
 
             /**
              *  A connection with no request in progress - kept alive after one, or yet to send its first - is closed once idle this
@@ -194,11 +190,12 @@ namespace Stroika::Frameworks::WebServer {
             optional<int> fLinger;
 
             /**
-             *  Is the TCP_NODELAY algorithm being used? Generally - this increases latency, for the benefit of better bandwidth utilization.
+             *  Sets TCP_NODELAY: turns off Nagle's algorithm, which holds back a small write to send it with the next - so lower
+             *  latency, for more packets.
              * 
              *  See https://brooker.co.za/blog/2024/05/09/nagle.html for hints about if its right for you?
              */
-            optional<bool> fTCPNoDelay;
+            bool fTCPNoDelay{kDefault_TCPNoDelay};
 
             /**
              * mostly for debugging - so easier to segregate names of threads if you have 

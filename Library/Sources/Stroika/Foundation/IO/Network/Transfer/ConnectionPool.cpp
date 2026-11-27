@@ -78,17 +78,6 @@ namespace {
 
 /*
  ********************************************************************************
- ********************* Transfer::ConnectionPool::Options ************************
- ********************************************************************************
- */
-ConnectionPool::Options::Options (const optional<unsigned int>& maxConnections, const function<Connection::Ptr ()>& connectionFactory)
-    : fMaxConnections{maxConnections}
-    , fConnectionFactory{connectionFactory}
-{
-}
-
-/*
- ********************************************************************************
  ************************ Transfer::ConnectionPool::Rep_ ************************
  ********************************************************************************
  */
@@ -203,6 +192,12 @@ public:
  ************************** Transfer::ConnectionPool ****************************
  ********************************************************************************
  */
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+ConnectionPool::ConnectionPool ()
+    : ConnectionPool{Options{}}
+{
+}
+#endif
 ConnectionPool::ConnectionPool (const Options& options)
     : fRep_{make_unique<Rep_> (options)}
 {

@@ -32,9 +32,9 @@ namespace Stroika::Frameworks::Modbus {
      */
     struct ServerOptions {
         /**
-         *  By spec, defaults to 502
+         *  By spec, 502
          */
-        optional<uint16_t> fListenPort;
+        uint16_t fListenPort{502};
 
         /**
          *  Logger to write interesting messages to.
@@ -42,10 +42,9 @@ namespace Stroika::Frameworks::Modbus {
         optional<Execution::Logger*> fLogger;
 
         /**
-         *  Defaults to ConnectionOrientedMasterSocket::BindFlags{}, which binds despite old connections - so a restarted
-         *  service can listen again at once.
+         *  By default, binds despite old connections - so a restarted service can listen again at once.
          */
-        optional<IO::Network::ConnectionOrientedMasterSocket::BindFlags> fBindFlags;
+        IO::Network::ConnectionOrientedMasterSocket::BindFlags fBindFlags;
 
         /**
          *  To specify size, provide your own threadpool. Without one, the server makes a one-thread pool, which goes with the

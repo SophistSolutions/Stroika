@@ -327,7 +327,7 @@ namespace {
             {
                 TraceContextBumper  ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::SetupDB_"};
                 Connection::Options o = options;
-                o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+                o.fBusyTimeout        = 1s; // a 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
                 EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
                 constexpr Version kCurrentVersion_ = Version{1, 0, VersionStage::Alpha, 0};
@@ -646,7 +646,7 @@ namespace {
             {
                 TraceContextBumper  ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::SetupDB_"};
                 Connection::Options o = options;
-                o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+                o.fBusyTimeout        = 1s; // a 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
                 EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
                 constexpr Version kCurrentVersion_ = Version{1, 0, VersionStage::Alpha, 0};

@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
@@ -959,6 +960,26 @@ namespace {
         const String       text = mapper.FromObject (blob).As<String> ();
         EXPECT_FALSE (text.Contains ("\r"sv) or text.Contains ("\n"sv)) << text.AsNarrowSDKString ();
         EXPECT_EQ (mapper.ToObject<Memory::BLOB> (mapper.FromObject (blob)), blob);
+    }
+
+    /*
+     *  A Range's bounds, mapped under the names RangeSerializerOptions gives - either or both; one not given keeps its default
+     */
+    GTEST_TEST (Foundation_DataExchangeFormat_ObjectVariantMapper, RangeBoundNames_)
+    {
+        Debug::TraceContextBumper ctx{"RangeBoundNames_"};
+        using Traversal::Range;
+        const Range<int> r{1, 10};
+        auto             boundNames = [&] (const ObjectVariantMapper::RangeSerializerOptions& options) {
+            ObjectVariantMapper mapper;
+            mapper.AddCommonType<Range<int>> (options);
+            VariantValue v = mapper.FromObject (r);
+            EXPECT_EQ (mapper.ToObject<Range<int>> (v), r);
+            return Set<String>{v.As<Mapping<String, VariantValue>> ().Keys ()};
+        };
+        EXPECT_EQ (boundNames ({}), (Set<String>{"LowerBound"sv, "UpperBound"sv}));
+        EXPECT_EQ (boundNames ({"lowerBound"sv, "upperBound"sv}), (Set<String>{"lowerBound"sv, "upperBound"sv}));
+        EXPECT_EQ (boundNames ({.fUpperBoundFieldName = "High"sv}), (Set<String>{"LowerBound"sv, "High"sv}));
     }
 }
 

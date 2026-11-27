@@ -853,7 +853,7 @@ public:
 
 inline auto Variant::JSON::Reader::mk_ (const ReaderOptions& options) -> shared_ptr<_IRep>
 {
-    switch (options.fPreferredAlgorithm.value_or (ReaderOptions::Algorithm::eDEFAULT)) {
+    switch (options.fPreferredAlgorithm) {
         case ReaderOptions::Algorithm::eStroikaNative:
             return MakeSharedPtr<NativeRep_> ();
 #if __has_include("boost/json.hpp")

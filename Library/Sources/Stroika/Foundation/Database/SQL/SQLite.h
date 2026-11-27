@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
                  */
                 eSerialized,
             };
-            optional<ThreadingMode> fThreadingMode;
+            ThreadingMode fThreadingMode{kDefault_ThreadingMode};
 
             /**
              *  I'm quite unsure I have this right, since seems to work so badly (frequent busy timeouts) - but from the docs this seems
@@ -258,9 +258,9 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
              *  Its ALMOST as if the database was holding a lock (one connection) while retrying?
              * 
              *  SQLITE appears to default this value to 0s, but that causes sporadic busy_timeouts in many tests. I think (empirically) - 1s, or maybe 10s
-             *  maybe better. Still early to say. Specify your own if you care, else see kBusyTimeout_Default.
+             *  maybe better. Still early to say. Specify your own if you care.
              */
-            optional<Duration> fBusyTimeout;
+            Duration fBusyTimeout{kBusyTimeout_Default};
 
             /**
              *  \see fBusyTimeout

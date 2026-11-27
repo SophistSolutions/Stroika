@@ -58,7 +58,10 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
         using Algorithm::eBoost;
 #endif
 
-        optional<Algorithm> fPreferredAlgorithm;
+        /**
+         *  The parser to use - by default boost's, where built in, else Stroika's own
+         */
+        Algorithm fPreferredAlgorithm{Algorithm::eDEFAULT};
     };
     using ReaderOptions::Algorithm::eStroikaNative;
 #if __has_include("boost/json.hpp")

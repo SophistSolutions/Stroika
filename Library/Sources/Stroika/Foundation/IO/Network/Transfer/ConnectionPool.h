@@ -37,20 +37,15 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /**
          */
         struct Options {
-            Options (const optional<unsigned int>&       maxConnections    = nullopt,
-                     const function<Connection::Ptr ()>& connectionFactory = (Connection::Ptr (*) ())&Connection::New);
-
             /**
              *  The most connections the pool holds - handed out, or idle in it; nullopt: no limit.
              */
             optional<unsigned int> fMaxConnections;
 
             /**
-             *  Factory to use for underlying connectionpool connections
-             *
-             *  \todo figure out why cast needed on New on g++ and clang++
+             *  Makes each connection the pool holds - by default, Connection::New ()'s
              */
-            function<Connection::Ptr ()> fConnectionFactory;
+            function<Connection::Ptr ()> fConnectionFactory{[] () { return Connection::New (); }};
         };
 
     public:
@@ -59,7 +54,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  (typically http)IO::Transfer::Connection objects. The idea is that its cheaper to
          *  re-use these objects if you happen to want to connect to an HTTP endpoint that is already connected.
          */
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+        ConnectionPool ();
+        ConnectionPool (const Options& options);
+#else
         ConnectionPool (const Options& options = {});
+#endif
         ConnectionPool (const ConnectionPool&) = delete;
         ~ConnectionPool ();
 

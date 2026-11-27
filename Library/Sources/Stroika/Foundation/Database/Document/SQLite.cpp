@@ -724,7 +724,7 @@ namespace {
 
             int flags = 0;
             // https://www.sqlite.org/threadsafe.html explains the thread-safety stuff. Not sure I have it right, but hopefully --LGP 2023-09-13
-            switch (options.fThreadingMode.value_or (Options::kDefault_ThreadingMode)) {
+            switch (options.fThreadingMode) {
                 case Options::ThreadingMode::eSingleThread:
                     break;
                 case Options::ThreadingMode::eMultiThread:
@@ -823,7 +823,7 @@ namespace {
                 });
                 ThrowSQLiteError_ (e, fDB_);
             }
-            SetBusyTimeout (options.fBusyTimeout.value_or (Options::kBusyTimeout_Default));
+            SetBusyTimeout (options.fBusyTimeout);
             if (options.fJournalMode) {
                 SetJournalMode (*options.fJournalMode);
             }

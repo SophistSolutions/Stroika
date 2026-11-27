@@ -27,10 +27,6 @@ Generally will track stuff here between releases
    - **String: a UTF-8 (char8_t) rep** (LGP 2026-11-07; may postpone, once discussed) - so a constant u8 string that is not ASCII
      is shared, not decoded and copied: enum names are UTF-8 now (EnumNameText), shared already when ASCII, as nearly all are.
      String.inl's FromStringConstant has the @todo and the design question (a UTF-8 rep cannot index directly).
-   - **After the float and Duration formatting redesign: which other Options want `With`** (LGP 2026-11-06) - scan
-     Stroika's Options structs and option classes for constructors that merge option sets or convert from each field's
-     type, and `optional<>` fields there only to overlay; convert those whose callers lay settings over a base
-     (Design-Overview.md, "Options structs", has the style).
 
 ## Watching
 

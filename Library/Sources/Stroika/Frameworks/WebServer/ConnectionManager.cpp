@@ -195,12 +195,7 @@ namespace {
         using Options = ConnectionManager::Options;
         Options result{o};
         result.fMaxConcurrentlyHandledConnections = NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
-        result.fBindFlags               = NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
-        result.fDefaultResponseHeaders  = NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
-        result.fAutoComputeETagResponse = NullCoalesce (result.fAutoComputeETagResponse, Options::kDefault_AutoComputeETagResponse);
-        result.fAutomaticTCPDisconnectOnClose = NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
-        result.fLinger     = NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
-        result.fTCPNoDelay = NullCoalesce (result.fTCPNoDelay, Options::kDefault_TCPNoDelay);
+        result.fLinger = NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
         // result.fThreadPoolName; can remain nullopt
         result.fTCPBacklog = NullCoalesce (result.fTCPBacklog, ComputeConnectionBacklog_ (result));
 
@@ -220,11 +215,9 @@ namespace {
             //      including 304 Not Modified responses and the "default" response."
             //
             //      -- LGP 2022-12-09
-            HTTP::Headers s = NullCoalesce (result.fDefaultResponseHeaders);
-            Set<String>   v = NullCoalesce (s.vary ());
+            Set<String> v = NullCoalesce (result.fDefaultResponseHeaders.vary ());
             v += HTTP::HeaderName::kOrigin;
-            s.vary                         = v;
-            result.fDefaultResponseHeaders = s;
+            result.fDefaultResponseHeaders.vary = v;
         }
         return result;
     }
@@ -330,22 +323,20 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
                                                     .fCollectStatistics = fEffectiveOptions_.fCollectStatistics}}
     , fWaitForReadyConnectionThread_{Thread::CleanupPtr::eAbortBeforeWaiting,
                                      Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, "WebServer-ConnectionMgr-Wait4IOReady"_k)}
-    , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
+    , fListener_{bindAddresses, fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  *fEffectiveOptions_.fTCPBacklog}
 {
     // validate fDefaultResponseHeaders contains no bad/inappropriate headers (like Content-Length), probably CORS headers worth a warning as well
     // just a bunch of sanity checks for things you really DONT want to set here for any reason I can think of
-    if (fEffectiveOptions_.fDefaultResponseHeaders) {
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->allow () == nullopt); // unsure
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->cookie ().cookieDetails ().empty ());
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->connection () == nullopt);
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->contentLength () == nullopt);
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ETag () == nullopt);
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->location () == nullopt);
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->origin () == nullopt);      // request only header
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ifNoneMatch () == nullopt); // request only header
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
-    }
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.allow () == nullopt); // unsure
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.cookie ().cookieDetails ().empty ());
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.connection () == nullopt);
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.contentLength () == nullopt);
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.ETag () == nullopt);
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.location () == nullopt);
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.origin () == nullopt);      // request only header
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.ifNoneMatch () == nullopt); // request only header
+    WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders.setCookie ().cookieDetails ().empty ());
     Require (options.fIdleConnectionTimeout > 0s);
     Require (options.fRequestHeaderTimeout > 0s);
     Require (options.fClientStallTimeout > 0s);
@@ -373,9 +364,9 @@ void ConnectionManager::DeriveConnectionOptions_ (Interceptors_& interceptors) c
 #endif
     interceptors.fConnectionOptions = MakeSharedPtr<Connection::Options> (Connection::Options{
         .fInterceptorChain              = chain,
-        .fDefaultResponseHeaders        = *fEffectiveOptions_.fDefaultResponseHeaders,
+        .fDefaultResponseHeaders        = fEffectiveOptions_.fDefaultResponseHeaders,
         .fDefaultGETResponseHeaders     = fEffectiveOptions_.fDefaultGETResponseHeaders,
-        .fAutoComputeETagResponse       = *fEffectiveOptions_.fAutoComputeETagResponse,
+        .fAutoComputeETagResponse       = fEffectiveOptions_.fAutoComputeETagResponse,
         .fAutomaticTransferChunkSize    = fEffectiveOptions_.fAutomaticTransferChunkSize,
         .fSupportedCompressionEncodings = fEffectiveOptions_.fSupportedCompressionEncodings,
         .fIdleConnectionTimeout         = fEffectiveOptions_.fIdleConnectionTimeout,
@@ -387,8 +378,8 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"ConnectionManager::onConnect_", "s={}"_f, s};
 #endif
-    s.SetTCPNoDelay (*fEffectiveOptions_.fTCPNoDelay);
-    s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
+    s.SetTCPNoDelay (fEffectiveOptions_.fTCPNoDelay);
+    s.SetAutomaticTCPDisconnectOnClose (fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
 
     // bound each blocking read and write - a request's body, its response (@see Options::fClientStallTimeout); a request's

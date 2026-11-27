@@ -1069,14 +1069,19 @@ namespace Stroika::Foundation::DataExchange {
     {
         return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, ACTUAL_CONTAINTER_TYPE> ();
     }
+#if qCompilerAndStdLib_default_member_initializer_needed_within_enclosing_class_Buggy
+    template <typename RANGE_TYPE>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
+    {
+        return MakeCommonSerializer_Range_<RANGE_TYPE> (RangeSerializerOptions{});
+    }
+#endif
     template <typename RANGE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ (const RangeSerializerOptions& options)
     {
         using namespace Characters::Literals;
-        static const String kLowerBoundLabel_{"LowerBound"sv};
-        static const String kUpperBoundLabel_{"UpperBound"sv};
-        String              lowerBoundLabel = options.fLowerBoundFieldName.value_or (kLowerBoundLabel_);
-        String              upperBoundLabel = options.fUpperBoundFieldName.value_or (kUpperBoundLabel_);
+        String lowerBoundLabel = options.fLowerBoundFieldName;
+        String upperBoundLabel = options.fUpperBoundFieldName;
         FromObjectMapperType<RANGE_TYPE> fromObjectMapper = [=] (const ObjectVariantMapper& mapper, const RANGE_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             Mapping<String, VariantValue> m;
