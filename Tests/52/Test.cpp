@@ -426,6 +426,13 @@ namespace {
 
 namespace {
     namespace {
+        /*
+         *  The base string is read through a volatile pointer, and a character of the result folded into a volatile sink, so
+         *  the compiler can neither work the result out from the literal nor drop the work as unused - as clang did, on macOS,
+         *  to the std side (a length it could compute was all that was checked)
+         */
+        volatile size_t sSimpleStringConCatSink_ = 0;
+
         template <typename WIDESTRING_IMPL>
         void Test_SimpleStringConCat1_T1_ (const WIDESTRING_IMPL& src)
         {
@@ -433,12 +440,20 @@ namespace {
             tmp                 = tmp + src;
             tmp                 = src + tmp;
             EXPECT_EQ (tmp.length (), src.length () * 4u);
+            if constexpr (same_as<WIDESTRING_IMPL, String>) {
+                sSimpleStringConCatSink_ = sSimpleStringConCatSink_ + tmp[tmp.length () / 2].GetCharacterCode ();
+            }
+            else {
+                sSimpleStringConCatSink_ = sSimpleStringConCatSink_ + static_cast<size_t> (tmp[tmp.length () / 2]);
+            }
         }
     }
     template <typename WIDESTRING_IMPL>
     void Test_SimpleStringConCat1_ ()
     {
-        const WIDESTRING_IMPL KBase = L"1234568321";
+        static const wchar_t kBase_[] = L"1234568321";
+        const wchar_t* volatile base  = kBase_;
+        const WIDESTRING_IMPL KBase{base};
         Test_SimpleStringConCat1_T1_ (KBase);
     }
 }
