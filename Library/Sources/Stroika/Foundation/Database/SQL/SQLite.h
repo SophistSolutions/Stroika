@@ -278,6 +278,9 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *
          *  A new Connection::Ptr is typically created SQLite::Connection::New()
          *
+         *  \note   A Connection::Ptr may be kept anywhere - in a static too, so closing during static destruction, in any order
+         *          relative to Stroika's own statics: sqlite shuts down (sqlite3_shutdown) only once its last connection has closed.
+         *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
          *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
          *          threadsafe (even if accessed across processes) - depending on its construction Options::ThreadSafety

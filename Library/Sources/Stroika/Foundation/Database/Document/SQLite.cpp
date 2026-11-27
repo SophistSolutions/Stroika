@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Database/Private/SQLiteLibrary.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -44,12 +45,6 @@ using Database::Document::EngineProperties;
 
 #if qStroika_HasComponent_sqlite
 namespace {
-    struct ModuleShutdown_ {
-        ~ModuleShutdown_ ()
-        {
-            Verify (::sqlite3_shutdown () == SQLITE_OK); // mostly pointless but avoids memory leak complaints
-        }
-    } sModuleShutdown_;
     [[noreturn]] void ThrowSQLiteError_ (int errCode, sqlite3* sqliteConnection)
     {
         Require (errCode != SQLITE_OK);
@@ -1031,7 +1026,9 @@ namespace {
             return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
         }
 
-        ::sqlite3* fDB_{};
+        // held so sqlite shuts down only after fDB_ closes (@see Database::Private::SQLiteLibrary)
+        shared_ptr<Database::Private::SQLiteLibrary> fSQLiteLibrary_{Database::Private::SQLiteLibrary::Reference ()};
+        ::sqlite3*                                   fDB_{};
     };
 }
 

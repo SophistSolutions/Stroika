@@ -865,6 +865,23 @@ namespace {
             (void)std::filesystem::remove (dbPath);
         }
     }
+
+    namespace SQLite_ConnectionHeldInStatic_ {
+        // Left open, so each closes during static destruction - in no particular order relative to Stroika's own statics. What
+        // this tests is that the program then exits cleanly (#1276: sqlite was shut down first, and a Windows Debug build
+        // asserted in sqlite3_close)
+        SQL::SQLite::Connection::Ptr      sSQLConnection_;
+        Document::SQLite::Connection::Ptr sDocumentConnection_{nullptr};
+        GTEST_TEST (Foundation_Database, SQLite_ConnectionHeldInStatic_)
+        {
+            TraceContextBumper ctx{"SQLite_ConnectionHeldInStatic_"};
+            sSQLConnection_ = SQL::SQLite::Connection::New (SQL::SQLite::Connection::Options{.fInMemoryDB = "held-in-static-sql"sv});
+            sSQLConnection_.Exec ("CREATE TABLE t (x INTEGER);"sv);
+            sDocumentConnection_ =
+                Document::SQLite::Connection::New (Document::SQLite::Connection::Options{.fInMemoryDB = "held-in-static-document"sv});
+            (void)sDocumentConnection_.CreateCollection ("c"sv);
+        }
+    }
 }
 #endif
 
