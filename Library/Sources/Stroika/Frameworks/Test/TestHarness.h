@@ -18,6 +18,8 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/CountedValue.h"
+#include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 #if qStroika_HasComponent_googletest
@@ -27,22 +29,49 @@
  *  std::vector is reported (gtest's no_sanitize_address marking is for GCC and clang only). So a value with a ToString ()
  *  prints that instead - even if its type also has a PrintTo or operator<< (gtest's usual way to print a type).
  *
+ *  And a KeyValuePair (a Mapping's element) or CountedValue (a MultiSet's) prints as Characters::ToString writes it - its
+ *  parts each by gtest's printer, so one with no ToString () still compiles. A Stroika container itself gtest walks, printing
+ *  each element: through Characters::ToString instead, a container of a type it cannot print would not compile.
+ *
  *  By specializing UniversalPrinter, which every gtest printing path ends in: gtest's documented hooks (a PrintTo or
  *  operator<<) are found only in the type's own namespace, so would take one per namespace. UniversalPrinter is gtest's
  *  internal, so a gtest that changes it breaks the build here, rather than silently. (const T and T& go to gtest's own
  *  specializations, which come back here for T.)
  */
+namespace Stroika::Frameworks::Test::Private_ {
+    template <typename T>
+    concept IHasToString_ = requires (const T& t) {
+        { t.ToString () } -> std::convertible_to<Foundation::Characters::String>;
+    };
+}
 namespace testing::internal {
     template <typename T>
         requires (std::same_as<T, std::remove_cvref_t<T>> and
-                  requires (const T& t) {
-                      { t.ToString () } -> std::convertible_to<Stroika::Foundation::Characters::String>;
-                  })
+                  (Stroika::Frameworks::Test::Private_::IHasToString_<T> or Stroika::Foundation::Common::IKeyValuePair<T> or
+                   Stroika::Foundation::Common::ICountedValue<T>))
     class UniversalPrinter<T> {
     public:
         static void Print (const T& value, ::std::ostream* os)
         {
-            *os << Stroika::Foundation::Characters::String{value.ToString ()};
+            if constexpr (Stroika::Foundation::Common::IKeyValuePair<T>) {
+                *os << "{";
+                UniversalPrint (value.fKey, os);
+                if constexpr (requires { value.fValue; }) { // not a KeyValuePair<KEY_TYPE, void>
+                    *os << ": ";
+                    UniversalPrint (value.fValue, os);
+                }
+                *os << "}";
+            }
+            else if constexpr (Stroika::Foundation::Common::ICountedValue<T>) {
+                *os << "{'";
+                UniversalPrint (value.fValue, os);
+                *os << "': ";
+                UniversalPrint (value.fCount, os);
+                *os << "}";
+            }
+            else {
+                *os << Stroika::Foundation::Characters::String{value.ToString ()};
+            }
         }
     };
 }

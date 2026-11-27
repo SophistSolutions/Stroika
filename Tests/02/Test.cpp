@@ -25,6 +25,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Locale.h"
 #include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -3171,7 +3172,8 @@ namespace {
 
     /*
      *  GoogleTest prints a value with a ToString () - in a failed EXPECT_EQ, say - as that (Frameworks/Test/TestHarness.h),
-     *  not as the object's raw bytes.
+     *  not as the object's raw bytes; and a KeyValuePair or CountedValue - a Mapping's or MultiSet's element, with no
+     *  ToString () - as Characters::ToString writes it (#1259).
      */
     struct HasToString_ {
         int    fN;
@@ -3185,6 +3187,11 @@ namespace {
         EXPECT_EQ (testing::PrintToString (HasToString_{3}), "HasToString_ 3");
         IO::Network::URI u{"http://example.com/a?b"sv};
         EXPECT_EQ (testing::PrintToString (u), Characters::ToString (u).AsNarrowSDKString ());
+        Containers::Mapping<int, HasToString_> m;
+        m.Add (1, HasToString_{2});
+        EXPECT_EQ (testing::PrintToString (m), "{ {1: HasToString_ 2} }"); // gtest walks the Mapping, printing each element
+        EXPECT_EQ (testing::PrintToString (Common::KeyValuePair<int, int>{1, 2}), "{1: 2}");
+        EXPECT_EQ (testing::PrintToString (Common::CountedValue<HasToString_>{HasToString_{2}, 3}), "{'HasToString_ 2': 3}");
     }
 }
 #endif
