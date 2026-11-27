@@ -1,8 +1,7 @@
 // ESLint flat config (ESLint 9+ / required by ESLint 10, which dropped .eslintrc).
 // https://eslint.org/docs/latest/use/configure/configuration-files
 //
-// Named .mjs rather than .js because package.json has no "type": "module",
-// so a plain .js file here would be parsed as CommonJS.
+// Named .mjs: an ES module, whatever package.json's "type" says.
 
 import globals from 'globals';
 import tseslint from 'typescript-eslint';

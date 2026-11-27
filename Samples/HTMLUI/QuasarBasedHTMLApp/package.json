@@ -5,6 +5,7 @@
   "productName": "stroika-htmlui-quasarexample",
   "author": "Lewis Pringle <lewis@sophists.com>",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "quasar dev",
     "build": "quasar build",
