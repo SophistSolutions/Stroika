@@ -95,8 +95,9 @@ namespace Stroika::Frameworks::WebServer {
 
         /**
          *  fCacheControlSettings provides a sequence of RegExp: CacheControl pairs. These are automatically applied
-         *  to the host-relative pathname for the resource (foo/bar/blah.gif forward slash even in windows) - and
-         *  the first matching regexp - if any - we default to using its associated Cache-Control settings.
+         *  to the host-relative pathname of the file served (foo/bar/blah.gif forward slash even in windows; for the
+         *  fFallbackFile, its own) - and the first matching regexp - if any - we default to using its associated
+         *  Cache-Control settings.
          * 
          *  This makes it easy to setup default/automatic rules for applying cache control settings.
          * 
@@ -105,8 +106,8 @@ namespace Stroika::Frameworks::WebServer {
          *          Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_ {
          *              // webpack generates js/css files with a hex/hash prefix, so those are immutable
          *              pair<RegularExpression, CacheControl>{RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)", eCaseInsensitive}, CacheControl::kImmutable},
-         *              // treat everything else as valid to be cached for a day (very arbitrary)
-         *              pair<RegularExpression, CacheControl>{RegularExpression::kAny, CacheControl{.fMaxAge = Duration{5min}.As<int32_t> ()}},
+         *              // everything else - index.html, naming those files - checked with the server on each use: answered 304 while unchanged
+         *              pair<RegularExpression, CacheControl>{RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::eNoCache}},
          *          };
          *      \endcode      
          */
@@ -117,6 +118,9 @@ namespace Stroika::Frameworks::WebServer {
          *  'not handled' - and the next route can match and handle it. But for some situations, its helpful to just
          *  have return a special magical page as if it matched. For example, this is helpful with 
          *  https://router.vuejs.org/guide/essentials/history-mode.html HTML5Mode.
+         *
+         *  It is served for any path with no file - a missing assets/x.js too - with the Cache-Control rule
+         *  (fCacheControlSettings) for its own path, not the one requested.
          */
         optional<filesystem::path> fFallbackFile;
     };

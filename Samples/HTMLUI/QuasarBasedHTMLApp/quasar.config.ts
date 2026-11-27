@@ -56,7 +56,7 @@ export default defineConfig(function (/* ctx */) {
 
       devtool: 'source-map',
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history' - history, as src/router/index.ts uses (see ReadMe.md)
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,

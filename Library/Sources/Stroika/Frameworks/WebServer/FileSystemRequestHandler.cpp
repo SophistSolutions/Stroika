@@ -65,8 +65,10 @@ namespace {
             using DataExchange::InternetMediaTypeRegistry;
             if (optional<String> urlHostRelPath = ExtractURLHostRelPath_ (m)) {
                 filesystem::path fn{fFSRoot_ / urlHostRelPath->As<filesystem::path> ()};
+                String           servedRelPath = *urlHostRelPath; // the path the cache rules match: the served file's
                 if (fFallbackFile_ and not filesystem::exists (fn)) {
-                    fn = fFSRoot_ / *fFallbackFile_;
+                    fn            = fFSRoot_ / *fFallbackFile_;
+                    servedRelPath = String{fFallbackFile_->generic_u8string ()};
                 }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -83,7 +85,7 @@ namespace {
                         DbgTrace ("content-type: {}"_f, *oMediaType);
 #endif
                     }
-                    ApplyCacheControl_ (response, *urlHostRelPath);
+                    ApplyCacheControl_ (response, servedRelPath);
                     response.write (in.ReadAll ());
                     handled = true;
                 }

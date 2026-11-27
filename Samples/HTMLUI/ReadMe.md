@@ -98,3 +98,10 @@ curl -v -H "Authorization: Bearer ya29..." https://www.googleapis.com/oauth2/v3/
 ## Web UI
 
 Simple app built using vue/quasar (has nothing todo with Stroika, can use any framework, but need something for a demo).
+
+### History routing
+
+The UI uses history routing - URLs like `/devices` ([src/router/index.ts](QuasarBasedHTMLApp/src/router/index.ts)) - because
+Google's OAuth does not allow a fragment in its callback URL. A reload of such a URL asks the server for it, so the server
+answers any path with no file with index.html ([WebServer.cpp](Backend/Sources/WebServer.cpp), `fFallbackFile`). Hash routing
+(`/#/devices`) needs no such fallback, and a missing file can then be a 404.

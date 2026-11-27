@@ -4,6 +4,7 @@
 //  TEST    Frameworks::WebServer
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <fstream>
 #include <iostream>
 #include <thread>
 
@@ -28,6 +29,7 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
@@ -1066,6 +1068,41 @@ namespace {
         EXPECT_ANY_THROW (response.End ());
         EXPECT_TRUE (response.responseCompleted ());
         EXPECT_TRUE (response.responseAborted ());
+    }
+}
+
+namespace {
+    /*
+     *  A FileSystemRequestHandler's fallback file - served for a path with no file - gets its own cache rule, not the rule for
+     *  the path asked for: index.html, served for a missing assets/x.js, is not cached as an immutable x.js (#1253).
+     */
+    GTEST_TEST (Frameworks_WebServer, FileSystemRequestHandler_FallbackFileCacheRule_)
+    {
+        TraceContextBumper           ctx{"FileSystemRequestHandler_FallbackFileCacheRule_"};
+        IO::FileSystem::ScopedTmpDir site{"FileSystemRequestHandler_FallbackFileCacheRule_"};
+        filesystem::create_directory (filesystem::path{site} / "assets");
+        ofstream{filesystem::path{site} / "index.html"} << "the index";
+        ofstream{filesystem::path{site} / "assets" / "app-1a2b.js"} << "the app";
+        const CacheControl                      kNoCache{.fCacheability = CacheControl::eNoCache};
+        const FileSystemRequestHandler::Options kOptions{
+            .fCacheControlSettings = Sequence<pair<RegularExpression, CacheControl>>{{"assets/.+"_RegEx, CacheControl::kImmutable},
+                                                                                     {RegularExpression::kAny, kNoCache}},
+            .fFallbackFile         = "index.html"};
+        ConnectionManager server{SocketAddresses (InternetAddresses_Any (), kRouterTestPort_),
+                                 Sequence<Route>{Route{RegularExpression::kAny, FileSystemRequestHandler{site, kOptions}}}};
+        try {
+            auto check = [] (const String& path, const String& expectedBody, const CacheControl& expectedCacheControl) {
+                IO::Network::Transfer::Response r = Ask_ (IO::Network::HTTP::Methods::kGet, path, {});
+                EXPECT_EQ (r.GetDataTextInputStream ().ReadAll (), expectedBody) << path;
+                EXPECT_EQ (r.GetHeaders ().cacheControl (), expectedCacheControl) << path;
+            };
+            check ("/assets/app-1a2b.js"sv, "the app"sv, CacheControl::kImmutable);
+            check ("/assets/app-9z8y.js"sv, "the index"sv, kNoCache); // no such file: the fallback, with its own rule
+            check ("/devices"sv, "the index"sv, kNoCache);
+        }
+        catch (const RequiredComponentMissingException&) {
+            DbgTrace ("ignore RequiredComponentMissingException cuz no IO::Network::Transfer::Connection factory"_f);
+        }
     }
 }
 #endif

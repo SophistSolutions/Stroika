@@ -78,16 +78,17 @@ namespace {
              */
             {RegularExpression{".*\\bassets\\/.+"sv, eCaseInsensitive}, CacheControl::kImmutable},
             /*
-             *  Top level (other) files, like "Home.html", its less clear how long to tell the browser they will be valid.
-             *  If you pick to large a time, when you update your site it can lead to grave confusion. Pick a time that's too slow, and you
-             *  needlessly generate web traffic (though still should do conditional gets and not actually transfer much data). 5 minutes
-             *  is a compromise I've found suggested someplace on the web.
+             *  Other files - index.html above all, which names the current hashed files - can change with each release. So no-cache:
+             *  the browser asks the server on each use - a conditional GET, answered 304 (Not Modified) with no body while the file is
+             *  unchanged (ConnectionManager adds an ETag: Options::fAutoComputeETagResponse). A max-age instead lets a reload soon
+             *  after an upgrade use the old index.html, which names hashed files the upgrade removed.
              */
-            {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{5min}.As<int32_t> ()}},
+            {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::eNoCache}},
         };
         return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<filesystem::path>{"index.html"sv},
                                                  .fCacheControlSettings  = kFSCacheControlSettings_,
-                                                 //fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect
+                                                 // history routing (createWebHistory () - URLs like /devices) needs any path with no file
+                                                 // answered with index.html, since a reload asks the server for it (@see ReadMe.md)
                                                  .fFallbackFile = "index.html"};
     }()};
 }
