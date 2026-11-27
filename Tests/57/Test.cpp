@@ -1017,6 +1017,57 @@ namespace {
         EXPECT_EQ (wrongIDs, 0u);
     }
 }
+
+namespace {
+    // An output stream whose client has gone: each Write fails, as a socket's does once its peer has reset the connection
+    struct ClientGoneStream_ final : Streams::OutputStream::IRep<byte> {
+        bool         fOpen_{true};
+        virtual bool IsSeekable () const override
+        {
+            return false;
+        }
+        virtual void CloseWrite () override
+        {
+            fOpen_ = false;
+        }
+        virtual bool IsOpenWrite () const override
+        {
+            return fOpen_;
+        }
+        virtual Streams::SeekOffsetType GetWriteOffset () const override
+        {
+            return 0;
+        }
+        virtual Streams::SeekOffsetType SeekWrite (Streams::Whence, Streams::SignedSeekOffsetType) override
+        {
+            AssertNotReached (); // not seekable
+            return 0;
+        }
+        virtual void Write (span<const byte>) override
+        {
+            ThrowError (errc::connection_reset);
+        }
+        virtual void Flush () override
+        {
+        }
+    };
+
+    /*
+     *  A response small enough to stay in Response's buffer until End meets its gone client only in End's final Flush - and
+     *  End then leaves it aborted, as it promises for any failure (#1269).
+     */
+    GTEST_TEST (Frameworks_WebServer, Response_EndWhenClientGone_)
+    {
+        TraceContextBumper ctx{"Response_EndWhenClientGone_"};
+        Response           response{IO::Network::ConnectionOrientedStreamSocket::New (IO::Network::SocketAddress::INET),
+                                    Streams::OutputStream::Ptr<byte>{MakeSharedPtr<ClientGoneStream_> ()}};
+        response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+        response.write ("a small body"_k);
+        EXPECT_ANY_THROW (response.End ());
+        EXPECT_TRUE (response.responseCompleted ());
+        EXPECT_TRUE (response.responseAborted ());
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

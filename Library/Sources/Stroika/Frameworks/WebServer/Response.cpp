@@ -511,13 +511,13 @@ bool Response::End ()
                 }
             }
             Assert (fState_ >= State::eHeadersSent);
+            fUseOutStream_.Flush (); // before completing - Abort, below, does nothing once completed
             StateTransition_ (State::eCompleted);
-            fUseOutStream_.Flush ();
         }
         catch (...) {
             DbgTrace ("Exception during Response::End () automaticaly triggers Response::Abort()"_f);
-            Abort (); // does nothing once completed - as when the final Flush above fails (a client gone): so not always responseAborted ()
-            Ensure (this->responseCompleted ());
+            Abort ();
+            Ensure (this->responseAborted ());
             Execution::ReThrow (); // but still rethrow so caller can see failure
         }
     }
