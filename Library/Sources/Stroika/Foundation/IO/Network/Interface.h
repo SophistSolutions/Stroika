@@ -273,6 +273,10 @@ namespace Stroika::Foundation::IO::Network {
                 eWPA_NONE,     // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_WPA_NONE = 5,               // used in NatSTA only
                 eRSNA,         // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_RSNA = 6,
                 eRSNA_PSK,     // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_RSNA_PSK = 7,
+                eWPA3_ENT_192, // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_WPA3 = 8,                   // WPA3-Enterprise 192-bit
+                eWPA3_SAE,     // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_WPA3_SAE = 9,               // WPA3-Personal
+                eOWE,          // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_OWE = 10,                   // Enhanced Open
+                eWPA3_ENT,     // DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_WPA3_ENT = 11,              // WPA3-Enterprise
                 eUnknown,
             };
             friend constexpr Common::EnumBounds<AuthAlgorithm> EnumBoundsOf (AuthAlgorithm)

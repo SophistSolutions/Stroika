@@ -57,6 +57,12 @@ namespace Stroika::Foundation::IO::Network {
                 return "WPA-NONE";
             case Interface::WirelessInfo::AuthAlgorithm::eRSNA_PSK:
                 return "RSNA-PSK";
+            case Interface::WirelessInfo::AuthAlgorithm::eWPA3_ENT_192:
+                return "WPA3-ENT-192";
+            case Interface::WirelessInfo::AuthAlgorithm::eWPA3_SAE:
+                return "WPA3-SAE";
+            case Interface::WirelessInfo::AuthAlgorithm::eWPA3_ENT:
+                return "WPA3-ENT";
             default:
                 return byRule;
         }

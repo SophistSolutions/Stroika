@@ -765,7 +765,9 @@ namespace {
                     wInfo.fSecurityEnabled = pConnectInfo->wlanSecurityAttributes.bSecurityEnabled;
                     wInfo.f8021XEnabled    = pConnectInfo->wlanSecurityAttributes.bOneXEnabled;
                     auto mapAuthAlgorithm  = [] (DOT11_AUTH_ALGORITHM s) -> WirelessInfo::AuthAlgorithm {
-                        switch (s) {
+                        // WPA3's values by number: only newer Windows SDKs name them (10.0.19041 on; DOT11_AUTH_ALGO_WPA3_ENT
+                        // only for NTDDI_WIN10_FE on)
+                        switch (static_cast<int> (s)) {
                             case DOT11_AUTH_ALGO_80211_OPEN:
                                 return WirelessInfo::AuthAlgorithm::eOpen;
                             case DOT11_AUTH_ALGO_80211_SHARED_KEY:
@@ -780,6 +782,14 @@ namespace {
                                 return WirelessInfo::AuthAlgorithm::eRSNA;
                             case DOT11_AUTH_ALGO_RSNA_PSK:
                                 return WirelessInfo::AuthAlgorithm::eRSNA_PSK;
+                            case 8: // DOT11_AUTH_ALGO_WPA3
+                                return WirelessInfo::AuthAlgorithm::eWPA3_ENT_192;
+                            case 9: // DOT11_AUTH_ALGO_WPA3_SAE
+                                return WirelessInfo::AuthAlgorithm::eWPA3_SAE;
+                            case 10: // DOT11_AUTH_ALGO_OWE
+                                return WirelessInfo::AuthAlgorithm::eOWE;
+                            case 11: // DOT11_AUTH_ALGO_WPA3_ENT
+                                return WirelessInfo::AuthAlgorithm::eWPA3_ENT;
                             default:
                                 DbgTrace ("Unknown AuthAlgorithm {}"_f, static_cast<int> (s));
                                 return WirelessInfo::AuthAlgorithm::eUnknown;
@@ -957,8 +967,8 @@ namespace {
                 if (newInterface.fType == Interface::Type::eWIFI) {
                     if (auto owinfo = wirelessInfo2Merge.Lookup (newInterface.fInterfaceID)) {
                         newInterface.fWirelessInfo = *owinfo;
-                        WeakAssert (not newInterface.fTransmitSpeedBaud.has_value () or newInterface.fTransmitSpeedBaud == owinfo->fTransmitSpeedBaud);
-                        WeakAssert (not newInterface.fReceiveLinkSpeedBaud.has_value () or newInterface.fReceiveLinkSpeedBaud == owinfo->fReceiveLinkSpeedBaud);
+                        // GetAdaptersAddresses' speeds where it has them; the two need not agree - each is a snapshot of a rate
+                        // the driver changes from moment to moment, and the WLAN API's was read moments earlier
                         newInterface.fTransmitSpeedBaud = Memory::NullCoalesce (newInterface.fTransmitSpeedBaud, owinfo->fTransmitSpeedBaud);
                         newInterface.fReceiveLinkSpeedBaud = Memory::NullCoalesce (newInterface.fReceiveLinkSpeedBaud, owinfo->fReceiveLinkSpeedBaud);
                     }
