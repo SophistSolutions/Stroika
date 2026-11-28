@@ -941,8 +941,9 @@ GTEST_TEST (Foundation_IO_Network, Test3_MulticastInterface_)
 
 GTEST_TEST (Foundation_IO_Network, Test3_PacketInfo_)
 {
-    // ReceiveFrom says where a datagram arrived - the interface, and the address it was sent to - once SetReceivePacketInfo
-    // (true); not asked for, it says nothing. Over loopback, so the interface is loopback's.
+    // ReceiveFrom says where a datagram arrived - the interface, the address it was sent to, and the hop limit it arrived with -
+    // once SetReceivePacketInfo (true); not asked for, it says nothing. Over loopback, so the interface is loopback's, and no
+    // router lowers the hop limit the sender set.
     Debug::TraceContextBumper trcCtx{"Test3_PacketInfo_"};
     for (const InternetAddress& localhost : {V4::kLocalhost, V6::kLocalhost}) {
         SocketAddress::FamilyType family =
@@ -956,8 +957,15 @@ GTEST_TEST (Foundation_IO_Network, Test3_PacketInfo_)
                 "Test3_PacketInfo_: no {} here: {}"_f(localhost, current_exception ()).AsNarrowSDKString ().c_str ());
             continue;
         }
-        const SocketAddress                        to     = *receiver.GetLocalAddress ();
-        ConnectionlessSocket::Ptr                  sender = ConnectionlessSocket::New (family, Socket::DGRAM);
+        const SocketAddress       to     = *receiver.GetLocalAddress ();
+        ConnectionlessSocket::Ptr sender = ConnectionlessSocket::New (family, Socket::DGRAM);
+        constexpr int             kHopLimit{37};
+        if (family == SocketAddress::INET) {
+            sender.setsockopt (IPPROTO_IP, IP_TTL, kHopLimit);
+        }
+        else {
+            sender.setsockopt (IPPROTO_IPV6, IPV6_UNICAST_HOPS, kHopLimit);
+        }
         const std::byte                            kHi[]{std::byte{'h'}, std::byte{'i'}};
         std::byte                                  buf[16];
         optional<ConnectionlessSocket::PacketInfo> info = ConnectionlessSocket::PacketInfo{}; // so nullopt says something was done
@@ -975,6 +983,7 @@ GTEST_TEST (Foundation_IO_Network, Test3_PacketInfo_)
         EXPECT_EQ (from.GetInternetAddress (), localhost);
         ASSERT_TRUE (info.has_value ()) << Characters::ToString (localhost).AsNarrowSDKString ();
         EXPECT_EQ (info->fDestination, localhost);
+        EXPECT_EQ (info->fHopLimit, kHopLimit) << Characters::ToString (*info).AsNarrowSDKString ();
         optional<Interface> loopback =
             SystemInterfacesMgr{}.GetAll ().First ([&] (const Interface& i) { return i.fBindings.fAddresses.Contains (localhost); });
         if (loopback and loopback->fIndex) {

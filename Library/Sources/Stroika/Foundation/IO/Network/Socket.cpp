@@ -65,7 +65,9 @@ Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddres
 #else
     AssertNotImplemented ();
 #endif
-    if (family == SocketAddress::FamilyType::INET6) {
+    // not a raw socket: it carries its own protocol's packets - ICMPv6's, say - so IPv4 cannot reach it, and Linux refuses the
+    // option on one (EINVAL)
+    if (family == SocketAddress::FamilyType::INET6 and socketKind != Socket::Type::RAW) {
         int useIPV6Only = not kUseDualStackSockets_;
 #if qStroika_Platform_Linux
         // Linux follows the RFC, and uses dual-stack mode by default

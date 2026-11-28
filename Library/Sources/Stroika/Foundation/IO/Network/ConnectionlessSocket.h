@@ -31,10 +31,11 @@ namespace Stroika::Foundation::IO::Network {
         class _IRep;
 
         /**
-         *  \brief Where a datagram arrived (from ReceiveFrom, once SetReceivePacketInfo (true)): the interface it came in on, and
-         *         the address it was sent to - one of that interface's, a multicast group, or a broadcast address.
+         *  \brief Where a datagram arrived (from ReceiveFrom, once SetReceivePacketInfo (true)): the interface it came in on, the
+         *         address it was sent to - one of that interface's, a multicast group, or a broadcast address - and the hop limit
+         *         it arrived with.
          *
-         *  What the OS reports with IP_PKTINFO (IPv4) / IPV6_PKTINFO (IPv6).
+         *  What the OS reports with IP_PKTINFO and IP_RECVTTL (IPv4) / IPV6_PKTINFO and IPV6_RECVHOPLIMIT (IPv6).
          */
         struct PacketInfo {
             /**
@@ -47,6 +48,14 @@ namespace Stroika::Foundation::IO::Network {
              *  The address it was sent to - its IP header's destination.
              */
             InternetAddress fDestination;
+
+            /**
+             *  The hop limit it arrived with - IPv4's TTL, IPv6's hop limit: what its sender set, less one for each router it
+             *  crossed. nullopt if the OS did not say.
+             *
+             *  It is how a raw IPv6 socket learns it: unlike IPv4's, it receives no IP header.
+             */
+            optional<uint8_t> fHopLimit;
 
             bool operator== (const PacketInfo&) const = default;
 

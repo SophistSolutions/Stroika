@@ -82,6 +82,8 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
     };
 
     /**
+     *  Pings addr - IPv4 (ICMP) or IPv6 (ICMPv6) - with echo requests, from a raw socket: so it needs the rights one takes
+     *  (Windows: an administrator; Linux: CAP_NET_RAW).
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -89,7 +91,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
     public:
         Pinger ()              = delete;
         Pinger (const Pinger&) = delete;
-        Pinger (const InternetAddress& addr, const Options& options = {});
+        Pinger (const InternetAddress& addr, const Options& options = {}); ///< \pre addr is IPv4 or IPv6
 
     public:
         struct ResultType;
@@ -105,7 +107,6 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
          *  Can throw:
          *      a timeout - a std::system_error whose code () == errc::timed_out (@see Execution::ThrowError (errc::timed_out))
          *      InternetProtocol::ICMP::DestinationUnreachableException
-         *      InternetProtocol::ICMP::UnknownICMPPacket
          *      InternetProtocol::ICMP::TTLExpiredException
          *      others...
          */
@@ -129,7 +130,12 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
     /**
      */
     struct Pinger::ResultType {
-        Duration     fPingTime;
+        Duration fPingTime;
+
+        /**
+         *  How many hops the reply crossed - a guess, from the hop limit it arrived with (IPv4's TTL, IPv6's hop limit) and the
+         *  usual starting values (64, 128, 255). 0 if the OS did not say.
+         */
         unsigned int fHopCount{};
 
         /**

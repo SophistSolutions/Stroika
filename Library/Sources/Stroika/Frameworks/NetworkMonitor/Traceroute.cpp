@@ -118,14 +118,14 @@ void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void
             perHopCallback (Hop{r.fPingTime, addr});
             break;
         }
-        catch (const ICMP::V4::TTLExpiredException& ttlExpiredException) {
+        catch (const ICMP::TTLExpiredException& ttlExpiredException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("exception {} - ipaddr = {}"_f, ttlExpiredException, ttlExpiredException.GetReachedIP ());
 #endif
             // totally normal - this is how we find out the hops
             perHopCallback (Hop{Duration{Time::GetTickCount () - startOfPingRequest}, ttlExpiredException.GetUnreachedIP ()});
         }
-        catch (const ICMP::V4::DestinationUnreachableException& destinationUnreachableException) {
+        catch (const ICMP::DestinationUnreachableException& destinationUnreachableException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("exception {} - ipaddr = {}"_f, destinationUnreachableException, destinationUnreachableException.GetReachedIP ());
 #endif

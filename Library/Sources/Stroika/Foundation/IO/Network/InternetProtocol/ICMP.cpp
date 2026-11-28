@@ -14,9 +14,10 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 
 namespace {
-    String mkMessage_ (unsigned short code)
+    // what a destination unreachable message's code means: ICMP's (IPv4)
+    // @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - Destination unreachable message
+    String mkMessageV4_ (unsigned int code)
     {
-        // from  @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol - Destination unreachable message
         switch (code) {
             case 0:
                 return "ICMP Destination Unreachable: Network unreachable error."sv;
@@ -54,15 +55,41 @@ namespace {
                 return "ICMP Destination Unreachable: code {}."_f(code);
         }
     }
+    // ... and ICMPv6's (RFC 4443, 3.1)
+    String mkMessageV6_ (unsigned int code)
+    {
+        switch (code) {
+            case 0:
+                return "ICMPv6 Destination Unreachable: No route to destination."sv;
+            case 1:
+                return "ICMPv6 Destination Unreachable: Communication with destination administratively prohibited."sv;
+            case 2:
+                return "ICMPv6 Destination Unreachable: Beyond scope of source address."sv;
+            case 3:
+                return "ICMPv6 Destination Unreachable: Address unreachable."sv;
+            case 4:
+                return "ICMPv6 Destination Unreachable: Port unreachable."sv;
+            case 5:
+                return "ICMPv6 Destination Unreachable: Source address failed ingress/egress policy."sv;
+            case 6:
+                return "ICMPv6 Destination Unreachable: Reject route to destination."sv;
+            default:
+                return "ICMPv6 Destination Unreachable: code {}."_f(code);
+        }
+    }
+    bool IsV6_ (const InternetAddress& a)
+    {
+        return a.GetAddressFamily () == InternetAddress::AddressFamily::V6;
+    }
 }
 
 /*
  ********************************************************************************
- ***** InternetProtocol::ICMP::V4::DestinationUnreachableException **************
+ ******** InternetProtocol::ICMP::DestinationUnreachableException ***************
  ********************************************************************************
  */
-InternetProtocol::ICMP::V4::DestinationUnreachableException::DestinationUnreachableException (uint8_t code, const InternetAddress& unreachedIP)
-    : inherited{mkMessage_ (code)}
+InternetProtocol::ICMP::DestinationUnreachableException::DestinationUnreachableException (uint8_t code, const InternetAddress& unreachedIP)
+    : inherited{IsV6_ (unreachedIP) ? mkMessageV6_ (code) : mkMessageV4_ (code)}
     , fCode_{code}
     , fUnreachedIP_{unreachedIP}
 {
@@ -81,11 +108,11 @@ InternetProtocol::ICMP::V4::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTyp
 
 /*
  ********************************************************************************
- ************* InternetProtocol::ICMP::V4::TTLExpiredException ******************
+ *************** InternetProtocol::ICMP::TTLExpiredException ********************
  ********************************************************************************
  */
-InternetProtocol::ICMP::V4::TTLExpiredException::TTLExpiredException (const InternetAddress& unreachedIP)
-    : inherited{"ICMP TTL Expired."sv}
+InternetProtocol::ICMP::TTLExpiredException::TTLExpiredException (const InternetAddress& unreachedIP)
+    : inherited{IsV6_ (unreachedIP) ? "ICMPv6 Hop Limit Exceeded."sv : "ICMP TTL Expired."sv}
     , fUnreachedIP_{unreachedIP}
 {
 }

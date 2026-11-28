@@ -57,6 +57,26 @@ using Debug::AssertExternallySynchronizedChecker;
 #endif
 
 namespace {
+    // Whether a control message ReceiveMsg_ reads carries the hop limit a datagram arrived with. The OSes differ, for IPv4:
+    // Linux sends it as IP_TTL, macOS as IP_RECVTTL, Windows as IP_HOPLIMIT (the same as its IP_RECVTTL)
+    constexpr bool IsHopLimit_ (int level, int type)
+    {
+        return (level == IPPROTO_IP and (type == IP_TTL or type == IP_RECVTTL)) or (level == IPPROTO_IPV6 and type == IPV6_HOPLIMIT);
+    }
+    // the hop limit in a control message's data, of size bytes: an int - except macOS's IP_RECVTTL, one byte
+    optional<uint8_t> HopLimit_ (const void* data, size_t size)
+    {
+        if (size >= sizeof (int)) {
+            int i;
+            ::memcpy (&i, data, sizeof (i));
+            return static_cast<uint8_t> (i);
+        }
+        if (size >= 1) {
+            return *reinterpret_cast<const uint8_t*> (data);
+        }
+        return nullopt;
+    }
+
     // the index of the interface with this address (an exact match - not merely on its subnet); kAddrAny: kAnyIndex
     unsigned int InterfaceIndexOf_ (const InternetAddress& interfaceAddress)
     {
@@ -164,12 +184,15 @@ namespace {
             switch (GetAddressFamily ()) {
                 case SocketAddress::INET: {
                     setsockopt<int> (IPPROTO_IP, IP_PKTINFO, on); // (macOS: the same as its IP_RECVPKTINFO)
+                    setsockopt<int> (IPPROTO_IP, IP_RECVTTL, on); // (Windows: the same as its IP_HOPLIMIT)
                 } break;
                 case SocketAddress::INET6: {
 #if qStroika_Platform_Windows
                     setsockopt<int> (IPPROTO_IPV6, IPV6_PKTINFO, on);
+                    setsockopt<int> (IPPROTO_IPV6, IPV6_HOPLIMIT, on);
 #else
                     setsockopt<int> (IPPROTO_IPV6, IPV6_RECVPKTINFO, on); // RFC 3542
+                    setsockopt<int> (IPPROTO_IPV6, IPV6_RECVHOPLIMIT, on);
 #endif
                 } break;
                 default:
@@ -253,9 +276,9 @@ namespace {
             sockaddr_storage sa{};
             *packetInfo = nullopt;
 #if qStroika_Platform_POSIX
-            iovec                  iov{intoStart, static_cast<size_t> (intoEnd - intoStart)};
-            alignas (cmsghdr) byte control[CMSG_SPACE (sizeof (in6_pktinfo)) + CMSG_SPACE (sizeof (in_pktinfo))];
-            msghdr                 m{};
+            iovec iov{intoStart, static_cast<size_t> (intoEnd - intoStart)};
+            alignas (cmsghdr) byte control[CMSG_SPACE (sizeof (in6_pktinfo)) + CMSG_SPACE (sizeof (in_pktinfo)) + CMSG_SPACE (sizeof (int))];
+            msghdr m{};
             m.msg_name       = &sa;
             m.msg_namelen    = sizeof (sa);
             m.msg_iov        = &iov;
@@ -263,6 +286,7 @@ namespace {
             m.msg_control    = control;
             m.msg_controllen = sizeof (control);
             size_t result    = static_cast<size_t> (Handle_ErrNoResultInterruption ([&] () -> int { return ::recvmsg (fSD_, &m, flag); }));
+            optional<uint8_t> hopLimit; // its control message may come before or after the PKTINFO one
             for (cmsghdr* c = CMSG_FIRSTHDR (&m); c != nullptr; c = CMSG_NXTHDR (&m, c)) {
                 if (c->cmsg_level == IPPROTO_IP and c->cmsg_type == IP_PKTINFO) {
                     in_pktinfo i;
@@ -274,6 +298,9 @@ namespace {
                     ::memcpy (&i, CMSG_DATA (c), sizeof (i));
                     *packetInfo = PacketInfo{static_cast<unsigned int> (i.ipi6_ifindex), InternetAddress { i.ipi6_addr }};
                 }
+                else if (IsHopLimit_ (c->cmsg_level, c->cmsg_type)) {
+                    hopLimit = HopLimit_ (CMSG_DATA (c), c->cmsg_len - CMSG_LEN (0));
+                }
             }
 #elif qStroika_Platform_Windows
             Require (cmp_less (intoEnd - intoStart, numeric_limits<ULONG>::max ()));
@@ -284,9 +311,9 @@ namespace {
                 ThrowWSASystemErrorIfSOCKET_ERROR (::WSAIoctl (fSD_, SIO_GET_EXTENSION_FUNCTION_POINTER, &id, sizeof (id), &fWSARecvMsg_,
                                                                sizeof (fWSARecvMsg_), &bytes, nullptr, nullptr));
             }
-            WSABUF                    buf{static_cast<ULONG> (intoEnd - intoStart), reinterpret_cast<CHAR*> (intoStart)};
-            alignas (WSACMSGHDR) char control[WSA_CMSG_SPACE (sizeof (IN6_PKTINFO)) + WSA_CMSG_SPACE (sizeof (IN_PKTINFO))];
-            WSAMSG                    m{};
+            WSABUF buf{static_cast<ULONG> (intoEnd - intoStart), reinterpret_cast<CHAR*> (intoStart)};
+            alignas (WSACMSGHDR) char control[WSA_CMSG_SPACE (sizeof (IN6_PKTINFO)) + WSA_CMSG_SPACE (sizeof (IN_PKTINFO)) + WSA_CMSG_SPACE (sizeof (INT))];
+            WSAMSG m{};
             m.name          = reinterpret_cast<sockaddr*> (&sa);
             m.namelen       = sizeof (sa);
             m.lpBuffers     = &buf;
@@ -295,7 +322,8 @@ namespace {
             m.dwFlags       = static_cast<ULONG> (flag);
             DWORD nBytes    = 0;
             ThrowWSASystemErrorIfSOCKET_ERROR (fWSARecvMsg_ (fSD_, &m, &nBytes, nullptr, nullptr));
-            size_t result = nBytes;
+            size_t            result = nBytes;
+            optional<uint8_t> hopLimit; // its control message may come before or after the PKTINFO one
             for (WSACMSGHDR* c = WSA_CMSG_FIRSTHDR (&m); c != nullptr; c = WSA_CMSG_NXTHDR (&m, c)) {
                 if (c->cmsg_level == IPPROTO_IP and c->cmsg_type == IP_PKTINFO) {
                     IN_PKTINFO i;
@@ -307,11 +335,18 @@ namespace {
                     ::memcpy (&i, WSA_CMSG_DATA (c), sizeof (i));
                     *packetInfo = PacketInfo{static_cast<unsigned int> (i.ipi6_ifindex), InternetAddress { i.ipi6_addr }};
                 }
+                else if (IsHopLimit_ (c->cmsg_level, c->cmsg_type)) {
+                    hopLimit = HopLimit_ (WSA_CMSG_DATA (c), c->cmsg_len - WSA_CMSG_LEN (0));
+                }
             }
 #else
             AssertNotImplemented ();
-            size_t result = 0;
+            size_t            result = 0;
+            optional<uint8_t> hopLimit;
 #endif
+            if (*packetInfo) {
+                (*packetInfo)->fHopLimit = hopLimit;
+            }
             if (fromAddress != nullptr) {
                 *fromAddress = sa;
             }
@@ -482,6 +517,9 @@ String ConnectionlessSocket::PacketInfo::ToString () const
     sb << "{"sv;
     sb << "interfaceIndex : "sv << fInterfaceIndex;
     sb << ", destination : "sv << fDestination;
+    if (fHopLimit) {
+        sb << ", hopLimit : "sv << static_cast<unsigned int> (*fHopLimit);
+    }
     sb << "}"sv;
     return sb;
 }
