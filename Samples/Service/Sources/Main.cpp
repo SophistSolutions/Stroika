@@ -121,7 +121,7 @@ int main (int argc, const char* argv[])
     }
 #endif
 
-#if qStroika_Foundation_Debug_TraceToFile
+#if qStroika_Foundation_Debug_TraceToFile and qUseLogger
     Logger::sThe.Log (Logger::eInfo, "Debugging Log2TraceFile: {}"_f, Debug::GetTraceFileName ());
 #endif
 
