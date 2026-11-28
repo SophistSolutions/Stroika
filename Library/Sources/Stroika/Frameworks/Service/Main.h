@@ -6,6 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include <atomic>
 #include <filesystem>
 #include <optional>
 
@@ -16,15 +17,12 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/Process.h"
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/Signals.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Time/Duration.h"
-
-#if qStroika_Platform_POSIX
-#include "Stroika/Foundation/Execution/SignalHandlers.h"
-#include "Stroika/Foundation/Execution/Signals.h"
-#endif
 
 /**
  *
@@ -93,9 +91,7 @@ namespace Stroika::Frameworks::Service {
     using Containers::Sequence;
     using Execution::pid_t;
 
-#if qStroika_Platform_POSIX
     using Execution::SignalID;
-#endif
 
     /**
      *  A service is a program that runs in the background on your computer, and has no user interface.
@@ -127,6 +123,25 @@ namespace Stroika::Frameworks::Service {
      *  Miscellaneous Notes:
      *      o   No need for a --daemonize option for --Run-As-Service, because that's essentially
      *          what the --start command does
+     *
+     *  \par Stopping and reloading: signals
+     *      The same whichever way the service runs - RunAsService (--run-as-service) or RunDirectly (--run-directly) - on Linux
+     *      and macOS:
+     *          o   SIGINT (Ctrl+C) or SIGTERM stops it: its MainLoop's thread is aborted, so the MainLoop unwinds - running its
+     *              shutdown code - and RunAsService or RunDirectly returns. So systemd and docker stop (SIGTERM) stop it cleanly -
+     *              as a container's PID 1 too, which the OS gives no default action for SIGTERM.
+     *          o   A second SIGINT - Ctrl+C again, while the shutdown takes too long - ends the process at once, as SIGINT does by
+     *              default. A repeated SIGTERM changes nothing: its sender (systemd, docker stop) escalates to SIGKILL itself.
+     *          o   SIGHUP calls IApplicationRep::OnReReadConfigurationRequest () - what to re-read is the application's (by
+     *              default, nothing); --reload-configuration sends it. So closing the terminal RunDirectly runs in does not end it:
+     *              Ctrl+C does.
+     *      These handlers are installed only while RunAsService or RunDirectly runs, beside any the application adds. They need a
+     *      SignalHandlerRegistry::SafeSignalsManager (as Samples/Service's main makes).
+     *
+     *      EXCEPT ON WINDOWS, which sends a program no SIGTERM or SIGHUP:
+     *          o   RunDirectly: Ctrl+C and Ctrl+Break stop it, as SIGINT does above - a second ends it at once.
+     *          o   RunAsService: the Windows Service Manager stops it (--stop); a service has no console.
+     *          o   No reloading: --reload-configuration is not implemented.
      *
      *  \par Example Usage
      *      @see Samples/Service project
@@ -183,7 +198,7 @@ namespace Stroika::Frameworks::Service {
 
     public:
         /**
-         * Note - besides the obvious, the Main () function also sets signal handlers to point to this objects signal handler.
+         *  Signal handlers are installed only while RunAsService or RunDirectly runs (@see Main, "Stopping and reloading").
          */
         explicit Main (const shared_ptr<IApplicationRep>&        appRep,
                        const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
@@ -279,13 +294,17 @@ namespace Stroika::Frameworks::Service {
          *
          *  If the startup of the service fails due to exception, it will be propagated back to the caller.
          *
+         *  How it stops and reloads: @see Main, "Stopping and reloading".
+         *
          *  @see RunDirectly
          */
         nonvirtual void RunAsService ();
 
     public:
         /**
-         *  RunDirectly () is mostly a debug-handy/debug-friendly variant of RunAsService().
+         *  RunDirectly () runs the service in the foreground, in this process - as a supervisor running it that way expects
+         *  (systemd's Type=simple, a container), or to debug it. It stops and reloads as RunAsService does (@see Main, "Stopping
+         *  and reloading").
          *
          *  RunDirectly () will not return until the program has terminated. It runs the service 'MainLoop'.
          *  When that happens, the calling application should exit.
@@ -395,7 +414,7 @@ namespace Stroika::Frameworks::Service {
         static inline constexpr string_view kRunAsService = "Run-As-Service"sv;
 
         /**
-         *  kRunDirectly is mostly a debug-handy/debug-friendly variant of RunAsService().
+         *  kRunDirectly runs the service in the foreground, in this process (@see RunDirectly).
          *
          *  kRunDirectly will not return until the program has terminated. It runs the service 'MainLoop'.
          *  When that happens, the calling application should exit.
@@ -811,6 +830,7 @@ namespace Stroika::Frameworks::Service {
     private:
         Execution::SignalHandler fOurSignalHandler_; // only initialized and then read as consant, so no need to synchronize
         nonvirtual void          SignalHandler_ (SignalID signum);
+        atomic<bool>             fStopRequested_{false}; // a stop signal came, in this run (@see Main, "Stopping and reloading")
 
         // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
     protected:
@@ -860,9 +880,12 @@ namespace Stroika::Frameworks::Service {
         nonvirtual void                  Handler_ (DWORD dwOpcode) noexcept;
         static void WINAPI               StaticHandler_ (DWORD dwOpcode) noexcept;
         nonvirtual void                  OnStopRequest_ () noexcept;
+        nonvirtual void                  SignalHandler_ (SignalID signum);
 
     private:
         static WindowsService*      s_SvcRunningTHIS_;
+        Execution::SignalHandler    fOurSignalHandler_;     // Ctrl+C's and Ctrl+Break's, under RunDirectly
+        atomic<bool>                fStopRequested_{false}; // a stop signal came, in this run (@see Main, "Stopping and reloading")
         Execution::Thread::Ptr      fRunThread_;
         SERVICE_STATUS_HANDLE       fServiceStatusHandle_{nullptr}; // nullptr if invalid - not INVALID_HANDLE
         SERVICE_STATUS              fServiceStatus_{};

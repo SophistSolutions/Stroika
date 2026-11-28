@@ -60,6 +60,29 @@ namespace {
     // safe to declare here because we cannot start the threads before main...
     const String kServiceRunThreadName_ = "Service 'Run' thread"sv;
 
+    /*
+     *  A signal asking the service to stop - SIGINT or SIGTERM; on Windows Ctrl+C's SIGINT or Ctrl+Break's SIGBREAK. The first
+     *  aborts the MainLoop's thread, so it unwinds. Another from the keyboard - not SIGTERM - ends the process at once, as the
+     *  signal does by default (@see Main, "Stopping and reloading").
+     */
+    void OnStopSignal_ (SignalID signum, atomic<bool>* stopRequested, const Thread::Ptr& runThread)
+    {
+        if (not stopRequested->exchange (true)) {
+            if (runThread != nullptr) {
+                runThread.Abort ();
+            }
+        }
+        else if (signum != SIGTERM) {
+            DbgTrace ("{} again, so ending the process at once"_f, SignalToName (signum));
+            SignalHandlerRegistry::sThe.SetSignalHandlers (signum); // none: the signal's default action, ending the process
+#if qStroika_Platform_POSIX
+            (void)::kill (::getpid (), signum); // to the process: raise would send it to this thread alone, which may block it
+#else
+            (void)::raise (signum);
+#endif
+        }
+    }
+
     const Mapping<CommandLine::Option, Main::CommandArgs::MajorOperation>& Map2Major_ ()
     {
         using MajorOperation = Main::CommandArgs::MajorOperation;
@@ -552,7 +575,9 @@ void Main::BasicUNIXServiceImpl::_UnInstall ()
 void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService"};
-    if (_GetServicePID () > 0) {
+    // a pid file naming this very process is stale: left by an earlier run whose process ID this one got again - as PID 1, in a
+    // container restarted after docker kill
+    if (pid_t running = _GetServicePID (); running > 0 and running != GetCurrentProcessID ()) {
         Throw (Exception{"Service Already Running"sv});
     }
 
@@ -560,6 +585,7 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     RequireNotNull (appRep); // must call Attach_ first
 
     // The run thread before the signal handlers: SIGINT's and SIGTERM's (SignalHandler_) aborts it
+    fStopRequested_ = false;
     fRunThread_.store (Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Thread::eAutoStart, kServiceRunThreadName_));
     [[maybe_unused]] auto&& cleanupSigHanders = Execution::Finally ([this] () noexcept {
         Thread::SuppressInterruptionInContext suppressThreadInterupts;
@@ -589,7 +615,14 @@ void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& r
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     RequireNotNull (appRep); // must call Attach_ first
+    // The run thread before the signal handlers, as for _RunAsService
+    fStopRequested_ = false;
     fRunThread_.store (Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Thread::eAutoStart, kServiceRunThreadName_));
+    [[maybe_unused]] auto&& cleanupSigHanders = Execution::Finally ([this] () noexcept {
+        Thread::SuppressInterruptionInContext suppressThreadInterupts;
+        SetupSignalHanlders_ (false);
+    });
+    SetupSignalHanlders_ (true);
     Thread::Ptr        t = fRunThread_.load ();
     Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
     if (runFor) {
@@ -725,8 +758,7 @@ void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     switch (signum) {
         case SIGINT:
         case SIGTERM: {
-            DbgTrace ("Calling sigHandlerThread2Abort (thread: {}).Abort ()"_f, fRunThread_.load ().ToString ());
-            fRunThread_.load ().Abort ();
+            OnStopSignal_ (signum, &fStopRequested_, fRunThread_.load ());
         } break;
         case kSIG_ReReadConfiguration: {
             DbgTrace ("Invoking fAppRep->OnReReadConfigurationRequest ()"_f);
@@ -745,7 +777,8 @@ void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 Main::WindowsService* Main::WindowsService::s_SvcRunningTHIS_ = nullptr;
 
 Main::WindowsService::WindowsService ()
-    : fServiceStatus_{}
+    : fOurSignalHandler_{[this] (SignalID signum) { SignalHandler_ (signum); }}
+    , fServiceStatus_{}
 {
     fServiceStatus_.dwServiceType      = SERVICE_WIN32_OWN_PROCESS;
     fServiceStatus_.dwCurrentState     = SERVICE_STOPPED;
@@ -889,7 +922,17 @@ void Main::WindowsService::_RunAsService ()
 void Main::WindowsService::_RunDirectly (const optional<Time::Duration>& runFor)
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
+    // The run thread before the signal handlers: Ctrl+C's and Ctrl+Break's (SignalHandler_) aborts it. No SIGTERM or SIGHUP:
+    // Windows sends a program neither (@see Main, "Stopping and reloading")
+    fStopRequested_ = false;
     fRunThread_ = Execution::Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Execution::Thread::eAutoStart, kServiceRunThreadName_);
+    [[maybe_unused]] auto&& cleanupSigHanders = Execution::Finally ([this] () noexcept {
+        Thread::SuppressInterruptionInContext suppressThreadInterupts;
+        SignalHandlerRegistry::sThe.RemoveSignalHandler (SIGINT, fOurSignalHandler_);
+        SignalHandlerRegistry::sThe.RemoveSignalHandler (SIGBREAK, fOurSignalHandler_);
+    });
+    SignalHandlerRegistry::sThe.AddSignalHandler (SIGINT, fOurSignalHandler_);
+    SignalHandlerRegistry::sThe.AddSignalHandler (SIGBREAK, fOurSignalHandler_);
     Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
     if (runFor) {
         stopper = Execution::Thread::New (
@@ -1071,6 +1114,11 @@ void Main::WindowsService::OnStopRequest_ () noexcept
         SetServiceStatus_ (SERVICE_STOP_PENDING);
         fRunThread_.Abort ();
     }
+}
+
+void Main::WindowsService::SignalHandler_ (SignalID signum)
+{
+    OnStopSignal_ (signum, &fStopRequested_, fRunThread_);
 }
 
 void Main::WindowsService::Handler_ (DWORD dwOpcode) noexcept
