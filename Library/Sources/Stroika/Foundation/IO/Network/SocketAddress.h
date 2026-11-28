@@ -6,6 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstring>
+
 #if qStroika_Platform_POSIX
 #include <sys/socket.h>
 #elif qStroika_Platform_Windows
@@ -61,14 +63,16 @@ namespace Stroika::Foundation::IO::Network {
          *  in host-byte-order.
          */
         constexpr SocketAddress () noexcept;
-        constexpr SocketAddress (const sockaddr& iaddr) noexcept;
         constexpr SocketAddress (const sockaddr_in& iaddr) noexcept;
         constexpr SocketAddress (const sockaddr_in6& iaddr) noexcept;
         constexpr SocketAddress (const sockaddr_storage& iaddr) noexcept;
+        explicit SocketAddress (const sockaddr* addr, size_t addrLen); ///< \brief the address the OS gives as a pointer and length (getaddrinfo's ai_addr and ai_addrlen; recvfrom's, accept's) - addr points at its family's own struct, and all addrLen bytes are copied
 #if qStroika_Platform_Windows
         SocketAddress (const SOCKET_ADDRESS& sockaddr);
 #endif
         explicit SocketAddress (const InternetAddress& iaddr, PortType portNumber = kAnyPort);
+        [[deprecated ("Since Stroika v3.0d26, use SocketAddress (const sockaddr*, size_t): a sockaddr holds 16 bytes, so an IPv6 or UNIX "
+                      "address passed as one is cut short")]] constexpr SocketAddress (const sockaddr& iaddr) noexcept;
 
     public:
         /**

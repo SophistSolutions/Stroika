@@ -1039,6 +1039,17 @@ GTEST_TEST (Foundation_IO_Network, Test4_DNS_)
     }
 }
 
+GTEST_TEST (Foundation_IO_Network, DNS_AddressLiteral_)
+{
+    Debug::TraceContextBumper ctx{"DNS_AddressLiteral_"};
+    // an address looked up as a literal comes back as itself - an IPv6 one whole: before Stroika v3.0d26 only its first 8 bytes
+    // came back, so ::1 came back as ::
+    for (const InternetAddress& a : {V4::kLocalhost, V6::kLocalhost, InternetAddress{"fd7a:115c:a1e0::6701:612c"sv}}) {
+        EXPECT_EQ (DNS::kThe.GetHostAddresses (a.As<String> ()), Containers::Sequence<InternetAddress>{a})
+            << Characters::ToString (a).AsNarrowSDKString ();
+    }
+}
+
 GTEST_TEST (Foundation_IO_Network, Test5_CIDR_)
 {
     Debug::TraceContextBumper ctx{"Test5_CIDR_::DoTests_"};

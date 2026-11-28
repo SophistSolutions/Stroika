@@ -16,6 +16,7 @@ namespace Stroika::Foundation::IO::Network {
     constexpr inline SocketAddress::SocketAddress (const sockaddr& iaddr) noexcept
         : fSocketAddress_{iaddr}
     {
+        Require (iaddr.sa_family == AF_INET or iaddr.sa_family == AF_UNSPEC); // a sockaddr holds no more - so as As<sockaddr> ()
     }
     constexpr inline SocketAddress::SocketAddress (const sockaddr_in& iaddr) noexcept
         : fSocketAddress_V4_{iaddr}
@@ -28,6 +29,15 @@ namespace Stroika::Foundation::IO::Network {
     constexpr inline SocketAddress::SocketAddress (const sockaddr_storage& iaddr) noexcept
         : fSocketAddressStorage_{iaddr}
     {
+    }
+    inline SocketAddress::SocketAddress (const sockaddr* addr, size_t addrLen)
+        : fSocketAddressStorage_{}
+    {
+        RequireNotNull (addr);
+        Require (addrLen <= sizeof (fSocketAddressStorage_));
+        Require (addr->sa_family != AF_INET or addrLen >= sizeof (sockaddr_in));
+        Require (addr->sa_family != AF_INET6 or addrLen >= sizeof (sockaddr_in6));
+        ::memcpy (&fSocketAddressStorage_, addr, addrLen);
     }
     inline SocketAddress::SocketAddress (const InternetAddress& iaddr, PortType portNumber)
     {

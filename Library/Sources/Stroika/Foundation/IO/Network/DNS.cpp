@@ -162,7 +162,7 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
         if (i != res and i->ai_canonname != nullptr and i->ai_canonname[0] != '\0') {
             result.fAliases += String::FromUTF8 (i->ai_canonname);
         }
-        SocketAddress sa{*i->ai_addr};
+        SocketAddress sa{i->ai_addr, i->ai_addrlen};
         if (sa.IsInternetAddress ()) {
             result.fAddressList += sa.GetInternetAddress ();
         }
