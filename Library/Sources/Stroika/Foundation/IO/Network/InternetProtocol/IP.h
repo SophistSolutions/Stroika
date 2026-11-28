@@ -30,6 +30,10 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
     /**
      * This type is frequently used to select what versions of IP protocol to use in higher level services.
      *
+     *  eIPV4AndIPV6 (the default) is each of the two this host has (@see GetHostIPVersionSupport) - so a service still works
+     *  where the OS refuses one version's sockets, as Linux booted with ipv6.disable=1 refuses IPv6's. eIPV4Only and eIPV6Only
+     *  each require theirs: where the OS refuses it, a service asked for it fails.
+     *
      *  @see SupportIPV4
      *  @see SupportIPV6
      */
@@ -47,7 +51,14 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
     Common::StroikaNaming EnumNamingRule (IPVersionSupport);
 
     /**
-     *  Trivial helper so you can do:
+     *  \brief The IP versions this host's OS makes sockets for - asked once, and remembered
+     *
+     *  eIPV4AndIPV6 where it makes both - or neither, so that whatever uses them fails, and says why.
+     */
+    IPVersionSupport GetHostIPVersionSupport ();
+
+    /**
+     *  \brief Does flag ask for IPv4 - for eIPV4AndIPV6, where this host has it (@see IPVersionSupport)
      *
      *  \par Example Usage
      *      \code
@@ -59,7 +70,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
     bool SupportIPV4 (IPVersionSupport flag);
 
     /**
-     *  Trivial helper so you can do:
+     *  \brief Does flag ask for IPv6 - for eIPV4AndIPV6, where this host has it (@see IPVersionSupport)
      *
      *  \par Example Usage
      *      \code

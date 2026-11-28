@@ -415,13 +415,16 @@ namespace Stroika::Foundation::IO::Network {
      */
 
     /**
-     *  Return kAddrAny - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.
+     *  Return kAddrAny - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both, each where
+     *  this host has it (@see InternetProtocol::IP::IPVersionSupport): a server bound to these still starts where the OS refuses
+     *  IPv6 sockets.
      */
     Traversal::Iterable<InternetAddress>
     InternetAddresses_Any (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
 
     /**
-     *  Return kLocalhost - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.
+     *  Return kLocalhost - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both, each where
+     *  this host has it (@see InternetProtocol::IP::IPVersionSupport).
      */
     Traversal::Iterable<InternetAddress>
     InternetAddresses_Localhost (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);

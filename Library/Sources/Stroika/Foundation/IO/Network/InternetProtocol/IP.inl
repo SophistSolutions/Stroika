@@ -7,11 +7,13 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
 
     inline bool SupportIPV4 (IPVersionSupport flag)
     {
-        return flag == IPVersionSupport::eIPV4Only or flag == IPVersionSupport::eIPV4AndIPV6;
+        return flag == IPVersionSupport::eIPV4Only or
+               (flag == IPVersionSupport::eIPV4AndIPV6 and GetHostIPVersionSupport () != IPVersionSupport::eIPV6Only);
     }
     inline bool SupportIPV6 (IPVersionSupport flag)
     {
-        return flag == IPVersionSupport::eIPV6Only or flag == IPVersionSupport::eIPV4AndIPV6;
+        return flag == IPVersionSupport::eIPV6Only or
+               (flag == IPVersionSupport::eIPV4AndIPV6 and GetHostIPVersionSupport () != IPVersionSupport::eIPV4Only);
     }
 
 }

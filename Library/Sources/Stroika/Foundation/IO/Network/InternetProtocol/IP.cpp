@@ -3,6 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 
 #include "IP.h"
@@ -11,6 +13,35 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
+
+/*
+ ********************************************************************************
+ ********** IO::Network::InternetProtocol::IP::GetHostIPVersionSupport **********
+ ********************************************************************************
+ */
+IP::IPVersionSupport InternetProtocol::IP::GetHostIPVersionSupport ()
+{
+    // only the OS saying it has no such address family counts as no - a socket failing for another reason (too many open
+    // files, say) leaves it to whatever uses that family to meet that failure, and report it
+    auto makesSockets = [] (SocketAddress::FamilyType family) {
+        try {
+            ConnectionlessSocket::New (family, Socket::DGRAM);
+            return true;
+        }
+        catch (const system_error& e) {
+            return not Execution::IsA (e, errc::address_family_not_supported);
+        }
+    };
+    static const IPVersionSupport sHostSupport_ = [&] () {
+        bool v4 = makesSockets (SocketAddress::INET);
+        bool v6 = makesSockets (SocketAddress::INET6);
+        if (v4 != v6) {
+            return v4 ? IPVersionSupport::eIPV4Only : IPVersionSupport::eIPV6Only;
+        }
+        return IPVersionSupport::eIPV4AndIPV6;
+    }();
+    return sHostSupport_;
+}
 
 /*
  ********************************************************************************

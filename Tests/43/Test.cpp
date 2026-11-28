@@ -1107,6 +1107,17 @@ GTEST_TEST (Foundation_IO_Network, GetAddressFamily_)
     }
 }
 
+GTEST_TEST (Foundation_IO_Network, InternetAddresses_Any_Bind_)
+{
+    Debug::TraceContextBumper ctx{"InternetAddresses_Any_Bind_"};
+    // a socket binds each of InternetAddresses_Any () - so a server bound to them all starts. Before Stroika v3.0d26, where
+    // the OS refuses IPv6 sockets (Linux booted with ipv6.disable=1), [::] was among them, and no such server started (#1245)
+    for (const InternetAddress& a : InternetAddresses_Any ()) {
+        EXPECT_NO_THROW (ConnectionlessSocket::New (SocketAddress{a, 0}.GetAddressFamily (), Socket::DGRAM).Bind (SocketAddress{a, 0}))
+            << Characters::ToString (a).AsNarrowSDKString ();
+    }
+}
+
 GTEST_TEST (Foundation_IO_Network, MulticastOptions_)
 {
     Debug::TraceContextBumper ctx{"MulticastOptions_"};
